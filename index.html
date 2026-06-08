@@ -293,6 +293,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .fusion-check{position:absolute;top:3px;right:3px;width:14px;height:14px;background:var(--gold);border-radius:50%;font-size:0.55rem;display:flex;align-items:center;justify-content:center;color:#0b1530;}
 .fusion-selected-info{font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:6px;}
 .fusion-clear-btn{padding:5px 12px;border:none;border-radius:8px;background:rgba(192,57,43,0.7);color:#fff;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;}
+.fusion-auto-btn{padding:5px 12px;border:none;border-radius:8px;background:linear-gradient(180deg,#7c4dff,#5a32c4);color:#fff;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;box-shadow:0 2px 0 #3a1f80;}
 
 .ach-header{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
 .ach-overall{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
@@ -2321,6 +2322,24 @@ function clearFusionSlots(){
   renderFusion();
 }
 
+function autoSelectFusion(){
+  var rarity=getFusionSelectedRarity()||fusionRarityFilter;
+  if(!rarity)return;
+  var candidates=G.hatchedPets.filter(function(p){return p.rarity===rarity && fusionSlots.indexOf(p.uid)<0;});
+  // Prefer unequipped pets first so Auto Select doesn't grab your active squad unless it must
+  candidates.sort(function(a,b){
+    var ae=G.equippedPets.indexOf(a.uid)>=0?1:0;
+    var be=G.equippedPets.indexOf(b.uid)>=0?1:0;
+    return ae-be;
+  });
+  var emptyIdxs=[];
+  for(var i=0;i<5;i++)if(fusionSlots[i]===null)emptyIdxs.push(i);
+  for(var j=0;j<emptyIdxs.length && j<candidates.length;j++){
+    fusionSlots[emptyIdxs[j]]=candidates[j].uid;
+  }
+  renderFusion();
+}
+
 function renderFusion(){
   var wrap=document.getElementById('fusion-wrap');if(!wrap)return;
   var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
@@ -2357,8 +2376,11 @@ function renderFusion(){
   html+='</div>';
 
   // Selected count + clear
+  var autoRar=selectedRarity||fusionRarityFilter;
+  var autoAvail=G.hatchedPets.filter(function(p){return p.rarity===autoRar && fusionSlots.indexOf(p.uid)<0;}).length;
   html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
   html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(selectedRarity&&currentRc?' · <span style="color:'+currentRc.color+'">'+currentRc.label+'</span>':'')+'</div>';
+  if(filledCount<5&&autoAvail>0)html+='<button class="fusion-auto-btn" onclick="autoSelectFusion()">⚡ Auto</button>';
   if(filledCount>0)html+='<button class="fusion-clear-btn" onclick="clearFusionSlots()">✕ Clear</button>';
   html+='</div>';
 
