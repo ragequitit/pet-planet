@@ -378,6 +378,52 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #app.home-collapsed #sheet-body{max-height:0;opacity:0;}
 #app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
 #app.home-collapsed #stage-group{bottom:4dvh;transform:scale(1.4);transform-origin:center bottom;}
+/* ===== PROFILE HUB ===== */
+#profile-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow-y:auto;display:flex;flex-direction:column;}
+.prof-topbar{position:sticky;top:0;background:linear-gradient(180deg,#15264e,#13224a);display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(58,92,184,0.4);z-index:5;}
+.prof-topbar-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;}
+.prof-x{background:none;border:none;color:rgba(255,255,255,0.55);font-size:1.3rem;cursor:pointer;line-height:1;}
+.prof-body{padding:14px 14px 28px;}
+.prof-header{background:linear-gradient(160deg,#1d3164,#13224a);border:1px solid rgba(58,92,184,0.7);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
+.prof-avatar-wrap{position:relative;flex-shrink:0;}
+.prof-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(160deg,#2a3f7a,#15264e);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 0 12px rgba(245,200,66,0.3);}
+.prof-shield{position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:7px;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;}
+.prof-id{flex:1;min-width:0;}
+.prof-name-row{display:flex;align-items:center;gap:7px;}
+.prof-name{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prof-edit{background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:0.85rem;padding:2px;flex-shrink:0;}
+.prof-name-input{font-family:'Fredoka One',cursive;font-size:1rem;background:#0b1530;border:1px solid var(--gold);border-radius:8px;color:#fff;padding:4px 8px;width:120px;min-width:0;}
+.prof-rename-ok{background:var(--gold);border:none;color:#0b1530;border-radius:7px;font-weight:900;padding:4px 9px;cursor:pointer;font-size:0.8rem;flex-shrink:0;}
+.prof-titletext{font-size:0.72rem;color:var(--gold);font-weight:800;margin-top:2px;}
+.prof-level-row{display:flex;align-items:center;gap:7px;margin-top:7px;}
+.prof-lvl{font-size:0.62rem;font-weight:900;color:#fff;background:rgba(124,77,255,0.35);border:1px solid #7a5ad0;border-radius:6px;padding:2px 7px;white-space:nowrap;}
+.prof-xp-bar{flex:1;height:8px;background:#0b1530;border:1px solid rgba(58,92,184,0.6);border-radius:5px;overflow:hidden;}
+.prof-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);}
+.prof-xp-soon{font-size:0.5rem;color:rgba(255,255,255,0.3);margin-top:3px;}
+.prof-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px;}
+.prof-qc{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:9px 4px;text-align:center;}
+.prof-qc-val{font-family:'Fredoka One',cursive;font-size:0.82rem;color:var(--gold);}
+.prof-qc-lbl{font-size:0.5rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.prof-subtabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto;padding-bottom:2px;}
+.prof-subtab{flex:1;min-width:62px;background:linear-gradient(180deg,#1a2c54,#13224a);border:1px solid rgba(58,92,184,0.5);border-radius:10px;padding:8px 4px;text-align:center;font-size:0.62rem;color:rgba(255,255,255,0.6);font-weight:700;cursor:pointer;white-space:nowrap;}
+.prof-subtab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.prof-tabcontent{margin-top:14px;}
+.prof-section-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:9px;padding:6px 12px;margin-bottom:10px;box-shadow:0 2px 0 #2a1858;}
+.prof-ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.prof-ov-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:11px;}
+.prof-ov-icon{font-size:1rem;}
+.prof-ov-val{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;margin-top:3px;}
+.prof-ov-lbl{font-size:0.55rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;}
+.prof-compl{margin-top:14px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:13px;}
+.prof-compl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.prof-compl-lbl{font-size:0.7rem;color:#fff;font-weight:800;}
+.prof-compl-pct{font-family:'Fredoka One',cursive;color:var(--gold);font-size:1.05rem;}
+.prof-compl-bar{height:10px;background:#0b1530;border:1px solid rgba(58,92,184,0.6);border-radius:6px;overflow:hidden;}
+.prof-compl-fill{height:100%;background:linear-gradient(90deg,#f5c842,#ffe08a);}
+.prof-soon{text-align:center;padding:34px 18px;color:rgba(255,255,255,0.45);}
+.prof-soon-icon{font-size:2.4rem;margin-bottom:10px;}
+.prof-soon-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);margin-bottom:6px;}
+.prof-soon-body{font-size:0.72rem;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -390,7 +436,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="tb-right">
       <div class="tb-gems" onclick="showComingSoon('💎 Gems','Premiumvalutan Gems. Här kommer du kunna se hur du tjänar Gems (achievements, dailies, battle pass) och köpa fler. Byggs i ett senare steg.')"><span style="font-size:0.95rem">💎</span><span class="tg-val" id="tb-gems-val">0</span></div>
       <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','Battle Pass-menyn — claima belöningar och köp premium-track. Byggs i ett senare steg.')">🎟️</div>
-      <div class="tb-rbtn profile" onclick="showComingSoon('👤 Profil','Profil-hubben (Overview, Customize, Titles, Badges, Stats) byggs så fort navigationen är klar.')">👤</div>
+      <div class="tb-rbtn profile" onclick="showProfile()">👤</div>
       <div class="tb-rbtn" onclick="openMore()">⋯</div>
       <div class="tb-rbtn" onclick="showComingSoon('⚙️ Inställningar','Inställningar byggs i ett senare steg.')">⚙️</div>
     </div>
@@ -523,6 +569,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="modal-title" id="generic-modal-title" style="margin-bottom:8px;"></div>
     <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;"></div>
     <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
+  </div>
+</div>
+<div id="profile-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">👤 Profile</div>
+      <button class="prof-x" onclick="document.getElementById('profile-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="prof-body" id="prof-body"></div>
   </div>
 </div>
 
@@ -905,6 +960,7 @@ var G={
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchedPets:[],
   achievements:{unlocked:{},claimed:{}},
+  profile:{name:'Player'},
   stats:{
     // ECONOMY
     totalCoinsEarned:0,
@@ -1038,7 +1094,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,profile:G.profile,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -1494,6 +1550,86 @@ function showEpsInfo(){
     'EPS är hur många Egg Coins du tjänar passivt varje sekund. Den kommer från dina byggnader (Buildings) och ökar när du köper fler eller högre nivåer. Aktiva pets med Coin Gain eller Idle Gain ökar den ytterligare. Att klicka på ägget ger coins direkt ovanpå din EPS.');
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
+
+// ===== PROFILE HUB =====
+var profileSubTab='overview';
+function profEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showProfile(){profileSubTab='overview';renderProfile();document.getElementById('profile-modal').classList.add('open');}
+function closeProfile(){document.getElementById('profile-modal').classList.remove('open');}
+function profileSub(s){profileSubTab=s;renderProfile();}
+function profActiveSince(){var d=new Date(G.stats.firstPlayDate||Date.now());return (d.getMonth()+1)+'/'+(d.getFullYear()+'').slice(-2);}
+function profPlaytime(){var s=G.stats.totalTimePlayed||0;if(s<3600)return Math.max(0,Math.floor(s/60))+'m';if(s<86400)return (s/3600).toFixed(1)+'h';return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';}
+function startRenameProfile(){
+  var row=document.getElementById('prof-name-row');if(!row)return;
+  var cur=(G.profile&&G.profile.name)||'Player';
+  row.innerHTML='<input id="prof-name-input" class="prof-name-input" maxlength="16" value="'+profEsc(cur)+'"><button class="prof-rename-ok" onclick="saveProfileName()">✓</button>';
+  var inp=document.getElementById('prof-name-input');if(inp){inp.focus();inp.select();inp.addEventListener('keydown',function(e){if(e.key==='Enter')saveProfileName();});}
+}
+function saveProfileName(){
+  var inp=document.getElementById('prof-name-input');if(!inp)return;
+  var v=(inp.value||'').trim().slice(0,16);if(!v)v='Player';
+  if(!G.profile)G.profile={};G.profile.name=v;saveGame();renderProfile();
+}
+function profOvCard(icon,lbl,val){return '<div class="prof-ov-card"><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div></div>';}
+function profSoon(icon,title,body){return '<div class="prof-soon"><div class="prof-soon-icon">'+icon+'</div><div class="prof-soon-title">'+title+'</div><div class="prof-soon-body">'+body+'</div></div>';}
+function renderProfile(){
+  var body=document.getElementById('prof-body');if(!body)return;
+  var name=(G.profile&&G.profile.name)||'Player';
+  var achTotal=ACHIEVEMENTS.length;
+  var achUnlocked=ACHIEVEMENTS.filter(function(a){return G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];}).length;
+  var achPct=achTotal>0?Math.floor(achUnlocked/achTotal*100):0;
+  var pdx=getTotalPetdexCount();
+  var pdxPct=(pdx&&pdx.total>0)?Math.floor(pdx.found/pdx.total*100):0;
+  var asc=G.stats.ascensionsCompleted||0;
+  var completion=Math.round((achPct+pdxPct)/2);
+  var h='';
+  // HEADER
+  h+='<div class="prof-header">';
+  h+='<div class="prof-avatar-wrap"><div class="prof-avatar">👤</div><div class="prof-shield">🐾</div></div>';
+  h+='<div class="prof-id">';
+  h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
+  h+='<div class="prof-titletext">Newcomer</div>';
+  h+='<div class="prof-level-row"><span class="prof-lvl">Lv 1</span><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:0%"></div></div></div>';
+  h+='<div class="prof-xp-soon">XP &amp; Levels — coming soon</div>';
+  h+='</div></div>';
+  // QUICK ROW
+  h+='<div class="prof-quick">';
+  h+='<div class="prof-qc"><div class="prof-qc-val">'+achUnlocked+'/'+achTotal+'</div><div class="prof-qc-lbl">Achiev.</div></div>';
+  h+='<div class="prof-qc"><div class="prof-qc-val">'+pdxPct+'%</div><div class="prof-qc-lbl">Petdex</div></div>';
+  h+='<div class="prof-qc"><div class="prof-qc-val">'+asc+'</div><div class="prof-qc-lbl">Ascend</div></div>';
+  h+='<div class="prof-qc"><div class="prof-qc-val">'+profActiveSince()+'</div><div class="prof-qc-lbl">Since</div></div>';
+  h+='</div>';
+  // SUBTABS
+  var tabs=[['overview','Overview'],['customize','Customize'],['titles','Titles'],['badges','Badges'],['stats','Stats']];
+  h+='<div class="prof-subtabs">';
+  tabs.forEach(function(t){h+='<div class="prof-subtab'+(profileSubTab===t[0]?' active':'')+'" onclick="profileSub(\''+t[0]+'\')">'+t[1]+'</div>';});
+  h+='</div>';
+  // CONTENT
+  h+='<div class="prof-tabcontent">';
+  if(profileSubTab==='overview'){
+    h+='<div class="prof-section-title">Lifetime Overview</div>';
+    h+='<div class="prof-ov-grid">';
+    h+=profOvCard('🥚','Coins Earned',fmtShort(G.stats.totalCoinsEarned||0));
+    h+=profOvCard('🐾','Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
+    h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0));
+    h+=profOvCard('👆','Total Clicks',fmtShort(G.stats.totalClicks||0));
+    h+=profOvCard('⚗️','Fusions',fmtShort(G.stats.totalFusions||0));
+    h+=profOvCard('⏱️','Playtime',profPlaytime());
+    h+='</div>';
+    h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Account Completion</span><span class="prof-compl-pct">'+completion+'%</span></div>';
+    h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+completion+'%"></div></div></div>';
+  } else if(profileSubTab==='stats'){
+    h+=profSoon('📊','Stats Page','Färgkodade kort för Economy, Hatching, Pets, Fusion med mera — byggs i nästa steg och fylls med riktig data.');
+  } else if(profileSubTab==='customize'){
+    h+=profSoon('🎨','Customize','Favorit-pet, profilram, bakgrund, namnfärg och effekter. Låses upp när cosmetics-systemet byggs.');
+  } else if(profileSubTab==='titles'){
+    h+=profSoon('🏷️','Titles','Titlar tjänas via achievements och milstolpar. Title-systemet byggs senare.');
+  } else if(profileSubTab==='badges'){
+    h+=profSoon('🛡️','Badges','Märken visar dina prestationer. Badge-systemet byggs senare.');
+  }
+  h+='</div>';
+  body.innerHTML=h;
+}
 
 // Hemskärmens flytande knappar (nav rebuild — step 3)
 var EVENT_ACTIVE=false; // sätts true när event-systemet finns
@@ -2596,6 +2732,7 @@ if(savedData){
   }
   G._discoveredPets=savedData._discoveredPets||{};
   G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
+  if(savedData.profile&&savedData.profile.name)G.profile={name:savedData.profile.name};
   G.stats.totalSessions++;
   G.stats.currentSessionStart=Date.now();
   UPGRADES.forEach(function(u){u.apply(G.ulvl[u.id]);});
