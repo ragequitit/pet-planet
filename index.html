@@ -358,6 +358,22 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ub-tab:active{transform:translateY(1px);}
 #ub-upgrades.active{background:linear-gradient(180deg,#3b82d9,#2563b0);color:#fff;border-color:#5b9be8;}
 #ub-buildings.active{background:linear-gradient(180deg,#f5c842,#e0a800);color:#1a0a2e;border-color:#fff;}
+/* Ihopfällbart bygg-blad (nav rebuild — hemskärmens två lägen) */
+#home-sheet{display:none;}
+#sheet-handle{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 2px;cursor:pointer;user-select:none;}
+.sheet-grip{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,0.3);}
+.sheet-handle-label{font-family:'Fredoka One',cursive;font-size:0.72rem;color:rgba(255,255,255,0.55);letter-spacing:0.3px;}
+#sheet-chevron{display:inline-block;transition:transform 0.3s ease;}
+#sheet-body{overflow:hidden;transition:max-height 0.38s ease,opacity 0.28s ease;max-height:4000px;opacity:1;}
+#scene-wrap{transition:height 0.38s ease;}
+/* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
+#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:6;transition:transform 0.4s ease,bottom 0.4s ease;}
+/* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
+#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 52px);}
+#app.home-collapsed #coin-display{display:none;}
+#app.home-collapsed #sheet-body{max-height:0;opacity:0;}
+#app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
+#app.home-collapsed #stage-group{bottom:16vh;transform:scale(1.4);transform-origin:center bottom;}
 </style>
 </head>
 <body>
@@ -386,30 +402,41 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <div class="side-btn" id="inv-btn" onclick="switchTab('inventory')"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon">🎉</span><span class="sb-label">Events</span></div>
       </div>
-      <img id="pedestal-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/pedestal.png" alt="">
-      <div id="pet-positions"></div>
-      <div id="egg-stage">
-        <div id="egg-glow2"></div>
-        <div id="egg-glow"></div>
-        <div id="particles"></div>
-        <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="">
-        <div id="egg-shadow"></div>
+      <div id="stage-group">
+        <img id="pedestal-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/pedestal.png" alt="">
+        <div id="pet-positions"></div>
+        <div id="egg-stage">
+          <div id="egg-glow2"></div>
+          <div id="egg-glow"></div>
+          <div id="particles"></div>
+          <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="">
+          <div id="egg-shadow"></div>
+        </div>
       </div>
     </div>
     <div id="coin-display">
       <div id="pet-bonus-display"></div>
       <div id="click-rate-display" style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.35)"></div>
     </div>
-    <div id="home-toggle">
-      <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span>📈</span> Upgrades</button>
-      <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span>🏠</span> Buildings</button>
-    </div>
-    <div id="tab-buildings" class="tab-content active">
-      <div id="blist"></div>
-    </div>
-    <div id="tab-upgrades" class="tab-content">
-      <div class="sec-title">⚡ Efficiency Upgrades</div><div id="ulist"></div>
-      <div class="sec-title" style="margin-top:10px">🐾 Pet Slots</div><div id="slist"></div>
+    <div id="home-sheet">
+      <div id="sheet-handle" onclick="toggleHomeSheet()">
+        <div class="sheet-grip"></div>
+        <div class="sheet-handle-label"><span id="sheet-chevron">▾</span> <span id="sheet-label-text">Buildings &amp; Upgrades</span></div>
+      </div>
+      <div id="sheet-body">
+        <div id="home-toggle">
+          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span>📈</span> Upgrades</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span>🏠</span> Buildings</button>
+        </div>
+        <div id="tab-buildings" class="tab-content active">
+          <div id="blist"></div>
+        </div>
+        <div id="tab-upgrades" class="tab-content">
+          <div class="sec-title">⚡ Efficiency Upgrades</div><div id="ulist"></div>
+          <div class="sec-title" style="margin-top:10px">🐾 Pet Slots</div><div id="slist"></div>
+        </div>
+        <div id="tab-inventory" class="tab-content"><div id="inv-wrap"></div></div>
+      </div>
     </div>
     <div id="tab-pets" class="tab-content">
       <div class="pets-subnav">
@@ -425,7 +452,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
     <div id="tab-hatch" class="tab-content"><div id="hatch-wrap"></div></div>
     <div id="tab-adventure" class="tab-content"><div class="placeholder"><div class="phi">🗺️</div><h2>Adventure</h2><p>Coming soon.</p></div></div>
-    <div id="tab-inventory" class="tab-content"><div id="inv-wrap"></div></div>
     <div id="tab-shop" class="tab-content"><div id="shop-wrap"></div></div>
     <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly och event-quests byggs i ett senare steg.</p></div></div>
   </div>
@@ -500,11 +526,19 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 // ============================================================
 // DATA: EGG WORLDS
 // ============================================================
+// Asset-pipeline: varje värld har egen bakgrund (kuliss), pedestal och ägg.
+// Namnstandard (lägg filerna i repo:t med dessa namn så plockas de upp automatiskt):
+//   bakgrund:  assets/eggworlds/<id>-bg.png
+//   pedestal:  assets/eggworlds/<id>-pedestal.png
+//   ägg:       assets/eggs/<id>-egg.png
+// Starter behåller sina nuvarande filnamn (scene-background.png, pedestal.png, starter-egg.png).
+var ASSET_BASE='https://raw.githubusercontent.com/ragequitit/pet-planet/main';
+function worldAssets(id){return {id:id,bg:ASSET_BASE+'/assets/eggworlds/'+id+'-bg.png',egg:ASSET_BASE+'/assets/eggs/'+id+'-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/'+id+'-pedestal.png'};}
 var EGG_WORLDS=[
-  {id:'starter',bg:'https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/scene-background.png',egg:'https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png',pedestal:'https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/pedestal.png'},
-  {id:'forest',bg:'',egg:'',pedestal:''},{id:'mountain',bg:'',egg:'',pedestal:''},{id:'desert',bg:'',egg:'',pedestal:''},
-  {id:'ocean',bg:'',egg:'',pedestal:''},{id:'jungle',bg:'',egg:'',pedestal:''},{id:'arctic',bg:'',egg:'',pedestal:''},
-  {id:'volcano',bg:'',egg:'',pedestal:''},{id:'mystic',bg:'',egg:'',pedestal:''},{id:'celestial',bg:'',egg:'',pedestal:''},{id:'cosmic',bg:'',egg:'',pedestal:''},
+  {id:'starter',bg:ASSET_BASE+'/assets/eggworlds/scene-background.png',egg:ASSET_BASE+'/assets/eggs/starter-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/pedestal.png'},
+  worldAssets('forest'),worldAssets('mountain'),worldAssets('desert'),
+  worldAssets('ocean'),worldAssets('jungle'),worldAssets('arctic'),
+  worldAssets('volcano'),worldAssets('mystic'),worldAssets('celestial'),worldAssets('cosmic'),
 ];
 
 // ============================================================
@@ -1037,7 +1071,25 @@ function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
 // ============================================================
 // SCENE
 // ============================================================
-function setWorld(idx){var w=EGG_WORLDS[idx];if(w.bg)document.getElementById('scene-bg').src=w.bg;if(w.egg)document.getElementById('egg-img').src=w.egg;if(w.pedestal)document.getElementById('pedestal-img').src=w.pedestal;G.currentWorld=idx;}
+function setWorld(idx){
+  var w=EGG_WORLDS[idx]||EGG_WORLDS[0];var fb=EGG_WORLDS[0];
+  function setImg(id,url,fallback){
+    var img=document.getElementById(id);if(!img||!url)return;
+    img.onerror=function(){img.onerror=null;if(fallback&&img.src!==fallback)img.src=fallback;};
+    img.src=url;
+  }
+  setImg('scene-bg',w.bg,fb.bg);
+  setImg('egg-img',w.egg,fb.egg);
+  setImg('pedestal-img',w.pedestal,fb.pedestal);
+  G.currentWorld=idx;
+}
+// TEST-knapp: bläddra genom alla världar för att granska konst. TAS BORT INNAN RELEASE.
+function cycleWorld(){
+  var n=(G.currentWorld+1)%EGG_WORLDS.length;
+  setWorld(n);
+  var b=document.getElementById('world-test-btn');
+  if(b)b.textContent='🌍 World: '+EGG_WORLDS[n].id+' ('+(n+1)+'/'+EGG_WORLDS.length+')';
+}
 function initParticles(){
   var c=document.getElementById('particles');c.innerHTML='';
   var sp=[
@@ -1289,7 +1341,7 @@ document.getElementById('pet-result-modal').onclick=function(e){if(e.target===th
 // ============================================================
 // TAB SWITCHING
 // ============================================================
-var SCENE_TABS=['buildings','upgrades'];
+var SCENE_TABS=['buildings','upgrades','inventory'];
 var currentTab='buildings';
 function switchTab(name){
   var wasHome=SCENE_TABS.indexOf(currentTab)>=0;
@@ -1298,14 +1350,19 @@ function switchTab(name){
   var tab=document.getElementById('tab-'+name);if(tab)tab.style.display='block';
   var nb=document.getElementById('nb-'+name);if(nb)nb.classList.add('active');
   var isHome=SCENE_TABS.indexOf(name)>=0;
+  var isInv=(name==='inventory');
   document.getElementById('scene-wrap').style.display=isHome?'block':'none';
-  var ht=document.getElementById('home-toggle');
-  if(ht){
-    ht.style.display=isHome?'flex':'none';
-    var ubB=document.getElementById('ub-buildings'),ubU=document.getElementById('ub-upgrades');
-    if(ubB)ubB.classList.toggle('active',name==='buildings');
-    if(ubU)ubU.classList.toggle('active',name==='upgrades');
-  }
+  var sheet=document.getElementById('home-sheet');
+  if(sheet)sheet.style.display=isHome?'block':'none';
+  // Bygg-växeln (Upgrades|Buildings) visas bara för bygg-bladet, döljs i inventory-läget
+  var ht=document.getElementById('home-toggle');if(ht)ht.style.display=isInv?'none':'flex';
+  var lbl=document.getElementById('sheet-label-text');if(lbl)lbl.textContent=isInv?'Inventory':'Buildings & Upgrades';
+  var ubB=document.getElementById('ub-buildings'),ubU=document.getElementById('ub-upgrades');
+  if(ubB)ubB.classList.toggle('active',name==='buildings');
+  if(ubU)ubU.classList.toggle('active',name==='upgrades');
+  // Att öppna inventoryt (via 🎒) fäller alltid upp bladet så det syns
+  if(isInv)homeCollapsed=false;
+  if(isHome)applyHomeCollapsed();
   currentTab=name;
   if(name==='inventory')renderInventory();
   if(name==='shop')renderShop();
@@ -1314,8 +1371,8 @@ function switchTab(name){
   if(name==='petdex')renderPetdex();
   if(name==='more')renderAchievements();
   // Slide-up-animation (nav rebuild — steg 3): spelas bara när man LANDAR på
-  // hemskärmen från en annan flik — inte när man växlar Buildings<->Upgrades.
-  if(isHome&&!wasHome)playHomeEntrance();
+  // hemskärmen från en annan flik, och bara i utfällt läge.
+  if(isHome&&!wasHome&&!homeCollapsed)playHomeEntrance();
 }
 
 // Replays a CSS keyframe-animation klass på ett element
@@ -1323,8 +1380,23 @@ function replayAnim(el,cls){if(!el)return;el.classList.remove(cls);void el.offse
 function playHomeEntrance(){
   var main=document.getElementById('main');if(main)main.scrollTop=0;
   replayAnim(document.getElementById('egg-stage'),'egg-shrink-in');
-  replayAnim(document.getElementById('home-toggle'),'home-slide-in');
-  replayAnim(document.getElementById('tab-'+currentTab),'home-slide-in');
+  replayAnim(document.getElementById('sheet-body'),'home-slide-in');
+}
+
+// Ihopfällbart bygg-blad: utfällt = ägg + Buildings/Upgrades, hopfällt = rent fullskärmsägg
+var homeCollapsed=false;
+function applyHomeCollapsed(){
+  var app=document.getElementById('app');
+  if(app)app.classList.toggle('home-collapsed',homeCollapsed);
+}
+function toggleHomeSheet(){
+  homeCollapsed=!homeCollapsed;
+  if(homeCollapsed){
+    var m=document.getElementById('main');if(m)m.scrollTop=0;
+    // Fäller man ner inventoryt → återställ hem-bladet till Buildings för nästa gång man fäller upp
+    if(currentTab==='inventory')switchTab('buildings');
+  }
+  applyHomeCollapsed();
 }
 
 // Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
@@ -1404,6 +1476,9 @@ function renderBuildings(){
   var testRow=document.createElement('div');testRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
   testRow.innerHTML='<button onclick="addTestShells()" style="flex:1;padding:6px;background:#3d2a6e;border:1px solid #5a3a9e;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+300 All</button><button onclick="addTestPets()" style="flex:1;padding:6px;background:#3d2a6e;border:1px solid #5a3a9e;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+10 Pets</button><button onclick="addTestCoins()" style="flex:1;padding:6px;background:#3d2a6e;border:1px solid #5a3a9e;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+1B Eggs</button><button onclick="resetGame()" style="flex:1;padding:6px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">Reset</button>';
   bl.appendChild(testRow);
+  var worldRow=document.createElement('div');worldRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
+  worldRow.innerHTML='<button id="world-test-btn" onclick="cycleWorld()" style="flex:1;padding:6px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">🌍 World: '+(EGG_WORLDS[G.currentWorld]?EGG_WORLDS[G.currentWorld].id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>';
+  bl.appendChild(worldRow);
   var unlocked=numUnlocked();var show=Math.min(unlocked+2,20);
   for(var i=0;i<show;i++){
     var d=document.createElement('div');d.dataset.idx=i;
