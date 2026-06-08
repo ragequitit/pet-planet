@@ -320,7 +320,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ach-right{flex-shrink:0;text-align:right;}
 .ach-claim-btn{padding:6px 12px;border:none;border-radius:8px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;box-shadow:0 2px 0 #1b5e20;}
 .ach-done{font-size:0.9rem;color:var(--gold);}
-.ach-popup{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#15264e,#0b1530);border:2px solid var(--gold);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:9999;box-shadow:0 4px 20px rgba(245,200,66,0.3);animation:achSlideIn 0.4s ease;min-width:260px;max-width:340px;}
+.ach-popup{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#15264e,#0b1530);border:2px solid var(--gold);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:9999;box-shadow:0 4px 20px rgba(245,200,66,0.3);animation:achSlideIn 0.4s ease;min-width:260px;max-width:340px;}
 @keyframes achSlideIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
 .ach-popup-icon{font-size:1.8rem;}
 .ach-popup-text{flex:1;}
@@ -435,6 +435,20 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pst-row-lbl{color:rgba(255,255,255,0.55);}
 .pst-row-val{color:#fff;font-weight:800;text-align:right;}
 .pst-card.soon .pst-rows{opacity:0.6;}
+.prof-cz-row{display:flex;align-items:center;gap:11px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:11px 13px;margin-bottom:9px;}
+.prof-cz-row.locked{opacity:0.55;}
+.prof-cz-ic{width:40px;height:40px;border-radius:10px;background:#0b1530;border:1px solid rgba(58,92,184,0.6);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.prof-cz-mid{flex:1;min-width:0;}
+.prof-cz-lbl{font-size:0.74rem;color:#fff;font-weight:800;}
+.prof-cz-sub{font-size:0.6rem;color:rgba(255,255,255,0.5);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prof-cz-btn{background:linear-gradient(180deg,#7c4dff,#5a32c4);border:none;color:#fff;border-radius:9px;padding:7px 12px;font-family:'Fredoka One',cursive;font-size:0.66rem;cursor:pointer;box-shadow:0 2px 0 #3a1f80;flex-shrink:0;}
+.prof-cz-lock{font-size:0.85rem;color:rgba(255,255,255,0.4);flex-shrink:0;}
+.prof-petgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:4px 0 12px;max-height:230px;overflow-y:auto;padding:3px;}
+.prof-petpick{background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.5);border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer;}
+.prof-petpick.sel{border-color:var(--gold);background:rgba(245,200,66,0.1);}
+.prof-petpick-e{font-size:1.5rem;}
+.prof-petpick-n{font-size:0.5rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.prof-cz-empty{text-align:center;color:rgba(255,255,255,0.45);font-size:0.72rem;padding:18px;}
 </style>
 </head>
 <body>
@@ -971,7 +985,7 @@ var G={
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchedPets:[],
   achievements:{unlocked:{},claimed:{}},
-  profile:{name:'Player'},
+  profile:{name:'Player',favoritePet:null},
   stats:{
     // ECONOMY
     totalCoinsEarned:0,
@@ -1596,7 +1610,7 @@ function renderProfile(){
   var h='';
   // HEADER
   h+='<div class="prof-header">';
-  h+='<div class="prof-avatar-wrap"><div class="prof-avatar">👤</div><div class="prof-shield">🐾</div></div>';
+  h+='<div class="prof-avatar-wrap"><div class="prof-avatar">'+profAvatarInner()+'</div><div class="prof-shield">🐾</div></div>';
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
   h+='<div class="prof-titletext">Newcomer</div>';
@@ -1632,7 +1646,7 @@ function renderProfile(){
   } else if(profileSubTab==='stats'){
     h+=renderProfileStats();
   } else if(profileSubTab==='customize'){
-    h+=profSoon('🎨','Customize','Favorit-pet, profilram, bakgrund, namnfärg och effekter. Låses upp när cosmetics-systemet byggs.');
+    h+=renderProfileCustomize();
   } else if(profileSubTab==='titles'){
     h+=profSoon('🏷️','Titles','Titlar tjänas via achievements och milstolpar. Title-systemet byggs senare.');
   } else if(profileSubTab==='badges'){
@@ -1722,6 +1736,45 @@ function renderProfileStats(){
     ['Total Currency',fmtShort(s.totalAscensionCurrency||0)],
     ['Highest Bonus',(s.highestAscensionBonus||0)+'%']
   ],true);
+  return h;
+}
+function profFavPet(){if(!G.profile||!G.profile.favoritePet)return null;return G.hatchedPets.find(function(p){return p.uid===G.profile.favoritePet;})||null;}
+function profAvatarInner(){var fp=profFavPet();return (fp&&fp.e)?fp.e:'👤';}
+var profPickerOpen=false;
+function toggleFavPicker(){profPickerOpen=!profPickerOpen;renderProfile();}
+function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();renderProfile();}
+function clearFavoritePet(){if(G.profile)G.profile.favoritePet=null;saveGame();renderProfile();}
+function renderProfileCustomize(){
+  var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var h='<div class="prof-section-title">Customize</div>';
+  var fp=profFavPet();
+  var sub=fp?(profEsc(fp.name)+' · '+(RARITY_CONFIG[fp.rarity]?RARITY_CONFIG[fp.rarity].label:fp.rarity)):'None selected — shows as your avatar';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+((fp&&fp.e)?fp.e:'⭐')+'</div>';
+  h+='<div class="prof-cz-mid"><div class="prof-cz-lbl">Favorite Pet</div><div class="prof-cz-sub">'+sub+'</div></div>';
+  h+='<button class="prof-cz-btn" onclick="toggleFavPicker()">'+(profPickerOpen?'Close':(fp?'Change':'Choose'))+'</button></div>';
+  if(profPickerOpen){
+    var seen={},uniq=[];
+    (G.hatchedPets||[]).forEach(function(p){var k=p.name+'|'+p.rarity;if(!seen[k]){seen[k]=true;uniq.push(p);}});
+    if(uniq.length===0){
+      h+='<div class="prof-cz-empty">You have no pets yet. Hatch one first, then pick your favorite here.</div>';
+    } else {
+      uniq.sort(function(a,b){var d=ORDER.indexOf(b.rarity)-ORDER.indexOf(a.rarity);return d!==0?d:String(a.name).localeCompare(String(b.name));});
+      h+='<div class="prof-petgrid">';
+      uniq.forEach(function(p){
+        var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#aaa';
+        var sel=(G.profile&&G.profile.favoritePet===p.uid)?' sel':'';
+        h+='<div class="prof-petpick'+sel+'" style="border-color:'+(sel?'var(--gold)':(col+'66'))+'" onclick="setFavoritePet('+JSON.stringify(p.uid)+')">';
+        h+='<div class="prof-petpick-e">'+(p.e||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div></div>';
+      });
+      h+='</div>';
+      if(fp)h+='<div style="text-align:center;margin-bottom:12px"><button class="prof-cz-btn" style="background:linear-gradient(180deg,#37507f,#243a63);box-shadow:0 2px 0 #16263f" onclick="clearFavoritePet()">Clear favorite</button></div>';
+    }
+  }
+  var locked=[['🖼️','Profile Frame','Decorative border around your avatar'],['🌅','Background','Profile backdrop'],['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
+  locked.forEach(function(l){
+    h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">🔒</div></div>';
+  });
+  h+='<div class="prof-soon-body" style="text-align:center;margin-top:6px">Locked options unlock as cosmetics, titles and prestige are added.</div>';
   return h;
 }
 
@@ -2826,7 +2879,7 @@ if(savedData){
   }
   G._discoveredPets=savedData._discoveredPets||{};
   G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
-  if(savedData.profile&&savedData.profile.name)G.profile={name:savedData.profile.name};
+  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
   G.stats.totalSessions++;
   G.stats.currentSessionStart=Date.now();
   UPGRADES.forEach(function(u){u.apply(G.ulvl[u.id]);});
