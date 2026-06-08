@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pet Planet</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;outline:none;touch-action:manipulation;}
+:root{--bg:#0b1530;--gold:#f5c842;--text:#fff;--muted:rgba(255,255,255,0.45);--border:rgba(58,92,184,0.6);--w:390px;--top-h:56px;--nav-h:88px;}
+html,body{height:100%;background:#000;display:flex;justify-content:center;font-family:'Nunito',sans-serif;color:var(--text);overflow:hidden;}
+#app{width:var(--w);max-width:100vw;height:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+#topbar{flex-shrink:0;height:var(--top-h);background:linear-gradient(180deg,#15264e,#0b1530);border-bottom:2px solid #2b4d92;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:100;}
+.top-btn{flex:1;height:36px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);}
+.top-btn:active{transform:translateY(1px);}
+.top-btn .tb-icon{font-size:1rem;line-height:1;}
+.top-btn .tb-label{font-size:0.45rem;font-weight:800;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.3px;}
+#main{flex:1;overflow-y:auto;overflow-x:hidden;}
+#main::-webkit-scrollbar{width:4px;}
+#main::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
+#scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
+#scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+#scene-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
+.side-btns{position:absolute;top:60px;display:flex;flex-direction:column;gap:8px;z-index:10;}
+#left-btns{left:8px;}
+#right-btns{right:8px;}
+.side-btn{width:52px;height:52px;background:linear-gradient(180deg,#3a5cb8,#1f3d96);border:3px solid #5a7fd8;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:1px;box-shadow:0 3px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.2);}
+.side-btn:active{transform:translateY(2px);}
+.side-btn .sb-icon{font-size:1.3rem;line-height:1;}
+.side-btn .sb-label{font-size:0.45rem;font-weight:800;color:rgba(255,255,255,0.8);text-transform:uppercase;}
+#pedestal-img{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:block;}
+#pet-positions{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:5;}
+.pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.pet-pos .ppi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.3);border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.3);overflow:hidden;}
+.pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
+.pet-pos.slot1 .ppi{border-color:#f5c84288;}
+.pet-pos.locked .ppi{opacity:0.2;}
+#egg-stage{position:absolute;bottom:100px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
+#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
+@keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
+@keyframes pulse2{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:0.9;transform:scale(1.12);}}
+#egg-img{width:115px;height:135px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes eggPop{0%{transform:scale(1,1);}20%{transform:scale(1.07,0.94);}50%{transform:scale(0.96,1.06);}100%{transform:scale(1,1);}}
+/* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
+@keyframes homeSlideUp{0%{transform:translateY(44px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
+.home-slide-in{animation:homeSlideUp 0.34s cubic-bezier(0.22,0.61,0.36,1);}
+@keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.74);}60%{transform:translateX(-50%) scale(1.46);}100%{transform:translateX(-50%) scale(1.5);}}
+.egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
+#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;}
+@keyframes shadowAnim{0%,100%{width:80px;height:16px;opacity:0.9;}50%{width:54px;height:10px;opacity:0.4;}}
+#particles{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1;}
+.spark{position:absolute;border-radius:50%;opacity:0;animation:sparkle var(--dur,3s) ease-in-out infinite;}
+@keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(1);}30%{opacity:1;}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
+.click-pop{position:absolute;pointer-events:none;font-size:1.1rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.8);animation:floatUp 0.8s ease forwards;white-space:nowrap;z-index:20;font-family:'Fredoka One',cursive;}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.4);}}
+@keyframes shellPop{0%{opacity:0;transform:translateX(-50%) translateY(0) scale(0.5);}15%{opacity:1;transform:translateX(-50%) translateY(-15px) scale(1.3);}70%{opacity:1;transform:translateX(-50%) translateY(-45px) scale(1);}100%{opacity:0;transform:translateX(-50%) translateY(-70px) scale(0.85);}}
+#coin-display{background:rgba(0,0,0,0.5);padding:6px 16px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);}
+#coin-count{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.8),0 0 20px rgba(245,200,66,0.3);line-height:1.1;font-family:'Fredoka One',cursive;letter-spacing:1px;}
+#cps-display{font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.5);}
+#pet-bonus-display{font-size:0.68rem;font-weight:700;color:rgba(180,136,255,0.8);min-height:14px;}
+.tab-content{display:none;padding:10px;}
+.tab-content.active{display:block;}
+.bld{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:8px 8px 8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:8px;backdrop-filter:blur(4px);}
+.bld.buyable{border-color:rgba(245,200,66,0.8);box-shadow:0 0 12px rgba(245,200,66,0.15);}
+.bld.poor{opacity:0.8;cursor:default;}
+.bld.semi{opacity:0.35;cursor:default;}
+.bld.ghost{opacity:0.15;cursor:default;}
+.bld-left{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.bld-owned{font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.5);min-width:18px;text-align:center;}
+.bld-img{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.bld-info{flex:1;min-width:0;}
+.bn{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;line-height:1.2;}
+.bp{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.bld-buy{flex-shrink:0;width:88px;height:44px;border-radius:12px;border:2px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;box-shadow:0 3px 0 rgba(0,0,0,0.4);transition:transform 0.08s;}
+.bld-buy:active{transform:translateY(2px);}
+.bld-buy.affordable{background:linear-gradient(180deg,#b388ff,#7c4dff);}
+.bld-buy.expensive{background:linear-gradient(180deg,#5a3a7e,#3a1a5e);cursor:default;opacity:0.7;}
+.bld-buy .buy-icon{font-size:1.4rem;line-height:1;flex-shrink:0;}
+.bld-buy .buy-price{font-family:'Fredoka One',cursive;font-size:0.85rem;color:#fff;white-space:nowrap;}
+.upg{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;cursor:pointer;backdrop-filter:blur(4px);}
+.upg.can-buy{border-color:rgba(245,200,66,0.8);box-shadow:0 0 12px rgba(245,200,66,0.15);}
+.upg.poor{opacity:0.45;cursor:default;}
+.upg.maxed{opacity:0.5;cursor:default;}
+.upg-img{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.un{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;}
+.ud{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:2px;}
+.udots{display:flex;gap:5px;margin-top:6px;}
+.dot{width:11px;height:11px;border-radius:50%;background:#1f3d78;border:2px solid #3a5cb8;}
+.dot.on{background:var(--gold);border-color:#fff;box-shadow:0 0 5px #f5c842;}
+.ur{text-align:right;flex-shrink:0;margin-left:auto;}
+.uc{font-family:'Fredoka One',cursive;font-size:0.85rem;}
+.sec-title{font-size:0.7rem;color:rgba(255,255,255,0.35);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;margin-top:4px;}
+.inv-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.inv-tab{flex:1;padding:6px 2px;background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:10px;font-family:'Fredoka One',cursive;font-size:0.62rem;color:rgba(255,255,255,0.5);text-align:center;cursor:pointer;}
+.inv-tab.active{background:linear-gradient(180deg,#1f3d78,#142a52);border-color:var(--gold);color:#fff;}
+.inv-total{background:rgba(0,0,0,0.3);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.inv-total-label{font-size:0.8rem;color:rgba(255,255,255,0.5);}
+.inv-total-val{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--gold);}
+.inv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.inv-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;}
+.inv-card.empty{opacity:0.35;}
+.inv-icon{font-size:1.8rem;flex-shrink:0;width:36px;text-align:center;}
+.inv-name{font-family:'Fredoka One',cursive;font-size:0.75rem;line-height:1.2;}
+.inv-count{font-size:1.1rem;font-weight:900;color:var(--gold);font-family:'Fredoka One',cursive;}
+.inv-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:8px;color:rgba(255,255,255,0.3);text-align:center;}
+.inv-coming .ic-icon{font-size:2.5rem;}
+.shop-egg-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:16px;padding:14px;margin-bottom:10px;backdrop-filter:blur(4px);}
+.shop-egg-card.available{border-color:rgba(245,200,66,0.6);}
+.shop-egg-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.shop-egg-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;}
+.shop-egg-name{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;}
+.shop-egg-status{font-size:0.7rem;margin-top:3px;}
+.shop-egg-reqs{background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 10px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;}
+.req-row{display:flex;align-items:center;gap:6px;font-size:0.72rem;}
+.req-icon{font-size:0.9rem;width:18px;text-align:center;}
+.req-label{color:rgba(255,255,255,0.5);flex:1;}
+.req-val.met{color:#4caf50;font-weight:800;}
+.req-val.unmet{color:rgba(255,255,255,0.3);}
+.shop-btn{width:100%;padding:10px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.4);}
+.shop-btn.can{background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;}
+.shop-btn.no{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;box-shadow:none;}
+.hatch-section-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.hatch-slot{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:16px;padding:14px;margin-bottom:8px;backdrop-filter:blur(4px);}
+.hatch-slot.active-slot{border-color:rgba(245,200,66,0.5);}
+.hatch-slot.empty-slot{border-style:dashed;opacity:0.6;}
+.hatch-slot-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.hatch-slot-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
+.hatch-slot-name{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
+.hatch-slot-time{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-top:3px;}
+.hatch-progress-bar{width:100%;height:8px;background:rgba(0,0,0,0.3);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.hatch-progress-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:4px;}
+.hatch-collect-btn{width:100%;padding:9px;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;}
+.hatch-collect-btn.ready{background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 3px 0 #8a6000;}
+.hatch-collect-btn.waiting{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;}
+.hatch-egg-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+.hatch-egg-row{background:rgba(27,45,78,0.45);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
+.he-icon{font-size:1.5rem;flex-shrink:0;}
+.he-name{font-family:'Fredoka One',cursive;font-size:0.85rem;flex:1;}
+.he-count{font-size:0.8rem;color:rgba(255,255,255,0.4);margin-right:8px;}
+.he-btn{padding:6px 14px;border:none;border-radius:8px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.75rem;cursor:pointer;}
+.he-btn.disabled{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;}
+.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:12px;color:rgba(255,255,255,0.3);text-align:center;}
+.placeholder .phi{font-size:3rem;}
+.placeholder h2{font-size:1rem;color:rgba(255,255,255,0.6);}
+.placeholder p{font-size:0.8rem;line-height:1.5;}
+#bottomnav{flex-shrink:0;height:var(--nav-h);background:linear-gradient(180deg,#1e2c52,#141f3c);border-top:2px solid #0e1830;display:flex;align-items:center;padding:4px 3px;gap:4px;z-index:100;}
+.nav-btn{flex:1;height:100%;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:3px 2px;cursor:pointer;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.nav-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.nav-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
+.nav-btn .ni{font-size:3rem;line-height:1;}
+.nav-btn .ni-img{width:50px;height:50px;object-fit:contain;display:block;}
+.nav-btn span:last-child{font-size:0.68rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
+.nav-btn.active span:last-child{color:#ffe08a;}
+.pets-subnav{display:flex;gap:6px;margin-bottom:10px;}
+.psub-btn{flex:1;padding:8px 4px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
+.psub-btn span{font-size:0.95rem;}
+.psub-btn:active{transform:translateY(2px);}
+.psub-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;color:#0b1530;box-shadow:0 2px 0 #8a6000;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:20px;width:var(--w);max-width:100vw;max-height:75vh;overflow-y:auto;}
+.modal-box.centered{border-radius:20px;width:320px;max-width:92vw;text-align:center;}
+.modal-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:10px;padding:7px 14px;margin-bottom:14px;text-align:center;box-shadow:0 2px 0 #2a1858,inset 0 1px 0 rgba(255,255,255,0.15);}
+.modal-close{float:right;background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;}
+.pet-option{background:#122446;border:2px solid #1f3d78;border-radius:12px;padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px;}
+.pet-option:hover{border-color:var(--gold);}
+.pet-option-icon{width:40px;height:40px;border-radius:50%;background:#0b1530;border:2px solid #1f3d78;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.pet-option-info{flex:1;}
+.pet-option-name{font-family:'Fredoka One',cursive;font-size:0.85rem;}
+.pet-option-rarity{font-size:0.65rem;margin-top:1px;}
+.pet-option-abilities{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:2px;}
+.ob-icon{font-size:2.5rem;margin-bottom:8px;}
+.ob-time{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:16px;}
+#offline-rewards{background:#122446;border-radius:12px;padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;}
+.ob-row{display:flex;justify-content:space-between;font-size:0.85rem;}
+.ob-label{color:rgba(255,255,255,0.5);}
+.ob-val{color:var(--gold);font-weight:800;}
+#offline-claim{width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;}
+.reset-btn{margin-top:10px;padding:10px 20px;background:#c0392b;border:none;border-radius:10px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 3px 0 #7b241c;width:100%;}
+@keyframes petBounce{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
+
+/* Pet Inventory Styles */
+.pet-inv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.pet-inv-count{font-size:0.75rem;color:rgba(255,255,255,0.4);}
+.pet-sort-row{display:flex;gap:4px;margin-bottom:10px;}
+.pet-sort-btn{flex:1;padding:5px 4px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
+.pet-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.pet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.pet-card{border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
+.pet-card::before{content:'';position:absolute;inset:0;opacity:0.08;pointer-events:none;}
+.pet-card:active{transform:scale(0.97);}
+.pet-card.equipped{box-shadow:0 0 12px rgba(245,200,66,0.25);}
+.pet-card-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;position:relative;z-index:1;}
+.pet-card-icon{font-size:1.8rem;width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(0,0,0,0.3);}
+.pet-card-info{flex:1;min-width:0;}
+.pet-card-name{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pet-card-rarity{font-size:0.6rem;font-weight:800;margin-top:1px;}
+.pet-card-world{font-size:0.55rem;color:rgba(255,255,255,0.35);margin-top:1px;}
+.pet-abilities{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1;}
+.pet-ability-row{display:flex;align-items:center;gap:4px;font-size:0.58rem;}
+.pa-icon{font-size:0.7rem;width:14px;text-align:center;}
+.pa-name{color:rgba(255,255,255,0.6);flex:1;}
+.pa-tier{font-weight:900;font-size:0.6rem;}
+.pa-val{color:rgba(255,255,255,0.4);font-size:0.55rem;}
+.equipped-badge{font-size:0.55rem;background:var(--gold);color:#0b1530;border-radius:4px;padding:1px 4px;font-weight:900;margin-top:3px;display:inline-block;position:relative;z-index:1;}
+.pet-empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3);}
+.pet-empty .pe-icon{font-size:2.5rem;margin-bottom:8px;}
+.pet-empty p{font-size:0.8rem;}
+
+/* Pet Result Modal */
+.pet-result-abilities{display:flex;flex-direction:column;gap:6px;margin:12px 0;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;}
+.pra-row{display:flex;align-items:center;gap:8px;font-size:0.8rem;}
+.pra-icon{font-size:1rem;width:20px;text-align:center;}
+.pra-name{flex:1;text-align:left;}
+.pra-tier{font-weight:900;}
+.pra-val{color:rgba(255,255,255,0.5);font-size:0.72rem;}
+
+/* Active bonuses strip */
+.bonus-strip{background:rgba(0,0,0,0.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;}
+.bonus-chip{font-size:0.62rem;font-weight:800;color:rgba(180,136,255,0.9);white-space:nowrap;}
+
+/* Petdex */
+.pdx-header{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
+.pdx-progress-bar{width:100%;height:10px;background:rgba(0,0,0,0.4);border-radius:5px;overflow:hidden;margin:6px 0 4px;}
+.pdx-progress-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:5px;transition:width 0.3s;}
+.pdx-progress-label{display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.5);}
+.pdx-world-tabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;}
+.pdx-world-tabs::-webkit-scrollbar{height:3px;}
+.pdx-world-tabs::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
+.pdx-world-tab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.6);border-radius:10px;cursor:pointer;min-width:60px;}
+.pdx-world-tab.active{border-color:var(--gold);background:rgba(245,200,66,0.1);}
+.pdx-world-tab .pwt-icon{font-size:1.3rem;}
+.pdx-world-tab .pwt-name{font-size:0.5rem;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;}
+.pdx-world-tab .pwt-prog{font-size:0.5rem;color:rgba(255,255,255,0.35);}
+.pdx-world-tab.active .pwt-name{color:var(--gold);}
+.pdx-world-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.pdx-world-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
+.pdx-world-count{font-size:0.7rem;color:rgba(255,255,255,0.4);}
+.pdx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.pdx-card{background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);border-radius:12px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;}
+.pdx-card.discovered{border-color:rgba(58,92,184,0.8);}
+.pdx-card.undiscovered{opacity:0.6;}
+.pdx-card-icon{font-size:1.8rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(0,0,0,0.3);}
+.pdx-card.undiscovered .pdx-card-icon{filter:grayscale(1) brightness(0.3);}
+.pdx-card-name{font-family:'Fredoka One',cursive;font-size:0.65rem;color:#fff;text-align:center;line-height:1.2;}
+.pdx-card.undiscovered .pdx-card-name{color:rgba(255,255,255,0.3);}
+.pdx-card-rarity{font-size:0.55rem;font-weight:800;}
+.pdx-discovered-badge{position:absolute;top:4px;right:4px;font-size:0.65rem;background:#4caf50;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
+.pdx-rarity-dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;margin-top:2px;}
+.pdx-rdot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);}
+.egg-info-rarity-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.2);margin-bottom:4px;}
+.egg-info-rarity-bar{flex:1;height:6px;background:rgba(0,0,0,0.3);border-radius:3px;overflow:hidden;}
+.egg-info-rarity-fill{height:100%;border-radius:3px;}
+.egg-info-rarity-pct{font-size:0.7rem;font-weight:800;min-width:35px;text-align:right;}
+.egg-info-pets{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+.egg-info-pet{background:rgba(0,0,0,0.2);border-radius:6px;padding:3px 7px;font-size:0.65rem;display:flex;align-items:center;gap:3px;}
+
+/* Fusion System */
+.fusion-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.fusion-tab{flex:1;padding:8px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.6);border-radius:12px;font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.5);text-align:center;cursor:pointer;}
+.fusion-tab.active{background:linear-gradient(180deg,#1f3d78,#142a52);border-color:var(--gold);color:#fff;}
+.fusion-slots-area{background:rgba(0,0,0,0.25);border-radius:14px;padding:12px;margin-bottom:10px;}
+.fusion-slots-title{font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.fusion-slots-row{display:flex;gap:6px;justify-content:center;margin-bottom:10px;}
+.fusion-slot{width:54px;height:54px;border-radius:12px;background:rgba(0,0,0,0.3);border:2px dashed rgba(58,92,184,0.5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;cursor:pointer;position:relative;flex-shrink:0;}
+.fusion-slot.filled{border-style:solid;border-color:rgba(245,200,66,0.5);}
+.fusion-slot.filled:after{content:'✕';position:absolute;top:-6px;right:-6px;width:16px;height:16px;background:#c0392b;border-radius:50%;font-size:0.55rem;display:flex;align-items:center;justify-content:center;color:#fff;font-family:sans-serif;}
+.fusion-arrow{font-size:1.5rem;color:rgba(255,255,255,0.3);align-self:center;margin:0 4px;}
+.fusion-result-box{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px;text-align:center;min-width:90px;}
+.fusion-result-silhouette{font-size:2rem;filter:brightness(0) invert(0.3);margin-bottom:4px;}
+.fusion-result-rarity{font-size:0.65rem;font-weight:800;margin-bottom:4px;}
+.fusion-result-odds{font-size:0.6rem;color:rgba(255,255,255,0.5);line-height:1.6;}
+.fusion-perfect{background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);border-radius:8px;padding:5px 8px;font-size:0.62rem;color:var(--gold);text-align:center;margin-bottom:8px;}
+.fusion-btn{width:100%;padding:11px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;}
+.fusion-btn.ready{background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;box-shadow:0 3px 0 #4a148c;}
+.fusion-btn.not-ready{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;}
+.fusion-pets-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.fusion-pets-title{font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;}
+.fusion-filter-row{display:flex;gap:4px;margin-bottom:8px;}
+.fusion-rarity-select{flex:1;padding:5px 8px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;color:#fff;font-size:0.7rem;font-family:'Nunito',sans-serif;}
+.fusion-pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:280px;overflow-y:auto;}
+.fusion-pet-grid::-webkit-scrollbar{width:3px;}
+.fusion-pet-grid::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
+.fusion-pet-card{background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);border-radius:12px;padding:8px 6px;text-align:center;cursor:pointer;position:relative;transition:border-color 0.1s;}
+.fusion-pet-card.selected{border-color:var(--gold);background:rgba(245,200,66,0.08);}
+.fusion-pet-card.disabled{opacity:0.3;cursor:default;}
+.fusion-pet-card .fp-icon{font-size:1.6rem;}
+.fusion-pet-card .fp-name{font-size:0.55rem;color:rgba(255,255,255,0.7);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fusion-pet-card .fp-rarity{font-size:0.5rem;font-weight:800;}
+.fusion-check{position:absolute;top:3px;right:3px;width:14px;height:14px;background:var(--gold);border-radius:50%;font-size:0.55rem;display:flex;align-items:center;justify-content:center;color:#0b1530;}
+.fusion-selected-info{font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:6px;}
+.fusion-clear-btn{padding:5px 12px;border:none;border-radius:8px;background:rgba(192,57,43,0.7);color:#fff;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;}
+
+.ach-header{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
+.ach-overall{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.ach-overall-pct{font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--gold);}
+.ach-overall-count{font-size:0.7rem;color:rgba(255,255,255,0.4);}
+.ach-progress-bar{width:100%;height:8px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;}
+.ach-progress-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:4px;}
+.ach-cat-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;}
+.ach-cat-tabs::-webkit-scrollbar{height:3px;}
+.ach-cat-tab{flex-shrink:0;padding:5px 10px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;}
+.ach-cat-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.ach-filter-row{display:flex;gap:4px;margin-bottom:10px;}
+.ach-filter-btn{flex:1;padding:5px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
+.ach-filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.ach-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.5);border-radius:14px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.ach-card.unlocked{border-color:rgba(245,200,66,0.5);background:rgba(245,200,66,0.05);}
+.ach-card.claimable{border-color:#4caf50;box-shadow:0 0 10px rgba(76,175,80,0.2);}
+.ach-icon{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ach-info{flex:1;min-width:0;}
+.ach-name{font-family:'Fredoka One',cursive;font-size:0.85rem;color:#fff;}
+.ach-desc{font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:1px;}
+.ach-prog-bar{width:100%;height:5px;background:rgba(0,0,0,0.3);border-radius:3px;overflow:hidden;margin-top:5px;}
+.ach-prog-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:3px;}
+.ach-prog-label{font-size:0.55rem;color:rgba(255,255,255,0.3);margin-top:2px;}
+.ach-right{flex-shrink:0;text-align:right;}
+.ach-claim-btn{padding:6px 12px;border:none;border-radius:8px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;box-shadow:0 2px 0 #1b5e20;}
+.ach-done{font-size:0.9rem;color:var(--gold);}
+.ach-popup{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#15264e,#0b1530);border:2px solid var(--gold);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:9999;box-shadow:0 4px 20px rgba(245,200,66,0.3);animation:achSlideIn 0.4s ease;min-width:260px;max-width:340px;}
+@keyframes achSlideIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.ach-popup-icon{font-size:1.8rem;}
+.ach-popup-text{flex:1;}
+.ach-popup-title{font-size:0.6rem;color:var(--gold);font-weight:800;text-transform:uppercase;letter-spacing:1px;}
+.ach-popup-name{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;}
+
+/* ============================================================
+   NEW TOPBAR (Navigation rebuild — step 1)
+   ============================================================ */
+.tb-left{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 6px;height:100%;flex:1;min-width:0;}
+.tb-coins-row{display:flex;align-items:center;gap:5px;}
+.tb-coin-icon{font-size:1rem;line-height:1;}
+.tb-coins{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;line-height:1;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+.tb-eps-row{display:flex;align-items:center;gap:5px;}
+.tb-eps{font-size:0.6rem;font-weight:800;color:#9be15d;white-space:nowrap;letter-spacing:0.3px;}
+.tb-info{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.18);color:rgba(255,255,255,0.8);font-size:0.55rem;font-weight:900;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-family:'Fredoka One',cursive;}
+.tb-info:active{transform:scale(0.9);}
+.tb-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.tb-rbtn{width:34px;height:34px;border-radius:9px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);position:relative;}
+.tb-rbtn:active{transform:translateY(1px);}
+.tb-rbtn.profile{border-color:var(--gold);}
+.tb-gems{display:flex;align-items:center;gap:3px;height:34px;padding:0 7px;border-radius:9px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);flex-shrink:0;}
+.tb-gems:active{transform:translateY(1px);}
+.tb-gems .tg-val{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#7fd4ff;}
+
+/* More drawer (temporary home for relocated views) */
+.more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.more-item{background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.6);border-radius:12px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+.more-item:active{transform:scale(0.96);}
+.more-item .mi-icon{font-size:1.5rem;}
+.more-item .mi-label{font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.7);text-align:center;}
+.more-note{font-size:0.62rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:10px;line-height:1.4;}
+
+/* Home Upgrades/Buildings toggle (nav rebuild — step 2) */
+#home-toggle{display:flex;gap:8px;padding:10px 10px 0;}
+.ub-tab{flex:1;height:42px;border-radius:12px 12px 0 0;border:2px solid #3a5cb8;border-bottom:none;background:linear-gradient(180deg,#1f3d78,#142a52);color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ub-tab:active{transform:translateY(1px);}
+#ub-upgrades.active{background:linear-gradient(180deg,#3b82d9,#2563b0);color:#fff;border-color:#5b9be8;}
+#ub-buildings.active{background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;border-color:#fff;}
+/* Ihopfällbart bygg-blad (nav rebuild — hemskärmens två lägen) */
+#home-sheet{display:none;}
+#sheet-handle{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 2px;cursor:pointer;user-select:none;}
+.sheet-grip{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,0.3);}
+.sheet-handle-label{font-family:'Fredoka One',cursive;font-size:0.72rem;color:rgba(255,255,255,0.55);letter-spacing:0.3px;}
+#sheet-chevron{display:inline-block;transition:transform 0.3s ease;}
+#sheet-body{overflow:hidden;transition:max-height 0.38s ease,opacity 0.28s ease;max-height:4000px;opacity:1;}
+#scene-wrap{transition:height 0.38s ease;}
+/* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
+#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:6;transition:transform 0.4s ease,bottom 0.4s ease;}
+/* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
+#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 52px);}
+#app.home-collapsed #coin-display{display:none;}
+#app.home-collapsed #sheet-body{max-height:0;opacity:0;}
+#app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
+#app.home-collapsed #stage-group{bottom:4dvh;transform:scale(1.4);transform-origin:center bottom;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="topbar">
+    <div class="tb-left">
+      <div class="tb-coins-row"><span class="tb-coin-icon">🥚</span><span class="tb-coins" id="tb-coins">0</span></div>
+      <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">EPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-gems" onclick="showComingSoon('💎 Gems','Premiumvalutan Gems. Här kommer du kunna se hur du tjänar Gems (achievements, dailies, battle pass) och köpa fler. Byggs i ett senare steg.')"><span style="font-size:0.95rem">💎</span><span class="tg-val" id="tb-gems-val">0</span></div>
+      <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','Battle Pass-menyn — claima belöningar och köp premium-track. Byggs i ett senare steg.')">🎟️</div>
+      <div class="tb-rbtn profile" onclick="showComingSoon('👤 Profil','Profil-hubben (Overview, Customize, Titles, Badges, Stats) byggs så fort navigationen är klar.')">👤</div>
+      <div class="tb-rbtn" onclick="openMore()">⋯</div>
+      <div class="tb-rbtn" onclick="showComingSoon('⚙️ Inställningar','Inställningar byggs i ett senare steg.')">⚙️</div>
+    </div>
+  </div>
+  <div id="main">
+    <div id="scene-wrap">
+      <img id="scene-bg" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/scene-background.png" alt="">
+      <div id="scene-fade"></div>
+      <div class="side-btns" id="left-btns">
+        <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon">🎁</span><span class="sb-label">Daily</span></div>
+      </div>
+      <div class="side-btns" id="right-btns">
+        <div class="side-btn" id="inv-btn" onclick="switchTab('inventory')"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
+        <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon">🎉</span><span class="sb-label">Events</span></div>
+      </div>
+      <div id="stage-group">
+        <img id="pedestal-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/pedestal.png" alt="">
+        <div id="pet-positions"></div>
+        <div id="egg-stage">
+          <div id="egg-glow2"></div>
+          <div id="egg-glow"></div>
+          <div id="particles"></div>
+          <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="">
+          <div id="egg-shadow"></div>
+        </div>
+      </div>
+    </div>
+    <div id="coin-display">
+      <div id="pet-bonus-display"></div>
+      <div id="click-rate-display" style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.35)"></div>
+    </div>
+    <div id="home-sheet">
+      <div id="sheet-handle" onclick="toggleHomeSheet()">
+        <div class="sheet-grip"></div>
+        <div class="sheet-handle-label"><span id="sheet-chevron">▾</span> <span id="sheet-label-text">Buildings &amp; Upgrades</span></div>
+      </div>
+      <div id="sheet-body">
+        <div id="home-toggle">
+          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span>📈</span> Upgrades</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span>🏠</span> Buildings</button>
+        </div>
+        <div id="tab-buildings" class="tab-content active">
+          <div id="blist"></div>
+        </div>
+        <div id="tab-upgrades" class="tab-content">
+          <div class="sec-title">⚡ Efficiency Upgrades</div><div id="ulist"></div>
+          <div class="sec-title" style="margin-top:10px">🐾 Pet Slots</div><div id="slist"></div>
+        </div>
+        <div id="tab-inventory" class="tab-content"><div id="inv-wrap"></div></div>
+      </div>
+    </div>
+    <div id="tab-pets" class="tab-content">
+      <div class="pets-subnav">
+        <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
+        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span>⚗️</span> Fusion</button>
+        <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span>🧪</span> Extract</button>
+      </div>
+      <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
+      <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
+      <div id="psub-panel-extract" class="psub-panel" style="display:none"><div class="placeholder"><div class="phi">🧪</div><h2>Extraction</h2><p>Förstör en pet för att spara dess ability som en Mutation Core. Byggs i ett senare steg (Fas 9).</p></div></div>
+    </div>
+    <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
+    <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
+    <div id="tab-hatch" class="tab-content"><div id="hatch-wrap"></div></div>
+    <div id="tab-adventure" class="tab-content"><div class="placeholder"><div class="phi">🗺️</div><h2>Adventure</h2><p>Coming soon.</p></div></div>
+    <div id="tab-shop" class="tab-content"><div id="shop-wrap"></div></div>
+    <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly och event-quests byggs i ett senare steg.</p></div></div>
+  </div>
+  <div id="bottomnav">
+    <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
+    <button class="nav-btn" id="nb-hatch" onclick="navTab('hatch')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-hatchery.png" alt="" onerror="this.parentNode.textContent='🐣'"></span><span>Hatchery</span></button>
+    <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Shop</span></button>
+    <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventures</span></button>
+    <button class="nav-btn" id="nb-quests" onclick="navTab('quests')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span>Quests</span></button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div id="pet-modal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" id="pet-modal-close">✕</button>
+    <div class="modal-title">Choose Active Pet</div>
+    <div id="pet-modal-list"></div>
+  </div>
+</div>
+<div id="offline-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <div class="ob-icon">😴</div>
+    <div class="modal-title">Welcome back!</div>
+    <div class="ob-time" id="ob-time"></div>
+    <div id="offline-rewards"></div>
+    <button id="offline-claim">Collect!</button>
+  </div>
+</div>
+<div id="pet-result-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <div id="pet-result-icon" style="font-size:4rem;margin-bottom:4px;display:block;animation:petBounce 0.5s ease;">🐾</div>
+    <div id="pet-result-name" style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;margin-bottom:2px;"></div>
+    <div id="pet-result-rarity" style="font-size:0.85rem;margin-bottom:2px;"></div>
+    <div id="pet-result-world" style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-bottom:6px;"></div>
+    <div class="pet-result-abilities" id="pet-result-abilities"></div>
+    <button id="pet-result-close" style="width:100%;padding:12px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;">Amazing! 🎉</button>
+  </div>
+</div>
+<div id="egg-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
+    <button class="modal-close" onclick="document.getElementById('egg-info-modal').classList.remove('open')" style="float:right">✕</button>
+    <div id="egg-info-content"></div>
+  </div>
+</div>
+<div id="pet-detail-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <button class="modal-close" id="pet-detail-close" style="float:right">✕</button>
+    <div id="pet-detail-content"></div>
+  </div>
+</div>
+
+<div id="more-drawer" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeMore()">✕</button>
+    <div class="modal-title">More</div>
+    <div class="more-grid" id="more-grid"></div>
+    <div class="more-note">Petdex och Achievements bor här. Inventory finns även som 🎒-knapp på hemskärmen — den här posten är en reservväg.</div>
+  </div>
+</div>
+<div id="generic-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <button class="modal-close" onclick="document.getElementById('generic-modal').classList.remove('open')" style="float:right">✕</button>
+    <div id="generic-modal-icon" style="font-size:2.5rem;margin-bottom:6px;"></div>
+    <div class="modal-title" id="generic-modal-title" style="margin-bottom:8px;"></div>
+    <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;"></div>
+    <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA: EGG WORLDS
+// ============================================================
+// Asset-pipeline: varje värld har egen bakgrund (kuliss), pedestal och ägg.
+// Namnstandard (lägg filerna i repo:t med dessa namn så plockas de upp automatiskt):
+//   bakgrund:  assets/eggworlds/<id>-bg.png
+//   pedestal:  assets/eggworlds/<id>-pedestal.png
+//   ägg:       assets/eggs/<id>-egg.png
+// Starter behåller sina nuvarande filnamn (scene-background.png, pedestal.png, starter-egg.png).
+var ASSET_BASE='https://raw.githubusercontent.com/ragequitit/pet-planet/main';
+function worldAssets(id){return {id:id,bg:ASSET_BASE+'/assets/eggworlds/'+id+'-bg.png',egg:ASSET_BASE+'/assets/eggs/'+id+'-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/'+id+'-pedestal.png'};}
+var EGG_WORLDS=[
+  {id:'starter',bg:ASSET_BASE+'/assets/eggworlds/scene-background.png',egg:ASSET_BASE+'/assets/eggs/starter-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/pedestal.png'},
+  worldAssets('forest'),worldAssets('mountain'),worldAssets('desert'),
+  worldAssets('ocean'),worldAssets('jungle'),worldAssets('arctic'),
+  worldAssets('volcano'),worldAssets('mystic'),worldAssets('celestial'),worldAssets('cosmic'),
+];
+
+// ============================================================
+// DATA: BUILDINGS & UPGRADES
+// ============================================================
+var BUILDINGS=[
+  {n:"Egg Tapper",e:"🥚",b:17,p:0.1},{n:"Nest",e:"🪺",b:120,p:0.8},{n:"Nursery",e:"🌱",b:1300,p:5},
+  {n:"Pet House",e:"🏠",b:14000,p:28},{n:"Pet Trainer",e:"🎯",b:150000,p:150},{n:"Pet Ranch",e:"🌾",b:1.6e6,p:800},
+  {n:"Pet Shop",e:"🏪",b:1.7e7,p:4200},{n:"Egg Vault",e:"🏦",b:1.8e8,p:22000},{n:"Resort",e:"🏖️",b:1.9e9,p:115000},
+  {n:"Zoo",e:"🦁",b:2e10,p:600000},{n:"Research Lab",e:"🔬",b:2.2e11,p:3.1e6},{n:"Breeding Center",e:"🧬",b:2.4e12,p:1.6e7},
+  {n:"Clone Lab",e:"🧪",b:2.6e13,p:8.2e7},{n:"Arcade",e:"🕹️",b:2.8e14,p:4.2e8},{n:"Pet Mall",e:"🛍️",b:3e15,p:2.2e9},
+  {n:"Theme Park",e:"🎡",b:3.2e16,p:1.1e10},{n:"Pet City",e:"🏙️",b:3.5e17,p:5.7e10},{n:"Spaceport",e:"🚀",b:3.8e18,p:3e11},
+  {n:"Moon Base",e:"🌙",b:4e19,p:1.6e12},{n:"Pet Planet",e:"🌍",b:4.2e20,p:8e12},
+];
+var UPGRADES=[
+  {id:'click',e:'🖱️',n:'Click Power',max:5,cost:[125,1250,12500,125000,1250000],desc:function(l){return 'Click: '+Math.pow(2,l)+' → '+Math.pow(2,l+1)+' eggs';},apply:function(l){G.clickPower=Math.pow(2,l);}},
+  {id:'craft',e:'💎',n:'Shell Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Shell cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
+  {id:'hatch',e:'🥚',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
+  {id:'luck',e:'🍀',n:'Luck',max:5,cost:[5000,50000,500000,5000000,50000000],desc:function(l){return 'Shell drop: +'+(l*2)+'% → +'+((l+1)*2)+'%';},apply:function(l){G.luck=l*2;}},
+  {id:'offline',e:'💤',n:'Offline Gain',max:5,cost:[10000,100000,1000000,10000000,100000000],desc:function(l){return 'Offline: '+[50,60,70,80,90,100][l]+'% → '+[50,60,70,80,90,100][l+1]+'%';},apply:function(l){G.offlineMult=[0.5,0.6,0.7,0.8,0.9,1.0][l];}},
+];
+var SLOTS=[{slot:2,cost:10000},{slot:3,cost:1e6},{slot:4,cost:1e8},{slot:5,cost:1e10}];
+var PET_POS=[{left:0,top:4},{left:52,top:22},{left:118,top:16},{left:184,top:22},{left:236,top:4}];
+
+// ============================================================
+// DATA: SHELL RARITIES
+// ============================================================
+var SHELL_RARITIES=[
+  {id:'common',    name:'Common Shell',    icon:'⚪',color:'#aaa',   weight:60},
+  {id:'uncommon',  name:'Uncommon Shell',  icon:'🟢',color:'#4caf50',weight:25},
+  {id:'rare',      name:'Rare Shell',      icon:'🔵',color:'#2196f3',weight:10},
+  {id:'epic',      name:'Epic Shell',      icon:'🟣',color:'#9c27b0',weight:3},
+  {id:'legendary', name:'Legendary Shell', icon:'🟠',color:'#ff9800',weight:1},
+  {id:'mythical',  name:'Mythical Shell',  icon:'🔴',color:'#f44336',weight:0.5},
+  {id:'artifact',  name:'Artifact Shell',  icon:'🟡',color:'#ffd700',weight:0.1},
+  {id:'heavenly',  name:'Heavenly Shell',  icon:'💎',color:'#00bcd4',weight:0.05},
+  {id:'eternal',   name:'Eternal Shell',   icon:'✨',color:'#fff',   weight:0.01},
+  {id:'cosmic',    name:'Cosmic Shell',    icon:'🌌',color:'#e040fb',weight:0.001},
+];
+
+// ============================================================
+// DATA: EGG SHOP
+// ============================================================
+var EGG_SHOP=[
+  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:75, buildReq:null,        hatchReq:null},
+  {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'uncommon', shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
+  {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'rare',     shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
+  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'epic',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
+  {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'legendary',shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
+  {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'mythical', shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
+  {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'artifact', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
+  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'heavenly', shellAmt:18, buildReq:'Resort',     hatchReq:'arctic'},
+  {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'eternal',  shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
+  {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'cosmic',   shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
+  {id:'cosmic',   name:'Cosmic Egg',   icon:'🌌',shellType:'cosmic',   shellAmt:5,  buildReq:'Breeding Center',hatchReq:'celestial'},
+];
+
+// ============================================================
+// DATA: HATCH TIMES (from Balance Sheet)
+// ============================================================
+var EGG_HATCH_TIMES={starter:30,forest:120,mountain:300,desert:600,ocean:1200,jungle:2400,arctic:3600,volcano:7200,mystic:14400,celestial:28800,cosmic:43200};
+
+// ============================================================
+// DATA: PET DISTRIBUTION DATABASE (full 110 pets)
+// ============================================================
+var PET_POOL={
+  starter:{
+    common:[
+      {name:'Dog',e:'🐶'},{name:'Cat',e:'🐱'},{name:'Rabbit',e:'🐰'},{name:'Chicken',e:'🐔'},{name:'Turtle',e:'🐢'}
+    ],
+    uncommon:[
+      {name:'Fox',e:'🦊'},{name:'Owl',e:'🦉'},{name:'Deer',e:'🦌'}
+    ],
+    rare:[
+      {name:'Wolf',e:'🐺'}
+    ],
+    epic:[
+      {name:'Baby Dragon',e:'🐉'}
+    ]
+  },
+  forest:{
+    common:[
+      {name:'Squirrel',e:'🐿️'},{name:'Hedgehog',e:'🦔'},{name:'Beaver',e:'🦫'}
+    ],
+    uncommon:[
+      {name:'Woodpecker',e:'🪵'},{name:'Badger',e:'🦝'},{name:'Skunk',e:'🦨'}
+    ],
+    rare:[
+      {name:'Otter',e:'🦦'},{name:'Wild Boar',e:'🐗'}
+    ],
+    epic:[
+      {name:'Moose',e:'🫎'},{name:'Brown Bear',e:'🐻'}
+    ]
+  },
+  mountain:{
+    common:[
+      {name:'Ram',e:'🐏'},{name:'Marmot',e:'🦫'},{name:'Llama',e:'🦙'}
+    ],
+    uncommon:[
+      {name:'Yak',e:'🦬'},{name:'Cougar',e:'🐆'},{name:'Condor',e:'🦅'}
+    ],
+    rare:[
+      {name:'Golden Eagle',e:'🦅'},{name:'Grizzly Bear',e:'🐻'}
+    ],
+    epic:[
+      {name:'Snow Leopard',e:'🐆'},{name:'Snow Yeti',e:'❄️'}
+    ]
+  },
+  desert:{
+    common:[
+      {name:'Jackal',e:'🐺'},{name:'Camel',e:'🐪'},{name:'Horned Lizard',e:'🦎'}
+    ],
+    uncommon:[
+      {name:'Vulture',e:'🦅'},{name:'Fennec Fox',e:'🦊'},{name:'Cobra',e:'🐍'}
+    ],
+    rare:[
+      {name:'Oryx',e:'🐂'},{name:'Sand Cat',e:'🐆'}
+    ],
+    epic:[
+      {name:'Caracal',e:'🐈'}
+    ],
+    legendary:[
+      {name:'Scorpion',e:'🦂'}
+    ]
+  },
+  ocean:{
+    uncommon:[
+      {name:'Clownfish',e:'🐠'},{name:'Seal',e:'🦭'},{name:'Dolphin',e:'🐬'}
+    ],
+    rare:[
+      {name:'King Lobster',e:'🦞'},{name:'Manta Ray',e:'🌊'},{name:'Anglerfish',e:'🐟'}
+    ],
+    epic:[
+      {name:'Great White Shark',e:'🦈'},{name:'Blue Whale',e:'🐳'}
+    ],
+    legendary:[
+      {name:'Giant Squid',e:'🦑'},{name:'Orca',e:'🐋'}
+    ]
+  },
+  jungle:{
+    uncommon:[
+      {name:'Toucan',e:'🦜'},{name:'Poison Dart Frog',e:'🐸'},{name:'Orangutan',e:'🦧'}
+    ],
+    rare:[
+      {name:'Gorilla',e:'🦍'},{name:'Crocodile',e:'🐊'},{name:'Anaconda',e:'🐍'}
+    ],
+    epic:[
+      {name:'Panther',e:'🐈‍⬛'},{name:'Chameleon',e:'🦎'}
+    ],
+    legendary:[
+      {name:'Tiger',e:'🐅'}
+    ],
+    mythical:[
+      {name:'Jaguar',e:'🐆'}
+    ]
+  },
+  arctic:{
+    rare:[
+      {name:'Penguin',e:'🐧'},{name:'Arctic Hare',e:'🐇'},{name:'Walrus',e:'🦭'}
+    ],
+    epic:[
+      {name:'Musk Ox',e:'🐂'},{name:'Gyrfalcon',e:'🦅'},{name:'Snowy Owl',e:'🦉'}
+    ],
+    legendary:[
+      {name:'Polar Bear',e:'🐻‍❄️'},{name:'Frost Lynx',e:'❄️'}
+    ],
+    mythical:[
+      {name:'Narwhal',e:'🦄'},{name:'Mammoth',e:'🦣'}
+    ]
+  },
+  volcano:{
+    rare:[
+      {name:'Ember Chick',e:'🐤'},{name:'Ash Bat',e:'🦇'},{name:'Lava Lizard',e:'🦎'}
+    ],
+    epic:[
+      {name:'Molten Kitty',e:'🐱'},{name:'Magma Golem',e:'🪨'},{name:'Fire Serpent',e:'🐍'}
+    ],
+    legendary:[
+      {name:'Inferno Bull',e:'🐂'},{name:'Flame Spirit',e:'🔥'}
+    ],
+    mythical:[
+      {name:'Hellhound',e:'🐺'}
+    ],
+    artifact:[
+      {name:'Volcano Dragon',e:'🐉'}
+    ]
+  },
+  mystic:{
+    epic:[
+      {name:'Unicorn',e:'🦄'},{name:'Griffin',e:'🦅'},{name:'Phoenix',e:'🔥'}
+    ],
+    legendary:[
+      {name:'Basilisk',e:'🐍'},{name:'Celestial Stag',e:'🦌'},{name:'Spirit Dragon',e:'🐉'}
+    ],
+    mythical:[
+      {name:'Nine-Tailed Fox',e:'🦊'},{name:'Moon Raven',e:'🌙'}
+    ],
+    artifact:[
+      {name:'Arcane Panther',e:'🔮'}
+    ],
+    heavenly:[
+      {name:'Chimera',e:'🦁'}
+    ]
+  },
+  celestial:{
+    artifact:[
+      {name:'Moon Hare',e:'🌙'},{name:'Stardust Manta',e:'✨'},{name:'Nebula Jellyfish',e:'🌌'}
+    ],
+    heavenly:[
+      {name:'Comet Hawk',e:'☄️'},{name:'Lunar Lynx',e:'🌙'},{name:'Astro Bunny',e:'💫'},{name:'Nebula Turtle',e:'🌌'},{name:'Celestial Moth',e:'🦋'}
+    ],
+    eternal:[
+      {name:'Nebula Whale',e:'🌌'},{name:'Solar Guardian',e:'🌞'},{name:'Astra Deer',e:'💫'},{name:'Starlight Wisp',e:'✨'},{name:'Comet Fox',e:'☄️'},{name:'Cosmic Moth',e:'🌠'}
+    ]
+  },
+  cosmic:{
+    cosmic:[
+      {name:'Eclipse Cat',e:'🌑'},{name:'Moon Dragon',e:'🌙'},{name:'Void Serpent',e:'🌀'},{name:'Star Lion',e:'🌟'},{name:'Nova Puff',e:'✨'},{name:'Nova Hawk',e:'🌠'}
+    ]
+  }
+};
+
+// ============================================================
+// DATA: RARITY CONFIG
+// ============================================================
+var RARITY_CONFIG={
+  common:   {color:'#aaa',   icon:'⚪',label:'Common',   slots:1,tiers:[1]},
+  uncommon: {color:'#4caf50',icon:'🟢',label:'Uncommon', slots:1,tiers:[2]},
+  rare:     {color:'#2196f3',icon:'🔵',label:'Rare',     slots:2,tiers:[1,2]},
+  epic:     {color:'#9c27b0',icon:'🟣',label:'Epic',     slots:2,tiers:[2,2]},
+  legendary:{color:'#ff9800',icon:'🟠',label:'Legendary',slots:3,tiers:[2,2,3]},
+  mythical: {color:'#f44336',icon:'🔴',label:'Mythical', slots:3,tiers:[3,3,3]},
+  artifact: {color:'#ffd700',icon:'🟡',label:'Artifact', slots:4,tiers:[3,3,4,4]},
+  heavenly: {color:'#00bcd4',icon:'💎',label:'Heavenly', slots:4,tiers:[4,4,4,4]},
+  eternal:  {color:'#ffffff',icon:'✨',label:'Eternal',  slots:5,tiers:[4,4,4,5,5]},
+  cosmic:   {color:'#e040fb',icon:'🌌',label:'Cosmic',   slots:5,tiers:[5,5,5,5,5]},
+};
+// Tiers are FIXED per slot — no randomness. Common = always T1, Cosmic = always T5 x5.
+
+// Rarity drop weights for each egg world
+// Each world's rarity pool (only what's available in that world)
+var EGG_RARITY_WEIGHTS={
+  starter:   {common:65,uncommon:28,rare:6,epic:1},
+  forest:    {common:50,uncommon:35,rare:13,epic:2},
+  mountain:  {common:20,uncommon:25,rare:45,epic:10},
+  desert:    {common:5,uncommon:10,rare:25,epic:45,legendary:15},
+  ocean:     {uncommon:10,rare:30,epic:40,legendary:20},
+  jungle:    {rare:20,epic:35,legendary:30,mythical:15},
+  arctic:    {rare:15,epic:30,legendary:35,mythical:20},
+  volcano:   {epic:20,legendary:35,mythical:30,artifact:15},
+  mystic:    {epic:10,legendary:25,mythical:40,artifact:20,heavenly:5},
+  celestial: {mythical:5,artifact:35,heavenly:40,eternal:20},
+  cosmic:    {cosmic:100},
+};
+
+// ============================================================
+// DATA: ABILITY SYSTEM
+// ============================================================
+var ABILITIES=['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'];
+var ABILITY_META={
+  coinGain:  {name:'Coin Gain',        icon:'🪙', color:'#f5c842', desc:function(v){return '+'+v+'% coin generation';}},
+  idleGain:  {name:'Idle Gain',        icon:'💤', color:'#64b5f6', desc:function(v){return '+'+v+'% idle production';}},
+  clickPower:{name:'Click Power',      icon:'👆', color:'#ef9a9a', desc:function(v){return '+'+v+'% click strength';}},
+  luck:      {name:'Luck',             icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% shell drop chance';}},
+  shellGain: {name:'Shell Drop',       icon:'🐚', color:'#ce93d8', desc:function(v){return '+'+v+'% more shells per drop';}},
+  hatchSpeed:{name:'Hatch Speed',      icon:'⏱️', color:'#ffcc80', desc:function(v){return '-'+v+'% hatch time';}},
+};
+var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
+
+// ============================================================
+// PET GENERATION
+// ============================================================
+function rollRarity(eggId){
+  var weights=EGG_RARITY_WEIGHTS[eggId]||{common:100};
+  var keys=Object.keys(weights);
+  var total=keys.reduce(function(s,k){return s+weights[k];},0);
+  var roll=Math.random()*total,acc=0;
+  for(var i=0;i<keys.length;i++){acc+=weights[keys[i]];if(roll<=acc)return keys[i];}
+  return keys[0];
+}
+
+function rollSpecies(eggId,rarity){
+  var pool=PET_POOL[eggId];
+  if(!pool)return {name:'Unknown',e:'❓'};
+  var rarPool=pool[rarity];
+  if(!rarPool||rarPool.length===0){
+    // fall back to any available rarity
+    var keys=Object.keys(pool);
+    if(keys.length===0)return {name:'Unknown',e:'❓'};
+    rarPool=pool[keys[Math.floor(Math.random()*keys.length)]];
+  }
+  return rarPool[Math.floor(Math.random()*rarPool.length)];
+}
+
+function generatePet(eggId){
+  var rarity=rollRarity(eggId);
+  var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
+  var species=rollSpecies(eggId,rarity);
+  var abilities=[];
+  for(var i=0;i<rc.slots;i++){
+    var abilityId=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
+    var tier=rc.tiers[i]; // FIXED tier per slot — no randomness
+    abilities.push({id:abilityId,tier:tier});
+  }
+  return {
+    uid:Date.now()+Math.random(),
+    name:species.name,
+    e:species.e,
+    rarity:rarity,
+    world:eggId,
+    abilities:abilities,
+    equippedSlot:-1,
+  };
+}
+
+// ============================================================
+// COMPUTE ACTIVE PET BONUSES
+// ============================================================
+function getActiveBonuses(){
+  var bonuses={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  G.equippedPets.forEach(function(petUid){
+    if(!petUid)return;
+    var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});
+    if(!pet)return;
+    pet.abilities.forEach(function(ab){
+      bonuses[ab.id]=(bonuses[ab.id]||0)+TIER_VALUES[ab.tier];
+    });
+  });
+  return bonuses;
+}
+
+function getEpsMultiplier(){
+  var b=getActiveBonuses();
+  return 1+(b.coinGain/100)+(b.idleGain/100);
+}
+function getClickMultiplier(){
+  var b=getActiveBonuses();
+  return 1+(b.coinGain/100)+(b.clickPower/100);
+}
+function getLuckBonus(){
+  return getActiveBonuses().luck/100;
+}
+function getHatchSpeedMult(){
+  return Math.max(0.1,1-(getActiveBonuses().hatchSpeed/100));
+}
+function getShellBonus(){
+  return getActiveBonuses().shellGain/100;
+}
+
+// ============================================================
+// GAME STATE
+// ============================================================
+var G={
+  coins:0,total:0,clicks:0,clickPower:1,luck:0,petSlots:1,currentWorld:0,
+  craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
+  equippedPets:[null,null,null,null,null],
+  owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  ulvl:{click:0,craft:0,hatch:0,luck:0,offline:0},
+  shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+  eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchedPets:[],
+  achievements:{unlocked:{},claimed:{}},
+  stats:{
+    // ECONOMY
+    totalCoinsEarned:0,
+    totalCoinsSpent:0,
+    totalBuildingsPurchased:0,
+    totalUpgradesPurchased:0,
+    highestEpsReached:0,
+    biggestSingleClick:0,
+    offlineRewardsClaimed:0,
+
+    // CLICKING
+    totalClicks:0,
+    highestClicksPerSecond:0,
+    mostClicksInSession:0,
+
+    // SHELLS
+    totalShellsCollected:0,
+    totalShellsSpent:0,
+    shellsCollectedByRarity:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+    highestRarityShellFound:'common',
+    favoriteShell:'common',
+
+    // HATCHING
+    eggsHatched:0,
+    eggsHatchedByWorld:{},
+    fastestHatch:null,
+    longestHatch:null,
+    totalHatchTimeWaited:0,
+    mostHatchedWorld:null,
+    tier5AbilitiesHatched:0,
+    duplicatePetsHatched:0,
+
+    // PETS
+    totalPetsCollected:0,
+    uniquePetsDiscovered:0,
+    highestRarityOwned:'common',
+    rarestPetEverHatched:null,
+    totalPetsFused:0,
+    totalPetsMutated:0,
+    totalPetsSentOnAdventures:0,
+    abilitiesExtracted:0,
+    mutationCoresCreated:0,
+    mutationCoresUsed:0,
+    petsSacrificed:0,
+    perfectPetsCreated:0,
+    favoriteAbility:null,
+
+    // FUSION
+    totalFusions:0,
+    highestFusionRarity:null,
+    perfectFusions:0,
+    petsConsumedInFusion:0,
+    cosmicPetsCreated:0,
+
+    // ADVENTURES
+    adventuresCompleted:0,
+    adventureHoursLogged:0,
+    adventurePetsFound:0,
+    discoveryItemsFound:0,
+    specialAdventures:0,
+    totalAdventureXp:0,
+
+    // ACHIEVEMENTS
+    achievementsCompleted:0,
+    secretAchievementsFound:0,
+
+    // ASCENSION
+    ascensionsCompleted:0,
+    totalAscensionCurrency:0,
+    highestAscensionBonus:0,
+    fastestAscension:null,
+
+    // SESSION / TIME
+    firstPlayDate:Date.now(),
+    totalTimePlayed:0,
+    totalSessions:1,
+    currentSessionStart:Date.now(),
+    longestSession:0,
+  },
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+function fmtShort(n){if(n<1e3)return Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(1)+'K';if(n<1e9)return (n/1e6).toFixed(1)+'M';if(n<1e12)return (n/1e9).toFixed(1)+'B';if(n<1e15)return (n/1e12).toFixed(1)+'T';return (n/1e15).toFixed(1)+'Qa';}
+function fmt(n){if(n<1e3)return n<10?n.toFixed(1):Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(2)+' Thousand';if(n<1e9)return (n/1e6).toFixed(2)+' Million';if(n<1e12)return (n/1e9).toFixed(2)+' Billion';if(n<1e15)return (n/1e12).toFixed(2)+' Trillion';if(n<1e18)return (n/1e15).toFixed(2)+' Quadrillion';return (n/1e18).toFixed(2)+' Quintillion';}
+function bcost(i){return Math.ceil(BUILDINGS[i].b*Math.pow(1.15,G.owned[i]));}
+function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i];return s*getEpsMultiplier();}
+function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
+function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
+function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
+function formatTime(secs){if(secs<60)return secs+'s';if(secs<3600)return Math.floor(secs/60)+'m '+(secs%60)+'s';return Math.floor(secs/3600)+'h '+Math.floor((secs%3600)/60)+'m';}
+function getDropChance(base){return base+G.luck*0.01+getLuckBonus();}
+function getRarityWeights(){var boost=Math.max(1,1+Math.log10(Math.max(1,eps()/1000)));return SHELL_RARITIES.map(function(r,i){return i>=3?r.weight*boost:r.weight;});}
+function rollShell(){var w=getRarityWeights();var total=w.reduce(function(a,b){return a+b;},0);var roll=Math.random()*total,acc=0;for(var i=0;i<SHELL_RARITIES.length;i++){acc+=w[i];if(roll<=acc)return SHELL_RARITIES[i];}return SHELL_RARITIES[0];}
+function dropShell(){
+  var r=rollShell();
+  var amt=1+Math.floor(getShellBonus());
+  if(Math.random()<(getShellBonus()%1))amt++;
+  G.shells[r.id]=(G.shells[r.id]||0)+amt;
+  // Stats
+  G.stats.totalShellsCollected+=amt;
+  G.stats.shellsCollectedByRarity[r.id]=(G.stats.shellsCollectedByRarity[r.id]||0)+amt;
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  if(rarityOrder.indexOf(r.id)>rarityOrder.indexOf(G.stats.highestRarityShellFound))G.stats.highestRarityShellFound=r.id;
+  // Favorite shell (mest samlad)
+  var favMax=0;
+  rarityOrder.forEach(function(rid){if((G.stats.shellsCollectedByRarity[rid]||0)>favMax){favMax=G.stats.shellsCollectedByRarity[rid];G.stats.favoriteShell=rid;}});
+  var idx=SHELL_RARITIES.findIndex(function(s){return s.id===r.id;});
+  if(idx>=0)showShellPop(r,idx);
+}
+function showShellPop(r,idx){
+  var stage=document.getElementById('egg-stage');if(!stage)return;
+  var dur=idx>=5?4000:idx>=3?2500:idx>=2?1500:900;
+  var pop=document.createElement('div');
+  pop.style.cssText='position:absolute;pointer-events:none;z-index:20;text-align:center;left:50%;top:0;animation:shellPop '+(dur/1000)+'s ease forwards;';
+  if(idx<=2){pop.innerHTML='<span style="font-size:1rem">'+r.icon+'</span> <span style="font-family:Fredoka One,cursive;font-size:0.7rem;color:'+r.color+'">'+r.name+'</span>';}
+  else{pop.innerHTML='<div style="font-size:'+(idx>=7?'2rem':'1.5rem')+'">'+r.icon+'</div><div style="font-family:Fredoka One,cursive;font-size:0.75rem;color:'+r.color+';text-shadow:0 0 10px '+r.color+'">'+r.name+'</div>';}
+  stage.appendChild(pop);
+  setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},dur);
+}
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+var SAVE_KEY='petplanet_v2_save';
+function saveGame(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({
+    coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
+    craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
+    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
+    equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,savedAt:Date.now()
+  }));}catch(e){}
+}
+function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function resetGame(){
+  if(!confirm('Reset all progress?'))return;
+  G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
+  G.equippedPets=[null,null,null,null,null];
+  G.owned=new Array(20).fill(0);
+  G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
+  G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchedPets=[];
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+}
+function addTestShells(){SHELL_RARITIES.forEach(function(r){G.shells[r.id]=(G.shells[r.id]||0)+300;});}
+function addTestPets(){
+  var rarities=RARITY_PROGRESSION;
+  rarities.forEach(function(rarity){
+    for(var i=0;i<10;i++){
+      var pool=PET_POOL['starter'];
+      var rarPool=pool[rarity];
+      if(!rarPool||rarPool.length===0)return;
+      var species=rarPool[Math.floor(Math.random()*rarPool.length)];
+      var rc=RARITY_CONFIG[rarity];
+      var abilities=[];
+      for(var j=0;j<rc.slots;j++){
+        abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});
+      }
+      G.hatchedPets.push({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1});
+    }
+  });
+}
+function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
+
+// ============================================================
+// SCENE
+// ============================================================
+function setWorld(idx){
+  var w=EGG_WORLDS[idx]||EGG_WORLDS[0];var fb=EGG_WORLDS[0];
+  function setImg(id,url,fallback){
+    var img=document.getElementById(id);if(!img||!url)return;
+    img.onerror=function(){img.onerror=null;if(fallback&&img.src!==fallback)img.src=fallback;};
+    img.src=url;
+  }
+  setImg('scene-bg',w.bg,fb.bg);
+  setImg('egg-img',w.egg,fb.egg);
+  setImg('pedestal-img',w.pedestal,fb.pedestal);
+  G.currentWorld=idx;
+}
+// TEST-knapp: bläddra genom alla världar för att granska konst. TAS BORT INNAN RELEASE.
+function cycleWorld(){
+  var n=(G.currentWorld+1)%EGG_WORLDS.length;
+  setWorld(n);
+  var b=document.getElementById('world-test-btn');
+  if(b)b.textContent='🌍 World: '+EGG_WORLDS[n].id+' ('+(n+1)+'/'+EGG_WORLDS.length+')';
+}
+function initParticles(){
+  var c=document.getElementById('particles');c.innerHTML='';
+  var sp=[
+    {x:12,y:20,w:2,h:2,col:'rgba(255,255,255,0.9)',dur:2.8,tx:-15,ty:-25,d:0},{x:85,y:12,w:2,h:2,col:'rgba(255,255,255,0.9)',dur:3.2,tx:12,ty:-30,d:0.3},
+    {x:118,y:28,w:2,h:2,col:'rgba(255,255,255,0.85)',dur:2.5,tx:20,ty:-20,d:0.6},{x:8,y:72,w:2,h:2,col:'rgba(255,255,255,0.8)',dur:3.6,tx:-18,ty:-15,d:0.9},
+    {x:30,y:45,w:4,h:4,col:'rgba(255,255,255,0.7)',dur:3.5,tx:-20,ty:-22,d:0.4},{x:100,y:40,w:4,h:4,col:'rgba(255,255,255,0.65)',dur:4.0,tx:18,ty:-25,d:0.8},
+    {x:20,y:35,w:2,h:2,col:'rgba(180,100,255,0.9)',dur:3.3,tx:-14,ty:-20,d:0.2},{x:95,y:18,w:2,h:2,col:'rgba(160,80,255,0.85)',dur:2.7,tx:16,ty:-28,d:0.7},
+  ];
+  sp.forEach(function(s){var el=document.createElement('div');el.className='spark';el.style.left=s.x+'px';el.style.top=s.y+'px';el.style.width=s.w+'px';el.style.height=s.h+'px';el.style.background=s.col;el.style.setProperty('--tx',s.tx+'px');el.style.setProperty('--ty',s.ty+'px');el.style.setProperty('--dur',s.dur+'s');el.style.animationDelay=s.d+'s';c.appendChild(el);});
+}
+
+// ============================================================
+// EGG CLICK
+// ============================================================
+function eggTap(clientX,clientY){
+  var clickVal=G.clickPower*getClickMultiplier();
+  G.coins+=clickVal;G.total+=clickVal;G.clicks++;
+  clicksThisSecond++;
+  G.stats.totalClicks++;
+  if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
+  G.stats.totalCoinsEarned+=clickVal;
+  if(Math.random()<getDropChance(0.15))dropShell();
+  var stage=document.getElementById('egg-stage');if(!stage)return;
+  var r=stage.getBoundingClientRect();
+  var pop=document.createElement('div');pop.className='click-pop';
+  pop.textContent='+'+fmt(clickVal);
+  pop.style.left=((clientX!=null?clientX-r.left:r.width/2)-20)+'px';
+  pop.style.top=((clientY!=null?clientY-r.top:r.height/2)-20)+'px';
+  stage.appendChild(pop);
+  setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},800);
+  var img=document.getElementById('egg-img');
+  img.style.animation='none';void img.offsetWidth;
+  img.style.animation='eggPop 0.08s ease forwards, float 3s ease-in-out 0.08s infinite';
+}
+(function(){
+  var stage=document.getElementById('egg-stage');if(!stage)return;
+  // Touch: hantera varje finger separat (tvåfinger-tapp = två träffar) och
+  // blockera syntetiskt klick + dubbeltryck-zoom genom preventDefault.
+  stage.addEventListener('touchstart',function(e){
+    e.preventDefault();
+    for(var i=0;i<e.changedTouches.length;i++){
+      var t=e.changedTouches[i];
+      eggTap(t.clientX,t.clientY);
+    }
+  },{passive:false});
+  // Mus (desktop): touchstart's preventDefault hindrar dubbelräkning på touch.
+  stage.addEventListener('click',function(e){e.stopPropagation();eggTap(e.clientX,e.clientY);});
+})();
+
+// ============================================================
+// PET SLOT POSITIONS (scene)
+// ============================================================
+function renderSlotRow(){
+  var row=document.getElementById('pet-positions');row.innerHTML='';
+  for(var i=0;i<5;i++){
+    var unlocked=i<G.petSlots;
+    var d=document.createElement('div');
+    d.className='pet-pos '+(unlocked?'unlocked':'locked')+(i===0?' slot1':'');
+    d.style.left=PET_POS[i].left+'px';d.style.top=PET_POS[i].top+'px';
+    var inner=document.createElement('div');inner.className='ppi';
+    var petUid=G.equippedPets[i];
+    var pet=petUid?G.hatchedPets.find(function(p){return p.uid===petUid;}):null;
+    if(unlocked){
+      inner.innerHTML=pet?('<span style="font-size:1.3rem">'+pet.e+'</span>'):'<span style="font-size:0.7rem;opacity:0.4">+</span>';
+      (function(idx){d.onclick=function(ev){ev.stopPropagation();openPetSlotModal(idx);};})(i);
+    } else {inner.innerHTML='🔒';}
+    d.appendChild(inner);row.appendChild(d);
+  }
+}
+
+// ============================================================
+// PET SLOT MODAL (choose which pet to equip in a slot)
+// ============================================================
+var activeSlot=-1;
+function openPetSlotModal(idx){
+  activeSlot=idx;
+  var list=document.getElementById('pet-modal-list');list.innerHTML='';
+  // Remove option
+  var uneq=document.createElement('div');uneq.className='pet-option';
+  uneq.innerHTML='<div class="pet-option-icon">❌</div><div class="pet-option-info"><div class="pet-option-name">Remove Pet</div></div>';
+  uneq.onclick=function(){
+    if(G.equippedPets[activeSlot]){
+      var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
+      if(oldPet)oldPet.equippedSlot=-1;
+    }
+    G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();
+  };
+  list.appendChild(uneq);
+  // List all pets
+  G.hatchedPets.forEach(function(pet){
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+    var equippedInThisSlot=G.equippedPets[activeSlot]===pet.uid;
+    var d=document.createElement('div');d.className='pet-option';
+    if(equippedInThisSlot)d.style.borderColor='var(--gold)';
+    var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+' T'+a.tier:'';}).join(' ');
+    d.innerHTML='<div class="pet-option-icon">'+pet.e+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+(isEquipped&&!equippedInThisSlot?' <span style="font-size:0.6rem;color:#f5c842">[Equipped]</span>':'')+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
+    d.onclick=function(){
+      // unequip from old slot if already equipped somewhere
+      var oldSlotIdx=G.equippedPets.indexOf(pet.uid);
+      if(oldSlotIdx>=0&&oldSlotIdx!==activeSlot){G.equippedPets[oldSlotIdx]=null;}
+      // unequip whatever was in this slot
+      if(G.equippedPets[activeSlot]){
+        var oldP=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
+        if(oldP)oldP.equippedSlot=-1;
+      }
+      G.equippedPets[activeSlot]=pet.uid;
+      pet.equippedSlot=activeSlot;
+      renderSlotRow();closePetModal();updateHUD();renderPets();
+    };
+    list.appendChild(d);
+  });
+  if(G.hatchedPets.length===0){
+    var empty=document.createElement('div');empty.style.cssText='text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;';empty.textContent='No pets yet — hatch some eggs!';list.appendChild(empty);
+  }
+  document.getElementById('pet-modal').classList.add('open');
+}
+function closePetModal(){document.getElementById('pet-modal').classList.remove('open');activeSlot=-1;}
+document.getElementById('pet-modal-close').onclick=closePetModal;
+document.getElementById('pet-modal').onclick=function(e){if(e.target===this)closePetModal();};
+
+// ============================================================
+// PET INVENTORY TAB
+// ============================================================
+var petSortMode='newest';
+function renderPets(){
+  var wrap=document.getElementById('pets-wrap');if(!wrap)return;
+  var total=G.hatchedPets.length;
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+
+  var html='<div class="pet-inv-header"><div style="font-family:\'Fredoka One\',cursive;font-size:1rem;color:#fff;">My Pets</div><div class="pet-inv-count">'+total+' collected</div></div>';
+
+  // Bonus strip
+  var b=getActiveBonuses();
+  var chips=[];
+  if(b.coinGain>0)chips.push('🪙 +'+b.coinGain+'% Coins');
+  if(b.idleGain>0)chips.push('💤 +'+b.idleGain+'% Idle');
+  if(b.clickPower>0)chips.push('👆 +'+b.clickPower+'% Click');
+  if(b.luck>0)chips.push('🍀 +'+b.luck+'% Luck');
+  if(b.shellGain>0)chips.push('🐚 +'+b.shellGain+'% Shells');
+  if(b.hatchSpeed>0)chips.push('⏱️ -'+b.hatchSpeed+'% Hatch');
+  if(chips.length>0){
+    html+='<div class="bonus-strip">';
+    chips.forEach(function(c){html+='<span class="bonus-chip">'+c+'</span>';});
+    html+='</div>';
+  }
+
+  // Sort buttons
+  html+='<div class="pet-sort-row">';
+  var sorts=[['newest','🕐 Newest'],['oldest','🕰️ Oldest'],['rarity_desc','⭐ Rarity ↓'],['rarity_asc','⭐ Rarity ↑'],['name','🔤 Name']];
+  sorts.forEach(function(s){
+    html+='<div class="pet-sort-btn'+(petSortMode===s[0]?' active':'')+'" onclick="setPetSort(\''+s[0]+'\')">'+s[1]+'</div>';
+  });
+  html+='</div>';
+
+  // Sort pets
+  var sorted=G.hatchedPets.slice();
+  if(petSortMode==='newest')sorted.reverse();
+  else if(petSortMode==='oldest'){/* redan rätt ordning */}
+  else if(petSortMode==='rarity_desc')sorted.sort(function(a,b){return rarityOrder.indexOf(b.rarity)-rarityOrder.indexOf(a.rarity);});
+  else if(petSortMode==='rarity_asc')sorted.sort(function(a,b){return rarityOrder.indexOf(a.rarity)-rarityOrder.indexOf(b.rarity);});
+  else if(petSortMode==='name')sorted.sort(function(a,b){return a.name.localeCompare(b.name);});
+
+  if(sorted.length===0){
+    html+='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
+  } else {
+    html+='<div class="pet-grid">';
+    sorted.forEach(function(pet){
+      var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+      var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+      var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+      // Bakgrundsfärg baserad på raritet
+      var bgColor='rgba(27,45,78,0.5)';
+      var borderColor=rc.color+'55';
+      var shaderColor=rc.color+'18';
+      if(isEquipped){borderColor='#f5c842';}
+      html+='<div class="pet-card'+(isEquipped?' equipped':'')+'" onclick="openPetDetail(\''+pet.uid+'\')" style="background:linear-gradient(135deg,'+shaderColor+',rgba(12,21,48,0.8));border-color:'+borderColor+';">';
+      // Raritetsfärgad stripe längst upp
+      html+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+rc.color+';border-radius:12px 12px 0 0;opacity:0.8;"></div>';
+      html+='<div class="pet-card-top">';
+      html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+pet.e+'</div>';
+      html+='<div class="pet-card-info"><div class="pet-card-name">'+pet.name+'</div>';
+      html+='<div class="pet-card-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
+      html+='<div class="pet-card-world">'+eggInfo.icon+' '+eggInfo.name+'</div>';
+      if(isEquipped)html+='<div class="equipped-badge">⚡ Active</div>';
+      html+='</div></div>';
+      html+='<div class="pet-abilities">';
+      pet.abilities.forEach(function(ab){
+        var m=ABILITY_META[ab.id];if(!m)return;
+        html+='<div class="pet-ability-row"><span class="pa-icon">'+m.icon+'</span><span class="pa-name">'+m.name+'</span><span class="pa-tier" style="color:'+m.color+'">T'+ab.tier+'</span><span class="pa-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+      });
+      html+='</div></div>';
+    });
+    html+='</div>';
+  }
+  wrap.innerHTML=html;
+}
+function setPetSort(mode){petSortMode=mode;renderPets();}
+
+// Pet Detail Modal
+function openPetDetail(uid){
+  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});if(!pet)return;
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+  var html='<div style="text-align:center;margin-bottom:12px;">';
+  html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+pet.e+'</div>';
+  html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#fff;">'+pet.name+'</div>';
+  html+='<div style="color:'+rc.color+';font-size:0.85rem;margin:2px 0;">'+rc.icon+' '+rc.label+'</div>';
+  html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">'+eggInfo.icon+' '+eggInfo.name+'</div>';
+  if(isEquipped)html+='<div style="margin-top:4px;display:inline-block;background:var(--gold);color:#0b1530;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:900;">⚡ ACTIVE</div>';
+  html+='</div>';
+  html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Abilities</div>';
+  html+='<div class="pet-result-abilities">';
+  pet.abilities.forEach(function(ab){
+    var m=ABILITY_META[ab.id];if(!m)return;
+    html+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+  });
+  html+='</div>';
+  // Equip / unequip button
+  if(isEquipped){
+    var slotIdx=G.equippedPets.indexOf(pet.uid);
+    html+='<button onclick="unequipPet(\''+uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:#c0392b;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">Remove from Slot '+(slotIdx+1)+'</button>';
+  } else {
+    html+='<button onclick="quickEquipPet(\''+uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">⚡ Equip Pet</button>';
+  }
+  document.getElementById('pet-detail-content').innerHTML=html;
+  document.getElementById('pet-detail-modal').classList.add('open');
+}
+function unequipPet(uid){
+  var slotIdx=G.equippedPets.indexOf(uid);
+  if(slotIdx>=0){G.equippedPets[slotIdx]=null;}
+  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+  if(pet)pet.equippedSlot=-1;
+  document.getElementById('pet-detail-modal').classList.remove('open');
+  renderSlotRow();renderPets();updateHUD();
+}
+function quickEquipPet(uid){
+  // Find first empty slot
+  var emptySlot=-1;
+  for(var i=0;i<G.petSlots;i++){if(!G.equippedPets[i]){emptySlot=i;break;}}
+  if(emptySlot===-1){
+    // Replace slot 0
+    var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[0];});
+    if(oldPet)oldPet.equippedSlot=-1;
+    emptySlot=0;
+  }
+  G.equippedPets[emptySlot]=uid;
+  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+  if(pet)pet.equippedSlot=emptySlot;
+  document.getElementById('pet-detail-modal').classList.remove('open');
+  renderSlotRow();renderPets();updateHUD();
+}
+document.getElementById('pet-detail-close').onclick=function(){document.getElementById('pet-detail-modal').classList.remove('open');};
+document.getElementById('pet-detail-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+
+// ============================================================
+// MODALS: OFFLINE, PET RESULT
+// ============================================================
+document.getElementById('offline-claim').onclick=function(){document.getElementById('offline-modal').classList.remove('open');};
+document.getElementById('pet-result-close').onclick=function(){document.getElementById('pet-result-modal').classList.remove('open');};
+document.getElementById('pet-result-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+var SCENE_TABS=['buildings','upgrades','inventory'];
+var currentTab='buildings';
+function switchTab(name){
+  var wasHome=SCENE_TABS.indexOf(currentTab)>=0;
+  document.querySelectorAll('.tab-content').forEach(function(t){t.style.display='none';});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  var tab=document.getElementById('tab-'+name);if(tab)tab.style.display='block';
+  var nb=document.getElementById('nb-'+name);if(nb)nb.classList.add('active');
+  var isHome=SCENE_TABS.indexOf(name)>=0;
+  var isInv=(name==='inventory');
+  document.getElementById('scene-wrap').style.display=isHome?'block':'none';
+  var sheet=document.getElementById('home-sheet');
+  if(sheet)sheet.style.display=isHome?'block':'none';
+  // Bygg-växeln (Upgrades|Buildings) visas bara för bygg-bladet, döljs i inventory-läget
+  var ht=document.getElementById('home-toggle');if(ht)ht.style.display=isInv?'none':'flex';
+  var lbl=document.getElementById('sheet-label-text');if(lbl)lbl.textContent=isInv?'Inventory':'Buildings & Upgrades';
+  var ubB=document.getElementById('ub-buildings'),ubU=document.getElementById('ub-upgrades');
+  if(ubB)ubB.classList.toggle('active',name==='buildings');
+  if(ubU)ubU.classList.toggle('active',name==='upgrades');
+  // Att öppna inventoryt (via 🎒) fäller alltid upp bladet så det syns
+  if(isInv)homeCollapsed=false;
+  if(isHome)applyHomeCollapsed();
+  currentTab=name;
+  if(name==='inventory')renderInventory();
+  if(name==='shop')renderShop();
+  if(name==='hatch')renderHatchery();
+  if(name==='pets')showPetsHub();
+  if(name==='petdex')renderPetdex();
+  if(name==='more')renderAchievements();
+  // Slide-up-animation (nav rebuild — steg 3): spelas bara när man LANDAR på
+  // hemskärmen från en annan flik, och bara i utfällt läge.
+  if(isHome&&!wasHome&&!homeCollapsed)playHomeEntrance();
+}
+
+// Replays a CSS keyframe-animation klass på ett element
+function replayAnim(el,cls){if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);}
+function playHomeEntrance(){
+  var main=document.getElementById('main');if(main)main.scrollTop=0;
+  replayAnim(document.getElementById('egg-stage'),'egg-shrink-in');
+  replayAnim(document.getElementById('sheet-body'),'home-slide-in');
+}
+
+// Ihopfällbart bygg-blad: utfällt = ägg + Buildings/Upgrades, hopfällt = rent fullskärmsägg
+var homeCollapsed=false;
+function applyHomeCollapsed(){
+  var app=document.getElementById('app');
+  if(app)app.classList.toggle('home-collapsed',homeCollapsed);
+}
+function toggleHomeSheet(){
+  homeCollapsed=!homeCollapsed;
+  if(homeCollapsed){
+    var m=document.getElementById('main');if(m)m.scrollTop=0;
+    // Fäller man ner inventoryt → återställ hem-bladet till Buildings för nästa gång man fäller upp
+    if(currentTab==='inventory')switchTab('buildings');
+  }
+  applyHomeCollapsed();
+}
+
+// Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
+function navTab(name){
+  if(currentTab===name){switchTab('buildings');}
+  else{switchTab(name);}
+}
+
+// Pets-hubbens underflikar (nav rebuild — step 4): Pets / Fusion / Extract
+var petsSubTab='pets';
+function petsSub(sub){
+  petsSubTab=sub;
+  ['pets','fusion','extract'].forEach(function(s){
+    var p=document.getElementById('psub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
+    var b=document.getElementById('psub-'+s);if(b)b.classList.toggle('active',s===sub);
+  });
+  if(sub==='pets')renderPets();
+  else if(sub==='fusion')renderFusion();
+  // 'extract' är en statisk platshållare tills Fas 9 byggs
+}
+function showPetsHub(){petsSub(petsSubTab);}
+
+// ============================================================
+// NAVIGATION (rebuild step 1): More drawer, EPS info, placeholders
+// ============================================================
+// Tillfällig More-meny — håller vyer som ännu inte fått sin permanenta plats
+// i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
+var MORE_ITEMS=[
+  {label:'Petdex',icon:'📖',tab:'petdex'},
+  {label:'Achievements',icon:'🏆',tab:'more'},
+  {label:'Inventory',icon:'🎒',tab:'inventory'},
+];
+function openMore(){
+  var g=document.getElementById('more-grid');g.innerHTML='';
+  MORE_ITEMS.forEach(function(it){
+    var d=document.createElement('div');d.className='more-item';
+    d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
+    d.onclick=function(){closeMore();switchTab(it.tab);};
+    g.appendChild(d);
+  });
+  document.getElementById('more-drawer').classList.add('open');
+}
+function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
+document.getElementById('more-drawer').onclick=function(e){if(e.target===this)closeMore();};
+function showGenericModal(icon,title,body){
+  document.getElementById('generic-modal-icon').textContent=icon;
+  document.getElementById('generic-modal-title').textContent=title;
+  document.getElementById('generic-modal-body').textContent=body;
+  document.getElementById('generic-modal').classList.add('open');
+}
+function showEpsInfo(){
+  showGenericModal('🥚','Eggs Per Second',
+    'EPS är hur många Egg Coins du tjänar passivt varje sekund. Den kommer från dina byggnader (Buildings) och ökar när du köper fler eller högre nivåer. Aktiva pets med Coin Gain eller Idle Gain ökar den ytterligare. Att klicka på ägget ger coins direkt ovanpå din EPS.');
+}
+function showComingSoon(title,body){showGenericModal('🚧',title,body);}
+
+// Hemskärmens flytande knappar (nav rebuild — step 3)
+var EVENT_ACTIVE=false; // sätts true när event-systemet finns
+function refreshHomeButtons(){
+  var ev=document.getElementById('events-btn');
+  if(ev)ev.style.display=EVENT_ACTIVE?'flex':'none';
+}
+function claimDaily(){
+  var btn=document.getElementById('daily-btn');
+  if(btn)btn.style.display='none';
+  showComingSoon('🎁 Daily Reward','Dagliga belöningar byggs i ett senare steg. Knappen döljs tills nästa gång du öppnar spelet.');
+}
+function openEvents(){
+  showComingSoon('🎉 Events','Event-systemet byggs i ett senare steg. Den här knappen visas bara när ett event är aktivt.');
+}
+
+// ============================================================
+// BUILDINGS
+// ============================================================
+function renderBuildings(){
+  var bl=document.getElementById('blist');bl.innerHTML='';
+  var testRow=document.createElement('div');testRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
+  testRow.innerHTML='<button onclick="addTestShells()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+300 All</button><button onclick="addTestPets()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+10 Pets</button><button onclick="addTestCoins()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+1B Eggs</button><button onclick="resetGame()" style="flex:1;padding:6px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">Reset</button>';
+  bl.appendChild(testRow);
+  var worldRow=document.createElement('div');worldRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
+  worldRow.innerHTML='<button id="world-test-btn" onclick="cycleWorld()" style="flex:1;padding:6px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">🌍 World: '+(EGG_WORLDS[G.currentWorld]?EGG_WORLDS[G.currentWorld].id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>';
+  bl.appendChild(worldRow);
+  var unlocked=numUnlocked();var show=Math.min(unlocked+2,20);
+  for(var i=0;i<show;i++){
+    var d=document.createElement('div');d.dataset.idx=i;
+    var c=bcost(i);var canAfford=G.coins>=c;
+    if(i<unlocked){
+      d.className='bld '+(canAfford?'buyable':'poor');
+      var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i])+'/s':'';
+      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p)+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">🥚</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
+    } else if(i===unlocked){
+      d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
+    } else {
+      d.className='bld ghost';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">???</div></div>';
+    }
+    bl.appendChild(d);
+  }
+}
+function updateBuildingClasses(){
+  var unlocked=numUnlocked();
+  for(var i=0;i<unlocked;i++){
+    var d=document.querySelector('[data-idx="'+i+'"]');if(!d){renderBuildings();return;}
+    var c=bcost(i);var canAfford=G.coins>=c;
+    d.className='bld '+(canAfford?'buyable':'poor');
+    var bp=document.getElementById('bp'+i),bo=document.getElementById('bo'+i),bc=document.getElementById('bc'+i),bb=document.getElementById('bb'+i);
+    if(bp)bp.textContent=fmt(BUILDINGS[i].p)+'/s each'+(G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i])+'/s total':'');
+    if(bo)bo.textContent=G.owned[i];if(bc)bc.textContent=fmtShort(c);
+    if(bb)bb.className='bld-buy '+(canAfford?'affordable':'expensive');
+  }
+}
+document.getElementById('blist').addEventListener('click',function(e){
+  var d=e.target;while(d&&d!==this){if(d.dataset&&d.dataset.idx!==undefined)break;d=d.parentNode;}
+  if(!d||d.dataset.idx===undefined)return;
+  var i=parseInt(d.dataset.idx);if(isNaN(i)||i>=numUnlocked())return;
+  var c=bcost(i);if(G.coins>=c){G.coins-=c;G.owned[i]++;G.stats.totalBuildingsPurchased++;G.stats.totalCoinsSpent+=c;renderBuildings();}
+});
+
+// ============================================================
+// UPGRADES
+// ============================================================
+function renderUpgrades(){
+  var ul=document.getElementById('ulist');ul.innerHTML='';
+  UPGRADES.forEach(function(u){
+    var l=G.ulvl[u.id];var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
+    var d=document.createElement('div');d.className='upg '+(maxed?'maxed':afford?'can-buy':'poor');
+    d.dataset.upgId=u.id;
+    d.setAttribute('data-upg-id',u.id);
+    d.innerHTML='<div class="upg-img">'+u.e+'</div><div style="flex:1"><div class="un">'+u.n+'</div><div class="ud">'+(maxed?'Maxed out!':u.desc(l))+'</div><div class="udots">'+dots(l,u.max)+'</div></div><div class="ur"><div class="uc" style="color:'+(maxed?'var(--gold)':afford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(maxed?'MAX':'🥚 '+fmtShort(c))+'</div></div>';
+    ul.appendChild(d);
+  });
+  var sl=document.getElementById('slist');sl.innerHTML='';
+  var next=null;for(var k=0;k<SLOTS.length;k++){if(G.petSlots<SLOTS[k].slot){next=SLOTS[k];break;}}
+  var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
+  var sd=document.createElement('div');sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
+  sd.dataset.upgId='slot';
+  sd.setAttribute('data-upg-id','slot');
+  sd.innerHTML='<div class="upg-img">🐾</div><div style="flex:1"><div class="un">Pet Slots</div><div class="ud">'+(allDone?'All slots unlocked':'Unlock slot '+(G.petSlots+1))+'</div><div class="udots">'+dots(G.petSlots,5)+'</div></div><div class="ur"><div class="uc" style="color:'+(allDone?'var(--gold)':slotAfford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(allDone?'MAX':'🥚 '+fmtShort(next?next.cost:0))+'</div></div>';
+  sl.appendChild(sd);
+}
+
+// Event delegation för shop
+document.addEventListener('click',function(e){
+  var d=e.target;
+  while(d&&d!==document){
+    if(d.dataset&&d.dataset.buyEgg){buyEgg(d.dataset.buyEgg);return;}
+    if(d.dataset&&d.dataset.infoEgg){showEggInfo(d.dataset.infoEgg);return;}
+    d=d.parentNode;
+  }
+});
+document.addEventListener('click',function(e){
+  var d=e.target;
+  while(d&&d!==document){
+    if(d.dataset&&d.dataset.upgId)break;
+    d=d.parentNode;
+  }
+  if(!d||d===document||!d.dataset||!d.dataset.upgId)return;
+  var id=d.dataset.upgId;
+  if(id==='slot'){
+    var next=null;for(var k=0;k<SLOTS.length;k++){if(G.petSlots<SLOTS[k].slot){next=SLOTS[k];break;}}
+    if(!next||G.coins<next.cost)return;
+    G.coins-=next.cost;G.petSlots=next.slot;renderSlotRow();renderUpgrades();
+  } else {
+    var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return;
+    var l=G.ulvl[u.id];if(l>=u.max)return;
+    var c=u.cost[l];if(G.coins<c)return;
+    G.coins-=c;G.ulvl[u.id]++;G.stats.totalUpgradesPurchased++;G.stats.totalCoinsSpent+=c;
+    u.apply(G.ulvl[u.id]);renderUpgrades();
+  }
+});
+
+// ============================================================
+// INVENTORY
+// ============================================================
+function renderInventory(){
+  var wrap=document.getElementById('inv-wrap');if(!wrap)return;
+  var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
+  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
+  var html='<div class="inv-tabs">';
+  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')">💎 Shells</div>';
+  html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')">🥚 Eggs</div>';
+  html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')">🧪 Cores</div>';
+  html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
+  html+='</div>';
+  html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
+  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon">'+r.icon+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
+  html+='</div></div>';
+  html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
+  EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon">'+egg.icon+'</div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
+  html+='</div></div>';
+  html+='<div id="isec-cores" style="display:none;"><div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets.</p></div></div>';
+  html+='<div id="isec-loot" style="display:none;"><div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here when pets return from missions.</p></div></div>';
+  wrap.innerHTML=html;
+  showInvSection(activeInvSection);
+}
+
+function softUpdateInventory(){
+  // Uppdatera bara siffrorna, bygg inte om DOM
+  var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
+  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
+  var el=document.getElementById('inv-shell-total');if(el)el.textContent=totalShells;
+  var el2=document.getElementById('inv-egg-total');if(el2)el2.textContent=totalEggs;
+  SHELL_RARITIES.forEach(function(r){var el=document.getElementById('inv-s-'+r.id);if(el)el.textContent=G.shells[r.id]||0;});
+  EGG_SHOP.forEach(function(egg){var el=document.getElementById('inv-e-'+egg.id);if(el)el.textContent=G.eggsOwned[egg.id]||0;});
+}
+var activeInvSection='shells';
+function showInvSection(name){
+  activeInvSection=name;
+  ['shells','eggs','cores','loot'].forEach(function(t){var tab=document.getElementById('itab-'+t);var sec=document.getElementById('isec-'+t);if(tab)tab.classList.remove('active');if(sec)sec.style.display='none';});
+  var tab=document.getElementById('itab-'+name);var sec=document.getElementById('isec-'+name);
+  if(tab)tab.classList.add('active');if(sec)sec.style.display='block';
+}
+
+// ============================================================
+// SHOP
+// ============================================================
+function hasBuildingUnlocked(name){var idx=BUILDINGS.findIndex(function(b){return b.n===name;});return idx>=0&&G.owned[idx]>0;}
+function getEggState(egg){if(egg.id==='starter')return 'unlocked';var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return buildOk&&hatchOk?'unlocked':'locked';}
+function renderShop(){
+  var wrap=document.getElementById('shop-wrap');if(!wrap)return;
+  var html='';
+  EGG_SHOP.forEach(function(egg){
+    var state=getEggState(egg);
+    var shellR=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
+    var have=G.shells[egg.shellType]||0;
+    var cost=getEggCost(egg);
+    var shellOk=have>=cost;var canBuy=state==='unlocked'&&shellOk;var owned=G.eggsOwned[egg.id]||0;
+    html+='<div class="shop-egg-card '+(state==='unlocked'?'available':'')+'">';
+    html+='<div class="shop-egg-top"><div class="shop-egg-icon">'+egg.icon+'</div><div>';
+    html+='<div class="shop-egg-name">'+egg.name+'</div>';
+    if(owned>0)html+='<div class="shop-egg-status" style="color:#4caf50">✅ Owned: '+owned+'</div>';
+    else if(state==='unlocked')html+='<div class="shop-egg-status" style="color:#b388ff">'+shellR.icon+' '+cost+' '+shellR.name+'</div>';
+    else html+='<div class="shop-egg-status" style="color:rgba(255,255,255,0.3)">🔒 Locked</div>';
+    html+='</div></div>';
+    html+='<button class="shop-btn '+(canBuy?'can':'no')+'" data-buy-egg="'+egg.id+'" style="border-radius:12px 12px 0 0;margin-bottom:2px;">'+(canBuy?'Craft for '+cost+' '+shellR.name:state==='locked'?'🔒 Locked':'Need more '+shellR.name+' ('+have+'/'+cost+')')+'</button>';
+    html+='<button data-info-egg="'+egg.id+'" style="width:100%;padding:8px;border:none;border-radius:0 0 12px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-family:\'Fredoka One\',cursive;font-size:0.75rem;cursor:pointer;">ℹ️ Drop Chances, Pets & Requirements</button>';
+    html+='</div>';
+  });
+  wrap.innerHTML=html;
+}
+function getEggCost(egg){
+  return Math.max(1,Math.floor(egg.shellAmt*G.craftDiscount));
+}
+function buyEgg(id){
+  var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
+  if(getEggState(egg)!=='unlocked')return;
+  var cost=getEggCost(egg);
+  if((G.shells[egg.shellType]||0)<cost)return;
+  G.shells[egg.shellType]-=cost;
+  G.stats.totalShellsSpent+=cost;
+  G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  renderShop();
+}
+
+// ============================================================
+// HATCHERY
+// ============================================================
+function getHatchDuration(eggId){
+  var base=EGG_HATCH_TIMES[eggId]||30;
+  var upgMult=G.hatchDiscount;
+  var petMult=getHatchSpeedMult();
+  return Math.floor(base*upgMult*petMult)*1000;
+}
+function showEggInfo(eggId){
+  var egg=EGG_SHOP.find(function(e){return e.id===eggId;});if(!egg)return;
+  var weights=EGG_RARITY_WEIGHTS[eggId]||{};
+  var total=Object.keys(weights).reduce(function(s,k){return s+weights[k];},0);
+  var hatchSecs=Math.floor(getHatchDuration(eggId)/1000);
+  var activeCount=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  var canHatch=activeCount<G.petSlots&&(G.eggsOwned[eggId]||0)>0;
+
+  var html='<div style="text-align:center;margin-bottom:12px;">';
+  html+='<div style="font-size:3rem;margin-bottom:4px;">'+egg.icon+'</div>';
+  html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.1rem;color:#fff;">'+egg.name+'</div>';
+  html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:2px;">⏱️ '+formatTime(hatchSecs)+' hatch time</div>';
+  html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">📦 Owned: '+(G.eggsOwned[eggId]||0)+'</div>';
+  html+='</div>';
+
+  // Unlock requirements
+  var reqs=[];
+  var cost=getEggCost(egg);
+  var shellR2=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
+  var have2=G.shells[egg.shellType]||0;
+  var shellOk2=have2>=cost;
+  reqs.push({icon:shellR2.icon,label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':'🔒 Required',met:bOk});}
+  if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':'🔒 Required',met:hOk});}
+  if(reqs.length>0){
+    html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Requirements</div>';
+    reqs.forEach(function(r){
+      html+='<div class="egg-info-rarity-row">';
+      html+='<span style="font-size:0.9rem;width:18px;text-align:center;">'+r.icon+'</span>';
+      html+='<span style="font-size:0.7rem;color:rgba(255,255,255,0.6);flex:1;">'+r.label+'</span>';
+      html+='<span style="font-size:0.7rem;font-weight:800;color:'+(r.met?'#4caf50':'rgba(255,255,255,0.3)')+'">'+r.val+'</span>';
+      html+='</div>';
+    });
+  }
+
+  // Rarity chances
+  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Drop Chances</div>';
+  Object.keys(weights).forEach(function(rarity){
+    var rc=RARITY_CONFIG[rarity];if(!rc)return;
+    var pct=Math.round(weights[rarity]/total*100*10)/10;
+    html+='<div class="egg-info-rarity-row">';
+    html+='<span style="font-size:0.9rem;width:18px;text-align:center;">'+rc.icon+'</span>';
+    html+='<span style="font-size:0.7rem;color:'+rc.color+';font-weight:800;min-width:70px;">'+rc.label+'</span>';
+    html+='<div class="egg-info-rarity-bar"><div class="egg-info-rarity-fill" style="width:'+pct+'%;background:'+rc.color+';"></div></div>';
+    html+='<span class="egg-info-rarity-pct" style="color:'+rc.color+'">'+pct+'%</span>';
+    html+='</div>';
+  });
+
+  // Pets in this world
+  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Possible Pets</div>';
+  html+='<div class="egg-info-pets">';
+  var pool=PET_POOL[eggId]||{};
+  Object.keys(pool).forEach(function(rarity){
+    var rc=RARITY_CONFIG[rarity];if(!rc)return;
+    pool[rarity].forEach(function(pet){
+      html+='<div class="egg-info-pet" style="border:1px solid '+rc.color+'44;">';
+      html+='<span>'+pet.e+'</span>';
+      html+='<span style="color:rgba(255,255,255,0.7);">'+pet.name+'</span>';
+      html+='</div>';
+    });
+  });
+  html+='</div>';
+
+  // Hatch button
+  html+='<button onclick="startHatchingFromInfo(\''+eggId+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;margin-top:14px;font-family:\'Fredoka One\',cursive;font-size:0.95rem;cursor:'+(canHatch?'pointer':'default')+';background:'+(canHatch?'linear-gradient(180deg,#f5c842,#e0a800)':'rgba(27,45,78,0.4)')+';color:'+(canHatch?'#0b1530':'rgba(255,255,255,0.3)')+';box-shadow:'+(canHatch?'0 3px 0 #8a6000':'none')+';">'+(canHatch?'🥚 Hatch Now!':activeCount>=G.petSlots?'Slots Full':'No Eggs')+'</button>';
+
+  document.getElementById('egg-info-content').innerHTML=html;
+  document.getElementById('egg-info-modal').classList.add('open');
+}
+
+function startHatchingFromInfo(eggId){
+  document.getElementById('egg-info-modal').classList.remove('open');
+  startHatching(eggId);
+}
+
+document.getElementById('egg-info-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+
+function startHatching(eggId){
+  var maxSlots=G.petSlots;
+  var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  if(active>=maxSlots)return;
+  if((G.eggsOwned[eggId]||0)<=0)return;
+  G.eggsOwned[eggId]--;
+  G.hatchSlots.push({eggId:eggId,startTime:Date.now(),duration:getHatchDuration(eggId),done:false});
+  renderHatchery();
+}
+function collectHatch(idx){
+  var slot=G.hatchSlots[idx];if(!slot||!slot.done)return;
+  var pet=generatePet(slot.eggId);
+  // Hatch stats
+  G.stats.eggsHatched++;
+  G.stats.eggsHatchedByWorld[slot.eggId]=(G.stats.eggsHatchedByWorld[slot.eggId]||0)+1;
+  var hatchDuration=Math.floor((Date.now()-slot.startTime)/1000);
+  G.stats.totalHatchTimeWaited+=hatchDuration;
+  if(G.stats.fastestHatch===null||hatchDuration<G.stats.fastestHatch)G.stats.fastestHatch=hatchDuration;
+  if(G.stats.longestHatch===null||hatchDuration>G.stats.longestHatch)G.stats.longestHatch=hatchDuration;
+  // Most hatched world
+  var maxW=0;Object.keys(G.stats.eggsHatchedByWorld).forEach(function(w){if(G.stats.eggsHatchedByWorld[w]>maxW){maxW=G.stats.eggsHatchedByWorld[w];G.stats.mostHatchedWorld=w;}});
+  // Pet stats
+  G.stats.totalPetsCollected++;
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  if(rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.highestRarityOwned))G.stats.highestRarityOwned=pet.rarity;
+  if(!G.stats.rarestPetEverHatched||rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.rarestPetEverHatched.rarity))G.stats.rarestPetEverHatched={name:pet.name,e:pet.e,rarity:pet.rarity};
+  // Tier 5 abilities
+  pet.abilities.forEach(function(ab){if(ab.tier===5)G.stats.tier5AbilitiesHatched++;});
+  // Duplicate check
+  var existing=G.hatchedPets.find(function(p){return p.name===pet.name&&p.rarity===pet.rarity;});
+  if(existing)G.stats.duplicatePetsHatched++;
+  // Unique pets
+  var uniqueKey=pet.name+'_'+pet.rarity;
+  if(!G._discoveredPets)G._discoveredPets={};
+  if(!G._discoveredPets[uniqueKey]){G._discoveredPets[uniqueKey]=true;G.stats.uniquePetsDiscovered++;}
+  // Cosmic
+  if(pet.rarity==='cosmic')G.stats.cosmicPetsCreated++;
+
+  G.hatchedPets.push(pet);
+  G.eggsHatched[slot.eggId]=true;
+  G.hatchSlots.splice(idx,1);
+  showPetResult(pet);
+  renderHatchery();
+}
+function showPetResult(pet){
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+  document.getElementById('pet-result-icon').textContent=pet.e;
+  document.getElementById('pet-result-name').textContent=pet.name;
+  document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>';
+  document.getElementById('pet-result-world').textContent=eggInfo.icon+' '+eggInfo.name;
+  var abHtml='';
+  pet.abilities.forEach(function(ab){
+    var m=ABILITY_META[ab.id];if(!m)return;
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+  });
+  document.getElementById('pet-result-abilities').innerHTML=abHtml;
+  document.getElementById('pet-result-modal').classList.add('open');
+}
+function renderHatchery(){
+  var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
+  var maxSlots=G.petSlots;var now=Date.now();
+  var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' max)</div>';
+  for(var i=0;i<maxSlots;i++){
+    var slot=G.hatchSlots[i];
+    if(slot){
+      var elapsed=now-slot.startTime;var pct=Math.min(1,elapsed/slot.duration);
+      if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
+      var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
+      var egg=EGG_SHOP.find(function(e){return e.id===slot.eggId;});
+      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(egg?egg.icon:'🥚')+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
+      html+='<div class="hatch-progress-bar"><div class="hatch-progress-fill" style="width:'+(pct*100)+'%"></div></div>';
+      html+='<button class="hatch-collect-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'🎉 Collect Pet!':'Hatching...')+'</button></div>';
+    } else {
+      html+='<div class="hatch-slot empty-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">🪹</div><div><div class="hatch-slot-name">Empty Slot</div><div class="hatch-slot-time">Select an egg below</div></div></div></div>';
+    }
+  }
+  var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;});
+  html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Eggs in Inventory</div>';
+  if(!hasEggs){
+    html+='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No eggs — craft some in the 🛍️ Shop!</div>';
+  } else {
+    var activeCount=G.hatchSlots.filter(function(s){return !s.done;}).length;
+    html+='<div class="hatch-egg-list">';
+    EGG_SHOP.forEach(function(egg){
+      var count=G.eggsOwned[egg.id]||0;if(count<=0)return;
+      var canHatch=activeCount<maxSlots;
+      html+='<div class="hatch-egg-row"><div class="he-icon">'+egg.icon+'</div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
+    });
+    html+='</div>';
+  }
+  wrap.innerHTML=html;
+}
+
+// ============================================================
+// FUSION SYSTEM
+// ============================================================
+var RARITY_PROGRESSION=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+
+var fusionSlots=[null,null,null,null,null]; // pet UIDs
+var fusionRarityFilter='common';
+
+function getNextRarity(rarity){
+  var idx=RARITY_PROGRESSION.indexOf(rarity);
+  if(idx<0||idx>=RARITY_PROGRESSION.length-1)return null;
+  return RARITY_PROGRESSION[idx+1];
+}
+
+function getFusionSelectedRarity(){
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  if(filled.length===0)return null;
+  var pet=G.hatchedPets.find(function(p){return p.uid===filled[0];});
+  return pet?pet.rarity:null;
+}
+
+function getFusionOdds(){
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  if(filled.length===0)return [];
+  var counts={};
+  filled.forEach(function(uid){
+    var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+    if(!pet)return;
+    counts[pet.name]=(counts[pet.name]||0)+1;
+  });
+  var total=filled.length;
+  return Object.keys(counts).map(function(name){
+    var pet=G.hatchedPets.find(function(p){return p.name===name;});
+    return {name:name,e:pet?pet.e:'🐾',pct:Math.round(counts[name]/total*100)};
+  }).sort(function(a,b){return b.pct-a.pct;});
+}
+
+function isPerfectFusion(){
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  if(filled.length<5)return false;
+  var names=filled.map(function(uid){
+    var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+    return pet?pet.name:'';
+  });
+  return names.every(function(n){return n===names[0];});
+}
+
+function canFuse(){
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  if(filled.length<5)return false;
+  var rarities=filled.map(function(uid){
+    var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+    return pet?pet.rarity:null;
+  });
+  return rarities.every(function(r){return r===rarities[0]&&r!==null;});
+}
+
+function doFusion(){
+  if(!canFuse())return;
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  var firstPet=G.hatchedPets.find(function(p){return p.uid===filled[0];});
+  var currentRarity=firstPet.rarity;
+  var nextRarity=getNextRarity(currentRarity);
+  if(!nextRarity){alert('Already at max rarity!');return;}
+
+  // Determine species via weighting
+  var odds=getFusionOdds();
+  var perfect=isPerfectFusion();
+  var resultSpecies;
+  if(perfect){
+    resultSpecies={name:firstPet.name,e:firstPet.e};
+  } else {
+    var roll=Math.random()*100,acc=0;
+    resultSpecies=odds[odds.length-1];
+    for(var i=0;i<odds.length;i++){acc+=odds[i].pct;if(roll<=acc){resultSpecies=odds[i];break;}}
+  }
+
+  // Generate new pet at next rarity with result species
+  var rc=RARITY_CONFIG[nextRarity]||RARITY_CONFIG.common;
+  var abilities=[];
+  for(var i=0;i<rc.slots;i++){
+    var abilityId=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
+    abilities.push({id:abilityId,tier:rc.tiers[i]});
+  }
+  var newPet={
+    uid:Date.now()+Math.random(),
+    name:resultSpecies.name,
+    e:resultSpecies.e,
+    rarity:nextRarity,
+    world:firstPet.world,
+    abilities:abilities,
+    equippedSlot:-1,
+  };
+
+  // Remove consumed pets
+  filled.forEach(function(uid){
+    var idx=G.hatchedPets.findIndex(function(p){return p.uid===uid;});
+    if(idx>=0){
+      // Unequip if equipped
+      var eqIdx=G.equippedPets.indexOf(uid);
+      if(eqIdx>=0)G.equippedPets[eqIdx]=null;
+      G.hatchedPets.splice(idx,1);
+    }
+  });
+
+  // Add new pet
+  G.hatchedPets.push(newPet);
+
+  // Update stats
+  G.stats.totalPetsFused=(G.stats.totalPetsFused||0)+1;
+  G.stats.petsConsumedInFusion=(G.stats.petsConsumedInFusion||0)+5;
+  if(perfect)G.stats.perfectFusions=(G.stats.perfectFusions||0)+1;
+  if(nextRarity==='cosmic')G.stats.cosmicPetsCreated=(G.stats.cosmicPetsCreated||0)+1;
+
+  // Petdex
+  var uniqueKey=newPet.name+'_'+newPet.rarity;
+  if(!G._discoveredPets)G._discoveredPets={};
+  if(!G._discoveredPets[uniqueKey]){G._discoveredPets[uniqueKey]=true;G.stats.uniquePetsDiscovered++;}
+
+  // Reset slots
+  fusionSlots=[null,null,null,null,null];
+
+  // Show result
+  showFusionResult(newPet,perfect);
+  renderFusion();
+  renderSlotRow();
+}
+
+function showFusionResult(pet,perfect){
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  document.getElementById('pet-result-icon').textContent=pet.e;
+  document.getElementById('pet-result-name').textContent=pet.name;
+  document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>'+(perfect?' <span style="color:var(--gold);font-size:0.7rem">⭐ Perfect Fusion!</span>':'');
+  document.getElementById('pet-result-world').textContent='✨ Fusion Result';
+  var abHtml='';
+  pet.abilities.forEach(function(ab){
+    var m=ABILITY_META[ab.id];if(!m)return;
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+  });
+  document.getElementById('pet-result-abilities').innerHTML=abHtml;
+  document.getElementById('pet-result-modal').classList.add('open');
+}
+
+function addToFusionSlot(uid){
+  // Check if already in a slot
+  if(fusionSlots.indexOf(uid)>=0){
+    // Remove it
+    fusionSlots[fusionSlots.indexOf(uid)]=null;
+    renderFusion();return;
+  }
+  // Check rarity matches existing slots
+  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+  if(!pet)return;
+  var existingRarity=getFusionSelectedRarity();
+  if(existingRarity&&pet.rarity!==existingRarity)return;
+  // Find empty slot
+  var emptyIdx=fusionSlots.indexOf(null);
+  if(emptyIdx<0)return;
+  fusionSlots[emptyIdx]=uid;
+  renderFusion();
+}
+
+function removeFromFusionSlot(slotIdx){
+  fusionSlots[slotIdx]=null;
+  renderFusion();
+}
+
+function clearFusionSlots(){
+  fusionSlots=[null,null,null,null,null];
+  renderFusion();
+}
+
+function renderFusion(){
+  var wrap=document.getElementById('fusion-wrap');if(!wrap)return;
+  var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
+  var selectedRarity=getFusionSelectedRarity();
+  var nextRar=selectedRarity?getNextRarity(selectedRarity):null;
+  var nextRc=nextRar?RARITY_CONFIG[nextRar]:null;
+  var currentRc=selectedRarity?RARITY_CONFIG[selectedRarity]:null;
+  var odds=getFusionOdds();
+  var perfect=isPerfectFusion();
+  var ready=canFuse();
+
+  var html='';
+
+  // Selected pets as chips
+  html+='<div class="fusion-slots-area">';
+  html+='<div class="fusion-slots-title">Select 5 Pets of the Same Rarity</div>';
+
+  // Chips row
+  html+='<div style="display:flex;gap:5px;flex-wrap:wrap;min-height:44px;margin-bottom:8px;">';
+  for(var i=0;i<5;i++){
+    var uid=fusionSlots[i];
+    var slotPet=uid?G.hatchedPets.find(function(p){return p.uid===uid;}):null;
+    var rc2=slotPet?RARITY_CONFIG[slotPet.rarity]:null;
+    if(slotPet){
+      html+='<div style="display:flex;align-items:center;gap:4px;background:'+(rc2?rc2.color+'22':'rgba(0,0,0,0.3)')+';border:1.5px solid '+(rc2?rc2.color+'66':'rgba(58,92,184,0.4)')+';border-radius:20px;padding:4px 10px 4px 6px;cursor:pointer;" data-fusion-slot="'+i+'">';
+      html+='<span style="font-size:1.1rem;">'+slotPet.e+'</span>';
+      html+='<span style="font-size:0.6rem;color:rgba(255,255,255,0.7);">'+slotPet.name+'</span>';
+      html+='<span style="font-size:0.55rem;color:rgba(255,100,100,0.8);margin-left:2px;">✕</span>';
+      html+='</div>';
+    } else {
+      html+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.2);border:2px dashed rgba(58,92,184,0.4);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.2);">'+(i+1)+'</div>';
+    }
+  }
+  html+='</div>';
+
+  // Selected count + clear
+  html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
+  html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(selectedRarity&&currentRc?' · <span style="color:'+currentRc.color+'">'+currentRc.label+'</span>':'')+'</div>';
+  if(filledCount>0)html+='<button class="fusion-clear-btn" onclick="clearFusionSlots()">✕ Clear</button>';
+  html+='</div>';
+
+  // Arrow down + result
+  if(filledCount>0){
+    html+='<div style="text-align:center;font-size:1.2rem;color:rgba(255,255,255,0.3);margin-bottom:6px;">▼</div>';
+    html+='<div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;">';
+    if(nextRc){
+      html+='<div style="font-size:2rem;">'+(ready&&odds.length>0?odds[0].e:'🐾')+'</div>';
+      html+='<div style="flex:1;">';
+      html+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.85rem;color:'+nextRc.color+'">'+nextRc.icon+' '+nextRc.label+'</div>';
+      if(ready&&odds.length>0){
+        odds.forEach(function(o){
+          html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+o.e+' '+o.name+' · '+o.pct+'%</div>';
+        });
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+
+  // Perfect fusion badge
+  if(perfect){
+    html+='<div class="fusion-perfect">⭐ Perfect Fusion — 100% guaranteed species!</div>';
+  }
+
+  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="doFusion()"':'')+'>⚗️ '+(ready?'Fuse Pets!':'Select 5 pets of the same rarity')+'</button>';
+  html+='</div>';
+
+  // Rarity filter chips
+  html+='<div class="fusion-pets-header"><div class="fusion-pets-title">🐾 Your Pets</div></div>';
+  html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">';
+  RARITY_PROGRESSION.forEach(function(r){
+    var rc3=RARITY_CONFIG[r];if(!rc3)return;
+    var count=G.hatchedPets.filter(function(p){return p.rarity===r;}).length;
+    if(count===0)return;
+    html+='<div data-fusion-rarity="'+r+'" style="padding:4px 10px;background:rgba(27,45,78,0.5);border:1.5px solid '+(fusionRarityFilter===r?rc3.color:'rgba(58,92,184,0.6)')+';border-radius:20px;font-size:0.62rem;color:'+(fusionRarityFilter===r?rc3.color:'rgba(255,255,255,0.5)')+';cursor:pointer;">'+rc3.icon+' '+rc3.label+' ('+count+')</div>';
+  });
+  html+='</div>';
+
+  // Pet grid
+  var eligibleRarity=selectedRarity||fusionRarityFilter;
+  var petsToShow=G.hatchedPets.filter(function(p){return p.rarity===eligibleRarity;});
+
+  if(petsToShow.length===0){
+    html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No '+eligibleRarity+' pets — hatch more eggs!</div>';
+  } else {
+    html+='<div class="fusion-pet-grid">';
+    petsToShow.forEach(function(pet){
+      var rc4=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+      var isSelected=fusionSlots.indexOf(pet.uid)>=0;
+      var isFull=filledCount>=5&&!isSelected;
+      var wrongRarity=selectedRarity&&pet.rarity!==selectedRarity;
+      var disabled=isFull||wrongRarity;
+      html+='<div class="fusion-pet-card'+(isSelected?' selected':disabled?' disabled':'')+'" style="border-color:'+(isSelected?rc4.color+'aa':rc4.color+'33')+';background:'+(isSelected?rc4.color+'15':'rgba(27,45,78,0.5)')+'" data-fusion-pet="'+pet.uid+'">';
+      if(isSelected)html+='<div class="fusion-check">✓</div>';
+      html+='<div class="fp-icon">'+pet.e+'</div>';
+      html+='<div class="fp-name">'+pet.name+'</div>';
+      html+='<div class="fp-rarity" style="color:'+rc4.color+'">'+rc4.label+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+
+  wrap.innerHTML=html;
+}
+
+// Event delegation for fusion
+document.addEventListener('click',function(e){
+  var d=e.target;
+  while(d&&d!==document){
+    if(d.dataset&&d.dataset.fusionPet!==undefined){
+      if(!d.classList.contains('disabled'))addToFusionSlot(parseFloat(d.dataset.fusionPet));
+      return;
+    }
+    if(d.dataset&&d.dataset.fusionSlot!==undefined){
+      removeFromFusionSlot(parseInt(d.dataset.fusionSlot));
+      return;
+    }
+    if(d.dataset&&d.dataset.fusionRarity!==undefined){
+      fusionRarityFilter=d.dataset.fusionRarity;
+      renderFusion();
+      return;
+    }
+    d=d.parentNode;
+  }
+});
+var ACHIEVEMENTS=[
+  // HATCHING
+  {id:'first_hatch',cat:'Collection',icon:'🥚',name:'First Hatch',desc:'Hatch your first Egg',check:function(){return G.stats.eggsHatched>=1;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,1),max:1};}},
+  {id:'cracked_shell',cat:'Collection',icon:'🥚',name:'Cracked Shell',desc:'Hatch 5 Eggs',check:function(){return G.stats.eggsHatched>=5;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,5),max:5};}},
+  {id:'egg_addict',cat:'Collection',icon:'🥚',name:'Egg Addict',desc:'Hatch 25 Eggs',check:function(){return G.stats.eggsHatched>=25;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,25),max:25};}},
+  {id:'hatchling_expert',cat:'Collection',icon:'🥚',name:'Hatchling Expert',desc:'Hatch 50 Eggs',check:function(){return G.stats.eggsHatched>=50;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,50),max:50};}},
+  {id:'egg_machine',cat:'Collection',icon:'🥚',name:'Egg Machine',desc:'Hatch 100 Eggs',check:function(){return G.stats.eggsHatched>=100;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,100),max:100};}},
+  {id:'breeder',cat:'Collection',icon:'🥚',name:'Breeder',desc:'Hatch 250 Eggs',check:function(){return G.stats.eggsHatched>=250;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,250),max:250};}},
+  {id:'pet_factory',cat:'Collection',icon:'🥚',name:'Pet Factory',desc:'Hatch 500 Eggs',check:function(){return G.stats.eggsHatched>=500;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,500),max:500};}},
+  {id:'hatch_master',cat:'Collection',icon:'🥚',name:'Hatch Master',desc:'Hatch 1,000 Eggs',check:function(){return G.stats.eggsHatched>=1000;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,1000),max:1000};}},
+  {id:'egg_tycoon',cat:'Collection',icon:'🥚',name:'Egg Tycoon',desc:'Hatch 5,000 Eggs',check:function(){return G.stats.eggsHatched>=5000;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,5000),max:5000};}},
+  {id:'infinite_incubator',cat:'Collection',icon:'🥚',name:'Infinite Incubator',desc:'Hatch 10,000 Eggs',check:function(){return G.stats.eggsHatched>=10000;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,10000),max:10000};}},
+
+  // PET COLLECTION
+  {id:'first_friend',cat:'Collection',icon:'🐾',name:'First Friend',desc:'Obtain your first Pet',check:function(){return G.stats.totalPetsCollected>=1;},progress:function(){return {cur:Math.min(G.stats.totalPetsCollected,1),max:1};}},
+  {id:'small_collection',cat:'Collection',icon:'🐾',name:'Small Collection',desc:'Own 10 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=10;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,10),max:10};}},
+  {id:'growing_zoo',cat:'Collection',icon:'🐾',name:'Growing Zoo',desc:'Own 25 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=25;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,25),max:25};}},
+  {id:'pet_enthusiast',cat:'Collection',icon:'🐾',name:'Pet Enthusiast',desc:'Own 50 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=50;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,50),max:50};}},
+  {id:'collector',cat:'Collection',icon:'🐾',name:'Collector',desc:'Own 75 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=75;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,75),max:75};}},
+  {id:'pet_master',cat:'Collection',icon:'🏆',name:'Pet Master',desc:'Own 100 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=100;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,100),max:100};}},
+
+  // RARITY
+  {id:'uncommon_find',cat:'Collection',icon:'🟢',name:'Uncommon Find',desc:'Hatch your first Uncommon Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='uncommon';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='uncommon';});return {cur:f?1:0,max:1};}},
+  {id:'rare_discovery',cat:'Collection',icon:'🔵',name:'Rare Discovery',desc:'Hatch your first Rare Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='rare';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='rare';});return {cur:f?1:0,max:1};}},
+  {id:'epic_encounter',cat:'Collection',icon:'🟣',name:'Epic Encounter',desc:'Hatch your first Epic Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='epic';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='epic';});return {cur:f?1:0,max:1};}},
+  {id:'legendary_moment',cat:'Collection',icon:'🟠',name:'Legendary Moment',desc:'Hatch your first Legendary Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='legendary';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='legendary';});return {cur:f?1:0,max:1};}},
+  {id:'mythical_being',cat:'Collection',icon:'🔴',name:'Mythical Being',desc:'Hatch your first Mythical Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='mythical';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='mythical';});return {cur:f?1:0,max:1};}},
+  {id:'cosmic_event',cat:'Collection',icon:'🌌',name:'Cosmic Event',desc:'Hatch your first Cosmic Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='cosmic';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='cosmic';});return {cur:f?1:0,max:1};}},
+
+  // EGG WORLDS
+  {id:'welcome_home',cat:'Progression',icon:'🥚',name:'Welcome Home',desc:'Unlock Starter Egg',check:function(){return true;},progress:function(){return {cur:1,max:1};}},
+  {id:'into_the_woods',cat:'Progression',icon:'🌿',name:'Into the Woods',desc:'Unlock Forest Egg',check:function(){return G.eggsHatched&&G.eggsHatched['starter'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['starter'])?1:0,max:1};}},
+  {id:'mountain_explorer',cat:'Progression',icon:'⛰️',name:'Mountain Explorer',desc:'Unlock Mountain Egg',check:function(){return G.eggsHatched&&G.eggsHatched['forest'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['forest'])?1:0,max:1};}},
+  {id:'desert_wanderer',cat:'Progression',icon:'🏜️',name:'Desert Wanderer',desc:'Unlock Desert Egg',check:function(){return G.eggsHatched&&G.eggsHatched['mountain'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['mountain'])?1:0,max:1};}},
+  {id:'ocean_traveler',cat:'Progression',icon:'🌊',name:'Ocean Traveler',desc:'Unlock Ocean Egg',check:function(){return G.eggsHatched&&G.eggsHatched['desert'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['desert'])?1:0,max:1};}},
+  {id:'cosmic_explorer',cat:'Progression',icon:'🌌',name:'Cosmic Explorer',desc:'Unlock Cosmic Egg',check:function(){return G.eggsHatched&&G.eggsHatched['celestial'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['celestial'])?1:0,max:1};}},
+
+  // SHELLS
+  {id:'first_shell',cat:'Gameplay',icon:'🐚',name:'First Shell',desc:'Obtain your first Shell',check:function(){return G.stats.totalShellsCollected>=1;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1),max:1};}},
+  {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Shell Collector',desc:'Collect 1,000 Shells',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
+  {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
+  {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
+  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Rare Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.rare||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.rare)||0,1),max:1};}},
+  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Legendary Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.legendary||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.legendary)||0,1),max:1};}},
+  {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+
+  // BUILDINGS
+  {id:'entrepreneur',cat:'Progression',icon:'🏗️',name:'Entrepreneur',desc:'Buy your first Building',check:function(){return G.stats.totalBuildingsPurchased>=1;},progress:function(){return {cur:Math.min(G.stats.totalBuildingsPurchased,1),max:1};}},
+  {id:'small_operation',cat:'Progression',icon:'🏗️',name:'Small Operation',desc:'Own 25 Buildings total',check:function(){return G.owned.reduce(function(a,b){return a+b;},0)>=25;},progress:function(){var t=G.owned.reduce(function(a,b){return a+b;},0);return {cur:Math.min(t,25),max:25};}},
+  {id:'growing_business',cat:'Progression',icon:'🏗️',name:'Growing Business',desc:'Own 100 Buildings total',check:function(){return G.owned.reduce(function(a,b){return a+b;},0)>=100;},progress:function(){var t=G.owned.reduce(function(a,b){return a+b;},0);return {cur:Math.min(t,100),max:100};}},
+  {id:'economic_powerhouse',cat:'Progression',icon:'🏗️',name:'Economic Powerhouse',desc:'Own 1,000 Buildings total',check:function(){return G.owned.reduce(function(a,b){return a+b;},0)>=1000;},progress:function(){var t=G.owned.reduce(function(a,b){return a+b;},0);return {cur:Math.min(t,1000),max:1000};}},
+
+  // EPS MILESTONES
+  {id:'first_production',cat:'Progression',icon:'⚡',name:'First Production',desc:'Reach 1 EPS',check:function(){return G.stats.highestEpsReached>=1;},progress:function(){return {cur:G.stats.highestEpsReached>=1?1:0,max:1};}},
+  {id:'productive',cat:'Progression',icon:'⚡',name:'Productive',desc:'Reach 100 EPS',check:function(){return G.stats.highestEpsReached>=100;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,100),max:100};}},
+  {id:'industrial',cat:'Progression',icon:'⚡',name:'Industrial',desc:'Reach 1,000 EPS',check:function(){return G.stats.highestEpsReached>=1000;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1000),max:1000};}},
+  {id:'mass_producer',cat:'Progression',icon:'⚡',name:'Mass Producer',desc:'Reach 1 Million EPS',check:function(){return G.stats.highestEpsReached>=1e6;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1e6),max:1e6};}},
+
+  // COIN MILESTONES
+  {id:'millionaire',cat:'Progression',icon:'🪙',name:'Millionaire',desc:'Earn 1 Million Egg Coins total',check:function(){return G.stats.totalCoinsEarned>=1e6;},progress:function(){return {cur:Math.min(G.stats.totalCoinsEarned,1e6),max:1e6};}},
+  {id:'billionaire',cat:'Progression',icon:'🪙',name:'Billionaire',desc:'Earn 1 Billion Egg Coins total',check:function(){return G.stats.totalCoinsEarned>=1e9;},progress:function(){return {cur:Math.min(G.stats.totalCoinsEarned,1e9),max:1e9};}},
+  {id:'trillionaire',cat:'Progression',icon:'🪙',name:'Trillionaire',desc:'Earn 1 Trillion Egg Coins total',check:function(){return G.stats.totalCoinsEarned>=1e12;},progress:function(){return {cur:Math.min(G.stats.totalCoinsEarned,1e12),max:1e12};}},
+
+  // CLICKING
+  {id:'first_tap',cat:'Gameplay',icon:'👆',name:'First Tap',desc:'Click the Egg once',check:function(){return G.stats.totalClicks>=1;},progress:function(){return {cur:Math.min(G.stats.totalClicks,1),max:1};}},
+  {id:'busy_finger',cat:'Gameplay',icon:'👆',name:'Busy Finger',desc:'Click 100 times',check:function(){return G.stats.totalClicks>=100;},progress:function(){return {cur:Math.min(G.stats.totalClicks,100),max:100};}},
+  {id:'click_apprentice',cat:'Gameplay',icon:'👆',name:'Click Apprentice',desc:'Click 1,000 times',check:function(){return G.stats.totalClicks>=1000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,1000),max:1000};}},
+  {id:'click_expert',cat:'Gameplay',icon:'👆',name:'Click Expert',desc:'Click 10,000 times',check:function(){return G.stats.totalClicks>=10000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,10000),max:10000};}},
+  {id:'click_master',cat:'Gameplay',icon:'👆',name:'Click Master',desc:'Click 100,000 times',check:function(){return G.stats.totalClicks>=100000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,100000),max:100000};}},
+  {id:'click_monster',cat:'Gameplay',icon:'👆',name:'Click Monster',desc:'Click 1,000,000 times',check:function(){return G.stats.totalClicks>=1000000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,1000000),max:1000000};}},
+
+  // UPGRADES
+  {id:'first_upgrade',cat:'Progression',icon:'⚡',name:'First Upgrade',desc:'Buy your first Upgrade',check:function(){return G.stats.totalUpgradesPurchased>=1;},progress:function(){return {cur:Math.min(G.stats.totalUpgradesPurchased,1),max:1};}},
+  {id:'fully_optimized',cat:'Progression',icon:'⚡',name:'Fully Optimized',desc:'Max all Upgrade Categories',check:function(){return Object.keys(G.ulvl).every(function(k){return G.ulvl[k]>=5;});},progress:function(){var total=Object.keys(G.ulvl).length*5;var cur=Object.keys(G.ulvl).reduce(function(s,k){return s+G.ulvl[k];},0);return {cur:cur,max:total};}},
+
+  // PET SLOTS
+  {id:'second_companion',cat:'Progression',icon:'🐾',name:'Second Companion',desc:'Unlock Pet Slot 2',check:function(){return G.petSlots>=2;},progress:function(){return {cur:Math.min(G.petSlots,2),max:2};}},
+  {id:'full_squad',cat:'Progression',icon:'🐾',name:'Full Squad',desc:'Unlock all 5 Pet Slots',check:function(){return G.petSlots>=5;},progress:function(){return {cur:G.petSlots,max:5};}},
+
+  // TIME
+  {id:'first_hour',cat:'Gameplay',icon:'⏱️',name:'First Hour',desc:'Play for 1 hour total',check:function(){return G.stats.totalTimePlayed>=3600;},progress:function(){return {cur:Math.min(G.stats.totalTimePlayed,3600),max:3600};}},
+  {id:'dedicated_player',cat:'Gameplay',icon:'⏱️',name:'Dedicated Player',desc:'Play for 10 hours total',check:function(){return G.stats.totalTimePlayed>=36000;},progress:function(){return {cur:Math.min(G.stats.totalTimePlayed,36000),max:36000};}},
+  {id:'long_nap',cat:'Gameplay',icon:'😴',name:'Long Nap',desc:'Claim an 8-hour offline reward',check:function(){return G.stats.offlineRewardsClaimed>=1;},progress:function(){return {cur:Math.min(G.stats.offlineRewardsClaimed,1),max:1};}},
+
+  // SECRET
+  {id:'cosmic_destiny',cat:'Secret',icon:'🌌',name:'Cosmic Destiny',desc:'Hatch a Cosmic Pet from a Cosmic Egg',check:function(){return G.stats.cosmicPetsCreated>=1;},progress:function(){return {cur:Math.min(G.stats.cosmicPetsCreated,1),max:1};}},
+  {id:'tier5_jackpot',cat:'Secret',icon:'✨',name:'Tier 5 Jackpot',desc:'Hatch a pet with a Tier 5 Ability',check:function(){return G.stats.tier5AbilitiesHatched>=1;},progress:function(){return {cur:Math.min(G.stats.tier5AbilitiesHatched,1),max:1};}},
+  {id:'pure_luck',cat:'Secret',icon:'🍀',name:'Pure Luck',desc:'Obtain a Cosmic Shell from a click',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+];
+
+// Achievement state
+if(!G.achievements)G.achievements={unlocked:{},claimed:{}};
+
+function checkAchievements(){
+  var newlyUnlocked=[];
+  ACHIEVEMENTS.forEach(function(a){
+    if(G.achievements.unlocked[a.id])return;
+    try{if(a.check()){G.achievements.unlocked[a.id]=true;newlyUnlocked.push(a);}}catch(e){}
+  });
+  if(newlyUnlocked.length>0){
+    G.stats.achievementsCompleted=(G.stats.achievementsCompleted||0)+newlyUnlocked.length;
+    showAchievementPopups(newlyUnlocked);
+    if(document.getElementById('tab-more').style.display==='block')renderAchievements();
+  }
+}
+
+var achPopupQueue=[];
+var achPopupShowing=false;
+function showAchievementPopups(list){
+  list.forEach(function(a){achPopupQueue.push(a);});
+  if(!achPopupShowing)nextAchievementPopup();
+}
+function nextAchievementPopup(){
+  if(achPopupQueue.length===0){achPopupShowing=false;return;}
+  achPopupShowing=true;
+  var a=achPopupQueue.shift();
+  var pop=document.createElement('div');pop.className='ach-popup';
+  pop.innerHTML='<div class="ach-popup-icon">'+a.icon+'</div><div class="ach-popup-text"><div class="ach-popup-title">🏆 Achievement Unlocked!</div><div class="ach-popup-name">'+a.name+'</div></div>';
+  document.body.appendChild(pop);
+  setTimeout(function(){
+    if(pop.parentNode)pop.parentNode.removeChild(pop);
+    setTimeout(nextAchievementPopup,200);
+  },3000);
+}
+
+var achCatFilter='All';
+var achStatusFilter='all';
+function renderAchievements(){
+  var wrap=document.getElementById('ach-wrap');if(!wrap)return;
+  var total=ACHIEVEMENTS.length;
+  var unlocked=ACHIEVEMENTS.filter(function(a){return G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];}).length;
+  var pct=total>0?Math.floor(unlocked/total*100):0;
+
+  var html='<div class="ach-header">';
+  html+='<div class="ach-overall"><span class="ach-overall-pct">'+pct+'%</span><span class="ach-overall-count">'+unlocked+' / '+total+' Unlocked</span></div>';
+  html+='<div class="ach-progress-bar"><div class="ach-progress-fill" style="width:'+pct+'%"></div></div>';
+  html+='</div>';
+
+  // Category tabs
+  var cats=['All','Collection','Progression','Gameplay','Secret'];
+  html+='<div class="ach-cat-tabs">';
+  cats.forEach(function(c){html+='<div class="ach-cat-tab'+(achCatFilter===c?' active':'')+'" onclick="setAchCat(\''+c+'\')">'+c+'</div>';});
+  html+='</div>';
+
+  // Status filter
+  html+='<div class="ach-filter-row">';
+  [['all','All'],['inprogress','In Progress'],['unlocked','Completed'],['locked','Locked']].forEach(function(f){
+    html+='<div class="ach-filter-btn'+(achStatusFilter===f[0]?' active':'')+'" onclick="setAchFilter(\''+f[0]+'\')">'+f[1]+'</div>';
+  });
+  html+='</div>';
+
+  // Filter achievements
+  var filtered=ACHIEVEMENTS.filter(function(a){
+    if(achCatFilter!=='All'&&a.cat!==achCatFilter)return false;
+    var isUnlocked=G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];
+    var isClaimed=G.achievements&&G.achievements.claimed&&G.achievements.claimed[a.id];
+    if(achStatusFilter==='inprogress'&&(isUnlocked||!getAchProgress(a)))return false;
+    if(achStatusFilter==='unlocked'&&!isUnlocked)return false;
+    if(achStatusFilter==='locked'&&isUnlocked)return false;
+    return true;
+  });
+
+  filtered.forEach(function(a){
+    var isUnlocked=G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];
+    var isClaimed=G.achievements&&G.achievements.claimed&&G.achievements.claimed[a.id];
+    var isSecret=a.cat==='Secret';
+    var prog=getAchProgress(a);
+    var pct2=prog.max>0?Math.min(100,Math.floor(prog.cur/prog.max*100)):0;
+
+    html+='<div class="ach-card'+(isUnlocked?' unlocked':'')+(isUnlocked&&!isClaimed?' claimable':'')+'">';
+    html+='<div class="ach-icon">'+(isSecret&&!isUnlocked?'❓':a.icon)+'</div>';
+    html+='<div class="ach-info">';
+    html+='<div class="ach-name">'+(isSecret&&!isUnlocked?'???':a.name)+'</div>';
+    html+='<div class="ach-desc">'+(isSecret&&!isUnlocked?'Hidden Achievement':a.desc)+'</div>';
+    if(!isSecret||isUnlocked){
+      html+='<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct2+'%"></div></div>';
+      html+='<div class="ach-prog-label">'+fmtShort(prog.cur)+' / '+fmtShort(prog.max)+'</div>';
+    }
+    html+='</div>';
+    html+='<div class="ach-right">';
+    if(isUnlocked&&!isClaimed){
+      html+='<button class="ach-claim-btn" data-claim-ach="'+a.id+'">CLAIM!</button>';
+    } else if(isClaimed){
+      html+='<div class="ach-done">✅</div>';
+    }
+    html+='</div></div>';
+  });
+
+  if(filtered.length===0)html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No achievements in this filter.</div>';
+
+  wrap.innerHTML=html;
+}
+
+function getAchProgress(a){
+  try{return a.progress();}catch(e){return {cur:0,max:1};}
+}
+
+function setAchCat(cat){achCatFilter=cat;renderAchievements();}
+function setAchFilter(f){achStatusFilter=f;renderAchievements();}
+
+function claimAchievement(id){
+  if(!G.achievements)G.achievements={unlocked:{},claimed:{}};
+  if(!G.achievements.unlocked[id]||G.achievements.claimed[id])return;
+  G.achievements.claimed[id]=true;
+  renderAchievements();
+}
+
+// Event delegation för achievements
+document.addEventListener('click',function(e){
+  var d=e.target;
+  while(d&&d!==document){
+    if(d.dataset&&d.dataset.claimAch){claimAchievement(d.dataset.claimAch);return;}
+    d=d.parentNode;
+  }
+});
+
+// Kör achievement-check var 2:a sekund
+setInterval(checkAchievements,2000);
+var PETDEX_WORLDS=[
+  {id:'starter',  name:'Starter',   icon:'🥚'},
+  {id:'forest',   name:'Forest',    icon:'🌿'},
+  {id:'mountain', name:'Mountain',  icon:'⛰️'},
+  {id:'desert',   name:'Desert',    icon:'🏜️'},
+  {id:'ocean',    name:'Ocean',     icon:'🌊'},
+  {id:'jungle',   name:'Jungle',    icon:'🌴'},
+  {id:'arctic',   name:'Arctic',    icon:'❄️'},
+  {id:'volcano',  name:'Volcano',   icon:'🌋'},
+  {id:'mystic',   name:'Mystic',    icon:'✨'},
+  {id:'celestial',name:'Celestial', icon:'🌙'},
+  {id:'cosmic',   name:'Cosmic',    icon:'🌌'},
+];
+
+// Bygg en platt lista av alla möjliga petdex-entries (species+rarity per värld)
+function buildPetdexEntries(){
+  var entries=[];
+  PETDEX_WORLDS.forEach(function(world){
+    var pool=PET_POOL[world.id];
+    if(!pool)return;
+    Object.keys(pool).forEach(function(rarity){
+      pool[rarity].forEach(function(species){
+        entries.push({
+          key:species.name+'_'+rarity+'_'+world.id,
+          name:species.name,
+          e:species.e,
+          rarity:rarity,
+          world:world.id,
+        });
+      });
+    });
+  });
+  return entries;
+}
+
+function isPetDiscovered(name,rarity){
+  if(!G._discoveredPets)return false;
+  return !!G._discoveredPets[name+'_'+rarity];
+}
+
+function getTotalPetdexCount(){
+  var entries=buildPetdexEntries();
+  return {total:entries.length, found:entries.filter(function(e){return isPetDiscovered(e.name,e.rarity);}).length};
+}
+
+function getWorldPetdexCount(worldId){
+  var entries=buildPetdexEntries().filter(function(e){return e.world===worldId;});
+  return {total:entries.length, found:entries.filter(function(e){return isPetDiscovered(e.name,e.rarity);}).length};
+}
+
+var petdexActiveWorld='starter';
+function renderPetdex(){
+  var wrap=document.getElementById('petdex-wrap');if(!wrap)return;
+  var overall=getTotalPetdexCount();
+  var pct=overall.total>0?Math.floor(overall.found/overall.total*100):0;
+
+  var html='';
+  // Header
+  html+='<div class="pdx-header">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:center">';
+  html+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.9rem;">📖 Petdex</div>';
+  html+='<div style="font-size:0.7rem;color:var(--gold);font-weight:800;">'+overall.found+' / '+overall.total+' Found</div>';
+  html+='</div>';
+  html+='<div class="pdx-progress-bar"><div class="pdx-progress-fill" style="width:'+pct+'%"></div></div>';
+  html+='<div class="pdx-progress-label"><span>'+pct+'% Complete</span><span style="color:rgba(255,255,255,0.3)">'+overall.total+' total pets</span></div>';
+  html+='</div>';
+
+  // World tabs
+  html+='<div class="pdx-world-tabs">';
+  PETDEX_WORLDS.forEach(function(w){
+    var wc=getWorldPetdexCount(w.id);
+    var wpct=wc.total>0?Math.floor(wc.found/wc.total*100):0;
+    html+='<div class="pdx-world-tab'+(petdexActiveWorld===w.id?' active':'')+'" onclick="setPetdexWorld(\''+w.id+'\')">';
+    html+='<div class="pwt-icon">'+w.icon+'</div>';
+    html+='<div class="pwt-name">'+w.name+'</div>';
+    html+='<div class="pwt-prog">'+wc.found+'/'+wc.total+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Active world grid
+  var worldInfo=PETDEX_WORLDS.find(function(w){return w.id===petdexActiveWorld;});
+  var worldEntries=buildPetdexEntries().filter(function(e){return e.world===petdexActiveWorld;});
+  var wc=getWorldPetdexCount(petdexActiveWorld);
+
+  html+='<div class="pdx-world-header">';
+  html+='<div class="pdx-world-title">'+(worldInfo?worldInfo.icon+' '+worldInfo.name+' Egg':'')+'</div>';
+  html+='<div class="pdx-world-count">'+wc.found+' / '+wc.total+'</div>';
+  html+='</div>';
+
+  html+='<div class="pdx-grid">';
+  worldEntries.forEach(function(entry){
+    var discovered=isPetDiscovered(entry.name,entry.rarity);
+    var rc=RARITY_CONFIG[entry.rarity]||RARITY_CONFIG.common;
+    html+='<div class="pdx-card'+(discovered?' discovered':' undiscovered')+'">';
+    if(discovered)html+='<div class="pdx-discovered-badge">✓</div>';
+    html+='<div class="pdx-card-icon">'+entry.e+'</div>';
+    html+='<div class="pdx-card-name">'+(discovered?entry.name:'???')+'</div>';
+    html+='<div class="pdx-card-rarity" style="color:'+rc.color+'">'+(discovered?rc.icon+' '+rc.label:'🔒')+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  wrap.innerHTML=html;
+}
+
+function setPetdexWorld(worldId){
+  petdexActiveWorld=worldId;
+  renderPetdex();
+}
+function updateHUD(){
+  var epsVal=eps();
+  var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmt(G.coins);
+  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsVal);
+  var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
+  var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsVal);
+  // Pet bonus display
+  var b=getActiveBonuses();
+  var parts=[];
+  if(b.coinGain>0)parts.push('+'+b.coinGain+'% coins');
+  if(b.idleGain>0)parts.push('+'+b.idleGain+'% idle');
+  if(b.clickPower>0)parts.push('+'+b.clickPower+'% click');
+  if(b.luck>0)parts.push('+'+b.luck+'% luck');
+  if(b.shellGain>0)parts.push('+'+b.shellGain+'% shells');
+  if(b.hatchSpeed>0)parts.push('-'+b.hatchSpeed+'% hatch time');
+  document.getElementById('pet-bonus-display').textContent=parts.length>0?'🐾 '+parts.join(' · '):'';
+  var crd=document.getElementById('click-rate-display');
+  if(crd)crd.textContent=clickRateDisplay>0?'👆 '+clickRateDisplay+' clicks/sec':'';
+}
+
+function showOfflineModal(ms,coins){
+  document.getElementById('ob-time').textContent='You were away for '+formatDuration(ms);
+  var r=document.getElementById('offline-rewards');r.innerHTML='';
+  [{label:'🥚 Eggs earned',val:'+'+fmt(coins)},{label:'⚡ Rate',val:fmt(eps())+'/s'},{label:'⏱️ Time',val:formatDuration(ms)}].forEach(function(row){
+    var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+row.label+'</span><span class="ob-val">'+row.val+'</span>';r.appendChild(d);
+  });
+  document.getElementById('offline-modal').classList.add('open');
+}
+
+// ============================================================
+// GAME LOOP
+// ============================================================
+var lastT=performance.now(),idleAcc=0;
+var clicksThisSecond=0,clickRateDisplay=0,clickRateTimer=0;
+function tick(now){
+  var dt=(now-lastT)/1000;lastT=now;
+  var currentEps=eps();
+  G.coins+=currentEps*dt;G.total+=currentEps*dt;
+  G.stats.totalCoinsEarned+=currentEps*dt;
+  if(currentEps>G.stats.highestEpsReached)G.stats.highestEpsReached=currentEps;
+  G.stats.totalTimePlayed+=dt;
+  var sessionLen=(Date.now()-G.stats.currentSessionStart)/1000;
+  if(sessionLen>G.stats.longestSession)G.stats.longestSession=sessionLen;
+  idleAcc+=dt;
+  clickRateTimer+=dt;
+  if(clickRateTimer>=1){
+    clickRateDisplay=clicksThisSecond;
+    if(clicksThisSecond>G.stats.highestClicksPerSecond)G.stats.highestClicksPerSecond=clicksThisSecond;
+    clicksThisSecond=0;
+    clickRateTimer=0;
+  }
+  var totalB=G.owned.reduce(function(a,b){return a+b;},0);
+  if(totalB>0){while(idleAcc>=1){idleAcc-=1;if(Math.random()<getDropChance(0.05)){dropShell();}}}
+  else{idleAcc=0;}
+  updateHUD();requestAnimationFrame(tick);
+}
+function softUpdateUpgrades(){
+  UPGRADES.forEach(function(u){
+    var d=document.querySelector('[data-upg-id="'+u.id+'"]');if(!d)return;
+    var l=G.ulvl[u.id];var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
+    d.className='upg '+(maxed?'maxed':afford?'can-buy':'poor');
+  });
+  var sd=document.querySelector('[data-upg-id="slot"]');if(!sd)return;
+  var next=null;for(var k=0;k<SLOTS.length;k++){if(G.petSlots<SLOTS[k].slot){next=SLOTS[k];break;}}
+  var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
+  sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
+}
+setInterval(function(){updateBuildingClasses();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgrades();},500);
+setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
+setInterval(saveGame,15000);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveGame();});
+
+// ============================================================
+// BOOT
+// ============================================================
+var offlineCoins=0,offlineMs=0;
+var savedData=loadGame();
+if(savedData){
+  G.coins=savedData.coins||0;G.total=savedData.total||0;G.clicks=savedData.clicks||0;
+  G.clickPower=savedData.clickPower||1;G.luck=savedData.luck||0;
+  G.craftDiscount=savedData.craftDiscount||1;
+  G.hatchDiscount=savedData.hatchDiscount||1;
+  G.offlineMult=savedData.offlineMult||0.5;
+  G.petSlots=savedData.petSlots||1;G.currentWorld=savedData.currentWorld||0;
+  G.owned=savedData.owned||new Array(20).fill(0);
+  G.ulvl=savedData.ulvl||{click:0,craft:0,hatch:0,luck:0,offline:0};
+  G.equippedPets=savedData.equippedPets||[null,null,null,null,null];
+  G.shells=savedData.shells||{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+  // Sanera null-värden till 0
+  SHELL_RARITIES.forEach(function(r){if(G.shells[r.id]===null||G.shells[r.id]===undefined)G.shells[r.id]=0;});
+  G.eggsOwned=savedData.eggsOwned||{};G.eggsHatched=savedData.eggsHatched||{};
+  G.hatchSlots=savedData.hatchSlots||[];
+  G.hatchedPets=savedData.hatchedPets||[];
+  // Ensure UIDs are numbers for comparison
+  G.hatchedPets=G.hatchedPets.map(function(p){if(!p.uid)p.uid=Date.now()+Math.random();return p;});
+  if(savedData.stats){
+    // Merga sparad stats med default (ifall nya fält lagts till)
+    Object.keys(savedData.stats).forEach(function(k){G.stats[k]=savedData.stats[k];});
+  }
+  G._discoveredPets=savedData._discoveredPets||{};
+  G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
+  G.stats.totalSessions++;
+  G.stats.currentSessionStart=Date.now();
+  UPGRADES.forEach(function(u){u.apply(G.ulvl[u.id]);});
+  if(savedData.savedAt){
+    offlineMs=Math.min(Date.now()-savedData.savedAt,8*60*60*1000);
+    if(offlineMs>30000){
+      var offlineRate=eps()*G.offlineMult;
+      offlineCoins=offlineRate*(offlineMs/1000);
+      G.coins+=offlineCoins;G.total+=offlineCoins;
+      G.stats.offlineRewardsClaimed++;
+      G.stats.totalCoinsEarned+=offlineCoins;
+    }
+  }
+}
+switchTab('buildings');
+initParticles();setWorld(G.currentWorld);
+refreshHomeButtons();
+renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+requestAnimationFrame(tick);
+if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
+</script>
+</body>
+</html>
