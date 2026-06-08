@@ -35,7 +35,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
 .pet-pos.slot1 .ppi{border-color:#f5c84288;}
 .pet-pos.locked .ppi{opacity:0.2;}
-#egg-stage{position:absolute;bottom:115px;left:50%;transform:translateX(-50%);width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;}
+#egg-stage{position:absolute;bottom:115px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;}
 #egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
 #egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
@@ -46,7 +46,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
 @keyframes homeSlideUp{0%{transform:translateY(44px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
 .home-slide-in{animation:homeSlideUp 0.34s cubic-bezier(0.22,0.61,0.36,1);}
-@keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.16);}60%{transform:translateX(-50%) scale(0.97);}100%{transform:translateX(-50%) scale(1);}}
+@keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.74);}60%{transform:translateX(-50%) scale(1.46);}100%{transform:translateX(-50%) scale(1.5);}}
 .egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
 #egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes shadowAnim{0%,100%{width:80px;height:16px;opacity:0.9;}50%{width:54px;height:10px;opacity:0.4;}}
