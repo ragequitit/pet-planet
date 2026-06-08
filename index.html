@@ -35,7 +35,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
 .pet-pos.slot1 .ppi{border-color:#f5c84288;}
 .pet-pos.locked .ppi{opacity:0.2;}
-#egg-stage{position:absolute;bottom:115px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;}
+#egg-stage{position:absolute;bottom:100px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
 #egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
@@ -1104,8 +1104,7 @@ function initParticles(){
 // ============================================================
 // EGG CLICK
 // ============================================================
-document.getElementById('egg-stage').onclick=function(e){
-  e.stopPropagation();
+function eggTap(clientX,clientY){
   var clickVal=G.clickPower*getClickMultiplier();
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
@@ -1113,16 +1112,32 @@ document.getElementById('egg-stage').onclick=function(e){
   if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
   G.stats.totalCoinsEarned+=clickVal;
   if(Math.random()<getDropChance(0.15))dropShell();
+  var stage=document.getElementById('egg-stage');if(!stage)return;
+  var r=stage.getBoundingClientRect();
   var pop=document.createElement('div');pop.className='click-pop';
   pop.textContent='+'+fmt(clickVal);
-  var r=this.getBoundingClientRect();
-  pop.style.left=(e.clientX-r.left-20)+'px';pop.style.top=(e.clientY-r.top-20)+'px';
-  this.appendChild(pop);
+  pop.style.left=((clientX!=null?clientX-r.left:r.width/2)-20)+'px';
+  pop.style.top=((clientY!=null?clientY-r.top:r.height/2)-20)+'px';
+  stage.appendChild(pop);
   setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},800);
   var img=document.getElementById('egg-img');
   img.style.animation='none';void img.offsetWidth;
   img.style.animation='eggPop 0.08s ease forwards, float 3s ease-in-out 0.08s infinite';
-};
+}
+(function(){
+  var stage=document.getElementById('egg-stage');if(!stage)return;
+  // Touch: hantera varje finger separat (tvåfinger-tapp = två träffar) och
+  // blockera syntetiskt klick + dubbeltryck-zoom genom preventDefault.
+  stage.addEventListener('touchstart',function(e){
+    e.preventDefault();
+    for(var i=0;i<e.changedTouches.length;i++){
+      var t=e.changedTouches[i];
+      eggTap(t.clientX,t.clientY);
+    }
+  },{passive:false});
+  // Mus (desktop): touchstart's preventDefault hindrar dubbelräkning på touch.
+  stage.addEventListener('click',function(e){e.stopPropagation();eggTap(e.clientX,e.clientY);});
+})();
 
 // ============================================================
 // PET SLOT POSITIONS (scene)
