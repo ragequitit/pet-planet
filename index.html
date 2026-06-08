@@ -424,6 +424,17 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-soon-icon{font-size:2.4rem;margin-bottom:10px;}
 .prof-soon-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);margin-bottom:6px;}
 .prof-soon-body{font-size:0.72rem;line-height:1.5;}
+.pst-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:13px;margin-bottom:10px;overflow:hidden;}
+.pst-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid rgba(58,92,184,0.35);border-left:4px solid var(--cat,#f5c842);background:rgba(255,255,255,0.025);}
+.pst-head-icon{font-size:1rem;}
+.pst-head-title{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;flex:1;}
+.pst-soon-tag{font-size:0.48rem;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.22);border-radius:5px;padding:2px 6px;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+.pst-rows{padding:6px 12px 9px;}
+.pst-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:4px 0;font-size:0.7rem;}
+.pst-row+.pst-row{border-top:1px solid rgba(58,92,184,0.18);}
+.pst-row-lbl{color:rgba(255,255,255,0.55);}
+.pst-row-val{color:#fff;font-weight:800;text-align:right;}
+.pst-card.soon .pst-rows{opacity:0.6;}
 </style>
 </head>
 <body>
@@ -1619,7 +1630,7 @@ function renderProfile(){
     h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Account Completion</span><span class="prof-compl-pct">'+completion+'%</span></div>';
     h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+completion+'%"></div></div></div>';
   } else if(profileSubTab==='stats'){
-    h+=profSoon('📊','Stats Page','Färgkodade kort för Economy, Hatching, Pets, Fusion med mera — byggs i nästa steg och fylls med riktig data.');
+    h+=renderProfileStats();
   } else if(profileSubTab==='customize'){
     h+=profSoon('🎨','Customize','Favorit-pet, profilram, bakgrund, namnfärg och effekter. Låses upp när cosmetics-systemet byggs.');
   } else if(profileSubTab==='titles'){
@@ -1629,6 +1640,89 @@ function renderProfile(){
   }
   h+='</div>';
   body.innerHTML=h;
+}
+function profDur(s){if(s===null||s===undefined)return '—';s=Math.floor(s);if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m '+(s%60)+'s';if(s<86400)return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m';return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';}
+function profRarity(id){if(!id)return '<span style="color:rgba(255,255,255,0.35)">—</span>';var rc=RARITY_CONFIG[id];return rc?'<span style="color:'+rc.color+'">'+rc.label+'</span>':profEsc(String(id));}
+function profWorldName(id){if(!id)return '—';var e=EGG_SHOP.find(function(x){return x.id===id;});return e?profEsc(e.name):profEsc(String(id));}
+function profRarestPet(p){if(!p)return '<span style="color:rgba(255,255,255,0.35)">—</span>';var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#fff';return '<span style="color:'+col+'">'+(p.e?p.e+' ':'')+profEsc(p.name||'')+'</span>';}
+function pstCard(color,icon,title,rows,soon){
+  var h='<div class="pst-card'+(soon?' soon':'')+'" style="--cat:'+color+'">';
+  h+='<div class="pst-head"><span class="pst-head-icon">'+icon+'</span><span class="pst-head-title">'+title+'</span>'+(soon?'<span class="pst-soon-tag">Not built yet</span>':'')+'</div>';
+  h+='<div class="pst-rows">';
+  rows.forEach(function(r){h+='<div class="pst-row"><span class="pst-row-lbl">'+r[0]+'</span><span class="pst-row-val">'+r[1]+'</span></div>';});
+  h+='</div></div>';
+  return h;
+}
+function renderProfileStats(){
+  var s=G.stats;
+  var achTotal=ACHIEVEMENTS.length;
+  var achUnlocked=ACHIEVEMENTS.filter(function(a){return G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];}).length;
+  var achPct=achTotal>0?Math.floor(achUnlocked/achTotal*100):0;
+  var pdx=getTotalPetdexCount();
+  var h='<div class="prof-section-title">Statistics</div>';
+  h+=pstCard('#f5c842','💰','Economy',[
+    ['Coins Earned',fmtShort(s.totalCoinsEarned||0)],
+    ['Coins Spent',fmtShort(s.totalCoinsSpent||0)],
+    ['Buildings Bought',fmtShort(s.totalBuildingsPurchased||0)],
+    ['Upgrades Bought',fmtShort(s.totalUpgradesPurchased||0)],
+    ['Highest EPS',fmtShort(s.highestEpsReached||0)],
+    ['Biggest Click',fmtShort(s.biggestSingleClick||0)],
+    ['Total Clicks',fmtShort(s.totalClicks||0)],
+    ['Offline Collects',fmtShort(s.offlineRewardsClaimed||0)]
+  ],false);
+  h+=pstCard('#4caf50','🐾','Pet Stats',[
+    ['Pets Collected',fmtShort(s.totalPetsCollected||0)],
+    ['Unique Discovered',(s.uniquePetsDiscovered||0)+' / '+pdx.total],
+    ['Highest Rarity',profRarity(s.highestRarityOwned)],
+    ['Rarest Hatched',profRarestPet(s.rarestPetEverHatched)],
+    ['Perfect Pets',fmtShort(s.perfectPetsCreated||0)]
+  ],false);
+  h+=pstCard('#ff9800','🍳','Hatching',[
+    ['Eggs Hatched',fmtShort(s.eggsHatched||0)],
+    ['Most Hatched',profWorldName(s.mostHatchedWorld)],
+    ['Fastest Hatch',profDur(s.fastestHatch)],
+    ['Longest Hatch',profDur(s.longestHatch)],
+    ['Time Waited',profDur(s.totalHatchTimeWaited||0)],
+    ['T5 Abilities',fmtShort(s.tier5AbilitiesHatched||0)],
+    ['Duplicates',fmtShort(s.duplicatePetsHatched||0)]
+  ],false);
+  h+=pstCard('#ec73c8','🐚','Shard Stats',[
+    ['Shells Collected',fmtShort(s.totalShellsCollected||0)],
+    ['Shells Spent',fmtShort(s.totalShellsSpent||0)],
+    ['Highest Rarity',profRarity(s.highestRarityShellFound)],
+    ['Favorite Shell',profRarity(s.favoriteShell)]
+  ],false);
+  h+=pstCard('#26c6da','⚗️','Fusion',[
+    ['Total Fusions',fmtShort(s.totalFusions||0)],
+    ['Perfect Fusions',fmtShort(s.perfectFusions||0)],
+    ['Pets Consumed',fmtShort(s.petsConsumedInFusion||0)],
+    ['Highest Rarity',profRarity(s.highestFusionRarity)],
+    ['Cosmic Created',fmtShort(s.cosmicPetsCreated||0)]
+  ],false);
+  h+=pstCard('#b388ff','🧬','Mutation',[
+    ['Pets Mutated',fmtShort(s.totalPetsMutated||0)],
+    ['Abilities Extracted',fmtShort(s.abilitiesExtracted||0)],
+    ['Cores Created',fmtShort(s.mutationCoresCreated||0)],
+    ['Cores Used',fmtShort(s.mutationCoresUsed||0)]
+  ],true);
+  h+=pstCard('#5c8aff','🗺️','Adventures',[
+    ['Completed',fmtShort(s.adventuresCompleted||0)],
+    ['Hours Logged',fmtShort(s.adventureHoursLogged||0)],
+    ['Pets Found',fmtShort(s.adventurePetsFound||0)],
+    ['Items Found',fmtShort(s.discoveryItemsFound||0)],
+    ['Special',fmtShort(s.specialAdventures||0)]
+  ],true);
+  h+=pstCard('#ef5350','🏆','Achievements',[
+    ['Unlocked',achUnlocked+' / '+achTotal],
+    ['Secrets Found',fmtShort(s.secretAchievementsFound||0)],
+    ['Completion',achPct+'%']
+  ],false);
+  h+=pstCard('#ffb74d','⭐','Ascension',[
+    ['Ascensions',fmtShort(s.ascensionsCompleted||0)],
+    ['Total Currency',fmtShort(s.totalAscensionCurrency||0)],
+    ['Highest Bonus',(s.highestAscensionBonus||0)+'%']
+  ],true);
+  return h;
 }
 
 // Hemskärmens flytande knappar (nav rebuild — step 3)
