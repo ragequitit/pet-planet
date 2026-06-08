@@ -151,7 +151,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .nav-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
 .nav-btn .ni{font-size:3rem;line-height:1;}
 .nav-btn .ni-img{width:50px;height:50px;object-fit:contain;display:block;}
-.nav-btn span:last-child{font-size:0.68rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
+#nb-pets .ni-img{width:58px;height:58px;}
+.nav-btn span:last-child{font-size:0.74rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
 .nav-btn.active span:last-child{color:#ffe08a;}
 .pets-subnav{display:flex;gap:6px;margin-bottom:10px;}
 .psub-btn{flex:1;padding:8px 4px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
@@ -332,6 +333,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .tb-left{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 6px;height:100%;flex:1;min-width:0;}
 .tb-coins-row{display:flex;align-items:center;gap:5px;}
 .tb-coin-icon{font-size:1rem;line-height:1;}
+.tb-coin-img{width:20px;height:20px;object-fit:contain;display:block;}
+.coin-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.15em;display:inline-block;}
 .tb-coins{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;line-height:1;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
 .tb-eps-row{display:flex;align-items:center;gap:5px;}
 .tb-eps{font-size:0.6rem;font-weight:800;color:#9be15d;white-space:nowrap;letter-spacing:0.3px;}
@@ -381,7 +384,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="app">
   <div id="topbar">
     <div class="tb-left">
-      <div class="tb-coins-row"><span class="tb-coin-icon">🥚</span><span class="tb-coins" id="tb-coins">0</span></div>
+      <div class="tb-coins-row"><span class="tb-coin-icon"><img class="tb-coin-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/egg-coin.png" alt="" onerror="this.parentNode.textContent='🥚'"></span><span class="tb-coins" id="tb-coins">0</span></div>
       <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">EPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
     </div>
     <div class="tb-right">
@@ -400,7 +403,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon">🎁</span><span class="sb-label">Daily</span></div>
       </div>
       <div class="side-btns" id="right-btns">
-        <div class="side-btn" id="inv-btn" onclick="switchTab('inventory')"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
+        <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon">🎉</span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -417,7 +420,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     </div>
     <div id="coin-display">
       <div id="pet-bonus-display"></div>
-      <div id="click-rate-display" style="font-size:0.68rem;font-weight:700;color:rgba(255,255,255,0.35)"></div>
     </div>
     <div id="home-sheet">
       <div id="sheet-handle" onclick="toggleHomeSheet()">
@@ -460,7 +462,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
     <button class="nav-btn" id="nb-hatch" onclick="navTab('hatch')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-hatchery.png" alt="" onerror="this.parentNode.textContent='🐣'"></span><span>Hatchery</span></button>
     <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Shop</span></button>
-    <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventures</span></button>
+    <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventure</span></button>
     <button class="nav-btn" id="nb-quests" onclick="navTab('quests')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span>Quests</span></button>
   </div>
 </div>
@@ -511,6 +513,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="modal-title">More</div>
     <div class="more-grid" id="more-grid"></div>
     <div class="more-note">Petdex och Achievements bor här. Inventory finns även som 🎒-knapp på hemskärmen — den här posten är en reservväg.</div>
+    <div id="more-dev"></div>
   </div>
 </div>
 <div id="generic-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -534,6 +537,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 //   ägg:       assets/eggs/<id>-egg.png
 // Starter behåller sina nuvarande filnamn (scene-background.png, pedestal.png, starter-egg.png).
 var ASSET_BASE='https://raw.githubusercontent.com/ragequitit/pet-planet/main';
+var COIN_IMG='<img class="coin-ic" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="🥚">';
 function worldAssets(id){return {id:id,bg:ASSET_BASE+'/assets/eggworlds/'+id+'-bg.png',egg:ASSET_BASE+'/assets/eggs/'+id+'-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/'+id+'-pedestal.png'};}
 var EGG_WORLDS=[
   {id:'starter',bg:ASSET_BASE+'/assets/eggworlds/scene-background.png',egg:ASSET_BASE+'/assets/eggs/starter-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/pedestal.png'},
@@ -1109,6 +1113,7 @@ function eggTap(clientX,clientY){
   var clickVal=G.clickPower*getClickMultiplier();
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
+  clickWindowAccum++;
   G.stats.totalClicks++;
   if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
   G.stats.totalCoinsEarned+=clickVal;
@@ -1414,6 +1419,11 @@ function toggleHomeSheet(){
   }
   applyHomeCollapsed();
 }
+// 🎒-knappen växlar: öppna inventory, eller stäng det HELT (rena ägget) om det redan är öppet
+function toggleInventory(){
+  if(currentTab==='inventory'){homeCollapsed=true;switchTab('buildings');}
+  else{switchTab('inventory');}
+}
 
 // Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
 function navTab(name){
@@ -1453,6 +1463,22 @@ function openMore(){
     d.onclick=function(){closeMore();switchTab(it.tab);};
     g.appendChild(d);
   });
+  var dev=document.getElementById('more-dev');
+  if(dev){
+    var w=EGG_WORLDS[G.currentWorld];
+    var bBlue='style="flex:1;padding:8px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;"';
+    dev.innerHTML=''
+      +'<div style="font-size:0.55rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-top:16px;margin-bottom:8px;">Dev / Test — tas bort innan release</div>'
+      +'<div style="display:flex;gap:6px;margin-bottom:6px;">'
+      +'<button onclick="addTestShells()" '+bBlue+'>+300 Shells</button>'
+      +'<button onclick="addTestPets()" '+bBlue+'>+10 Pets</button>'
+      +'<button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px;">'
+      +'<button onclick="cycleWorld();closeMore();" style="flex:2;padding:8px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">🌍 '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>'
+      +'<button onclick="resetGame()" style="flex:1;padding:8px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">Reset</button>'
+      +'</div>';
+  }
   document.getElementById('more-drawer').classList.add('open');
 }
 function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
@@ -1489,12 +1515,6 @@ function openEvents(){
 // ============================================================
 function renderBuildings(){
   var bl=document.getElementById('blist');bl.innerHTML='';
-  var testRow=document.createElement('div');testRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
-  testRow.innerHTML='<button onclick="addTestShells()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+300 All</button><button onclick="addTestPets()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+10 Pets</button><button onclick="addTestCoins()" style="flex:1;padding:6px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">+1B Eggs</button><button onclick="resetGame()" style="flex:1;padding:6px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">Reset</button>';
-  bl.appendChild(testRow);
-  var worldRow=document.createElement('div');worldRow.style.cssText='display:flex;gap:6px;margin-bottom:10px;';
-  worldRow.innerHTML='<button id="world-test-btn" onclick="cycleWorld()" style="flex:1;padding:6px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.7rem;cursor:pointer;">🌍 World: '+(EGG_WORLDS[G.currentWorld]?EGG_WORLDS[G.currentWorld].id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>';
-  bl.appendChild(worldRow);
   var unlocked=numUnlocked();var show=Math.min(unlocked+2,20);
   for(var i=0;i<show;i++){
     var d=document.createElement('div');d.dataset.idx=i;
@@ -1502,7 +1522,7 @@ function renderBuildings(){
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
       var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i])+'/s':'';
-      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p)+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">🥚</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
+      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p)+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">'+COIN_IMG+'</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -1540,7 +1560,7 @@ function renderUpgrades(){
     var d=document.createElement('div');d.className='upg '+(maxed?'maxed':afford?'can-buy':'poor');
     d.dataset.upgId=u.id;
     d.setAttribute('data-upg-id',u.id);
-    d.innerHTML='<div class="upg-img">'+u.e+'</div><div style="flex:1"><div class="un">'+u.n+'</div><div class="ud">'+(maxed?'Maxed out!':u.desc(l))+'</div><div class="udots">'+dots(l,u.max)+'</div></div><div class="ur"><div class="uc" style="color:'+(maxed?'var(--gold)':afford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(maxed?'MAX':'🥚 '+fmtShort(c))+'</div></div>';
+    d.innerHTML='<div class="upg-img">'+u.e+'</div><div style="flex:1"><div class="un">'+u.n+'</div><div class="ud">'+(maxed?'Maxed out!':u.desc(l))+'</div><div class="udots">'+dots(l,u.max)+'</div></div><div class="ur"><div class="uc" style="color:'+(maxed?'var(--gold)':afford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(maxed?'MAX':COIN_IMG+' '+fmtShort(c))+'</div></div>';
     ul.appendChild(d);
   });
   var sl=document.getElementById('slist');sl.innerHTML='';
@@ -1549,7 +1569,7 @@ function renderUpgrades(){
   var sd=document.createElement('div');sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
   sd.dataset.upgId='slot';
   sd.setAttribute('data-upg-id','slot');
-  sd.innerHTML='<div class="upg-img">🐾</div><div style="flex:1"><div class="un">Pet Slots</div><div class="ud">'+(allDone?'All slots unlocked':'Unlock slot '+(G.petSlots+1))+'</div><div class="udots">'+dots(G.petSlots,5)+'</div></div><div class="ur"><div class="uc" style="color:'+(allDone?'var(--gold)':slotAfford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(allDone?'MAX':'🥚 '+fmtShort(next?next.cost:0))+'</div></div>';
+  sd.innerHTML='<div class="upg-img">🐾</div><div style="flex:1"><div class="un">Pet Slots</div><div class="ud">'+(allDone?'All slots unlocked':'Unlock slot '+(G.petSlots+1))+'</div><div class="udots">'+dots(G.petSlots,5)+'</div></div><div class="ur"><div class="uc" style="color:'+(allDone?'var(--gold)':slotAfford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(allDone?'MAX':COIN_IMG+' '+fmtShort(next?next.cost:0))+'</div></div>';
   sl.appendChild(sd);
 }
 
@@ -2472,11 +2492,10 @@ function setPetdexWorld(worldId){
   renderPetdex();
 }
 function updateHUD(){
-  var epsVal=eps();
   var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmt(G.coins);
-  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsVal);
+  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
-  var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsVal);
+  var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsDispVal);
   // Pet bonus display
   var b=getActiveBonuses();
   var parts=[];
@@ -2487,14 +2506,12 @@ function updateHUD(){
   if(b.shellGain>0)parts.push('+'+b.shellGain+'% shells');
   if(b.hatchSpeed>0)parts.push('-'+b.hatchSpeed+'% hatch time');
   document.getElementById('pet-bonus-display').textContent=parts.length>0?'🐾 '+parts.join(' · '):'';
-  var crd=document.getElementById('click-rate-display');
-  if(crd)crd.textContent=clickRateDisplay>0?'👆 '+clickRateDisplay+' clicks/sec':'';
 }
 
 function showOfflineModal(ms,coins){
   document.getElementById('ob-time').textContent='You were away for '+formatDuration(ms);
   var r=document.getElementById('offline-rewards');r.innerHTML='';
-  [{label:'🥚 Eggs earned',val:'+'+fmt(coins)},{label:'⚡ Rate',val:fmt(eps())+'/s'},{label:'⏱️ Time',val:formatDuration(ms)}].forEach(function(row){
+  [{label:COIN_IMG+' Eggs earned',val:'+'+fmt(coins)},{label:'⚡ Rate',val:fmt(eps())+'/s'},{label:'⏱️ Time',val:formatDuration(ms)}].forEach(function(row){
     var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+row.label+'</span><span class="ob-val">'+row.val+'</span>';r.appendChild(d);
   });
   document.getElementById('offline-modal').classList.add('open');
@@ -2505,6 +2522,7 @@ function showOfflineModal(ms,coins){
 // ============================================================
 var lastT=performance.now(),idleAcc=0;
 var clicksThisSecond=0,clickRateDisplay=0,clickRateTimer=0;
+var clickWindowAccum=0,smoothClickRate=0,CLICK_TAU=2.0,epsDispTimer=1,epsDispVal=0;
 function tick(now){
   var dt=(now-lastT)/1000;lastT=now;
   var currentEps=eps();
@@ -2515,9 +2533,15 @@ function tick(now){
   var sessionLen=(Date.now()-G.stats.currentSessionStart)/1000;
   if(sessionLen>G.stats.longestSession)G.stats.longestSession=sessionLen;
   idleAcc+=dt;
+  // Klick-takt: glidande medel över ~CLICK_TAU sek (mjukt, håller stilla, faller långsamt)
+  clickWindowAccum*=Math.exp(-dt/CLICK_TAU);
+  smoothClickRate=clickWindowAccum/CLICK_TAU;
+  if(smoothClickRate<0.05)smoothClickRate=0;
+  // EPS-siffran uppdateras bara några gånger per sekund så den inte "swooshar" förbi
+  epsDispTimer+=dt;
+  if(epsDispTimer>=0.3){epsDispVal=eps()+smoothClickRate*(G.clickPower*getClickMultiplier());epsDispTimer=0;}
   clickRateTimer+=dt;
   if(clickRateTimer>=1){
-    clickRateDisplay=clicksThisSecond;
     if(clicksThisSecond>G.stats.highestClicksPerSecond)G.stats.highestClicksPerSecond=clicksThisSecond;
     clicksThisSecond=0;
     clickRateTimer=0;
