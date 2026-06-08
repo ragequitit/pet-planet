@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Pet Planet</title>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@800&family=Fredoka+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;outline:none;touch-action:manipulation;}
-:root{--bg:#0b1530;--gold:#f5c842;--text:#fff;--muted:rgba(255,255,255,0.45);--border:rgba(58,92,184,0.6);--w:390px;--top-h:56px;--nav-h:76px;}
+:root{--bg:#0b1530;--gold:#f5c842;--text:#fff;--muted:rgba(255,255,255,0.45);--border:rgba(58,92,184,0.6);--w:390px;--top-h:56px;--nav-h:88px;}
 html,body{height:100%;background:#000;display:flex;justify-content:center;font-family:'Nunito',sans-serif;color:var(--text);overflow:hidden;}
 #app{width:var(--w);max-width:100vw;height:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
 #topbar{flex-shrink:0;height:var(--top-h);background:linear-gradient(180deg,#15264e,#0b1530);border-bottom:2px solid #2b4d92;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:100;}
@@ -145,14 +145,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .placeholder .phi{font-size:3rem;}
 .placeholder h2{font-size:1rem;color:rgba(255,255,255,0.6);}
 .placeholder p{font-size:0.8rem;line-height:1.5;}
-#bottomnav{flex-shrink:0;height:var(--nav-h);background:linear-gradient(180deg,#15264e,#0b1530);border-top:2px solid #2b4d92;display:flex;align-items:center;padding:6px 8px;gap:6px;z-index:100;}
-.nav-btn{flex:1;height:100%;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;box-shadow:0 3px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.15);transition:transform 0.1s;}
-.nav-btn:active{transform:translateY(2px);}
-.nav-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;box-shadow:0 3px 0 #8a6000;}
-.nav-btn .ni{font-size:1.5rem;line-height:1;}
-.nav-btn .ni-img{width:26px;height:26px;object-fit:contain;display:block;}
-.nav-btn span:last-child{font-size:0.58rem;font-weight:800;color:rgba(255,255,255,0.8);text-transform:uppercase;}
-.nav-btn.active span:last-child{color:#0b1530;}
+#bottomnav{flex-shrink:0;height:var(--nav-h);background:linear-gradient(180deg,#1e2c52,#141f3c);border-top:2px solid #0e1830;display:flex;align-items:center;padding:8px 8px;gap:7px;z-index:100;}
+.nav-btn{flex:1;height:100%;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.nav-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.nav-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
+.nav-btn .ni{font-size:2rem;line-height:1;}
+.nav-btn .ni-img{width:32px;height:32px;object-fit:contain;display:block;}
+.nav-btn span:last-child{font-size:0.56rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0.2px;white-space:nowrap;}
+.nav-btn.active span:last-child{color:#ffe08a;}
 .pets-subnav{display:flex;gap:6px;margin-bottom:10px;}
 .psub-btn{flex:1;padding:8px 4px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
 .psub-btn span{font-size:0.95rem;}
