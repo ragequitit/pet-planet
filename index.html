@@ -1067,6 +1067,10 @@ function getActiveBonuses(){
       bonuses[ab.id]=(bonuses[ab.id]||0)+TIER_VALUES[ab.tier];
     });
   });
+  // Permanenta belöningsbonusar (från achievements/World Completion)
+  if(G.permBonus){
+    ABILITIES.forEach(function(k){bonuses[k]=(bonuses[k]||0)+(G.permBonus[k]||0);});
+  }
   return bonuses;
 }
 
@@ -1100,6 +1104,8 @@ var G={
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchedPets:[],
   achievements:{unlocked:{},claimed:{}},
+  gems:0,
+  permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   profile:{name:'Player',favoritePet:null},
   stats:{
     // ECONOMY
@@ -1234,7 +1240,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,profile:G.profile,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,profile:G.profile,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -1246,6 +1252,9 @@ function resetGame(){
   G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchedPets=[];
+  G.gems=0;
+  G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  G.achievements={unlocked:{},claimed:{}};
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 }
@@ -2884,6 +2893,8 @@ function renderAchievements(){
     if(!isSecret||isUnlocked){
       html+='<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct2+'%"></div></div>';
       html+='<div class="ach-prog-label">'+fmtShort(prog.cur)+' / '+fmtShort(prog.max)+'</div>';
+      var rwt=rewardShortText(a.id);
+      if(rwt)html+='<div class="ach-desc" style="color:var(--gold);opacity:0.9;margin-top:3px;">🎁 '+rwt+'</div>';
     }
     html+='</div>';
     html+='<div class="ach-right">';
@@ -2907,11 +2918,147 @@ function getAchProgress(a){
 function setAchCat(cat){achCatFilter=cat;renderAchievements();}
 function setAchFilter(f){achStatusFilter=f;renderAchievements();}
 
+// ============================================================
+// ACHIEVEMENT REWARDS (spikat i Achievement_Rewards.docx v2.1)
+// Lager 1 = engång (shells/gems/eggs/pet), Lager 2 = perm (%-bonus, ransonerad)
+// Anti-cirkulär: shell-ach ger ej shells, kläck-ach ger ej ägg, pet-ach ger ej pet.
+// Egg-världar per svårighet: trivial=starter, medel=mountain, svår=ocean.
+// ============================================================
+var ACH_REWARDS={
+  // HATCHING
+  first_hatch:{shells:{common:10}},
+  cracked_shell:{shells:{common:15}},
+  egg_addict:{shells:{uncommon:25}},
+  hatchling_expert:{shells:{uncommon:40}},
+  egg_machine:{shells:{rare:25},gems:3},
+  breeder:{shells:{rare:35},gems:3},
+  pet_factory:{shells:{epic:25},gems:5},
+  hatch_master:{shells:{epic:25},gems:6,perm:{hatchSpeed:3}},
+  egg_tycoon:{shells:{legendary:20},gems:8},
+  infinite_incubator:{shells:{legendary:10},gems:15,pet:'legendary',perm:{hatchSpeed:5}},
+  // PET COLLECTION
+  first_friend:{shells:{common:10}},
+  small_collection:{shells:{uncommon:25}},
+  growing_zoo:{shells:{rare:20},eggs:{mountain:1},gems:2},
+  pet_enthusiast:{shells:{rare:30},eggs:{mountain:1},gems:3,perm:{luck:2}},
+  collector:{shells:{epic:15},eggs:{ocean:2},gems:5},
+  pet_master:{shells:{legendary:15},eggs:{ocean:2},gems:12,perm:{coinGain:5}},
+  // RARITY
+  uncommon_find:{shells:{uncommon:15}},
+  rare_discovery:{shells:{rare:20},gems:1},
+  epic_encounter:{shells:{epic:15},gems:2},
+  legendary_moment:{shells:{legendary:10},gems:3},
+  mythical_being:{shells:{mythical:8},gems:5},
+  cosmic_event:{shells:{cosmic:5},gems:12,perm:{luck:5}},
+  // EGG WORLDS
+  welcome_home:{shells:{common:10}},
+  into_the_woods:{shells:{uncommon:25},perm:{hatchSpeed:2}},
+  mountain_explorer:{shells:{uncommon:25},perm:{clickPower:2}},
+  desert_wanderer:{shells:{rare:15},gems:2,perm:{shellGain:2}},
+  ocean_traveler:{shells:{rare:15},gems:3,perm:{idleGain:3}},
+  cosmic_explorer:{shells:{cosmic:5},gems:12,perm:{luck:5}},
+  // SHELLS (inga shells!)
+  first_shell:{eggs:{starter:1}},
+  shell_collector:{gems:2},
+  shell_hoarder:{eggs:{mountain:1},gems:4},
+  shell_empire:{eggs:{ocean:2},gems:8,perm:{shellGain:5}},
+  lucky_drop:{gems:2},
+  legendary_treasure:{eggs:{mountain:1},gems:4},
+  cosmic_miracle:{gems:10,pet:'legendary',perm:{shellGain:3}},
+  // BUILDINGS / EPS / COINS
+  entrepreneur:{shells:{common:10}},
+  small_operation:{shells:{uncommon:25}},
+  growing_business:{shells:{rare:20},eggs:{mountain:1},gems:3},
+  economic_powerhouse:{shells:{epic:15},gems:6,perm:{coinGain:5}},
+  first_production:{shells:{common:10}},
+  productive:{shells:{uncommon:25},gems:1},
+  industrial:{shells:{rare:20},gems:3},
+  mass_producer:{shells:{epic:15},gems:6,perm:{idleGain:5}},
+  millionaire:{shells:{uncommon:25},gems:1},
+  billionaire:{shells:{rare:20},gems:3},
+  trillionaire:{shells:{epic:15},gems:6,perm:{coinGain:5}},
+  // CLICK / UPGRADES / SLOTS
+  first_tap:{shells:{common:10}},
+  busy_finger:{shells:{common:15}},
+  click_apprentice:{shells:{uncommon:25}},
+  click_expert:{shells:{rare:20},gems:2,perm:{clickPower:2}},
+  click_master:{shells:{epic:15},gems:5,perm:{clickPower:5}},
+  click_monster:{shells:{legendary:8},gems:10,pet:'legendary',perm:{clickPower:5}},
+  first_upgrade:{shells:{common:10}},
+  fully_optimized:{shells:{legendary:10},gems:10,perm:{idleGain:5}},
+  second_companion:{shells:{uncommon:20}},
+  full_squad:{shells:{epic:15},gems:6,perm:{coinGain:3,idleGain:3}},
+  // TIME / SECRET
+  first_hour:{shells:{common:10}},
+  dedicated_player:{shells:{rare:20},gems:3},
+  long_nap:{shells:{uncommon:20},gems:2},
+  cosmic_destiny:{gems:15,pet:'mythical',perm:{luck:5}},
+  tier5_jackpot:{gems:12,pet:'mythical'},
+  pure_luck:{gems:15,pet:'mythical',perm:{luck:5}}
+};
+var PERM_LABELS={coinGain:'Coin Gain',idleGain:'Idle Gain',clickPower:'Click Power',luck:'Luck',shellGain:'Shell Gain',hatchSpeed:'Hatch Speed'};
+function rwCap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function grantShellsReward(rarity,n){
+  G.shells[rarity]=(G.shells[rarity]||0)+n;
+  G.stats.totalShellsCollected+=n;
+  G.stats.shellsCollectedByRarity[rarity]=(G.stats.shellsCollectedByRarity[rarity]||0)+n;
+  var order=RARITY_PROGRESSION;
+  if(order.indexOf(rarity)>order.indexOf(G.stats.highestRarityShellFound))G.stats.highestRarityShellFound=rarity;
+}
+function grantPetReward(rarity){
+  var all=[];
+  Object.keys(PET_POOL).forEach(function(w){Object.keys(PET_POOL[w]).forEach(function(rr){PET_POOL[w][rr].forEach(function(sp){all.push({name:sp.name,e:sp.e,world:w});});});});
+  if(all.length===0)return;
+  var pick=all[Math.floor(Math.random()*all.length)];
+  var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
+  var abilities=[];
+  for(var i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
+  G.hatchedPets.push({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1});
+  G.stats.totalPetsCollected=(G.stats.totalPetsCollected||0)+1;
+  if(typeof syncDiscoveredFromInventory==='function')syncDiscoveredFromInventory();
+}
+function applyPermReward(stat,pct){
+  if(!G.permBonus)G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  G.permBonus[stat]=(G.permBonus[stat]||0)+pct;
+}
+// Returnerar lista med läsbara belöningsrader (för popup)
+function grantReward(id){
+  var r=ACH_REWARDS[id];if(!r)return [];
+  var parts=[];
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){grantShellsReward(rar,r.shells[rar]);parts.push(r.shells[rar]+' '+rwCap(rar)+' shells');});
+  if(r.eggs)Object.keys(r.eggs).forEach(function(eid){G.eggsOwned[eid]=(G.eggsOwned[eid]||0)+r.eggs[eid];var em=EGG_SHOP.find(function(e){return e.id===eid;});parts.push(r.eggs[eid]+'× '+(em?em.name:eid));});
+  if(r.gems){G.gems=(G.gems||0)+r.gems;parts.push(r.gems+' 💎 Gems');}
+  if(r.pet){grantPetReward(r.pet);parts.push('1 '+rwCap(r.pet)+' pet 🐾');}
+  if(r.perm)Object.keys(r.perm).forEach(function(st){applyPermReward(st,r.perm[st]);parts.push('+'+r.perm[st]+'% '+PERM_LABELS[st]+' (permanent)');});
+  return parts;
+}
+// Kort belöningstext för achievement-kortet
+function rewardShortText(id){
+  var r=ACH_REWARDS[id];if(!r)return '';
+  var p=[];
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' shells');});
+  if(r.eggs)Object.keys(r.eggs).forEach(function(eid){var em=EGG_SHOP.find(function(e){return e.id===eid;});p.push(r.eggs[eid]+'× '+(em?em.name:eid));});
+  if(r.gems)p.push(r.gems+' 💎');
+  if(r.pet)p.push(rwCap(r.pet)+' pet 🐾');
+  if(r.perm)Object.keys(r.perm).forEach(function(st){p.push('+'+r.perm[st]+'% '+PERM_LABELS[st]);});
+  return p.join(' · ');
+}
+function showRewardPopup(parts){
+  var pop=document.createElement('div');pop.className='ach-popup';
+  pop.innerHTML='<div class="ach-popup-icon">🎁</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div></div>';
+  document.body.appendChild(pop);
+  setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},3500);
+}
+
 function claimAchievement(id){
   if(!G.achievements)G.achievements={unlocked:{},claimed:{}};
   if(!G.achievements.unlocked[id]||G.achievements.claimed[id])return;
   G.achievements.claimed[id]=true;
+  var parts=grantReward(id);
+  if(typeof updateHUD==='function')updateHUD();
+  if(typeof softUpdateInventory==='function')softUpdateInventory();
   renderAchievements();
+  if(parts&&parts.length)showRewardPopup(parts);
 }
 
 // Event delegation för achievements
@@ -3155,6 +3302,7 @@ function setPetdexWorld(worldId){
 }
 function updateHUD(){
   var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmt(G.coins);
+  var tbg=document.getElementById('tb-gems-val');if(tbg)tbg.textContent=fmtShort(G.gems||0);
   var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
   var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsDispVal);
@@ -3259,6 +3407,9 @@ if(savedData){
   G._discoveredPets=savedData._discoveredPets||{};
   syncDiscoveredFromInventory(); // allt man äger ska finnas i Petdex
   G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
+  G.gems=savedData.gems||0;
+  G.permBonus=savedData.permBonus||{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  ['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'].forEach(function(k){if(G.permBonus[k]==null)G.permBonus[k]=0;});
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
   G.stats.totalSessions++;
   G.stats.currentSessionStart=Date.now();
