@@ -115,40 +115,38 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
 .shop-world-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-weight:800;}
-.shop-worlds{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
-.shop-world-chip{flex:0 0 auto;width:62px;text-align:center;cursor:pointer;opacity:0.8;}
+.shop-worlds{display:flex;gap:3px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
+.shop-world-chip{flex:0 0 auto;width:52px;text-align:center;cursor:pointer;opacity:0.8;}
 .shop-world-chip.active{opacity:1;}
-.swc-icon{width:54px;height:54px;margin:0 auto;border-radius:13px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+.swc-icon{width:48px;height:48px;margin:0 auto;border-radius:12px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
 .shop-world-chip.active .swc-icon{border-color:#f5c842;box-shadow:0 0 10px rgba(245,200,66,0.5);}
-.swc-img{width:42px;height:42px;object-fit:contain;}
-.swc-name{font-size:0.58rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.shop-egg-card{position:relative;background:rgba(27,45,78,0.4);border:2px solid var(--rc,#3a5cb8);border-radius:16px;padding:13px;margin-bottom:12px;overflow:hidden;}
-.shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 16% 28%,var(--rc,#3a5cb8),transparent 62%);opacity:0.15;pointer-events:none;}
-.shop-egg-card.locked{border-color:rgba(90,110,150,0.4);}
+.swc-img{width:38px;height:38px;object-fit:contain;}
+.swc-name{font-size:0.55rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shop-egg-card{position:relative;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-left:6px solid var(--rc,#3a5cb8);border-radius:15px;padding:9px 11px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -5px 9px rgba(0,0,0,0.42);}
+.shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 12% 45%,var(--rc,#3a5cb8),transparent 60%);opacity:0.32;pointer-events:none;}
+.shop-egg-card.locked{border-left-color:rgba(120,135,170,0.5);}
 .shop-egg-card.locked::before{opacity:0;}
 .shop-egg-card.locked .sec-art-img{filter:grayscale(1) brightness(0.45);}
-.sec-info{position:absolute;top:8px;left:8px;width:27px;height:27px;border-radius:9px;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:0.85rem;cursor:pointer;z-index:3;}
-.sec-owned{position:absolute;top:8px;right:8px;background:#c0392b;color:#fff;font-family:'Fredoka One',cursive;font-size:0.68rem;padding:2px 8px;border-radius:9px;z-index:3;}
-.sec-top{display:flex;align-items:center;gap:13px;position:relative;z-index:1;margin:6px 0 11px;}
-.sec-art{width:72px;height:72px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:3rem;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.4));}
-.sec-art-img{width:72px;height:72px;object-fit:contain;}
-.sec-mid{flex:1;min-width:0;}
-.sec-name{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;}
-.sec-rarity{font-size:0.62rem;margin-top:2px;font-weight:700;}
-.sec-have{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px;}
-.sec-cost{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.28);border-radius:11px;padding:9px 12px;margin-bottom:9px;position:relative;z-index:1;}
-.sec-cost-lbl{font-size:0.58rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;}
-.sec-cost-chip{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.82rem;color:#fff;}
+.sec-art{position:relative;width:58px;height:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.3rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));z-index:1;}
+.sec-art-img{width:58px;height:58px;object-fit:contain;}
+.sec-info{position:absolute;top:-3px;left:-3px;width:21px;height:21px;border-radius:7px;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;font-size:0.62rem;cursor:pointer;z-index:4;}
+.sec-mid{flex:1;min-width:0;position:relative;z-index:1;}
+.sec-name{font-family:'Fredoka One',cursive;font-size:0.88rem;color:#fff;line-height:1.1;display:flex;align-items:center;gap:6px;}
+.sec-own-tag{background:#c0392b;color:#fff;font-size:0.58rem;padding:1px 6px;border-radius:7px;font-family:'Fredoka One',cursive;}
+.sec-desc{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.6rem;color:rgba(255,255,255,0.55);line-height:1.2;margin-top:2px;}
+.sec-lockline{font-size:0.6rem;color:rgba(255,255,255,0.45);margin-top:3px;font-weight:700;}
+.sec-cost{flex-shrink:0;display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;}
+.sec-cost-chip{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:0.72rem;color:#fff;white-space:nowrap;justify-content:flex-end;}
 .sec-cost-chip.bad{color:#ff7b7b;}
-.sec-coin{width:17px;height:17px;object-fit:contain;}
-.sec-cost-plus{color:rgba(255,255,255,0.35);font-weight:800;}
-.sec-locked-req{background:rgba(0,0,0,0.28);border-radius:11px;padding:10px 12px;margin-bottom:9px;font-size:0.74rem;color:rgba(255,255,255,0.55);position:relative;z-index:1;}
-.sec-btns{display:flex;gap:8px;position:relative;z-index:1;}
-.sec-btn{flex:1;padding:11px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:0.88rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.35);color:#fff;}
+.sec-coin{width:14px;height:14px;object-fit:contain;}
+.sec-cshell{font-size:0.78rem;}
+.sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
+.sec-btn{padding:9px 4px;border:1.5px solid #0f1a33;border-radius:13px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;color:#fff;text-align:center;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -4px 7px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.sec-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -3px 6px rgba(0,0,0,0.4);}
 .sec-btn.craft{background:linear-gradient(180deg,#b388ff,#7c4dff);}
 .sec-btn.hatch{background:linear-gradient(180deg,#5fd16a,#2e9e3f);}
-.sec-btn.no{background:rgba(27,45,78,0.5);color:rgba(255,255,255,0.3);cursor:default;box-shadow:none;}
-.sec-btn.locked{background:rgba(27,45,78,0.5);color:rgba(255,255,255,0.35);cursor:default;box-shadow:none;width:100%;flex:none;}
+.sec-btn.no{background:linear-gradient(180deg,#2a3c6c,#172643);color:rgba(255,255,255,0.3);cursor:default;box-shadow:0 2px 0 #0b1326,inset 0 1px 0 rgba(255,255,255,0.1);}
+.sec-btn.locked{background:linear-gradient(180deg,#2a3c6c,#172643);color:rgba(255,255,255,0.4);cursor:default;box-shadow:0 2px 0 #0b1326,inset 0 1px 0 rgba(255,255,255,0.1);}
 .shop-egg-reqs{background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 10px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;}
 .req-row{display:flex;align-items:center;gap:6px;font-size:0.72rem;}
 .req-icon{font-size:0.9rem;width:18px;text-align:center;}
@@ -2086,6 +2084,19 @@ function shopJumpTo(id){
   document.querySelectorAll('.shop-world-chip').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-world')===id);});
 }
 var SHOP_EGG_ICON_FILE={starter:'basic',arctic:'artic',volcano:'vulcano'};
+var EGG_DESC={
+  starter:'The beginning of your journey.',
+  forest:'Infused with ancient forest magic.',
+  mountain:'Born from stone and strong will.',
+  desert:'Holds the heat of endless sands.',
+  ocean:'Deep, mysterious and full of life.',
+  jungle:'Wild, untamed and teeming with life.',
+  arctic:'Frozen secrets beneath the ice.',
+  volcano:'Forged in molten fury.',
+  mystic:'Woven from arcane energy.',
+  celestial:'Touched by distant stars.',
+  cosmic:'Born from the fabric of the universe.'
+};
 function eggShopIconUrl(id){var f=SHOP_EGG_ICON_FILE[id]||id;return ASSET_BASE+'/assets/ui/shop/'+f+'-egg.png';}
 function shopLockReason(egg){
   if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)return '🔒 Earn '+fmtShort(egg.coinReq)+' Egg Coins ('+fmtShort(G.stats.totalCoinsEarned)+' / '+fmtShort(egg.coinReq)+')';
@@ -2118,7 +2129,7 @@ function renderShop(){
   });
   html+='</div>';
 
-  // Äggkort
+  // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
   var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
   var slotFree=active<G.petSlots;
   EGG_SHOP.forEach(function(egg){
@@ -2132,31 +2143,28 @@ function renderShop(){
     var afford=unlocked&&shellOk&&coinOk;
     var rc=shellR.color;
     html+='<div class="shop-egg-card'+(unlocked?'':' locked')+'" id="shopcard-'+egg.id+'" style="--rc:'+rc+'">';
-    html+='<div class="sec-info" data-info-egg="'+egg.id+'">🔍</div>';
-    if(owned>0)html+='<div class="sec-owned">×'+owned+'</div>';
-    html+='<div class="sec-top">';
-    html+='<div class="sec-art"><img class="sec-art-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
-    html+='<div class="sec-mid"><div class="sec-name">'+egg.name+'</div>';
-    html+='<div class="sec-rarity" style="color:'+rc+'">'+shellR.icon+' '+shellR.name.replace(' Shell','')+' world</div>';
-    html+='<div class="sec-have">You have: <b style="color:#fff">'+owned+'</b></div>';
-    html+='</div></div>';
-
+    // Ägg + info-ikon
+    html+='<div class="sec-art"><div class="sec-info" data-info-egg="'+egg.id+'">🔍</div><img class="sec-art-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
+    // Namn + liten text
+    html+='<div class="sec-mid"><div class="sec-name">'+egg.name+(owned>0?'<span class="sec-own-tag">×'+owned+'</span>':'')+'</div>';
+    html+='<div class="sec-desc">'+(EGG_DESC[egg.id]||'')+'</div>';
+    if(!unlocked)html+='<div class="sec-lockline">'+shopLockReason(egg)+'</div>';
+    html+='</div>';
+    // Kostnad (coins + shells med ikoner)
     if(unlocked){
-      html+='<div class="sec-cost"><span class="sec-cost-lbl">Craft cost</span>';
+      html+='<div class="sec-cost">';
       html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
-      html+='<span class="sec-cost-plus">+</span>';
-      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'">'+shellR.icon+' '+sc+'</span></div>';
-    } else {
-      html+='<div class="sec-locked-req">'+shopLockReason(egg)+'</div>';
+      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'"><span class="sec-cshell">'+shellR.icon+'</span>'+sc+'</span>';
+      html+='</div>';
     }
-
+    // Knappar (Craft över Hatch)
     html+='<div class="sec-btns">';
     if(!unlocked){
-      html+='<button class="sec-btn locked" disabled>🔒 Locked</button>';
+      html+='<button class="sec-btn locked" disabled>🔒</button>';
     } else {
       html+='<button class="sec-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
-      if(!slotFree)html+='<button class="sec-btn no" disabled>Hatchery Full</button>';
-      else html+='<button class="sec-btn hatch'+(afford?'':' no')+'"'+(afford?' data-hatch-egg="'+egg.id+'"':' disabled')+'>Hatch ▸</button>';
+      if(!slotFree)html+='<button class="sec-btn no" disabled>Full</button>';
+      else html+='<button class="sec-btn hatch'+(afford?'':' no')+'"'+(afford?' data-hatch-egg="'+egg.id+'"':' disabled')+'>Hatch</button>';
     }
     html+='</div>';
     html+='</div>';
