@@ -24,19 +24,19 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btns{position:absolute;top:24px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
-.side-btn{position:relative;width:54px;padding:24px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:13px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);overflow:visible;}
+.side-btn{position:relative;width:54px;padding:34px 3px 7px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:13px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);overflow:visible;}
 .side-btn:active{transform:translateY(2px);}
 .side-btn .sb-icon{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
 .side-btn .sb-img{width:42px;height:42px;object-fit:contain;display:inline-block;}
 .side-btn .sb-label{font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
-#pedestal-img{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:block;}
+#pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:block;}
 #pet-positions{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:5;}
 .pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
 .pet-pos .ppi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.3);border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.3);overflow:hidden;}
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
 .pet-pos.slot1 .ppi{border-color:#f5c84288;}
 .pet-pos.locked .ppi{opacity:0.2;}
-#egg-stage{position:absolute;bottom:100px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
 #egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
@@ -56,7 +56,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(1);}30%{opacity:1;}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
 .click-pop{position:absolute;pointer-events:none;font-size:1.1rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.8);animation:floatUp 0.8s ease forwards;white-space:nowrap;z-index:20;font-family:'Fredoka One',cursive;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.4);}}
-@keyframes shellPop{0%{opacity:0;transform:translateX(-50%) translateY(0) scale(0.5);}15%{opacity:1;transform:translateX(-50%) translateY(-15px) scale(1.3);}70%{opacity:1;transform:translateX(-50%) translateY(-45px) scale(1);}100%{opacity:0;transform:translateX(-50%) translateY(-70px) scale(0.85);}}
+@keyframes shellFly{0%{opacity:0;transform:translate(0,0) scale(0.4);}15%{opacity:1;transform:translate(calc(var(--dx,0px)*0.3),calc(var(--dy,-40px)*0.3)) scale(1.25);}70%{opacity:1;transform:translate(calc(var(--dx,0px)*0.85),calc(var(--dy,-40px)*0.85)) scale(1);}100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,-40px)) scale(0.85);}}
 #coin-display{background:rgba(0,0,0,0.5);padding:6px 16px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);}
 #coin-count{font-size:2rem;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.8),0 0 20px rgba(245,200,66,0.3);line-height:1.1;font-family:'Fredoka One',cursive;letter-spacing:1px;}
 #cps-display{font-size:0.78rem;font-weight:700;color:rgba(255,255,255,0.5);}
@@ -115,31 +115,31 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
 .shop-world-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-weight:800;}
-.shop-worlds{display:flex;gap:3px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
-.shop-world-chip{flex:0 0 auto;width:52px;text-align:center;cursor:pointer;opacity:0.8;}
+.shop-worlds{display:flex;gap:2px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
+.shop-world-chip{flex:0 0 auto;width:47px;text-align:center;cursor:pointer;opacity:0.8;}
 .shop-world-chip.active{opacity:1;}
-.swc-icon{width:48px;height:48px;margin:0 auto;border-radius:12px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
-.shop-world-chip.active .swc-icon{border-color:#f5c842;box-shadow:0 0 10px rgba(245,200,66,0.5);}
-.swc-img{width:38px;height:38px;object-fit:contain;}
+.swc-icon{width:44px;height:44px;margin:0 auto;border-radius:13px;background:linear-gradient(180deg,#2f436f,#18284a);border:1.5px solid #0f1a33;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.shop-world-chip.active .swc-icon{border-color:#f5c842;box-shadow:0 3px 0 #0b1326,0 0 11px rgba(245,200,66,0.6),inset 0 2px 0 rgba(255,255,255,0.2);}
+.swc-img{width:36px;height:36px;object-fit:contain;}
 .swc-name{font-size:0.55rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.shop-egg-card{position:relative;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-left:6px solid var(--rc,#3a5cb8);border-radius:15px;padding:9px 11px;margin-bottom:10px;overflow:hidden;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -5px 9px rgba(0,0,0,0.42);}
-.shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 12% 45%,var(--rc,#3a5cb8),transparent 60%);opacity:0.32;pointer-events:none;}
-.shop-egg-card.locked{border-left-color:rgba(120,135,170,0.5);}
+.shop-egg-card{position:relative;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-left:6px solid var(--rc,#3a5cb8);border-radius:15px;padding:9px 11px;margin-bottom:6px;overflow:hidden;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -5px 9px rgba(0,0,0,0.42);}
+.shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 12% 45%,var(--rc,#3a5cb8),transparent 60%);opacity:0.48;pointer-events:none;}
+/* Låsta kort: behåll raritetsfärgad kant (hint om vad som komma skall), men ingen fade-glöd och grått ägg */
 .shop-egg-card.locked::before{opacity:0;}
 .shop-egg-card.locked .sec-art-img{filter:grayscale(1) brightness(0.45);}
-.sec-art{position:relative;width:58px;height:58px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.3rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));z-index:1;}
-.sec-art-img{width:58px;height:58px;object-fit:contain;}
+.sec-art{position:relative;width:70px;height:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2.76rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4));z-index:1;}
+.sec-art-img{width:70px;height:70px;object-fit:contain;}
 .sec-info{position:absolute;top:-3px;left:-3px;width:21px;height:21px;border-radius:7px;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;font-size:0.62rem;cursor:pointer;z-index:4;}
 .sec-mid{flex:1;min-width:0;position:relative;z-index:1;}
-.sec-name{font-family:'Fredoka One',cursive;font-size:0.88rem;color:#fff;line-height:1.1;display:flex;align-items:center;gap:6px;}
+.sec-name{font-family:'Fredoka One',cursive;font-size:1.32rem;color:#fff;line-height:1.1;display:flex;align-items:center;gap:6px;}
 .sec-own-tag{background:#c0392b;color:#fff;font-size:0.58rem;padding:1px 6px;border-radius:7px;font-family:'Fredoka One',cursive;}
-.sec-desc{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.6rem;color:rgba(255,255,255,0.55);line-height:1.2;margin-top:2px;}
+.sec-desc{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.9rem;color:rgba(255,255,255,0.55);line-height:1.2;margin-top:2px;}
 .sec-lockline{font-size:0.6rem;color:rgba(255,255,255,0.45);margin-top:3px;font-weight:700;}
 .sec-cost{flex-shrink:0;display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;}
-.sec-cost-chip{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:0.72rem;color:#fff;white-space:nowrap;justify-content:flex-end;}
+.sec-cost-chip{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:1.08rem;color:#fff;white-space:nowrap;justify-content:flex-end;}
 .sec-cost-chip.bad{color:#ff7b7b;}
-.sec-coin{width:14px;height:14px;object-fit:contain;}
-.sec-cshell{font-size:0.78rem;}
+.sec-coin{width:21px;height:21px;object-fit:contain;}
+.sec-cshell{font-size:1.17rem;}
 .sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
 .sec-btn{padding:9px 4px;border:1.5px solid #0f1a33;border-radius:13px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;color:#fff;text-align:center;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -4px 7px rgba(0,0,0,0.4);transition:transform 0.1s;}
 .sec-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -3px 6px rgba(0,0,0,0.4);}
@@ -417,6 +417,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ach-cat-tabs::-webkit-scrollbar{height:3px;}
 .ach-cat-tab{flex-shrink:0;padding:5px 10px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;}
 .ach-cat-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.ach-group-head{font-family:'Fredoka One',cursive;font-size:0.72rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1px;margin:16px 0 7px;padding-bottom:5px;border-bottom:1.5px solid rgba(58,92,184,0.4);}
+.ach-group-head.ready{color:var(--gold);border-bottom-color:rgba(245,200,66,0.55);}
+.ach-group-head.first{margin-top:4px;}
 .ach-filter-row{display:flex;gap:4px;margin-bottom:10px;}
 .ach-filter-btn{flex:1;padding:5px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
 .ach-filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
@@ -445,8 +448,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
    ============================================================ */
 .tb-left{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 6px;height:100%;flex:1;min-width:0;}
 .tb-coins-row{display:flex;align-items:center;gap:5px;}
-.tb-coin-icon{font-size:1rem;line-height:1;}
-.tb-coin-img{width:20px;height:20px;object-fit:contain;display:block;}
+.tb-coin-icon{font-size:1.35rem;line-height:1;}
+.tb-coin-img{width:26px;height:26px;object-fit:contain;display:block;}
 .coin-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.15em;display:inline-block;}
 .tb-coins{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;line-height:1;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
 .tb-eps-row{display:flex;align-items:center;gap:5px;}
@@ -1206,11 +1209,18 @@ function dropShell(){
 }
 function showShellPop(r,idx){
   var stage=document.getElementById('egg-stage');if(!stage)return;
-  var dur=idx>=5?4000:idx>=3?2500:idx>=2?1500:900;
+  var rect=stage.getBoundingClientRect();
+  var dur=idx>=5?3500:idx>=3?2200:idx>=2?1400:900;
   var pop=document.createElement('div');
-  pop.style.cssText='position:absolute;pointer-events:none;z-index:20;text-align:center;left:50%;top:0;animation:shellPop '+(dur/1000)+'s ease forwards;';
-  if(idx<=2){pop.innerHTML='<span style="font-size:1rem">'+r.icon+'</span> <span style="font-family:Fredoka One,cursive;font-size:0.7rem;color:'+r.color+'">'+r.name+'</span>';}
-  else{pop.innerHTML='<div style="font-size:'+(idx>=7?'2rem':'1.5rem')+'">'+r.icon+'</div><div style="font-family:Fredoka One,cursive;font-size:0.75rem;color:'+r.color+';text-shadow:0 0 10px '+r.color+'">'+r.name+'</div>';}
+  // Slumpa startpunkt runt övre delen/sidorna av ägget + en slumpmässig drift uppåt/utåt så de inte alla åker rakt upp
+  var sx=rect.width/2+(Math.random()*2-1)*44;
+  var sy=rect.height*(0.12+Math.random()*0.36);
+  var dx=(Math.random()*2-1)*40;
+  var dy=-(42+Math.random()*46);
+  var sz=idx>=7?'2.1rem':idx>=3?'1.6rem':'1.15rem';
+  var glow=idx>=3?'text-shadow:0 0 10px '+r.color+';':'';
+  pop.style.cssText='position:absolute;pointer-events:none;z-index:20;left:'+sx+'px;top:'+sy+'px;font-size:'+sz+';'+glow+'--dx:'+dx+'px;--dy:'+dy+'px;animation:shellFly '+(dur/1000)+'s ease forwards;';
+  pop.innerHTML=r.icon; // bara ikonen, inget namn
   stage.appendChild(pop);
   setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},dur);
 }
@@ -1318,8 +1328,11 @@ function eggTap(clientX,clientY){
   var r=stage.getBoundingClientRect();
   var pop=document.createElement('div');pop.className='click-pop';
   pop.textContent='+'+fmt(clickVal);
-  pop.style.left=((clientX!=null?clientX-r.left:r.width/2)-20)+'px';
-  pop.style.top=((clientY!=null?clientY-r.top:r.height/2)-20)+'px';
+  // Slumpa fram en position runt ägget (sidled + övre delen) så siffrorna sprids som crits istället för att stapla på samma ställe
+  var ox=(Math.random()*2-1)*46;
+  var oy=r.height*(0.16+Math.random()*0.4);
+  pop.style.left=(r.width/2+ox-14)+'px';
+  pop.style.top=oy+'px';
   stage.appendChild(pop);
   setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},800);
   var img=document.getElementById('egg-img');
@@ -2083,7 +2096,7 @@ function shopJumpTo(id){
   if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
   document.querySelectorAll('.shop-world-chip').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-world')===id);});
 }
-var SHOP_EGG_ICON_FILE={starter:'basic',arctic:'artic',volcano:'vulcano'};
+var SHOP_EGG_ICON_FILE={arctic:'artic',volcano:'vulcano'};
 var EGG_DESC={
   starter:'The beginning of your journey.',
   forest:'Infused with ancient forest magic.',
@@ -2142,9 +2155,9 @@ function renderShop(){
     var shellOk=haveShell>=sc,coinOk=G.coins>=cc;
     var afford=unlocked&&shellOk&&coinOk;
     var rc=shellR.color;
-    html+='<div class="shop-egg-card'+(unlocked?'':' locked')+'" id="shopcard-'+egg.id+'" style="--rc:'+rc+'">';
-    // Ägg + info-ikon
-    html+='<div class="sec-art"><div class="sec-info" data-info-egg="'+egg.id+'">🔍</div><img class="sec-art-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
+    html+='<div class="shop-egg-card'+(unlocked?'':' locked')+'" id="shopcard-'+egg.id+'" data-info-egg="'+egg.id+'" style="--rc:'+rc+'">';
+    // Ägg
+    html+='<div class="sec-art"><img class="sec-art-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
     // Namn + liten text
     html+='<div class="sec-mid"><div class="sec-name">'+egg.name+(owned>0?'<span class="sec-own-tag">×'+owned+'</span>':'')+'</div>';
     html+='<div class="sec-desc">'+(EGG_DESC[egg.id]||'')+'</div>';
@@ -2163,8 +2176,9 @@ function renderShop(){
       html+='<button class="sec-btn locked" disabled>🔒</button>';
     } else {
       html+='<button class="sec-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
+      var canHatchCard=owned>0||afford; // hatcha från lager om man äger, annars crafta+hatcha
       if(!slotFree)html+='<button class="sec-btn no" disabled>Full</button>';
-      else html+='<button class="sec-btn hatch'+(afford?'':' no')+'"'+(afford?' data-hatch-egg="'+egg.id+'"':' disabled')+'>Hatch</button>';
+      else html+='<button class="sec-btn hatch'+(canHatchCard?'':' no')+'"'+(canHatchCard?' data-hatch-egg="'+egg.id+'"':' disabled')+'>Hatch</button>';
     }
     html+='</div>';
     html+='</div>';
@@ -2188,17 +2202,21 @@ function buyEgg(id){
   if(typeof updateHUD==='function')updateHUD();
   renderShop();
 }
-// Hatch direkt från shoppen: betala kostnaden och starta kläckningen (kräver ledig kläck-slot)
+// Hatch direkt från shoppen. Har du ägget i lager → hatcha det gratis. Annars → crafta ett nytt och hatcha (kräver att du har råd). Kräver alltid en ledig kläck-slot.
 function hatchFromShop(id){
   var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
   if(getEggState(egg)!=='unlocked')return;
   var activeSlots=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  if(activeSlots>=G.petSlots)return;
-  var sc=getEggCost(egg),cc=getEggCoinCost(egg);
-  if((G.shells[egg.shellType]||0)<sc||G.coins<cc)return;
-  G.shells[egg.shellType]-=sc;G.coins-=cc;
-  G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
-  G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  if(activeSlots>=G.petSlots)return; // ingen ledig slot
+  var owned=G.eggsOwned[egg.id]||0;
+  if(owned<=0){
+    // Inget i lager → crafta ett nytt först (betala coins + shells)
+    var sc=getEggCost(egg),cc=getEggCoinCost(egg);
+    if((G.shells[egg.shellType]||0)<sc||G.coins<cc)return;
+    G.shells[egg.shellType]-=sc;G.coins-=cc;
+    G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
+    G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  }
   startHatching(egg.id); // drar av 1 owned + lägger ägget i en kläck-slot
   if(typeof updateHUD==='function')updateHUD();
   renderShop();
@@ -2222,7 +2240,7 @@ function showEggInfo(eggId){
   var canHatch=activeCount<G.petSlots&&(G.eggsOwned[eggId]||0)>0;
 
   var html='<div style="text-align:center;margin-bottom:12px;">';
-  html+='<div style="font-size:3rem;margin-bottom:4px;">'+egg.icon+'</div>';
+  html+='<div style="font-size:3rem;margin-bottom:4px;"><img src="'+eggShopIconUrl(eggId)+'" alt="" style="width:78px;height:78px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div>';
   html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.1rem;color:#fff;">'+egg.name+'</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:2px;">⏱️ '+formatTime(hatchSecs)+' hatch time</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">📦 Owned: '+(G.eggsOwned[eggId]||0)+'</div>';
@@ -2279,8 +2297,7 @@ function showEggInfo(eggId){
   });
   html+='</div>';
 
-  // Hatch button
-  html+='<button onclick="startHatchingFromInfo(\''+eggId+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;margin-top:14px;font-family:\'Fredoka One\',cursive;font-size:0.95rem;cursor:'+(canHatch?'pointer':'default')+';background:'+(canHatch?'linear-gradient(180deg,#f5c842,#e0a800)':'rgba(27,45,78,0.4)')+';color:'+(canHatch?'#0b1530':'rgba(255,255,255,0.3)')+';box-shadow:'+(canHatch?'0 3px 0 #8a6000':'none')+';">'+(canHatch?'🥚 Hatch Now!':activeCount>=G.petSlots?'Slots Full':'No Eggs')+'</button>';
+  // (Hatch-knappen borttagen — info-rutan visar bara information. Snabbhatch sker från äggkortet i shoppen.)
 
   document.getElementById('egg-info-content').innerHTML=html;
   document.getElementById('egg-info-modal').classList.add('open');
@@ -2955,6 +2972,8 @@ function nextAchievementPopup(){
     achPopupQueue=[];                       // rensa väntande popups
     if(pop.parentNode)pop.parentNode.removeChild(pop);
     achPopupShowing=false;
+    achCatFilter='All';
+    achStatusFilter='unlocked';             // landa direkt på Completed-fliken
     if(typeof closeMore==='function')closeMore();
     switchTab('more');                      // öppna Achievements-fliken
   };
@@ -2963,6 +2982,49 @@ function nextAchievementPopup(){
 
 var achCatFilter='All';
 var achStatusFilter='all';
+// Fina grupp-rubriker för Completed-fliken (achievements har bara den breda cat:en i datan, så vi mappar id → grupp här)
+var ACH_GROUPS=[
+  {label:'🥚 Hatching',ids:['first_hatch','cracked_shell','egg_addict','hatchling_expert','egg_machine','breeder','pet_factory','hatch_master','egg_tycoon','infinite_incubator']},
+  {label:'🐾 Pet Collection',ids:['first_friend','small_collection','growing_zoo','pet_enthusiast','collector','pet_master']},
+  {label:'🌈 Rarity Firsts',ids:['uncommon_find','rare_discovery','epic_encounter','legendary_moment','mythical_being','artifact_hunter','heavenly_creature','eternal_soul','cosmic_event']},
+  {label:'🌍 Egg Worlds',ids:['welcome_home','into_the_woods','mountain_explorer','desert_wanderer','ocean_traveler','cosmic_explorer']},
+  {label:'🐚 Shells',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','lucky_drop','epic_fortune','legendary_treasure','mythical_discovery','artifact_find','heavenly_luck','eternal_shell','cosmic_miracle']},
+  {label:'🏗️ Buildings',ids:['entrepreneur','small_operation','growing_business','economic_powerhouse']},
+  {label:'⚡ Production (EPS)',ids:['first_production','productive','industrial','mass_producer']},
+  {label:'🪙 Egg Coins',ids:['millionaire','billionaire','trillionaire']},
+  {label:'👆 Clicking',ids:['first_tap','busy_finger','click_apprentice','click_expert','click_master','click_monster']},
+  {label:'🔧 Upgrades',ids:['first_upgrade','fully_optimized']},
+  {label:'🐾 Pet Slots',ids:['second_companion','full_squad']},
+  {label:'⏱️ Time Played',ids:['first_hour','dedicated_player','long_nap']},
+  {label:'🌌 Secret',ids:['cosmic_destiny','tier5_jackpot','pure_luck']}
+];
+function achCardHtml(a){
+  var isUnlocked=G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];
+  var isClaimed=G.achievements&&G.achievements.claimed&&G.achievements.claimed[a.id];
+  var isSecret=a.cat==='Secret';
+  var prog=getAchProgress(a);
+  var pct2=prog.max>0?Math.min(100,Math.floor(prog.cur/prog.max*100)):0;
+  var html='<div class="ach-card'+(isUnlocked?' unlocked':'')+(isUnlocked&&!isClaimed?' claimable':'')+'">';
+  html+='<div class="ach-icon">'+(isSecret&&!isUnlocked?'❓':a.icon)+'</div>';
+  html+='<div class="ach-info">';
+  html+='<div class="ach-name">'+(isSecret&&!isUnlocked?'???':a.name)+'</div>';
+  html+='<div class="ach-desc">'+(isSecret&&!isUnlocked?'Hidden Achievement':a.desc)+'</div>';
+  if(!isSecret||isUnlocked){
+    html+='<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct2+'%"></div></div>';
+    html+='<div class="ach-prog-label">'+fmtShort(prog.cur)+' / '+fmtShort(prog.max)+'</div>';
+    var rwt=rewardShortText(a.id);
+    if(rwt)html+='<div class="ach-desc" style="color:var(--gold);opacity:0.9;margin-top:3px;">🎁 '+rwt+'</div>';
+  }
+  html+='</div>';
+  html+='<div class="ach-right">';
+  if(isUnlocked&&!isClaimed){
+    html+='<button class="ach-claim-btn" data-claim-ach="'+a.id+'">CLAIM!</button>';
+  } else if(isClaimed){
+    html+='<div class="ach-done">✅</div>';
+  }
+  html+='</div></div>';
+  return html;
+}
 function renderAchievements(){
   var wrap=document.getElementById('ach-wrap');if(!wrap)return;
   var total=ACHIEVEMENTS.length;
@@ -2982,7 +3044,7 @@ function renderAchievements(){
 
   // Status filter
   html+='<div class="ach-filter-row">';
-  [['all','All'],['inprogress','In Progress'],['unlocked','Completed'],['locked','Locked']].forEach(function(f){
+  [['unlocked','Completed'],['inprogress','In Progress'],['all','All'],['locked','Locked']].forEach(function(f){
     html+='<div class="ach-filter-btn'+(achStatusFilter===f[0]?' active':'')+'" onclick="setAchFilter(\''+f[0]+'\')">'+f[1]+'</div>';
   });
   html+='</div>';
@@ -2998,33 +3060,34 @@ function renderAchievements(){
     return true;
   });
 
-  filtered.forEach(function(a){
-    var isUnlocked=G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];
-    var isClaimed=G.achievements&&G.achievements.claimed&&G.achievements.claimed[a.id];
-    var isSecret=a.cat==='Secret';
-    var prog=getAchProgress(a);
-    var pct2=prog.max>0?Math.min(100,Math.floor(prog.cur/prog.max*100)):0;
-
-    html+='<div class="ach-card'+(isUnlocked?' unlocked':'')+(isUnlocked&&!isClaimed?' claimable':'')+'">';
-    html+='<div class="ach-icon">'+(isSecret&&!isUnlocked?'❓':a.icon)+'</div>';
-    html+='<div class="ach-info">';
-    html+='<div class="ach-name">'+(isSecret&&!isUnlocked?'???':a.name)+'</div>';
-    html+='<div class="ach-desc">'+(isSecret&&!isUnlocked?'Hidden Achievement':a.desc)+'</div>';
-    if(!isSecret||isUnlocked){
-      html+='<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct2+'%"></div></div>';
-      html+='<div class="ach-prog-label">'+fmtShort(prog.cur)+' / '+fmtShort(prog.max)+'</div>';
-      var rwt=rewardShortText(a.id);
-      if(rwt)html+='<div class="ach-desc" style="color:var(--gold);opacity:0.9;margin-top:3px;">🎁 '+rwt+'</div>';
+  if(achStatusFilter==='unlocked'){
+    // COMPLETED: oclaimade överst (platt, så man kan trycka sig igenom claims utan att scrolla),
+    // därefter de claimade grupperade under kategori-rubriker så listan blir lätt att läsa.
+    var unclaimed=filtered.filter(function(a){return !(G.achievements.claimed&&G.achievements.claimed[a.id]);});
+    var claimedSet={};
+    filtered.forEach(function(a){if(G.achievements.claimed&&G.achievements.claimed[a.id])claimedSet[a.id]=a;});
+    var firstHead=true;
+    if(unclaimed.length){
+      html+='<div class="ach-group-head ready first">🎁 Ready to Claim ('+unclaimed.length+')</div>';
+      firstHead=false;
+      unclaimed.forEach(function(a){html+=achCardHtml(a);});
     }
-    html+='</div>';
-    html+='<div class="ach-right">';
-    if(isUnlocked&&!isClaimed){
-      html+='<button class="ach-claim-btn" data-claim-ach="'+a.id+'">CLAIM!</button>';
-    } else if(isClaimed){
-      html+='<div class="ach-done">✅</div>';
+    ACH_GROUPS.forEach(function(g){
+      var inGroup=g.ids.map(function(id){return claimedSet[id];}).filter(Boolean);
+      if(inGroup.length){
+        html+='<div class="ach-group-head'+(firstHead?' first':'')+'">'+g.label+'</div>';
+        firstHead=false;
+        inGroup.forEach(function(a){html+=achCardHtml(a);delete claimedSet[a.id];});
+      }
+    });
+    var leftover=Object.keys(claimedSet).map(function(id){return claimedSet[id];});
+    if(leftover.length){
+      html+='<div class="ach-group-head'+(firstHead?' first':'')+'">🏅 Other</div>';
+      leftover.forEach(function(a){html+=achCardHtml(a);});
     }
-    html+='</div></div>';
-  });
+  } else {
+    filtered.forEach(function(a){html+=achCardHtml(a);});
+  }
 
   if(filtered.length===0)html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No achievements in this filter.</div>';
 
