@@ -108,21 +108,23 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .inv-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:8px;color:rgba(255,255,255,0.3);text-align:center;}
 .inv-coming .ic-icon{font-size:2.5rem;}
 .shop-header{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;text-align:center;margin:2px 0 12px;text-shadow:0 2px 6px rgba(0,0,0,0.5);}
-.shop-tabs{display:flex;gap:8px;margin-bottom:14px;}
-.shop-tab{flex:1;text-align:center;padding:10px;border-radius:12px;background:rgba(27,45,78,0.5);border:1px solid rgba(58,92,184,0.4);color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;font-size:0.85rem;cursor:pointer;}
-.shop-tab.active{background:linear-gradient(180deg,#3a5cb8,#1f3d96);border-color:#5a7fd8;color:#fff;box-shadow:0 2px 0 #0a1838;}
+.shop-tabs{display:flex;gap:7px;margin-bottom:14px;}
+.shop-tab{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 8px;border-radius:15px 15px 12px 12px;background:linear-gradient(180deg,#2c4673,#142136);border:1.5px solid #0f1a33;color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;font-size:1rem;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;box-shadow:0 5px 0 #0a1426,inset 0 2px 0 rgba(255,255,255,0.14);transition:transform 0.1s;}
+.shop-tab .stab-img{width:26px;height:26px;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));}
+.shop-tab .stab-emoji{font-size:1.4rem;line-height:1;}
+.shop-tab.active{background:linear-gradient(180deg,#6791e8,#284ba6);border-color:#84a8ef;color:#fff;box-shadow:0 5px 0 #16285c,inset 0 2px 0 rgba(255,255,255,0.4);text-shadow:0 1px 3px rgba(0,0,0,0.45);}
 .shop-placeholder{text-align:center;padding:50px 20px;color:rgba(255,255,255,0.5);}
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
-.shop-world-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-weight:800;}
+.shop-world-label{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;text-align:center;letter-spacing:0.5px;margin-bottom:9px;text-shadow:0 2px 4px rgba(0,0,0,0.5);}
 .shop-worlds{display:flex;gap:2px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
-.shop-world-chip{flex:0 0 auto;width:47px;text-align:center;cursor:pointer;opacity:0.8;}
+.shop-world-chip{flex:0 0 auto;width:70px;text-align:center;cursor:pointer;opacity:0.8;}
 .shop-world-chip.active{opacity:1;}
-.swc-icon{width:44px;height:44px;margin:0 auto;border-radius:13px;background:linear-gradient(180deg,#2f436f,#18284a);border:1.5px solid #0f1a33;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.swc-icon{width:66px;height:66px;margin:0 auto;border-radius:19px;background:linear-gradient(180deg,#2f436f,#18284a);border:1.5px solid #0f1a33;display:flex;align-items:center;justify-content:center;font-size:2.1rem;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -4px 7px rgba(0,0,0,0.4);}
 .shop-world-chip.active .swc-icon{border-color:#f5c842;box-shadow:0 3px 0 #0b1326,0 0 11px rgba(245,200,66,0.6),inset 0 2px 0 rgba(255,255,255,0.2);}
-.swc-img{width:36px;height:36px;object-fit:contain;}
-.swc-name{font-size:0.55rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.shop-egg-card{position:relative;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-left:6px solid var(--rc,#3a5cb8);border-radius:15px;padding:9px 11px;margin-bottom:6px;overflow:hidden;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -5px 9px rgba(0,0,0,0.42);}
+.swc-img{width:54px;height:54px;object-fit:contain;}
+.swc-name{font-size:0.83rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shop-egg-card{position:relative;display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-left:6px solid var(--rc,#3a5cb8);border-radius:15px;padding:5px 11px;margin-bottom:6px;overflow:hidden;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -5px 9px rgba(0,0,0,0.42);}
 .shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 12% 45%,var(--rc,#3a5cb8),transparent 60%);opacity:0.48;pointer-events:none;}
 /* Låsta kort: behåll raritetsfärgad kant (hint om vad som komma skall), men ingen fade-glöd och grått ägg */
 .shop-egg-card.locked::before{opacity:0;}
@@ -2097,6 +2099,8 @@ function shopJumpTo(id){
   document.querySelectorAll('.shop-world-chip').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-world')===id);});
 }
 var SHOP_EGG_ICON_FILE={arctic:'artic',volcano:'vulcano'};
+// Glow-färg per äggvärld (matchar äggets visuella tema) — används som sken runt ägget i världs-knapparna
+var WORLD_GLOW={starter:'#6ab0e8',forest:'#56c25a',mountain:'#c2a06e',desert:'#edb04a',ocean:'#3fb6e6',jungle:'#7ccb3e',arctic:'#8fe0ee',volcano:'#f0503a',mystic:'#a865ec',celestial:'#c0a8f4',cosmic:'#e040fb'};
 var EGG_DESC={
   starter:'The beginning of your journey.',
   forest:'Infused with ancient forest magic.',
@@ -2122,8 +2126,8 @@ function renderShop(){
   var html='';
   html+='<div class="shop-header">Shop</div>';
   html+='<div class="shop-tabs">';
-  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs">🥚 Eggs</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells">🐚 Egg Shells</div>';
+  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shop/basic-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><span class="stab-emoji">🐚</span>EGG SHELLS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
@@ -2136,7 +2140,8 @@ function renderShop(){
   html+='<div class="shop-worlds">';
   EGG_SHOP.forEach(function(egg){
     html+='<div class="shop-world-chip" data-world="'+egg.id+'" data-jump-world="'+egg.id+'">';
-    html+='<div class="swc-icon"><img class="swc-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
+    var glow=WORLD_GLOW[egg.id]||'#6a8fd8';
+    html+='<div class="swc-icon"><img class="swc-img" src="'+eggShopIconUrl(egg.id)+'" alt="" style="filter:drop-shadow(0 0 4px '+glow+') drop-shadow(0 0 8px '+glow+'99);" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
     html+='<div class="swc-name">'+egg.name.replace(' Egg','')+'</div>';
     html+='</div>';
   });
@@ -2173,7 +2178,7 @@ function renderShop(){
     // Knappar (Craft över Hatch)
     html+='<div class="sec-btns">';
     if(!unlocked){
-      html+='<button class="sec-btn locked" disabled>🔒</button>';
+      html+='<button class="sec-btn locked" disabled style="font-size:1.08rem;">🔒</button>';
     } else {
       html+='<button class="sec-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
       var canHatchCard=owned>0||afford; // hatcha från lager om man äger, annars crafta+hatcha
