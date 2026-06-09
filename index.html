@@ -223,34 +223,86 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .bonus-chip{font-size:0.62rem;font-weight:800;color:rgba(180,136,255,0.9);white-space:nowrap;}
 
 /* Petdex */
-.pdx-header{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
-.pdx-progress-bar{width:100%;height:10px;background:rgba(0,0,0,0.4);border-radius:5px;overflow:hidden;margin:6px 0 4px;}
-.pdx-progress-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:5px;transition:width 0.3s;}
-.pdx-progress-label{display:flex;justify-content:space-between;font-size:0.7rem;color:rgba(255,255,255,0.5);}
-.pdx-world-tabs{display:flex;gap:5px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;}
+.pdx-prog-card{background:linear-gradient(160deg,#1d3164,#13224a);border:1px solid rgba(58,92,184,0.7);border-radius:14px;padding:13px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
+.pdx-prog-main{flex:1;min-width:0;}
+.pdx-prog-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.pdx-prog-title{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#fff;}
+.pdx-prog-pct{font-family:'Fredoka One',cursive;font-size:0.95rem;color:var(--gold);}
+.pdx-progress-bar{width:100%;height:11px;background:#0b1530;border:1px solid rgba(58,92,184,0.6);border-radius:6px;overflow:hidden;}
+.pdx-progress-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:5px;transition:width 0.3s;}
+.pdx-prog-count{font-size:0.7rem;color:rgba(255,255,255,0.6);font-weight:700;margin-top:6px;}
+.pdx-chest{flex-shrink:0;text-align:center;opacity:0.45;position:relative;}
+.pdx-chest.active{opacity:1;cursor:pointer;}
+.pdx-chest-badge{position:absolute;top:-3px;right:2px;background:#c0392b;color:#fff;font-size:0.5rem;font-weight:900;min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+.pdx-wc-btn{display:block;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:12px;padding:11px 14px;margin-bottom:14px;cursor:pointer;color:#fff;box-shadow:0 2px 0 #2a1858;}
+.pdx-wc-btn-top{display:flex;align-items:center;justify-content:space-between;font-family:'Fredoka One',cursive;font-size:0.8rem;}
+.pdx-wc-btn-pct{color:var(--gold);}
+.pdx-wc-btn-bar{height:7px;background:rgba(0,0,0,0.35);border-radius:4px;overflow:hidden;margin:7px 0 5px;}
+.pdx-wc-btn-fill{height:100%;background:linear-gradient(90deg,#f5c842,#ffe08a);}
+.pdx-wc-btn-sub{font-size:0.62rem;color:rgba(255,255,255,0.8);font-weight:700;text-align:right;}
+.pdx-chest-ic{font-size:1.9rem;line-height:1;}
+.pdx-chest-lbl{font-size:0.46rem;color:rgba(255,255,255,0.4);margin-top:2px;max-width:58px;}
+.pdx-section-label{font-family:'Fredoka One',cursive;font-size:0.7rem;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:8px;letter-spacing:0.5px;}
+.pdx-world-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;}
 .pdx-world-tabs::-webkit-scrollbar{height:3px;}
 .pdx-world-tabs::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
-.pdx-world-tab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.6);border-radius:10px;cursor:pointer;min-width:60px;}
-.pdx-world-tab.active{border-color:var(--gold);background:rgba(245,200,66,0.1);}
-.pdx-world-tab .pwt-icon{font-size:1.3rem;}
-.pdx-world-tab .pwt-name{font-size:0.5rem;font-weight:800;color:rgba(255,255,255,0.6);text-transform:uppercase;}
-.pdx-world-tab .pwt-prog{font-size:0.5rem;color:rgba(255,255,255,0.35);}
-.pdx-world-tab.active .pwt-name{color:var(--gold);}
-.pdx-world-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.pdx-world-tab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 12px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.6);border-radius:13px;cursor:pointer;min-width:62px;}
+.pdx-world-tab .pwt-icon{font-size:1.6rem;}
+.pdx-world-tab .pwt-name{font-size:0.55rem;font-weight:800;color:rgba(255,255,255,0.6);}
+.pdx-world-tab.active{border-color:#4caf50;background:linear-gradient(160deg,#1b3a2a,#122c20);box-shadow:0 0 10px rgba(76,175,80,0.25);}
+.pdx-world-tab.active .pwt-name{color:#7be08a;}
+.pdx-world-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
 .pdx-world-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
-.pdx-world-count{font-size:0.7rem;color:rgba(255,255,255,0.4);}
-.pdx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.pdx-card{background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);border-radius:12px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;position:relative;}
-.pdx-card.discovered{border-color:rgba(58,92,184,0.8);}
-.pdx-card.undiscovered{opacity:0.6;}
-.pdx-card-icon{font-size:1.8rem;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(0,0,0,0.3);}
-.pdx-card.undiscovered .pdx-card-icon{filter:grayscale(1) brightness(0.3);}
-.pdx-card-name{font-family:'Fredoka One',cursive;font-size:0.65rem;color:#fff;text-align:center;line-height:1.2;}
-.pdx-card.undiscovered .pdx-card-name{color:rgba(255,255,255,0.3);}
-.pdx-card-rarity{font-size:0.55rem;font-weight:800;}
-.pdx-discovered-badge{position:absolute;top:4px;right:4px;font-size:0.65rem;background:#4caf50;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;}
-.pdx-rarity-dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;margin-top:2px;}
-.pdx-rdot{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,0.2);}
+.pdx-world-count{font-size:0.78rem;color:var(--gold);font-weight:800;}
+.pdx-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pdx-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.5);border-radius:14px;padding:10px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;position:relative;}
+.pdx-card.found{border-color:rgba(245,200,66,0.55);}
+.pdx-card-art{font-size:2.4rem;width:58px;height:58px;display:flex;align-items:center;justify-content:center;}
+.pdx-card.undiscovered .pdx-card-art{filter:brightness(0) opacity(0.55);}
+.pdx-card-name{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#fff;text-align:center;line-height:1.1;}
+.pdx-card.undiscovered .pdx-card-name{color:rgba(255,255,255,0.3);letter-spacing:1px;}
+.pdx-card-pct{font-size:0.6rem;font-weight:800;color:var(--gold);}
+.pdx-card.undiscovered .pdx-card-pct{color:rgba(255,255,255,0.25);}
+.pdx-card-badge{position:absolute;top:5px;right:5px;font-size:0.6rem;background:#4caf50;border-radius:50%;width:17px;height:17px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.4);}
+#petdex-species-modal .pdsp-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow-y:auto;display:flex;flex-direction:column;}
+.pdsp-topbar{position:sticky;top:0;background:linear-gradient(180deg,#5a3aa8,#3f2880);display:flex;align-items:center;justify-content:space-between;padding:11px 14px;z-index:5;border-bottom:1px solid #7a5ad0;}
+.pdsp-back,.pdsp-x{background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:1rem;cursor:pointer;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.pdsp-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;text-transform:uppercase;letter-spacing:1px;}
+.pdsp-body{padding:14px 14px 28px;}
+.pdsp-art{height:148px;border-radius:16px;background:linear-gradient(160deg,#1d3164,#0e1c3c);border:1px solid rgba(58,92,184,0.6);display:flex;align-items:center;justify-content:center;font-size:5rem;margin-bottom:14px;}
+.pdsp-sec{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:13px;padding:12px;margin-bottom:11px;}
+.pdsp-sec-title{font-size:0.62rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;font-weight:800;}
+.pdsp-rarity-row{display:flex;flex-wrap:wrap;gap:8px;}
+.pdsp-rchip{display:flex;flex-direction:column;align-items:center;gap:3px;width:50px;}
+.pdsp-rchip-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;background:rgba(0,0,0,0.3);position:relative;border:1.5px solid;}
+.pdsp-rchip-lbl{font-size:0.48rem;color:rgba(255,255,255,0.55);}
+.pdsp-rchip-badge{position:absolute;bottom:-4px;right:-4px;font-size:0.45rem;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.pdsp-compl-bar{height:11px;background:#0b1530;border:1px solid rgba(58,92,184,0.6);border-radius:6px;overflow:hidden;}
+.pdsp-compl-fill{height:100%;background:linear-gradient(90deg,#f5c842,#ffe08a);}
+.pdsp-evo{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;}
+.pdsp-evo-cell{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pdsp-evo-art{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:rgba(0,0,0,0.3);border:1.5px solid;position:relative;}
+.pdsp-evo-lbl{font-size:0.44rem;}
+.pdsp-evo-badge{position:absolute;bottom:-4px;right:-4px;font-size:0.45rem;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.pdsp-ab-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.pdsp-ab{display:flex;align-items:center;gap:7px;font-size:0.7rem;}
+.pdsp-ab-ic{font-size:1rem;}
+.pdsp-ab .pdsp-ab-name{color:#fff;font-weight:700;}
+.pdsp-ab.unseen{opacity:0.4;}
+.pdsp-ab.unseen .pdsp-ab-name{color:rgba(255,255,255,0.6);font-weight:400;}
+.wc-row{display:flex;align-items:center;gap:11px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:13px;padding:11px 12px;margin-bottom:9px;}
+.wc-row.done{border-color:rgba(76,175,80,0.6);}
+.wc-ic{width:40px;height:40px;border-radius:11px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.wc-mid{flex:1;min-width:0;}
+.wc-name{font-size:0.74rem;font-weight:800;color:#fff;}
+.wc-done-tag{font-size:0.5rem;color:#7be08a;margin-left:6px;}
+.wc-bar{height:8px;background:#0b1530;border:1px solid rgba(58,92,184,0.5);border-radius:5px;overflow:hidden;margin-top:5px;}
+.wc-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);}
+.wc-pct{font-size:0.55rem;color:rgba(255,255,255,0.5);margin-top:3px;}
+.wc-reward{flex-shrink:0;text-align:center;width:72px;background:rgba(0,0,0,0.25);border:1px dashed rgba(255,255,255,0.22);border-radius:10px;padding:7px 4px;}
+.wc-reward-ic{font-size:1.1rem;opacity:0.7;}
+.wc-reward-lbl{font-size:0.45rem;color:rgba(255,255,255,0.4);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;line-height:1.3;}
+.wc-note{text-align:center;font-size:0.66rem;color:rgba(255,255,255,0.4);line-height:1.5;margin-top:10px;padding:0 6px;}
 .egg-info-rarity-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:8px;background:rgba(0,0,0,0.2);margin-bottom:4px;}
 .egg-info-rarity-bar{flex:1;height:6px;background:rgba(0,0,0,0.3);border-radius:3px;overflow:hidden;}
 .egg-info-rarity-fill{height:100%;border-radius:3px;}
@@ -294,6 +346,34 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .fusion-selected-info{font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:6px;}
 .fusion-clear-btn{padding:5px 12px;border:none;border-radius:8px;background:rgba(192,57,43,0.7);color:#fff;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;}
 .fusion-auto-btn{padding:5px 12px;border:none;border-radius:8px;background:linear-gradient(180deg,#7c4dff,#5a32c4);color:#fff;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;box-shadow:0 2px 0 #3a1f80;}
+.shf-intro{font-size:0.62rem;color:rgba(255,255,255,0.4);margin-bottom:12px;text-align:center;}
+.shf-row{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;margin-bottom:9px;}
+.shf-eq{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.shf-chip{display:flex;align-items:center;gap:4px;font-size:0.72rem;font-weight:800;color:#fff;}
+.shf-ic{font-size:1.05rem;}
+.shf-arrow{color:rgba(255,255,255,0.35);font-size:0.9rem;}
+.shf-have{font-size:0.55rem;color:rgba(255,255,255,0.45);margin-top:4px;}
+.shf-btns{display:flex;flex-direction:column;gap:4px;flex-shrink:0;align-items:flex-end;}
+.shf-btn{padding:5px 10px;border:none;border-radius:8px;background:linear-gradient(180deg,#7c4dff,#5a32c4);color:#fff;font-family:'Fredoka One',cursive;font-size:0.62rem;cursor:pointer;box-shadow:0 2px 0 #3a1f80;white-space:nowrap;}
+.shf-btn.max{background:linear-gradient(180deg,#1f3d78,#142a52);box-shadow:0 2px 0 #0c1b3a;}
+.shf-empty{text-align:center;padding:30px 18px;color:rgba(255,255,255,0.4);font-size:0.8rem;line-height:1.5;}
+.shf-io{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.shf-box{flex:1;background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:14px 8px;text-align:center;min-width:0;}
+.shf-box.pick{cursor:pointer;border-color:var(--gold);}
+.shf-box-ic{font-size:2rem;line-height:1;}
+.shf-box-lbl{font-size:0.72rem;font-weight:800;color:#fff;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shf-box-sub{font-size:0.55rem;color:rgba(255,255,255,0.5);margin-top:3px;}
+.shf-box-empty{color:rgba(255,255,255,0.4);font-size:0.7rem;padding:6px 2px;}
+.shf-io-arrow{font-size:1.3rem;color:var(--gold);flex-shrink:0;}
+.shf-qty-title{font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;text-align:center;}
+.shf-qty-row{display:flex;gap:6px;margin-bottom:14px;}
+.shf-qty{flex:1;padding:9px 4px;border:1px solid rgba(58,92,184,0.6);border-radius:10px;background:rgba(27,45,78,0.5);color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;text-align:center;white-space:nowrap;}
+.shf-qty.active{border-color:var(--gold);color:#fff;background:linear-gradient(180deg,#1f3d78,#142a52);}
+.shf-qty.disabled{opacity:0.3;pointer-events:none;}
+.shf-fuse{width:100%;padding:13px;border:none;border-radius:14px;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;}
+.shf-fuse.ready{background:linear-gradient(180deg,#f5c842,#d4a017);color:#3a2a00;box-shadow:0 3px 0 #9a7400;}
+.shf-fuse.disabled{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.35);pointer-events:none;}
+.shf-src-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);margin-bottom:7px;cursor:pointer;}
 
 .ach-header{background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
 .ach-overall{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
@@ -604,6 +684,40 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="document.getElementById('profile-modal').classList.remove('open')">✕</button>
     </div>
     <div class="prof-body" id="prof-body"></div>
+  </div>
+</div>
+<div id="confirm-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <div class="modal-title" id="confirm-title">Confirm</div>
+    <div id="confirm-body" style="font-size:0.8rem;color:rgba(255,255,255,0.85);line-height:1.55;margin-bottom:18px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="closeConfirm()" style="flex:1;padding:11px;border:none;border-radius:12px;background:rgba(255,255,255,0.12);color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;">Cancel</button>
+      <button id="confirm-ok" onclick="runConfirm()" style="flex:1;padding:11px;border:none;border-radius:12px;background:linear-gradient(180deg,#c0392b,#922b21);color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 3px 0 #5e1a12;">Confirm</button>
+    </div>
+  </div>
+</div>
+<div id="shell-src-modal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('shell-src-modal').classList.remove('open')">✕</button>
+    <div class="modal-title">Choose Source Shell</div>
+    <div id="shell-src-list"></div>
+  </div>
+</div>
+<div id="petdex-species-modal" class="modal-overlay">
+  <div class="pdsp-panel">
+    <div class="pdsp-topbar">
+      <button class="pdsp-back" onclick="document.getElementById('petdex-species-modal').classList.remove('open')">←</button>
+      <div class="pdsp-title" id="pdsp-title">Species</div>
+      <button class="pdsp-x" onclick="document.getElementById('petdex-species-modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="pdsp-body" id="pdsp-body"></div>
+  </div>
+</div>
+<div id="world-completion-modal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('world-completion-modal').classList.remove('open')">✕</button>
+    <div class="modal-title">🏆 World Completion</div>
+    <div id="wc-list"></div>
   </div>
 </div>
 
@@ -1152,6 +1266,7 @@ function addTestPets(){
       G.hatchedPets.push({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1});
     }
   });
+  syncDiscoveredFromInventory();
 }
 function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
 
@@ -1576,6 +1691,18 @@ function showEpsInfo(){
     'EPS är hur många Egg Coins du tjänar passivt varje sekund. Den kommer från dina byggnader (Buildings) och ökar när du köper fler eller högre nivåer. Aktiva pets med Coin Gain eller Idle Gain ökar den ytterligare. Att klicka på ägget ger coins direkt ovanpå din EPS.');
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
+
+// ===== CONFIRM-DIALOG (återanvändbar) =====
+var _confirmCb=null;
+function showConfirm(title,bodyHtml,okLabel,cb){
+  _confirmCb=cb;
+  var t=document.getElementById('confirm-title');if(t)t.textContent=title;
+  var b=document.getElementById('confirm-body');if(b)b.innerHTML=bodyHtml;
+  var ok=document.getElementById('confirm-ok');if(ok)ok.textContent=okLabel||'Confirm';
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');_confirmCb=null;}
+function runConfirm(){var cb=_confirmCb;closeConfirm();if(typeof cb==='function')cb();}
 
 // ===== PROFILE HUB =====
 var profileSubTab='overview';
@@ -2156,6 +2283,9 @@ function renderHatchery(){
 var RARITY_PROGRESSION=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
 
 var fusionSlots=[null,null,null,null,null]; // pet UIDs
+var fusionMode='pets'; // 'pets' eller 'shells'
+var shellFuseSource=null; // vald källraritet
+var shellFuseQty=1; // antal högre shells att skapa (1/5/10/50 eller 'max')
 var fusionRarityFilter='common';
 
 function getNextRarity(rarity){
@@ -2207,6 +2337,16 @@ function canFuse(){
   return rarities.every(function(r){return r===rarities[0]&&r!==null;});
 }
 
+function tryFusePets(){
+  if(!canFuse())return;
+  var filled=fusionSlots.filter(function(s){return s!==null;});
+  var firstPet=G.hatchedPets.find(function(p){return p.uid===filled[0];});
+  if(!firstPet)return;
+  var next=getNextRarity(firstPet.rarity);
+  if(!next){alert('Already at max rarity!');return;}
+  var cur=RARITY_CONFIG[firstPet.rarity]||{},nm=RARITY_CONFIG[next]||{};
+  showConfirm('Fuse Pets','This will permanently destroy <b>5 '+(cur.label||firstPet.rarity)+' pets</b> to create <b style="color:'+(nm.color||'#fff')+'">1 '+(nm.label||next)+' pet</b>.<br><br>The fused pets cannot be recovered.','⚗️ Fuse',function(){doFusion();});
+}
 function doFusion(){
   if(!canFuse())return;
   var filled=fusionSlots.filter(function(s){return s!==null;});
@@ -2322,6 +2462,100 @@ function clearFusionSlots(){
   renderFusion();
 }
 
+function setFusionMode(m){fusionMode=m;if(m==='pets')clearFusionSlots();else renderFusion();}
+function shellMeta(id){var s=SHELL_RARITIES.find(function(x){return x.id===id;});var rc=RARITY_CONFIG[id]||{};return {icon:s?s.icon:'⚪',color:s?s.color:(rc.color||'#aaa'),label:(rc.label||id)};}
+function convertShells(fromRarity,batches){
+  var next=getNextRarity(fromRarity);if(!next)return;
+  var have=G.shells[fromRarity]||0;
+  var maxB=Math.floor(have/5);
+  var n=Math.min(batches,maxB);
+  if(n<=0)return;
+  G.shells[fromRarity]-=n*5;
+  G.shells[next]=(G.shells[next]||0)+n;
+  // Stats: 5 förbrukade per batch, n producerade räknas som insamlade
+  G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+n*5;
+  G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+n;
+  if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
+  G.stats.shellsCollectedByRarity[next]=(G.stats.shellsCollectedByRarity[next]||0)+n;
+  var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  if(ORDER.indexOf(next)>ORDER.indexOf(G.stats.highestRarityShellFound||'common'))G.stats.highestRarityShellFound=next;
+  var favMax=0;ORDER.forEach(function(rid){if((G.stats.shellsCollectedByRarity[rid]||0)>favMax){favMax=G.stats.shellsCollectedByRarity[rid];G.stats.favoriteShell=rid;}});
+  saveGame();
+  renderFusion();
+}
+function renderShellFusion(){
+  var src=shellFuseSource;
+  var have=src?(G.shells[src]||0):0;
+  var maxOut=Math.floor(have/5);
+  var next=src?getNextRarity(src):null;
+  var sm=src?shellMeta(src):null;
+  var nm=next?shellMeta(next):null;
+  var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
+  var h='<div class="shf-intro">Pick a source shell, choose how many higher shells to make. 5 lower = 1 higher.</div>';
+  // INPUT → OUTPUT
+  h+='<div class="shf-io">';
+  h+='<div class="shf-box pick" onclick="openShellSrcPicker()">';
+  if(src){
+    h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+sm.icon+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
+  } else {
+    h+='<div class="shf-box-ic">🐚</div><div class="shf-box-empty">Tap to choose a shell</div>';
+  }
+  h+='</div>';
+  h+='<div class="shf-io-arrow">→</div>';
+  h+='<div class="shf-box">';
+  if(src&&next){
+    h+='<div class="shf-box-ic" style="color:'+nm.color+'">'+nm.icon+'</div><div class="shf-box-lbl">'+nm.label+'</div><div class="shf-box-sub">'+(qty>0?('get '+fmtShort(qty)):'—')+'</div>';
+  } else {
+    h+='<div class="shf-box-ic" style="opacity:0.3">❔</div><div class="shf-box-empty">Result</div>';
+  }
+  h+='</div></div>';
+  // QUANTITY
+  h+='<div class="shf-qty-title">Amount to create</div><div class="shf-qty-row">';
+  [1,5,10,50].forEach(function(v){
+    var dis=(!src||v>maxOut)?' disabled':'';
+    var act=(shellFuseQty===v)?' active':'';
+    h+='<div class="shf-qty'+act+dis+'" onclick="setShellQty('+v+')">'+v+'</div>';
+  });
+  var maxDis=(!src||maxOut<1)?' disabled':'';
+  var maxAct=(shellFuseQty==='max')?' active':'';
+  h+='<div class="shf-qty'+maxAct+maxDis+'" onclick="setShellQty(\'max\')">Max'+((src&&maxOut>0)?' ('+fmtShort(maxOut)+')':'')+'</div>';
+  h+='</div>';
+  // FUSE
+  var ready=src&&next&&qty>=1;
+  if(ready){
+    h+='<button class="shf-fuse ready" onclick="tryFuseShells()">🐚 Fuse Shells ('+fmtShort(qty*5)+' → '+fmtShort(qty)+')</button>';
+  } else {
+    var msg=!src?'Choose a source shell':(maxOut<1?('Need 5 '+(sm?sm.label:'')+' shells'):'Select an amount');
+    h+='<button class="shf-fuse disabled">'+msg+'</button>';
+  }
+  return h;
+}
+function setShellQty(v){shellFuseQty=v;renderFusion();}
+function openShellSrcPicker(){renderShellSrcList();document.getElementById('shell-src-modal').classList.add('open');}
+function renderShellSrcList(){
+  var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var wrap=document.getElementById('shell-src-list');if(!wrap)return;
+  var h='',any=false;
+  ORDER.forEach(function(rid){
+    if(!getNextRarity(rid))return; // cosmic kan inte konverteras
+    var have=G.shells[rid]||0;if(have<=0)return;
+    any=true;var sm=shellMeta(rid),maxOut=Math.floor(have/5);
+    h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+sm.icon+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Shell</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
+  });
+  if(!any)h='<div class="shf-empty">You have no shells that can be converted yet.<br>Collect shells by tapping and idling first.</div>';
+  wrap.innerHTML=h;
+}
+function setShellSource(rid){shellFuseSource=rid;shellFuseQty=1;document.getElementById('shell-src-modal').classList.remove('open');renderFusion();}
+function tryFuseShells(){
+  var src=shellFuseSource;if(!src)return;
+  var next=getNextRarity(src);if(!next)return;
+  var have=G.shells[src]||0,maxOut=Math.floor(have/5);
+  var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
+  if(qty<1)return;
+  var sm=shellMeta(src),nm=shellMeta(next),cost=qty*5;
+  showConfirm('Fuse Shells','This will permanently destroy <b style="color:'+sm.color+'">'+fmtShort(cost)+' '+sm.label+' Shell'+(cost>1?'s':'')+'</b> to create <b style="color:'+nm.color+'">'+fmtShort(qty)+' '+nm.label+' Shell'+(qty>1?'s':'')+'</b>.<br><br>Destroyed shells cannot be recovered.','🐚 Fuse',function(){convertShells(src,qty);shellFuseQty=1;renderFusion();});
+}
+
 function autoSelectFusion(){
   var rarity=getFusionSelectedRarity()||fusionRarityFilter;
   if(!rarity)return;
@@ -2342,6 +2576,11 @@ function autoSelectFusion(){
 
 function renderFusion(){
   var wrap=document.getElementById('fusion-wrap');if(!wrap)return;
+  var modeTabs='<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +'<div class="fusion-tab'+(fusionMode==='pets'?' active':'')+'" onclick="setFusionMode(\'pets\')">⚗️ Pet Fusion</div>'
+    +'<div class="fusion-tab'+(fusionMode==='shells'?' active':'')+'" onclick="setFusionMode(\'shells\')">🐚 Shell Fusion</div>'
+    +'</div>';
+  if(fusionMode==='shells'){wrap.innerHTML=modeTabs+renderShellFusion();return;}
   var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
   var selectedRarity=getFusionSelectedRarity();
   var nextRar=selectedRarity?getNextRarity(selectedRarity):null;
@@ -2351,7 +2590,7 @@ function renderFusion(){
   var perfect=isPerfectFusion();
   var ready=canFuse();
 
-  var html='';
+  var html=modeTabs;
 
   // Selected pets as chips
   html+='<div class="fusion-slots-area">';
@@ -2407,7 +2646,7 @@ function renderFusion(){
     html+='<div class="fusion-perfect">⭐ Perfect Fusion — 100% guaranteed species!</div>';
   }
 
-  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="doFusion()"':'')+'>⚗️ '+(ready?'Fuse Pets!':'Select 5 pets of the same rarity')+'</button>';
+  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="tryFusePets()"':'')+'>⚗️ '+(ready?'Fuse Pets!':'Select 5 pets of the same rarity')+'</button>';
   html+='</div>';
 
   // Rarity filter chips
@@ -2725,6 +2964,19 @@ function isPetDiscovered(name,rarity){
   if(!G._discoveredPets)return false;
   return !!G._discoveredPets[name+'_'+rarity];
 }
+// Logga en upptäckt (enda vägen in). Bumpar unik-stat bara för NYA.
+function discoverPet(name,rarity){
+  if(!G._discoveredPets)G._discoveredPets={};
+  var key=name+'_'+rarity;
+  if(!G._discoveredPets[key]){
+    G._discoveredPets[key]=true;
+    if(G.stats)G.stats.uniquePetsDiscovered=(G.stats.uniquePetsDiscovered||0)+1;
+  }
+}
+// Allt du ÄGER ska räknas som upptäckt (hatch/fusion/fusk/trade/adventures).
+function syncDiscoveredFromInventory(){
+  (G.hatchedPets||[]).forEach(function(p){if(p&&p.name&&p.rarity)discoverPet(p.name,p.rarity);});
+}
 
 function getTotalPetdexCount(){
   var entries=buildPetdexEntries();
@@ -2737,58 +2989,163 @@ function getWorldPetdexCount(worldId){
 }
 
 var petdexActiveWorld='starter';
+// ===== PETDEX: art-baserade hjälpare (v2.2 lyft) =====
+var PETDEX_RARITY_ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+function getPetdexSpecies(worldId){
+  var pool=PET_POOL[worldId];if(!pool)return [];
+  var seen={},list=[];
+  PETDEX_RARITY_ORDER.forEach(function(r){
+    if(!pool[r])return;
+    pool[r].forEach(function(sp){
+      if(seen[sp.name])return;
+      seen[sp.name]=true;
+      list.push({name:sp.name,e:sp.e,native:r,world:worldId});
+    });
+  });
+  return list;
+}
+function speciesObtainableRarities(native){
+  var i=PETDEX_RARITY_ORDER.indexOf(native);
+  return i<0?PETDEX_RARITY_ORDER.slice():PETDEX_RARITY_ORDER.slice(i);
+}
+function speciesDiscoveredRarities(name,native){
+  return speciesObtainableRarities(native).filter(function(r){return isPetDiscovered(name,r);});
+}
+function speciesCompletion(name,native){
+  var ob=speciesObtainableRarities(native);
+  return ob.length>0?Math.floor(speciesDiscoveredRarities(name,native).length/ob.length*100):0;
+}
+function isSpeciesFound(name,native){
+  return speciesObtainableRarities(native).some(function(r){return isPetDiscovered(name,r);});
+}
+function getWorldSpeciesCount(worldId){
+  var sp=getPetdexSpecies(worldId);
+  return {total:sp.length, found:sp.filter(function(s){return isSpeciesFound(s.name,s.native);}).length};
+}
+function getTotalSpeciesCount(){
+  var t=0,f=0;
+  PETDEX_WORLDS.forEach(function(w){var c=getWorldSpeciesCount(w.id);t+=c.total;f+=c.found;});
+  return {total:t,found:f};
+}
+function findSpeciesMeta(name,worldId){
+  return getPetdexSpecies(worldId).find(function(s){return s.name===name;})||null;
+}
+// Art-detaljsida (steg 2)
+var pdexSpName=null, pdexSpWorld=null;
+function openPetdexSpecies(name,worldId){
+  pdexSpName=name;pdexSpWorld=worldId;
+  renderPetdexSpecies();
+  document.getElementById('petdex-species-modal').classList.add('open');
+}
+function pdexRarityChip(r,found){
+  var rc=RARITY_CONFIG[r]||{};
+  return '<div class="pdsp-rchip"><div class="pdsp-rchip-ic" style="border-color:'+(found?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';color:'+(rc.color||'#aaa')+'">'+(rc.icon||'')+'<span class="pdsp-rchip-badge" style="background:'+(found?'#4caf50':'#444')+'">'+(found?'✓':'🔒')+'</span></div><div class="pdsp-rchip-lbl">'+(rc.label||r)+'</div></div>';
+}
+function renderPetdexSpecies(){
+  var body=document.getElementById('pdsp-body');if(!body)return;
+  var meta=findSpeciesMeta(pdexSpName,pdexSpWorld);
+  if(!meta){body.innerHTML='';return;}
+  var titleEl=document.getElementById('pdsp-title');if(titleEl)titleEl.textContent=meta.name;
+  var ob=speciesObtainableRarities(meta.native);
+  var found=ob.filter(function(r){return isPetDiscovered(meta.name,r);});
+  var missing=ob.filter(function(r){return !isPetDiscovered(meta.name,r);});
+  var comp=ob.length>0?Math.floor(found.length/ob.length*100):0;
+  var h='';
+  // Stor bild
+  h+='<div class="pdsp-art">'+meta.e+'</div>';
+  // Completion
+  h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Completion · '+found.length+' / '+ob.length+' rarities</div>';
+  h+='<div class="pdsp-compl-bar"><div class="pdsp-compl-fill" style="width:'+comp+'%"></div></div>';
+  h+='<div style="text-align:right;font-family:\'Fredoka One\',cursive;color:var(--gold);font-size:0.9rem;margin-top:5px;">'+comp+'%</div></div>';
+  // Rarity Found
+  h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Rarity Found</div>';
+  if(found.length){h+='<div class="pdsp-rarity-row">'+found.map(function(r){return pdexRarityChip(r,true);}).join('')+'</div>';}
+  else{h+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.4)">None yet.</div>';}
+  h+='</div>';
+  // Missing
+  if(missing.length){
+    h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Missing</div><div class="pdsp-rarity-row">'+missing.map(function(r){return pdexRarityChip(r,false);}).join('')+'</div></div>';
+  }
+  // Evolution Line
+  h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Evolution Line</div><div class="pdsp-evo">';
+  ob.forEach(function(r){
+    var disc=isPetDiscovered(meta.name,r);var rc=RARITY_CONFIG[r]||{};
+    h+='<div class="pdsp-evo-cell"><div class="pdsp-evo-art" style="border-color:'+(disc?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';'+(disc?'':'filter:brightness(0) opacity(0.5);')+'">'+meta.e+'<span class="pdsp-evo-badge" style="background:'+(disc?'#4caf50':'#444')+'">'+(disc?'✓':'🔒')+'</span></div>';
+    h+='<div class="pdsp-evo-lbl" style="color:'+(disc?(rc.color||'#aaa'):'rgba(255,255,255,0.4)')+'">'+(rc.label||r)+'</div></div>';
+  });
+  h+='</div></div>';
+  // Abilities Seen (av ability-typer du sett på pets du ÄGER av arten)
+  var seen={};
+  (G.hatchedPets||[]).forEach(function(p){if(p.name===meta.name&&p.abilities){p.abilities.forEach(function(a){if(a&&a.id)seen[a.id]=true;});}});
+  h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Abilities Seen</div><div class="pdsp-ab-grid">';
+  ABILITIES.forEach(function(aid){
+    var am=ABILITY_META[aid]||{};var s=!!seen[aid];
+    h+='<div class="pdsp-ab '+(s?'seen':'unseen')+'"><span class="pdsp-ab-ic">'+(s?(am.icon||'✨'):'❔')+'</span><span class="pdsp-ab-name">'+(am.name||aid)+'</span></div>';
+  });
+  h+='</div></div>';
+  body.innerHTML=h;
+}
+// World Completion (steg 3) — belöningar är placeholders tills rewards-sessionen
+function countCompletedWorlds(){
+  return PETDEX_WORLDS.filter(function(w){var c=getWorldSpeciesCount(w.id);return c.total>0&&c.found>=c.total;}).length;
+}
+function openWorldCompletion(){renderWorldCompletion();document.getElementById('world-completion-modal').classList.add('open');}
+function renderWorldCompletion(){
+  var wrap=document.getElementById('wc-list');if(!wrap)return;
+  var h='';
+  PETDEX_WORLDS.forEach(function(w){
+    var c=getWorldSpeciesCount(w.id);
+    var pct=c.total>0?Math.floor(c.found/c.total*100):0;
+    var done=pct>=100;
+    h+='<div class="wc-row'+(done?' done':'')+'">';
+    h+='<div class="wc-ic">'+w.icon+'</div>';
+    h+='<div class="wc-mid"><div class="wc-name">'+w.name+' Egg'+(done?'<span class="wc-done-tag">✓ COMPLETE</span>':'')+'</div>';
+    h+='<div class="wc-bar"><div class="wc-fill" style="width:'+pct+'%"></div></div>';
+    h+='<div class="wc-pct">'+c.found+' / '+c.total+' species · '+pct+'%</div></div>';
+    h+='<div class="wc-reward"><div class="wc-reward-ic">🎁</div><div class="wc-reward-lbl">Reward<br>soon</div></div>';
+    h+='</div>';
+  });
+  h+='<div class="wc-note">Rewards for completing each world will be added in a future update.</div>';
+  wrap.innerHTML=h;
+}
+
 function renderPetdex(){
   var wrap=document.getElementById('petdex-wrap');if(!wrap)return;
-  var overall=getTotalPetdexCount();
+  syncDiscoveredFromInventory(); // skyddsnät: äger man peten syns den alltid
+  var overall=getTotalSpeciesCount();
   var pct=overall.total>0?Math.floor(overall.found/overall.total*100):0;
-
   var html='';
-  // Header
-  html+='<div class="pdx-header">';
-  html+='<div style="display:flex;justify-content:space-between;align-items:center">';
-  html+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.9rem;">📖 Petdex</div>';
-  html+='<div style="font-size:0.7rem;color:var(--gold);font-weight:800;">'+overall.found+' / '+overall.total+' Found</div>';
-  html+='</div>';
+  // Progress header
+  html+='<div class="pdx-prog-card"><div class="pdx-prog-main">';
+  html+='<div class="pdx-prog-top"><span class="pdx-prog-title">Petdex Progress</span><span class="pdx-prog-pct">'+pct+'%</span></div>';
   html+='<div class="pdx-progress-bar"><div class="pdx-progress-fill" style="width:'+pct+'%"></div></div>';
-  html+='<div class="pdx-progress-label"><span>'+pct+'% Complete</span><span style="color:rgba(255,255,255,0.3)">'+overall.total+' total pets</span></div>';
-  html+='</div>';
-
+  html+='<div class="pdx-prog-count">'+overall.found+' / '+overall.total+' Species Found</div>';
+  var doneWorlds=countCompletedWorlds();
+  html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">🎁</div>'+(doneWorlds>0?'<div class="pdx-chest-badge">'+doneWorlds+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
+  html+='<div class="pdx-wc-btn" onclick="openWorldCompletion()"><div class="pdx-wc-btn-top"><span>🏆 World Completion</span><span class="pdx-wc-btn-pct">'+pct+'%</span></div><div class="pdx-wc-btn-bar"><div class="pdx-wc-btn-fill" style="width:'+pct+'%"></div></div><div class="pdx-wc-btn-sub">'+doneWorlds+' / '+PETDEX_WORLDS.length+' worlds complete ›</div></div>';
   // World tabs
-  html+='<div class="pdx-world-tabs">';
+  html+='<div class="pdx-section-label">Select Egg World</div><div class="pdx-world-tabs">';
   PETDEX_WORLDS.forEach(function(w){
-    var wc=getWorldPetdexCount(w.id);
-    var wpct=wc.total>0?Math.floor(wc.found/wc.total*100):0;
-    html+='<div class="pdx-world-tab'+(petdexActiveWorld===w.id?' active':'')+'" onclick="setPetdexWorld(\''+w.id+'\')">';
-    html+='<div class="pwt-icon">'+w.icon+'</div>';
-    html+='<div class="pwt-name">'+w.name+'</div>';
-    html+='<div class="pwt-prog">'+wc.found+'/'+wc.total+'</div>';
-    html+='</div>';
+    html+='<div class="pdx-world-tab'+(petdexActiveWorld===w.id?' active':'')+'" onclick="setPetdexWorld(\''+w.id+'\')"><div class="pwt-icon">'+w.icon+'</div><div class="pwt-name">'+w.name+'</div></div>';
   });
   html+='</div>';
-
   // Active world grid
   var worldInfo=PETDEX_WORLDS.find(function(w){return w.id===petdexActiveWorld;});
-  var worldEntries=buildPetdexEntries().filter(function(e){return e.world===petdexActiveWorld;});
-  var wc=getWorldPetdexCount(petdexActiveWorld);
-
-  html+='<div class="pdx-world-header">';
-  html+='<div class="pdx-world-title">'+(worldInfo?worldInfo.icon+' '+worldInfo.name+' Egg':'')+'</div>';
-  html+='<div class="pdx-world-count">'+wc.found+' / '+wc.total+'</div>';
-  html+='</div>';
-
+  var species=getPetdexSpecies(petdexActiveWorld);
+  var wc=getWorldSpeciesCount(petdexActiveWorld);
+  html+='<div class="pdx-world-header"><div class="pdx-world-title">'+(worldInfo?worldInfo.icon+' '+worldInfo.name+' Egg':'')+'</div><div class="pdx-world-count">'+wc.found+' / '+wc.total+'</div></div>';
   html+='<div class="pdx-grid">';
-  worldEntries.forEach(function(entry){
-    var discovered=isPetDiscovered(entry.name,entry.rarity);
-    var rc=RARITY_CONFIG[entry.rarity]||RARITY_CONFIG.common;
-    html+='<div class="pdx-card'+(discovered?' discovered':' undiscovered')+'">';
-    if(discovered)html+='<div class="pdx-discovered-badge">✓</div>';
-    html+='<div class="pdx-card-icon">'+entry.e+'</div>';
-    html+='<div class="pdx-card-name">'+(discovered?entry.name:'???')+'</div>';
-    html+='<div class="pdx-card-rarity" style="color:'+rc.color+'">'+(discovered?rc.icon+' '+rc.label:'🔒')+'</div>';
+  species.forEach(function(sp){
+    var found=isSpeciesFound(sp.name,sp.native);
+    var comp=found?speciesCompletion(sp.name,sp.native):0;
+    html+='<div class="pdx-card '+(found?'found':'undiscovered')+'"'+(found?' onclick="openPetdexSpecies(\''+sp.name+'\',\''+petdexActiveWorld+'\')"':' style="cursor:default"')+'>';
+    if(found)html+='<div class="pdx-card-badge">✓</div>';
+    html+='<div class="pdx-card-art">'+sp.e+'</div>';
+    html+='<div class="pdx-card-name">'+(found?sp.name:'?????')+'</div>';
+    html+='<div class="pdx-card-pct">'+comp+'%</div>';
     html+='</div>';
   });
   html+='</div>';
-
   wrap.innerHTML=html;
 }
 
@@ -2900,6 +3257,7 @@ if(savedData){
     Object.keys(savedData.stats).forEach(function(k){G.stats[k]=savedData.stats[k];});
   }
   G._discoveredPets=savedData._discoveredPets||{};
+  syncDiscoveredFromInventory(); // allt man äger ska finnas i Petdex
   G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
   G.stats.totalSessions++;
