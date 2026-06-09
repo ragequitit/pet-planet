@@ -107,21 +107,54 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .inv-count{font-size:1.1rem;font-weight:900;color:var(--gold);font-family:'Fredoka One',cursive;}
 .inv-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:8px;color:rgba(255,255,255,0.3);text-align:center;}
 .inv-coming .ic-icon{font-size:2.5rem;}
-.shop-egg-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:16px;padding:14px;margin-bottom:10px;backdrop-filter:blur(4px);}
-.shop-egg-card.available{border-color:rgba(245,200,66,0.6);}
-.shop-egg-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.shop-egg-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:2rem;flex-shrink:0;}
-.shop-egg-name{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;}
-.shop-egg-status{font-size:0.7rem;margin-top:3px;}
+.shop-header{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;text-align:center;margin:2px 0 12px;text-shadow:0 2px 6px rgba(0,0,0,0.5);}
+.shop-tabs{display:flex;gap:8px;margin-bottom:14px;}
+.shop-tab{flex:1;text-align:center;padding:10px;border-radius:12px;background:rgba(27,45,78,0.5);border:1px solid rgba(58,92,184,0.4);color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;font-size:0.85rem;cursor:pointer;}
+.shop-tab.active{background:linear-gradient(180deg,#3a5cb8,#1f3d96);border-color:#5a7fd8;color:#fff;box-shadow:0 2px 0 #0a1838;}
+.shop-placeholder{text-align:center;padding:50px 20px;color:rgba(255,255,255,0.5);}
+.shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
+.shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
+.shop-world-label{font-size:0.72rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;font-weight:800;}
+.shop-worlds{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
+.shop-world-chip{flex:0 0 auto;width:62px;text-align:center;cursor:pointer;opacity:0.8;}
+.shop-world-chip.active{opacity:1;}
+.swc-icon{width:54px;height:54px;margin:0 auto;border-radius:13px;background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.5);display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+.shop-world-chip.active .swc-icon{border-color:#f5c842;box-shadow:0 0 10px rgba(245,200,66,0.5);}
+.swc-img{width:42px;height:42px;object-fit:contain;}
+.swc-name{font-size:0.58rem;color:rgba(255,255,255,0.8);margin-top:3px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.shop-egg-card{position:relative;background:rgba(27,45,78,0.4);border:2px solid var(--rc,#3a5cb8);border-radius:16px;padding:13px;margin-bottom:12px;overflow:hidden;}
+.shop-egg-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 16% 28%,var(--rc,#3a5cb8),transparent 62%);opacity:0.15;pointer-events:none;}
+.shop-egg-card.locked{border-color:rgba(90,110,150,0.4);}
+.shop-egg-card.locked::before{opacity:0;}
+.shop-egg-card.locked .sec-art-img{filter:grayscale(1) brightness(0.45);}
+.sec-info{position:absolute;top:8px;left:8px;width:27px;height:27px;border-radius:9px;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;font-size:0.85rem;cursor:pointer;z-index:3;}
+.sec-owned{position:absolute;top:8px;right:8px;background:#c0392b;color:#fff;font-family:'Fredoka One',cursive;font-size:0.68rem;padding:2px 8px;border-radius:9px;z-index:3;}
+.sec-top{display:flex;align-items:center;gap:13px;position:relative;z-index:1;margin:6px 0 11px;}
+.sec-art{width:72px;height:72px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:3rem;filter:drop-shadow(0 3px 5px rgba(0,0,0,0.4));}
+.sec-art-img{width:72px;height:72px;object-fit:contain;}
+.sec-mid{flex:1;min-width:0;}
+.sec-name{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;}
+.sec-rarity{font-size:0.62rem;margin-top:2px;font-weight:700;}
+.sec-have{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-top:4px;}
+.sec-cost{display:flex;align-items:center;gap:8px;background:rgba(0,0,0,0.28);border-radius:11px;padding:9px 12px;margin-bottom:9px;position:relative;z-index:1;}
+.sec-cost-lbl{font-size:0.58rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;margin-right:2px;}
+.sec-cost-chip{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.82rem;color:#fff;}
+.sec-cost-chip.bad{color:#ff7b7b;}
+.sec-coin{width:17px;height:17px;object-fit:contain;}
+.sec-cost-plus{color:rgba(255,255,255,0.35);font-weight:800;}
+.sec-locked-req{background:rgba(0,0,0,0.28);border-radius:11px;padding:10px 12px;margin-bottom:9px;font-size:0.74rem;color:rgba(255,255,255,0.55);position:relative;z-index:1;}
+.sec-btns{display:flex;gap:8px;position:relative;z-index:1;}
+.sec-btn{flex:1;padding:11px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:0.88rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.35);color:#fff;}
+.sec-btn.craft{background:linear-gradient(180deg,#b388ff,#7c4dff);}
+.sec-btn.hatch{background:linear-gradient(180deg,#5fd16a,#2e9e3f);}
+.sec-btn.no{background:rgba(27,45,78,0.5);color:rgba(255,255,255,0.3);cursor:default;box-shadow:none;}
+.sec-btn.locked{background:rgba(27,45,78,0.5);color:rgba(255,255,255,0.35);cursor:default;box-shadow:none;width:100%;flex:none;}
 .shop-egg-reqs{background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 10px;margin-bottom:10px;display:flex;flex-direction:column;gap:4px;}
 .req-row{display:flex;align-items:center;gap:6px;font-size:0.72rem;}
 .req-icon{font-size:0.9rem;width:18px;text-align:center;}
 .req-label{color:rgba(255,255,255,0.5);flex:1;}
 .req-val.met{color:#4caf50;font-weight:800;}
 .req-val.unmet{color:rgba(255,255,255,0.3);}
-.shop-btn{width:100%;padding:10px;border:none;border-radius:12px;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,0.4);}
-.shop-btn.can{background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;}
-.shop-btn.no{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;box-shadow:none;}
 .hatch-section-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
 .hatch-slot{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:16px;padding:14px;margin-bottom:8px;backdrop-filter:blur(4px);}
 .hatch-slot.active-slot{border-color:rgba(245,200,66,0.5);}
@@ -1970,7 +2003,10 @@ document.addEventListener('click',function(e){
   var d=e.target;
   while(d&&d!==document){
     if(d.dataset&&d.dataset.buyEgg){buyEgg(d.dataset.buyEgg);return;}
+    if(d.dataset&&d.dataset.hatchEgg){hatchFromShop(d.dataset.hatchEgg);return;}
     if(d.dataset&&d.dataset.infoEgg){showEggInfo(d.dataset.infoEgg);return;}
+    if(d.dataset&&d.dataset.jumpWorld){shopJumpTo(d.dataset.jumpWorld);return;}
+    if(d.dataset&&d.dataset.shopTab){setShopTab(d.dataset.shopTab);return;}
     d=d.parentNode;
   }
 });
@@ -2042,25 +2078,87 @@ function showInvSection(name){
 // ============================================================
 function hasBuildingUnlocked(name){var idx=BUILDINGS.findIndex(function(b){return b.n===name;});return idx>=0&&G.owned[idx]>0;}
 function getEggState(egg){var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&buildOk&&hatchOk?'unlocked':'locked';}
+var shopTab='eggs';
+function setShopTab(t){shopTab=t;renderShop();}
+function shopJumpTo(id){
+  var el=document.getElementById('shopcard-'+id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
+  document.querySelectorAll('.shop-world-chip').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-world')===id);});
+}
+var SHOP_EGG_ICON_FILE={starter:'basic',arctic:'artic',volcano:'vulcano'};
+function eggShopIconUrl(id){var f=SHOP_EGG_ICON_FILE[id]||id;return ASSET_BASE+'/assets/ui/shop/'+f+'-egg.png';}
+function shopLockReason(egg){
+  if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)return '🔒 Earn '+fmtShort(egg.coinReq)+' Egg Coins ('+fmtShort(G.stats.totalCoinsEarned)+' / '+fmtShort(egg.coinReq)+')';
+  if(egg.buildReq&&!hasBuildingUnlocked(egg.buildReq))return '🔒 Build a '+egg.buildReq+' first';
+  if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return '🔒 Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
+  return '🔒 Locked';
+}
 function renderShop(){
   var wrap=document.getElementById('shop-wrap');if(!wrap)return;
   var html='';
+  html+='<div class="shop-header">Shop</div>';
+  html+='<div class="shop-tabs">';
+  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs">🥚 Eggs</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells">🐚 Egg Shells</div>';
+  html+='</div>';
+
+  if(shopTab==='shells'){
+    html+='<div class="shop-placeholder"><div style="font-size:2.6rem;">🐚</div><div class="sp-title">Egg Shells</div><div class="sp-sub">Här kommer du kunna se alla dina shells samlade på ett ställe. Byggs i ett senare steg.</div></div>';
+    wrap.innerHTML=html;return;
+  }
+
+  // Världsväljare (scrollar till ägget i listan)
+  html+='<div class="shop-world-label">Select Egg World</div>';
+  html+='<div class="shop-worlds">';
+  EGG_SHOP.forEach(function(egg){
+    html+='<div class="shop-world-chip" data-world="'+egg.id+'" data-jump-world="'+egg.id+'">';
+    html+='<div class="swc-icon"><img class="swc-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
+    html+='<div class="swc-name">'+egg.name.replace(' Egg','')+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+
+  // Äggkort
+  var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  var slotFree=active<G.petSlots;
   EGG_SHOP.forEach(function(egg){
     var state=getEggState(egg);
+    var unlocked=state==='unlocked';
     var shellR=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
-    var have=G.shells[egg.shellType]||0;
-    var cost=getEggCost(egg);
-    var shellOk=have>=cost;var canBuy=state==='unlocked'&&shellOk;var owned=G.eggsOwned[egg.id]||0;
-    html+='<div class="shop-egg-card '+(state==='unlocked'?'available':'')+'">';
-    html+='<div class="shop-egg-top"><div class="shop-egg-icon">'+egg.icon+'</div><div>';
-    html+='<div class="shop-egg-name">'+egg.name+'</div>';
-    if(owned>0)html+='<div class="shop-egg-status" style="color:#4caf50">✅ Owned: '+owned+'</div>';
-    else if(state==='unlocked')html+='<div class="shop-egg-status" style="color:#b388ff">'+shellR.icon+' '+cost+' '+shellR.name+'</div>';
-    else if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)html+='<div class="shop-egg-status" style="color:rgba(255,255,255,0.45)">🔒 Earn '+egg.coinReq+' Egg Coins ('+fmtShort(G.stats.totalCoinsEarned)+'/'+egg.coinReq+')</div>';
-    else html+='<div class="shop-egg-status" style="color:rgba(255,255,255,0.3)">🔒 Locked</div>';
+    var sc=getEggCost(egg),cc=getEggCoinCost(egg);
+    var haveShell=G.shells[egg.shellType]||0;
+    var owned=G.eggsOwned[egg.id]||0;
+    var shellOk=haveShell>=sc,coinOk=G.coins>=cc;
+    var afford=unlocked&&shellOk&&coinOk;
+    var rc=shellR.color;
+    html+='<div class="shop-egg-card'+(unlocked?'':' locked')+'" id="shopcard-'+egg.id+'" style="--rc:'+rc+'">';
+    html+='<div class="sec-info" data-info-egg="'+egg.id+'">🔍</div>';
+    if(owned>0)html+='<div class="sec-owned">×'+owned+'</div>';
+    html+='<div class="sec-top">';
+    html+='<div class="sec-art"><img class="sec-art-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
+    html+='<div class="sec-mid"><div class="sec-name">'+egg.name+'</div>';
+    html+='<div class="sec-rarity" style="color:'+rc+'">'+shellR.icon+' '+shellR.name.replace(' Shell','')+' world</div>';
+    html+='<div class="sec-have">You have: <b style="color:#fff">'+owned+'</b></div>';
     html+='</div></div>';
-    html+='<button class="shop-btn '+(canBuy?'can':'no')+'" data-buy-egg="'+egg.id+'" style="border-radius:12px 12px 0 0;margin-bottom:2px;">'+(canBuy?'Craft for '+cost+' '+shellR.name:state==='locked'?'🔒 Locked':'Need more '+shellR.name+' ('+have+'/'+cost+')')+'</button>';
-    html+='<button data-info-egg="'+egg.id+'" style="width:100%;padding:8px;border:none;border-radius:0 0 12px 12px;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);font-family:\'Fredoka One\',cursive;font-size:0.75rem;cursor:pointer;">ℹ️ Drop Chances, Pets & Requirements</button>';
+
+    if(unlocked){
+      html+='<div class="sec-cost"><span class="sec-cost-lbl">Craft cost</span>';
+      html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
+      html+='<span class="sec-cost-plus">+</span>';
+      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'">'+shellR.icon+' '+sc+'</span></div>';
+    } else {
+      html+='<div class="sec-locked-req">'+shopLockReason(egg)+'</div>';
+    }
+
+    html+='<div class="sec-btns">';
+    if(!unlocked){
+      html+='<button class="sec-btn locked" disabled>🔒 Locked</button>';
+    } else {
+      html+='<button class="sec-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
+      if(!slotFree)html+='<button class="sec-btn no" disabled>Hatchery Full</button>';
+      else html+='<button class="sec-btn hatch'+(afford?'':' no')+'"'+(afford?' data-hatch-egg="'+egg.id+'"':' disabled')+'>Hatch ▸</button>';
+    }
+    html+='</div>';
     html+='</div>';
   });
   wrap.innerHTML=html;
@@ -2068,14 +2166,33 @@ function renderShop(){
 function getEggCost(egg){
   return Math.max(1,Math.floor(egg.shellAmt*G.craftDiscount));
 }
+// Coin-kostnad: 100 × 10^tier (starter 100 → cosmic 1 biljon). Påverkas EJ av craft-rabatten.
+function getEggTier(egg){var i=EGG_SHOP.indexOf(egg);return i<0?0:i;}
+function getEggCoinCost(egg){return 100*Math.pow(10,getEggTier(egg));}
 function buyEgg(id){
   var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
   if(getEggState(egg)!=='unlocked')return;
-  var cost=getEggCost(egg);
-  if((G.shells[egg.shellType]||0)<cost)return;
-  G.shells[egg.shellType]-=cost;
-  G.stats.totalShellsSpent+=cost;
+  var sc=getEggCost(egg),cc=getEggCoinCost(egg);
+  if((G.shells[egg.shellType]||0)<sc||G.coins<cc)return;
+  G.shells[egg.shellType]-=sc;G.coins-=cc;
+  G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
   G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  if(typeof updateHUD==='function')updateHUD();
+  renderShop();
+}
+// Hatch direkt från shoppen: betala kostnaden och starta kläckningen (kräver ledig kläck-slot)
+function hatchFromShop(id){
+  var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
+  if(getEggState(egg)!=='unlocked')return;
+  var activeSlots=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  if(activeSlots>=G.petSlots)return;
+  var sc=getEggCost(egg),cc=getEggCoinCost(egg);
+  if((G.shells[egg.shellType]||0)<sc||G.coins<cc)return;
+  G.shells[egg.shellType]-=sc;G.coins-=cc;
+  G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
+  G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  startHatching(egg.id); // drar av 1 owned + lägger ägget i en kläck-slot
+  if(typeof updateHUD==='function')updateHUD();
   renderShop();
 }
 
@@ -2110,6 +2227,8 @@ function showEggInfo(eggId){
   var have2=G.shells[egg.shellType]||0;
   var shellOk2=have2>=cost;
   reqs.push({icon:shellR2.icon,label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
+  reqs.push({icon:'🪙',label:'Egg Coins (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:'🪙',label:'Earn '+egg.coinReq+' Egg Coins',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
   if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':'🔒 Required',met:bOk});}
   if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':'🔒 Required',met:hOk});}
