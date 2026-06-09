@@ -783,7 +783,7 @@ var SHELL_RARITIES=[
 // DATA: EGG SHOP
 // ============================================================
 var EGG_SHOP=[
-  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:75, buildReq:null,        hatchReq:null},
+  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:75, buildReq:null,        hatchReq:null, coinReq:100},
   {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'uncommon', shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
   {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'rare',     shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
   {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'epic',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
@@ -1095,6 +1095,36 @@ function getShellBonus(){
 // ============================================================
 // GAME STATE
 // ============================================================
+function freshStats(){
+  return {
+    // ECONOMY
+    totalCoinsEarned:0,totalCoinsSpent:0,totalBuildingsPurchased:0,totalUpgradesPurchased:0,
+    highestEpsReached:0,biggestSingleClick:0,offlineRewardsClaimed:0,
+    // CLICKING
+    totalClicks:0,highestClicksPerSecond:0,mostClicksInSession:0,
+    // SHELLS
+    totalShellsCollected:0,totalShellsSpent:0,
+    shellsCollectedByRarity:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+    highestRarityShellFound:'common',favoriteShell:'common',
+    // HATCHING
+    eggsHatched:0,eggsHatchedByWorld:{},fastestHatch:null,longestHatch:null,totalHatchTimeWaited:0,
+    mostHatchedWorld:null,tier5AbilitiesHatched:0,duplicatePetsHatched:0,
+    // PETS
+    totalPetsCollected:0,uniquePetsDiscovered:0,highestRarityOwned:'common',rarestPetEverHatched:null,
+    totalPetsFused:0,totalPetsMutated:0,totalPetsSentOnAdventures:0,abilitiesExtracted:0,
+    mutationCoresCreated:0,mutationCoresUsed:0,petsSacrificed:0,perfectPetsCreated:0,favoriteAbility:null,
+    // FUSION
+    totalFusions:0,highestFusionRarity:null,perfectFusions:0,petsConsumedInFusion:0,cosmicPetsCreated:0,
+    // ADVENTURES
+    adventuresCompleted:0,adventureHoursLogged:0,adventurePetsFound:0,discoveryItemsFound:0,specialAdventures:0,totalAdventureXp:0,
+    // ACHIEVEMENTS
+    achievementsCompleted:0,secretAchievementsFound:0,
+    // ASCENSION
+    ascensionsCompleted:0,totalAscensionCurrency:0,highestAscensionBonus:0,fastestAscension:null,
+    // SESSION / TIME
+    firstPlayDate:Date.now(),totalTimePlayed:0,totalSessions:1,currentSessionStart:Date.now(),longestSession:0
+  };
+}
 var G={
   coins:0,total:0,clicks:0,clickPower:1,luck:0,petSlots:1,currentWorld:0,
   craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
@@ -1106,86 +1136,10 @@ var G={
   achievements:{unlocked:{},claimed:{}},
   gems:0,
   permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
+  worldClaims:{},
+  titlesEarned:{},
   profile:{name:'Player',favoritePet:null},
-  stats:{
-    // ECONOMY
-    totalCoinsEarned:0,
-    totalCoinsSpent:0,
-    totalBuildingsPurchased:0,
-    totalUpgradesPurchased:0,
-    highestEpsReached:0,
-    biggestSingleClick:0,
-    offlineRewardsClaimed:0,
-
-    // CLICKING
-    totalClicks:0,
-    highestClicksPerSecond:0,
-    mostClicksInSession:0,
-
-    // SHELLS
-    totalShellsCollected:0,
-    totalShellsSpent:0,
-    shellsCollectedByRarity:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
-    highestRarityShellFound:'common',
-    favoriteShell:'common',
-
-    // HATCHING
-    eggsHatched:0,
-    eggsHatchedByWorld:{},
-    fastestHatch:null,
-    longestHatch:null,
-    totalHatchTimeWaited:0,
-    mostHatchedWorld:null,
-    tier5AbilitiesHatched:0,
-    duplicatePetsHatched:0,
-
-    // PETS
-    totalPetsCollected:0,
-    uniquePetsDiscovered:0,
-    highestRarityOwned:'common',
-    rarestPetEverHatched:null,
-    totalPetsFused:0,
-    totalPetsMutated:0,
-    totalPetsSentOnAdventures:0,
-    abilitiesExtracted:0,
-    mutationCoresCreated:0,
-    mutationCoresUsed:0,
-    petsSacrificed:0,
-    perfectPetsCreated:0,
-    favoriteAbility:null,
-
-    // FUSION
-    totalFusions:0,
-    highestFusionRarity:null,
-    perfectFusions:0,
-    petsConsumedInFusion:0,
-    cosmicPetsCreated:0,
-
-    // ADVENTURES
-    adventuresCompleted:0,
-    adventureHoursLogged:0,
-    adventurePetsFound:0,
-    discoveryItemsFound:0,
-    specialAdventures:0,
-    totalAdventureXp:0,
-
-    // ACHIEVEMENTS
-    achievementsCompleted:0,
-    secretAchievementsFound:0,
-
-    // ASCENSION
-    ascensionsCompleted:0,
-    totalAscensionCurrency:0,
-    highestAscensionBonus:0,
-    fastestAscension:null,
-
-    // SESSION / TIME
-    firstPlayDate:Date.now(),
-    totalTimePlayed:0,
-    totalSessions:1,
-    currentSessionStart:Date.now(),
-    longestSession:0,
-  },
+  stats:freshStats(),
 };
 
 // ============================================================
@@ -1240,7 +1194,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,profile:G.profile,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,profile:G.profile,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -1255,6 +1209,10 @@ function resetGame(){
   G.gems=0;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.achievements={unlocked:{},claimed:{}};
+  G.worldClaims={};
+  G.titlesEarned={};
+  G.stats=freshStats();
+  G._discoveredPets={};
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 }
@@ -1676,12 +1634,12 @@ function openMore(){
     dev.innerHTML=''
       +'<div style="font-size:0.55rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-top:16px;margin-bottom:8px;">Dev / Test — tas bort innan release</div>'
       +'<div style="display:flex;gap:6px;margin-bottom:6px;">'
-      +'<button onclick="addTestShells()" '+bBlue+'>+300 Shells</button>'
-      +'<button onclick="addTestPets()" '+bBlue+'>+10 Pets</button>'
-      +'<button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button>'
+      +'<button onclick="event.stopPropagation();addTestShells()" '+bBlue+'>+300 Shells</button>'
+      +'<button onclick="event.stopPropagation();addTestPets()" '+bBlue+'>+10 Pets</button>'
+      +'<button onclick="event.stopPropagation();addTestCoins()" '+bBlue+'>+1B Eggs</button>'
       +'</div>'
       +'<div style="display:flex;gap:6px;">'
-      +'<button onclick="cycleWorld();closeMore();" style="flex:2;padding:8px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">🌍 '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>'
+      +'<button id="world-test-btn" onclick="event.stopPropagation();cycleWorld()" style="flex:2;padding:8px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>'
       +'<button onclick="resetGame()" style="flex:1;padding:8px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">Reset</button>'
       +'</div>';
   }
@@ -2069,7 +2027,7 @@ function showInvSection(name){
 // SHOP
 // ============================================================
 function hasBuildingUnlocked(name){var idx=BUILDINGS.findIndex(function(b){return b.n===name;});return idx>=0&&G.owned[idx]>0;}
-function getEggState(egg){if(egg.id==='starter')return 'unlocked';var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return buildOk&&hatchOk?'unlocked':'locked';}
+function getEggState(egg){var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&buildOk&&hatchOk?'unlocked':'locked';}
 function renderShop(){
   var wrap=document.getElementById('shop-wrap');if(!wrap)return;
   var html='';
@@ -2084,6 +2042,7 @@ function renderShop(){
     html+='<div class="shop-egg-name">'+egg.name+'</div>';
     if(owned>0)html+='<div class="shop-egg-status" style="color:#4caf50">✅ Owned: '+owned+'</div>';
     else if(state==='unlocked')html+='<div class="shop-egg-status" style="color:#b388ff">'+shellR.icon+' '+cost+' '+shellR.name+'</div>';
+    else if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)html+='<div class="shop-egg-status" style="color:rgba(255,255,255,0.45)">🔒 Earn '+egg.coinReq+' Egg Coins ('+fmtShort(G.stats.totalCoinsEarned)+'/'+egg.coinReq+')</div>';
     else html+='<div class="shop-egg-status" style="color:rgba(255,255,255,0.3)">🔒 Locked</div>';
     html+='</div></div>';
     html+='<button class="shop-btn '+(canBuy?'can':'no')+'" data-buy-egg="'+egg.id+'" style="border-radius:12px 12px 0 0;margin-bottom:2px;">'+(canBuy?'Craft for '+cost+' '+shellR.name:state==='locked'?'🔒 Locked':'Need more '+shellR.name+' ('+have+'/'+cost+')')+'</button>';
@@ -2137,6 +2096,7 @@ function showEggInfo(eggId){
   var have2=G.shells[egg.shellType]||0;
   var shellOk2=have2>=cost;
   reqs.push({icon:shellR2.icon,label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:'🪙',label:'Earn '+egg.coinReq+' Egg Coins',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
   if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':'🔒 Required',met:bOk});}
   if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':'🔒 Required',met:hOk});}
   if(reqs.length>0){
@@ -2743,10 +2703,13 @@ var ACHIEVEMENTS=[
   {id:'epic_encounter',cat:'Collection',icon:'🟣',name:'Epic Encounter',desc:'Hatch your first Epic Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='epic';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='epic';});return {cur:f?1:0,max:1};}},
   {id:'legendary_moment',cat:'Collection',icon:'🟠',name:'Legendary Moment',desc:'Hatch your first Legendary Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='legendary';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='legendary';});return {cur:f?1:0,max:1};}},
   {id:'mythical_being',cat:'Collection',icon:'🔴',name:'Mythical Being',desc:'Hatch your first Mythical Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='mythical';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='mythical';});return {cur:f?1:0,max:1};}},
+  {id:'artifact_hunter',cat:'Collection',icon:'🟡',name:'Artifact Hunter',desc:'Hatch your first Artifact Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='artifact';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='artifact';});return {cur:f?1:0,max:1};}},
+  {id:'heavenly_creature',cat:'Collection',icon:'💎',name:'Heavenly Creature',desc:'Hatch your first Heavenly Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='heavenly';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='heavenly';});return {cur:f?1:0,max:1};}},
+  {id:'eternal_soul',cat:'Collection',icon:'✨',name:'Eternal Soul',desc:'Hatch your first Eternal Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='eternal';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='eternal';});return {cur:f?1:0,max:1};}},
   {id:'cosmic_event',cat:'Collection',icon:'🌌',name:'Cosmic Event',desc:'Hatch your first Cosmic Pet',check:function(){return G.hatchedPets.some(function(p){return p.rarity==='cosmic';});},progress:function(){var f=G.hatchedPets.some(function(p){return p.rarity==='cosmic';});return {cur:f?1:0,max:1};}},
 
   // EGG WORLDS
-  {id:'welcome_home',cat:'Progression',icon:'🥚',name:'Welcome Home',desc:'Unlock Starter Egg',check:function(){return true;},progress:function(){return {cur:1,max:1};}},
+  {id:'welcome_home',cat:'Progression',icon:'🥚',name:'Welcome Home',desc:'Earn your first 100 Egg Coins',check:function(){return G.stats.totalCoinsEarned>=100;},progress:function(){return {cur:Math.min(G.stats.totalCoinsEarned,100),max:100};}},
   {id:'into_the_woods',cat:'Progression',icon:'🌿',name:'Into the Woods',desc:'Unlock Forest Egg',check:function(){return G.eggsHatched&&G.eggsHatched['starter'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['starter'])?1:0,max:1};}},
   {id:'mountain_explorer',cat:'Progression',icon:'⛰️',name:'Mountain Explorer',desc:'Unlock Mountain Egg',check:function(){return G.eggsHatched&&G.eggsHatched['forest'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['forest'])?1:0,max:1};}},
   {id:'desert_wanderer',cat:'Progression',icon:'🏜️',name:'Desert Wanderer',desc:'Unlock Desert Egg',check:function(){return G.eggsHatched&&G.eggsHatched['mountain'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['mountain'])?1:0,max:1};}},
@@ -2759,7 +2722,12 @@ var ACHIEVEMENTS=[
   {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
   {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
   {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Rare Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.rare||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.rare)||0,1),max:1};}},
+  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Epic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.epic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.epic)||0,1),max:1};}},
   {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Legendary Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.legendary||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.legendary)||0,1),max:1};}},
+  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Mythical Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mythical||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mythical)||0,1),max:1};}},
+  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Artifact Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.artifact||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.artifact)||0,1),max:1};}},
+  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Heavenly Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.heavenly||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.heavenly)||0,1),max:1};}},
+  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Eternal Shell',desc:'Obtain your first Eternal Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.eternal||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.eternal)||0,1),max:1};}},
   {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
 
   // BUILDINGS
@@ -2832,13 +2800,24 @@ function nextAchievementPopup(){
   if(achPopupQueue.length===0){achPopupShowing=false;return;}
   achPopupShowing=true;
   var a=achPopupQueue.shift();
-  var pop=document.createElement('div');pop.className='ach-popup';
-  pop.innerHTML='<div class="ach-popup-icon">'+a.icon+'</div><div class="ach-popup-text"><div class="ach-popup-title">🏆 Achievement Unlocked!</div><div class="ach-popup-name">'+a.name+'</div></div>';
-  document.body.appendChild(pop);
-  setTimeout(function(){
+  var pop=document.createElement('div');pop.className='ach-popup';pop.style.cursor='pointer';
+  pop.innerHTML='<div class="ach-popup-icon">'+a.icon+'</div><div class="ach-popup-text"><div class="ach-popup-title">🏆 Achievement Unlocked!</div><div class="ach-popup-name">'+a.name+'</div><div style="font-size:0.6rem;color:var(--gold);opacity:0.85;margin-top:1px;">Tap to claim →</div></div>';
+  var dismissed=false;
+  var t=setTimeout(function(){
+    if(dismissed)return;dismissed=true;
     if(pop.parentNode)pop.parentNode.removeChild(pop);
     setTimeout(nextAchievementPopup,200);
   },3000);
+  pop.onclick=function(){
+    if(dismissed)return;dismissed=true;
+    clearTimeout(t);
+    achPopupQueue=[];                       // rensa väntande popups
+    if(pop.parentNode)pop.parentNode.removeChild(pop);
+    achPopupShowing=false;
+    if(typeof closeMore==='function')closeMore();
+    switchTab('more');                      // öppna Achievements-fliken
+  };
+  document.body.appendChild(pop);
 }
 
 var achCatFilter='All';
@@ -2965,6 +2944,16 @@ var ACH_REWARDS={
   lucky_drop:{gems:2},
   legendary_treasure:{eggs:{mountain:1},gems:4},
   cosmic_miracle:{gems:10,pet:'legendary',perm:{shellGain:3}},
+  // Nya shell-firsts (anti-cirkulär: inga shells)
+  epic_fortune:{gems:3},
+  mythical_discovery:{eggs:{mountain:1},gems:6},
+  artifact_find:{eggs:{ocean:1},gems:7},
+  heavenly_luck:{eggs:{ocean:1},gems:8},
+  eternal_shell:{eggs:{ocean:1},gems:9},
+  // Nya pet-firsts (matchande shells + gems)
+  artifact_hunter:{shells:{artifact:6},gems:6},
+  heavenly_creature:{shells:{heavenly:5},gems:8},
+  eternal_soul:{shells:{eternal:4},gems:10},
   // BUILDINGS / EPS / COINS
   entrepreneur:{shells:{common:10}},
   small_operation:{shells:{uncommon:25}},
@@ -3236,9 +3225,67 @@ function renderPetdexSpecies(){
 function countCompletedWorlds(){
   return PETDEX_WORLDS.filter(function(w){var c=getWorldSpeciesCount(w.id);return c.total>0&&c.found>=c.total;}).length;
 }
+// ============================================================
+// WORLD COMPLETION-BELÖNINGAR (spikat i Achievement_Rewards.docx v2.1)
+// Petdex no-P2W: bara Gems + titlar (cosmetic), aldrig stat/power.
+// 75% av arterna = liten gem-morot. 100% = större Gems + världstitel.
+// Titlar sparas i G.titlesEarned (titel-systemet är stub tills cosmetics byggs).
+// ============================================================
+var WORLD_REWARDS={
+  starter:{g75:3,g100:10,title:'Starter Tamer'},
+  forest:{g75:4,g100:12,title:'Forest Guardian'},
+  mountain:{g75:5,g100:15,title:'Peak Climber'},
+  desert:{g75:6,g100:18,title:'Dune Walker'},
+  ocean:{g75:7,g100:21,title:'Tide Master'},
+  jungle:{g75:8,g100:25,title:'Jungle Lord'},
+  arctic:{g75:10,g100:30,title:'Frost Warden'},
+  volcano:{g75:12,g100:35,title:'Ember Sovereign'},
+  mystic:{g75:15,g100:45,title:'Arcane Sage'},
+  celestial:{g75:18,g100:55,title:'Star Voyager'},
+  cosmic:{g75:20,g100:60,title:'Cosmic Collector'}
+};
+var GRAND_PETDEX_REWARD={gems:100,title:'Living Petdex'}; // + unik profil-ram (cosmetic stub)
+
+function claimWorldReward(worldId,milestone){
+  if(!G.worldClaims)G.worldClaims={};if(!G.titlesEarned)G.titlesEarned={};
+  var wr=WORLD_REWARDS[worldId];if(!wr)return;
+  var c=getWorldSpeciesCount(worldId);var pct=c.total>0?Math.floor(c.found/c.total*100):0;
+  var key=worldId+'_'+milestone;
+  if(G.worldClaims[key]||pct<milestone)return;
+  G.worldClaims[key]=true;
+  var gems=milestone===75?wr.g75:wr.g100;
+  G.gems=(G.gems||0)+gems;
+  var parts=[gems+' 💎 Gems'];
+  if(milestone===100){G.titlesEarned[wr.title]=true;parts.push('Title: '+wr.title+' 🏷️');}
+  if(typeof updateHUD==='function')updateHUD();
+  renderWorldCompletion();
+  if(typeof showRewardPopup==='function')showRewardPopup(parts);
+}
+function claimGrandPetdex(){
+  if(!G.worldClaims)G.worldClaims={};if(!G.titlesEarned)G.titlesEarned={};
+  if(G.worldClaims['grand'])return;
+  var o=getTotalSpeciesCount();if(o.total===0||o.found<o.total)return;
+  G.worldClaims['grand']=true;
+  G.gems=(G.gems||0)+GRAND_PETDEX_REWARD.gems;
+  G.titlesEarned[GRAND_PETDEX_REWARD.title]=true;
+  if(typeof updateHUD==='function')updateHUD();
+  renderWorldCompletion();
+  if(typeof showRewardPopup==='function')showRewardPopup([GRAND_PETDEX_REWARD.gems+' 💎 Gems','Title: '+GRAND_PETDEX_REWARD.title+' 🏷️','Profile Frame ✨']);
+}
+function wcMilestoneCell(worldId,milestone,pct){
+  var wr=WORLD_REWARDS[worldId];var gems=milestone===75?wr.g75:wr.g100;
+  var claimed=G.worldClaims&&G.worldClaims[worldId+'_'+milestone];
+  if(claimed)return '<div style="font-size:0.5rem;color:#7be08a;padding:3px 0;font-family:\'Fredoka One\',cursive;">✓ '+milestone+'%</div>';
+  if(pct>=milestone){
+    var extra=milestone===100?' +🏷️':'';
+    return '<button onclick="event.stopPropagation();claimWorldReward(\''+worldId+'\','+milestone+')" style="display:block;width:100%;margin:2px 0;padding:4px 2px;border:none;border-radius:7px;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.5rem;cursor:pointer;box-shadow:0 2px 0 #1b5e20;">'+milestone+'% · '+gems+'💎'+extra+'</button>';
+  }
+  return '<div style="font-size:0.46rem;color:rgba(255,255,255,0.3);padding:3px 0;">🔒 '+milestone+'% · '+gems+'💎'+(milestone===100?'+🏷️':'')+'</div>';
+}
 function openWorldCompletion(){renderWorldCompletion();document.getElementById('world-completion-modal').classList.add('open');}
 function renderWorldCompletion(){
   var wrap=document.getElementById('wc-list');if(!wrap)return;
+  if(!G.worldClaims)G.worldClaims={};
   var h='';
   PETDEX_WORLDS.forEach(function(w){
     var c=getWorldSpeciesCount(w.id);
@@ -3249,10 +3296,23 @@ function renderWorldCompletion(){
     h+='<div class="wc-mid"><div class="wc-name">'+w.name+' Egg'+(done?'<span class="wc-done-tag">✓ COMPLETE</span>':'')+'</div>';
     h+='<div class="wc-bar"><div class="wc-fill" style="width:'+pct+'%"></div></div>';
     h+='<div class="wc-pct">'+c.found+' / '+c.total+' species · '+pct+'%</div></div>';
-    h+='<div class="wc-reward"><div class="wc-reward-ic">🎁</div><div class="wc-reward-lbl">Reward<br>soon</div></div>';
+    h+='<div class="wc-reward" style="width:104px;border-style:solid;border-color:rgba(58,92,184,0.5);">'+wcMilestoneCell(w.id,75,pct)+wcMilestoneCell(w.id,100,pct)+'</div>';
     h+='</div>';
   });
-  h+='<div class="wc-note">Rewards for completing each world will be added in a future update.</div>';
+  // Storslam — hela Petdex
+  var o=getTotalSpeciesCount();var grandDone=o.total>0&&o.found>=o.total;
+  h+='<div style="margin-top:12px;background:linear-gradient(160deg,#2a1f4f,#160f2e);border:1px solid rgba(179,136,255,0.55);border-radius:13px;padding:13px 12px;text-align:center;">';
+  h+='<div style="font-family:\'Fredoka One\',cursive;color:var(--gold);font-size:0.9rem;">🌌 Living Petdex</div>';
+  h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.55);margin:4px 0 9px;">Find every species in the game · '+o.found+' / '+o.total+'</div>';
+  if(G.worldClaims['grand']){
+    h+='<div style="color:#7be08a;font-size:0.8rem;font-family:\'Fredoka One\',cursive;">✓ Claimed</div>';
+  } else if(grandDone){
+    h+='<button onclick="event.stopPropagation();claimGrandPetdex()" style="width:100%;padding:10px;border:none;border-radius:11px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:\'Fredoka One\',cursive;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;">Claim 100💎 + Title + Frame</button>';
+  } else {
+    h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);">🔒 Reward: 100💎 + “Living Petdex” title + profile frame</div>';
+  }
+  h+='</div>';
+  h+='<div class="wc-note">Titlar &amp; profil-ram sparas och visas när cosmetics-systemet byggs.</div>';
   wrap.innerHTML=h;
 }
 
@@ -3410,6 +3470,8 @@ if(savedData){
   G.gems=savedData.gems||0;
   G.permBonus=savedData.permBonus||{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   ['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'].forEach(function(k){if(G.permBonus[k]==null)G.permBonus[k]=0;});
+  G.worldClaims=savedData.worldClaims||{};
+  G.titlesEarned=savedData.titlesEarned||{};
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
   G.stats.totalSessions++;
   G.stats.currentSessionStart=Date.now();
