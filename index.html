@@ -21,13 +21,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
 #scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 #scene-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
-.side-btns{position:absolute;top:60px;display:flex;flex-direction:column;gap:8px;z-index:10;}
+.side-btns{position:absolute;top:24px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
-.side-btn{width:52px;height:52px;background:linear-gradient(180deg,#3a5cb8,#1f3d96);border:3px solid #5a7fd8;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:1px;box-shadow:0 3px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.2);}
+.side-btn{position:relative;width:54px;padding:24px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:13px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);overflow:visible;}
 .side-btn:active{transform:translateY(2px);}
-.side-btn .sb-icon{font-size:1.3rem;line-height:1;}
-.side-btn .sb-label{font-size:0.45rem;font-weight:800;color:rgba(255,255,255,0.8);text-transform:uppercase;}
+.side-btn .sb-icon{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
+.side-btn .sb-img{width:42px;height:42px;object-fit:contain;display:inline-block;}
+.side-btn .sb-label{font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:50px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:block;}
 #pet-positions{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:5;}
 .pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
@@ -424,7 +425,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .tb-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
 .tb-rbtn{width:34px;height:34px;border-radius:9px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);position:relative;}
 .tb-rbtn:active{transform:translateY(1px);}
-.tb-rbtn.profile{border-color:var(--gold);}
 .tb-gems{display:flex;align-items:center;gap:3px;height:34px;padding:0 7px;border-radius:9px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);flex-shrink:0;}
 .tb-gems:active{transform:translateY(1px);}
 .tb-gems .tg-val{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#7fd4ff;}
@@ -552,6 +552,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <img id="scene-bg" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/scene-background.png" alt="">
       <div id="scene-fade"></div>
       <div class="side-btns" id="left-btns">
+        <div class="side-btn" id="quests-btn" onclick="switchTab('quests')"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon">🎁</span><span class="sb-label">Daily</span></div>
       </div>
       <div class="side-btns" id="right-btns">
@@ -613,9 +614,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div id="bottomnav">
     <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
     <button class="nav-btn" id="nb-hatch" onclick="navTab('hatch')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-hatchery.png" alt="" onerror="this.parentNode.textContent='🐣'"></span><span>Hatchery</span></button>
+    <button class="nav-btn" id="nb-home" onclick="goHome()"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-home.png" alt="" onerror="this.parentNode.textContent='🥚'"></span><span>Home</span></button>
     <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Shop</span></button>
     <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventure</span></button>
-    <button class="nav-btn" id="nb-quests" onclick="navTab('quests')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span>Quests</span></button>
   </div>
 </div>
 
@@ -1535,6 +1536,7 @@ function switchTab(name){
   var tab=document.getElementById('tab-'+name);if(tab)tab.style.display='block';
   var nb=document.getElementById('nb-'+name);if(nb)nb.classList.add('active');
   var isHome=SCENE_TABS.indexOf(name)>=0;
+  if(isHome){var nbh=document.getElementById('nb-home');if(nbh)nbh.classList.add('active');}
   var isInv=(name==='inventory');
   document.getElementById('scene-wrap').style.display=isHome?'block':'none';
   var sheet=document.getElementById('home-sheet');
@@ -1593,6 +1595,18 @@ function toggleInventory(){
 function navTab(name){
   if(currentTab===name){switchTab('buildings');}
   else{switchTab(name);}
+}
+// Home-knappen (mitten av bottom-nav):
+//  - inte hemma / bladet nere / på upgrades → gå hem med bygg-bladet UPPE
+//  - redan hemma med bygg-bladet uppe → fäll NER bladet (som handtaget)
+function goHome(){
+  var onBuildingsUp=(currentTab==='buildings')&&!homeCollapsed;
+  if(onBuildingsUp){
+    toggleHomeSheet();
+  } else {
+    homeCollapsed=false;
+    switchTab('buildings');
+  }
 }
 
 // Pets-hubbens underflikar (nav rebuild — step 4): Pets / Fusion / Extract
@@ -3225,6 +3239,18 @@ function renderPetdexSpecies(){
 function countCompletedWorlds(){
   return PETDEX_WORLDS.filter(function(w){var c=getWorldSpeciesCount(w.id);return c.total>0&&c.found>=c.total;}).length;
 }
+function countClaimableWorldRewards(){
+  if(!G.worldClaims)G.worldClaims={};
+  var n=0;
+  PETDEX_WORLDS.forEach(function(w){
+    var c=getWorldSpeciesCount(w.id);var pct=c.total>0?Math.floor(c.found/c.total*100):0;
+    if(pct>=75&&!G.worldClaims[w.id+'_75'])n++;
+    if(pct>=100&&!G.worldClaims[w.id+'_100'])n++;
+  });
+  var o=getTotalSpeciesCount();
+  if(o.total>0&&o.found>=o.total&&!G.worldClaims['grand'])n++;
+  return n;
+}
 // ============================================================
 // WORLD COMPLETION-BELÖNINGAR (spikat i Achievement_Rewards.docx v2.1)
 // Petdex no-P2W: bara Gems + titlar (cosmetic), aldrig stat/power.
@@ -3328,7 +3354,8 @@ function renderPetdex(){
   html+='<div class="pdx-progress-bar"><div class="pdx-progress-fill" style="width:'+pct+'%"></div></div>';
   html+='<div class="pdx-prog-count">'+overall.found+' / '+overall.total+' Species Found</div>';
   var doneWorlds=countCompletedWorlds();
-  html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">🎁</div>'+(doneWorlds>0?'<div class="pdx-chest-badge">'+doneWorlds+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
+  var claimable=countClaimableWorldRewards();
+  html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">🎁</div>'+(claimable>0?'<div class="pdx-chest-badge">'+claimable+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
   html+='<div class="pdx-wc-btn" onclick="openWorldCompletion()"><div class="pdx-wc-btn-top"><span>🏆 World Completion</span><span class="pdx-wc-btn-pct">'+pct+'%</span></div><div class="pdx-wc-btn-bar"><div class="pdx-wc-btn-fill" style="width:'+pct+'%"></div></div><div class="pdx-wc-btn-sub">'+doneWorlds+' / '+PETDEX_WORLDS.length+' worlds complete ›</div></div>';
   // World tabs
   html+='<div class="pdx-section-label">Select Egg World</div><div class="pdx-world-tabs">';
