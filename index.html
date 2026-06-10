@@ -895,6 +895,43 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .upg-reserved-icon{font-size:2.4rem;margin-bottom:10px;}
 .upg-reserved-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);margin-bottom:6px;}
 .upg-reserved-body{font-size:0.72rem;line-height:1.5;max-width:300px;margin:0 auto;}
+.dbl{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:9px 11px;margin-bottom:7px;}
+.dbl.afford{border-color:#7c4dff;cursor:pointer;box-shadow:0 0 9px rgba(124,77,255,0.22);}
+.dbl.poor{opacity:0.85;}
+.dbl.locked{opacity:0.45;}
+.dbl-icon{position:relative;font-size:1.5rem;width:36px;text-align:center;flex-shrink:0;}
+.dbl-x2{position:absolute;right:-4px;bottom:-3px;font-family:'Fredoka One',cursive;font-size:0.5rem;color:#0b1530;background:var(--gold);border-radius:5px;padding:0 3px;}
+.dbl-info{flex:1;min-width:0;}
+.dbl-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;line-height:1.15;}
+.dbl-sub{font-size:0.6rem;color:rgba(255,255,255,0.55);margin-top:1px;}
+.dbl-right{flex-shrink:0;}
+.dbl-cost{font-family:'Fredoka One',cursive;font-size:0.74rem;color:var(--gold);white-space:nowrap;}
+.dbl-cost.bad{color:rgba(255,255,255,0.4);}
+.dbl-lock{font-size:0.9rem;}
+/* === Steg 3: ikon-ström + tooltip === */
+.utile-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.utile{position:relative;width:52px;height:52px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);cursor:pointer;}
+.utile:active{transform:translateY(1px);}
+.utile-ic{font-size:1.5rem;line-height:1;}
+.utile.afford{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,0.45),0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);}
+.utile.poor{opacity:0.7;}
+.utile.locked{opacity:0.4;filter:grayscale(0.55);}
+.utile.owned{opacity:0.5;border-color:#3a7a4a;}
+.utile-badge{position:absolute;top:-5px;right:-5px;background:var(--gold);color:#0b1530;font-family:'Fredoka One',cursive;font-size:0.5rem;border-radius:6px;padding:0 4px;line-height:1.45;}
+.utile-lock{position:absolute;font-size:0.95rem;right:-4px;bottom:-4px;}
+.utile-check{position:absolute;font-size:0.85rem;right:-3px;bottom:-3px;}
+#upgTip{position:fixed;z-index:9999;width:198px;background:linear-gradient(180deg,#16284f,#0e1c3c);border:2px solid var(--gold);border-radius:12px;padding:10px 11px;box-shadow:0 8px 24px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity 0.12s,transform 0.12s;}
+#upgTip.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.utip-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+.utip-ic{font-size:1.3rem;line-height:1;}
+.utip-name{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;line-height:1.15;}
+.utip-desc{font-size:0.64rem;color:rgba(255,255,255,0.6);line-height:1.4;margin-bottom:9px;}
+.utip-buy{width:100%;background:linear-gradient(180deg,#f5c842,#d9a520);color:#0b1530;border:none;border-radius:9px;padding:7px;font-family:'Fredoka One',cursive;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+.utip-buy:active{transform:translateY(1px);}
+.utip-buy.dis{background:#2a3a5c;color:rgba(255,255,255,0.4);cursor:default;}
+.utip-buy .coin-ic{width:14px;height:14px;}
+.utip-req{font-size:0.64rem;color:rgba(255,255,255,0.5);text-align:center;line-height:1.4;}
+.utip-owned{font-size:0.72rem;color:#5fd07a;text-align:center;font-family:'Fredoka One',cursive;}
 .pet-pos.unlockable .ppi{opacity:1;border:2px dashed #f5c842;color:var(--gold);cursor:pointer;background:rgba(245,200,66,0.12);box-shadow:0 0 8px rgba(245,200,66,0.4);}
 .pst-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:13px;margin-bottom:10px;overflow:hidden;}
 .pst-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid rgba(58,92,184,0.35);border-left:4px solid var(--cat,#f5c842);background:rgba(255,255,255,0.025);}
@@ -977,11 +1014,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
           <div id="blist"></div>
         </div>
         <div id="tab-upgrades" class="tab-content">
-          <div class="upg-reserved">
-            <div class="upg-reserved-icon">🚧</div>
-            <div class="upg-reserved-title">Coming Soon</div>
-            <div class="upg-reserved-body">This space is reserved for a new system. Egg Crafting moved to the Shop, Hatch Speed to the Hatchery, and Pet Slots are now unlocked around the egg.</div>
-          </div>
+          <div id="ulist"></div>
         </div>
         <div id="tab-inventory" class="tab-content"><div id="inv-wrap"></div></div>
       </div>
@@ -1202,6 +1235,60 @@ var SLOTS=[{slot:2,cost:10000},{slot:3,cost:1e6},{slot:4,cost:1e8},{slot:5,cost:
 // Spelaren börjar med 1 hatch slot, max 3 (spikat). Köps med Egg Coins i Hatchery.
 var HATCH_SLOT_MAX=3;
 var HATCH_SLOT_COSTS=[50000,5e6]; // Egg Coins för att låsa upp slot 2 resp 3 — PRELIMINÄRA värden, justeras vid balansering
+// === KLICK-BALANS ===
+// Andel av EPS som varje klick ger ovanpå bas-klicket (Cookie Clicker-stil), så aktivt
+// klickande förblir meningsfullt hela spelet. 0.08 = 8% av EPS per klick. Tuna fritt.
+var CLICK_EPS_SHARE=0.08;
+// === BYGGNADS-DOUBLINGAR (Cookie Clicker-stil per-byggnads-multiplikatorer) ===
+// Varje byggnad kan köpa upp till 5 doublingar (×2 var → upp till ×32 på just den byggnaden).
+// En doubling låses upp när du äger minst DOUBLING_THRESHOLDS[nivå] av byggnaden.
+// Pris = byggnadens baskostnad × DOUBLING_PRICE_MULT^(nivå+1)  (nivå 0..4 → b×10 … b×100000).
+// >>> TUNING (känns det för LÄTT?): höj DOUBLING_PRICE_MULT (12–15) och/eller skjut trösklarna
+//     uppåt. Känns det för GRINDIGT? sänk priset/trösklarna. Se Session Notes "TUNING — drip".
+var DOUBLING_THRESHOLDS=[1,10,25,50,100];
+var DOUBLING_PRICE_MULT=6;
+var DOUBLING_MAX=5;
+// === KLICK-UPGRADES (Steg 2) — EPS-skalande klick + Thousand Fingers ===
+// Köps en gång var, låses upp vid milstolpar. ALLT tunbart (epsAdd/fingerBase/trösklar/cost).
+// EPS-linjen ökar andelen av EPS varje klick ger (additivt ovanpå CLICK_EPS_SHARE).
+// Finger-linjen ger klick +flat per ägd icke-Egg-Tapper-byggnad (Egg Tapper, index 0, = "klick-byggnaden").
+// req = kräver att en tidigare upgrade är köpt först. >>> TUNING: se Session Notes sektion 4.
+var CLICK_UPGRADES=[
+  {id:'eps1',line:'eps',name:'Reinforced Tapper',desc:'Clicking gains +1% of your EPS.',epsAdd:0.01,unlockClicks:100,cost:1000},
+  {id:'eps2',line:'eps',name:'Precision Tapping',desc:'Clicking gains +1% of your EPS.',epsAdd:0.01,unlockClicks:1000,cost:100000},
+  {id:'eps3',line:'eps',name:'Power Tapping',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:10000,cost:1e7},
+  {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
+  {id:'tf1',line:'finger',name:'Thousand Fingers',desc:'+0.1 per non-Egg-Tapper building, per click.',fingerBase:0.1,unlockBuildings:25,cost:100000},
+  {id:'tf2',line:'finger',name:'Million Fingers',desc:'Thousand Fingers bonus ×5.',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
+  {id:'tf3',line:'finger',name:'Billion Fingers',desc:'Thousand Fingers bonus ×10.',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
+];
+function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
+function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
+function clickUpgOwned(id){return !!(G.clickUpgrades&&G.clickUpgrades[id]);}
+function clickEpsBonus(){var s=0;CLICK_UPGRADES.forEach(function(u){if(u.epsAdd&&clickUpgOwned(u.id))s+=u.epsAdd;});return s;}
+function clickFingerPer(){var per=0,started=false;CLICK_UPGRADES.forEach(function(u){if(u.line!=='finger'||!clickUpgOwned(u.id))return;if(u.fingerBase!=null){per=u.fingerBase;started=true;}else if(u.fingerMult!=null&&started)per*=u.fingerMult;});return per;}
+function clickFingerBonus(){return clickFingerPer()*nonClickBuildingsOwned();}
+function isClickUpgradeUnlocked(u){
+  if(u.req&&!clickUpgOwned(u.req))return false;
+  if(u.unlockClicks!=null&&(G.stats.totalClicks||0)<u.unlockClicks)return false;
+  if(u.unlockBuildings!=null&&totalBuildingsOwned()<u.unlockBuildings)return false;
+  return true;
+}
+function clickUpgradeReqText(u){
+  if(u.req&&!clickUpgOwned(u.req)){var r=CLICK_UPGRADES.find(function(x){return x.id===u.req;});return 'Requires '+(r?r.name:u.req);}
+  if(u.unlockClicks!=null)return 'Reach '+fmtShort(u.unlockClicks)+' total clicks';
+  if(u.unlockBuildings!=null)return 'Own '+u.unlockBuildings+' buildings';
+  return 'Locked';
+}
+function buyClickUpgrade(id){
+  var u=CLICK_UPGRADES.find(function(x){return x.id===id;});if(!u)return;
+  if(clickUpgOwned(id)||!isClickUpgradeUnlocked(u)||G.coins<u.cost)return;
+  if(!G.clickUpgrades)G.clickUpgrades={};
+  G.coins-=u.cost;G.clickUpgrades[id]=true;
+  G.stats.totalUpgradesPurchased++;G.stats.totalCoinsSpent+=u.cost;
+  if(typeof updateHUD==='function')updateHUD();
+  renderUpgrades();saveGame();
+}
 // === PET ADVENTURES (Phase 8) ===
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
@@ -1652,6 +1739,8 @@ var G={
   craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
   equippedPets:[null,null,null,null,null],
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  buildingDoublings:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
@@ -1676,7 +1765,8 @@ var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles
 function fmtShort(n){if(n<1e3)return Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(1)+'K';if(n<1e9)return (n/1e6).toFixed(1)+'M';if(n<1e12)return (n/1e9).toFixed(1)+'B';if(n<1e15)return (n/1e12).toFixed(1)+'T';return (n/1e15).toFixed(1)+'Qa';}
 function fmt(n){if(n<1e3)return n<10?n.toFixed(1):Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(2)+' Thousand';if(n<1e9)return (n/1e6).toFixed(2)+' Million';if(n<1e12)return (n/1e9).toFixed(2)+' Billion';if(n<1e15)return (n/1e12).toFixed(2)+' Trillion';if(n<1e18)return (n/1e15).toFixed(2)+' Quadrillion';return (n/1e18).toFixed(2)+' Quintillion';}
 function bcost(i){return Math.ceil(BUILDINGS[i].b*Math.pow(1.15,G.owned[i]));}
-function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i];return s*getEpsMultiplier();}
+function buildingMult(i){return Math.pow(2,(G.buildingDoublings&&G.buildingDoublings[i])||0);}
+function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildingMult(i);return s*getEpsMultiplier();}
 function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
 function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
@@ -1982,7 +2072,7 @@ function saveGame(){
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
-    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
+    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
@@ -1996,6 +2086,8 @@ function resetGame(){
   G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
   G.equippedPets=[null,null,null,null,null];
   G.owned=new Array(20).fill(0);
+  G.buildingDoublings=new Array(20).fill(0);
+  G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
@@ -2097,7 +2189,7 @@ function initParticles(){
 // EGG CLICK
 // ============================================================
 function eggTap(clientX,clientY){
-  var clickVal=G.clickPower*getClickMultiplier();
+  var clickVal=G.clickPower*getClickMultiplier()+eps()*(CLICK_EPS_SHARE+clickEpsBonus())+clickFingerBonus();
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
   clickWindowAccum++;
@@ -3030,6 +3122,8 @@ function resetFromSettings(){
     G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
     G.equippedPets=[null,null,null,null,null];
     G.owned=new Array(20).fill(0);
+    G.buildingDoublings=new Array(20).fill(0);
+    G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
@@ -3427,8 +3521,8 @@ function renderBuildings(){
     var c=bcost(i);var canAfford=G.coins>=c;
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
-      var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i])+'/s':'';
-      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p)+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">'+COIN_IMG+'</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
+      var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s':'';
+      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">'+COIN_IMG+'</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -3444,7 +3538,7 @@ function updateBuildingClasses(){
     var c=bcost(i);var canAfford=G.coins>=c;
     d.className='bld '+(canAfford?'buyable':'poor');
     var bp=document.getElementById('bp'+i),bo=document.getElementById('bo'+i),bc=document.getElementById('bc'+i),bb=document.getElementById('bb'+i);
-    if(bp)bp.textContent=fmt(BUILDINGS[i].p)+'/s each'+(G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i])+'/s total':'');
+    if(bp)bp.textContent=fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+(G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s total':'');
     if(bo)bo.textContent=G.owned[i];if(bc)bc.textContent=fmtShort(c);
     if(bb)bb.className='bld-buy '+(canAfford?'affordable':'expensive');
   }
@@ -3453,16 +3547,208 @@ document.getElementById('blist').addEventListener('click',function(e){
   var d=e.target;while(d&&d!==this){if(d.dataset&&d.dataset.idx!==undefined)break;d=d.parentNode;}
   if(!d||d.dataset.idx===undefined)return;
   var i=parseInt(d.dataset.idx);if(isNaN(i)||i>=numUnlocked())return;
-  var c=bcost(i);if(G.coins>=c){G.coins-=c;G.owned[i]++;G.stats.totalBuildingsPurchased++;G.stats.totalCoinsSpent+=c;renderBuildings();}
+  var c=bcost(i);if(G.coins>=c){G.coins-=c;G.owned[i]++;G.stats.totalBuildingsPurchased++;G.stats.totalCoinsSpent+=c;renderBuildings();renderUpgrades();}
 });
 
 // ============================================================
 // UPGRADES
 // ============================================================
-function renderUpgrades(){
-  /* Upgrades-fliken är tömd och reserverad för ett kommande system.
-     Egg Crafting → Shop, Hatch Speed → Hatchery, Pet Slots → runt ägget. */
+// === Steg 3: ikon-ström. Bygger view-objekt per upgrade och renderar små ikon-tiles. ===
+var _upgView={};   // key ('dbl:i' / 'clk:id') -> view-objekt, byggs om vid varje render
+var _tipKey=null;  // nyckeln för öppen tooltip, eller null
+var ROMAN=['I','II','III','IV','V'];
+function buildDblView(i){
+  var d=(G.buildingDoublings&&G.buildingDoublings[i])||0;
+  if(d>=DOUBLING_MAX)return null;
+  var thr=DOUBLING_THRESHOLDS[d];
+  var unlocked=(G.owned[i]||0)>=thr;
+  var cost=doublingCost(i,d);
+  return {key:'dbl:'+i,type:'dbl',i:i,icon:BUILDINGS[i].e,badge:ROMAN[d]||'',
+    name:BUILDINGS[i].n+' Boost '+(ROMAN[d]||''),
+    desc:'Doubles '+BUILDINGS[i].n+' production (×2).',
+    cost:cost,reqText:'Own '+thr+' '+BUILDINGS[i].n+' to unlock',
+    state: unlocked?(G.coins>=cost?'afford':'poor'):'locked'};
 }
+function buildClkView(u){
+  var owned=clickUpgOwned(u.id);
+  var unlocked=isClickUpgradeUnlocked(u);
+  return {key:'clk:'+u.id,type:'clk',id:u.id,icon:(u.line==='finger'?'👆':'🖱️'),badge:'',
+    name:u.name,desc:u.desc,cost:u.cost,reqText:clickUpgradeReqText(u),
+    state: owned?'owned':(unlocked?(G.coins>=u.cost?'afford':'poor'):'locked')};
+}
+var _stateRank={afford:0,poor:1,locked:2,owned:3};
+function renderUpgrades(){
+  var wrap=document.getElementById('ulist');if(!wrap)return;
+  _upgView={};
+  var unlocked=numUnlocked();
+  var dbl=[],clkActive=[],clkOwned=[];
+  for(var i=0;i<unlocked;i++){var v=buildDblView(i);if(v){_upgView[v.key]=v;dbl.push(v);}}
+  CLICK_UPGRADES.forEach(function(u){var v=buildClkView(u);_upgView[v.key]=v;if(v.state==='owned')clkOwned.push(v);else clkActive.push(v);});
+  dbl.sort(function(a,b){return _stateRank[a.state]-_stateRank[b.state];});
+  clkActive.sort(function(a,b){return _stateRank[a.state]-_stateRank[b.state];});
+  if(!dbl.length&&!clkActive.length&&!clkOwned.length){
+    wrap.innerHTML='<div class="upg-reserved"><div class="upg-reserved-icon">🏗️</div><div class="upg-reserved-title">No boosts yet</div><div class="upg-reserved-body">Buy production buildings — each unlocks ×2 boosts, and click upgrades unlock as you click and grow. Tap any icon for details.</div></div>';
+    _lastUpgSig=upgradesSignature();return;
+  }
+  var h='';
+  if(dbl.length){h+='<div class="sec-title">⚡ Building Boosts</div><div class="utile-grid">';dbl.forEach(function(v){h+=upgTileHtml(v);});h+='</div>';}
+  if(clkActive.length){h+='<div class="sec-title" style="margin-top:12px;">🖱️ Click Upgrades</div><div class="utile-grid">';clkActive.forEach(function(v){h+=upgTileHtml(v);});h+='</div>';}
+  if(clkOwned.length){h+='<div class="sec-title" style="margin-top:12px;opacity:0.6;">✓ Owned</div><div class="utile-grid">';clkOwned.forEach(function(v){h+=upgTileHtml(v);});h+='</div>';}
+  wrap.innerHTML=h;
+  _lastUpgSig=upgradesSignature();
+  if(_tipKey&&_upgView[_tipKey])refreshTip();else closeUpgTip();
+}
+function upgTileHtml(v){
+  var badge=v.badge?'<span class="utile-badge">'+v.badge+'</span>':'';
+  var ov=v.state==='locked'?'<span class="utile-lock">🔒</span>':(v.state==='owned'?'<span class="utile-check">✓</span>':'');
+  return '<div class="utile '+v.state+'" data-ukey="'+v.key+'"><span class="utile-ic">'+v.icon+'</span>'+badge+ov+'</div>';
+}
+function doublingCost(i,level){return Math.ceil(BUILDINGS[i].b*Math.pow(DOUBLING_PRICE_MULT,level+1));}
+function doublingCardHtml(c,unlockedFlag){
+  var b=BUILDINGS[c.i];
+  var roman=['I','II','III','IV','V'][c.level]||'';
+  var cost=doublingCost(c.i,c.level);
+  var afford=unlockedFlag&&G.coins>=cost;
+  var cls='dbl'+(unlockedFlag?(afford?' afford':' poor'):' locked');
+  var click=unlockedFlag?(' onclick="buyBuildingDoubling('+c.i+')"'):'';
+  var sub=unlockedFlag?('Doubles '+b.n+' production (×2)'):('Own '+c.thr+' '+b.n+' to unlock');
+  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
+  return '<div class="'+cls+'" data-dbl="'+c.i+'"'+click+'>'+
+    '<div class="dbl-icon">'+b.e+'<span class="dbl-x2">×2</span></div>'+
+    '<div class="dbl-info"><div class="dbl-name">'+b.n+' Boost '+roman+'</div><div class="dbl-sub">'+sub+'</div></div>'+
+    '<div class="dbl-right">'+right+'</div></div>';
+}
+function buyBuildingDoubling(i){
+  if(!G.buildingDoublings)G.buildingDoublings=new Array(20).fill(0);
+  var d=G.buildingDoublings[i]||0;
+  if(d>=DOUBLING_MAX)return;
+  if((G.owned[i]||0)<DOUBLING_THRESHOLDS[d])return;
+  var cost=doublingCost(i,d);
+  if(G.coins<cost)return;
+  G.coins-=cost;G.buildingDoublings[i]=d+1;
+  G.stats.totalUpgradesPurchased++;G.stats.totalCoinsSpent+=cost;
+  if(typeof updateHUD==='function')updateHUD();
+  renderUpgrades();renderBuildings();saveGame();
+}
+// Live-uppdaterar bara råd/ej-råd på köpbara doubling-kort (struktur byggs om vid köp av byggnad/doubling).
+function softUpdateDoublings(){
+  var unlocked=numUnlocked();
+  for(var i=0;i<unlocked;i++){
+    var el=document.querySelector('[data-dbl="'+i+'"]');if(!el||el.classList.contains('locked'))continue;
+    var d=(G.buildingDoublings&&G.buildingDoublings[i])||0;if(d>=DOUBLING_MAX)continue;
+    var cost=doublingCost(i,d);
+    var afford=G.coins>=cost;
+    el.className='dbl'+(afford?' afford':' poor');
+    var cc=el.querySelector('.dbl-cost');if(cc)cc.className='dbl-cost'+(afford?'':' bad');
+  }
+}
+function clickUpgradeCardHtml(u,unlockedFlag){
+  var afford=unlockedFlag&&G.coins>=u.cost;
+  var cls='dbl'+(unlockedFlag?(afford?' afford':' poor'):' locked');
+  var click=unlockedFlag?(' onclick="buyClickUpgrade(\''+u.id+'\')"'):'';
+  var icon=u.line==='finger'?'👆':'🖱️';
+  var sub=unlockedFlag?u.desc:clickUpgradeReqText(u);
+  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(u.cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
+  return '<div class="'+cls+'" data-clkupg="'+u.id+'"'+click+'>'+
+    '<div class="dbl-icon">'+icon+'</div>'+
+    '<div class="dbl-info"><div class="dbl-name">'+u.name+'</div><div class="dbl-sub">'+sub+'</div></div>'+
+    '<div class="dbl-right">'+right+'</div></div>';
+}
+// Signatur över STRUKTUREN (vilka kort som finns/är köpbara/låsta/köpta) — ej råd/ej-råd.
+// Används för att bara bygga om DOM när strukturen ändras (annars bara klass-uppdatering = ingen flimmer).
+var _lastUpgSig='';
+function upgradesSignature(){
+  var s='',unlocked=numUnlocked();
+  for(var i=0;i<unlocked;i++){
+    var d=(G.buildingDoublings&&G.buildingDoublings[i])||0;
+    s+= d>=DOUBLING_MAX?'X':(((G.owned[i]||0)>=DOUBLING_THRESHOLDS[d])?'B':'L');
+  }
+  s+='|';
+  CLICK_UPGRADES.forEach(function(u){s+= clickUpgOwned(u.id)?'O':(isClickUpgradeUnlocked(u)?'B':'L');});
+  return s;
+}
+// Körs var 500ms när Upgrades-fliken är synlig: bygg om vid strukturändring, annars uppdatera bara råd/ej-råd.
+function softUpdateUpgradesTab(){
+  if(upgradesSignature()!==_lastUpgSig){renderUpgrades();return;}
+  var tipChanged=false;
+  for(var key in _upgView){
+    var v=_upgView[key];
+    if(v.state==='locked'||v.state==='owned')continue;
+    var ns=G.coins>=v.cost?'afford':'poor';
+    if(ns!==v.state){
+      v.state=ns;
+      var el=document.querySelector('[data-ukey="'+key+'"]');
+      if(el)el.className='utile '+ns;
+      if(key===_tipKey)tipChanged=true;
+    }
+  }
+  if(tipChanged)refreshTip();
+}
+// ----- Tooltip-popover (Steg 3) -----
+function ensureTipEl(){
+  var tip=document.getElementById('upgTip');
+  if(!tip){tip=document.createElement('div');tip.id='upgTip';document.body.appendChild(tip);}
+  return tip;
+}
+function tipInnerHtml(v){
+  var foot;
+  if(v.state==='owned')foot='<div class="utip-owned">✓ Owned</div>';
+  else if(v.state==='locked')foot='<div class="utip-req">🔒 '+v.reqText+'</div>';
+  else{var afford=v.state==='afford';foot='<button class="utip-buy'+(afford?'':' dis')+'"'+(afford?' onclick="buyFromTip()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(v.cost)+'</button>';}
+  return '<div class="utip-head"><span class="utip-ic">'+v.icon+'</span><span class="utip-name">'+v.name+'</span></div>'+
+    '<div class="utip-desc">'+v.desc+'</div>'+foot;
+}
+function positionTip(){
+  var tip=document.getElementById('upgTip');if(!tip||!_tipKey)return;
+  var tile=document.querySelector('[data-ukey="'+_tipKey+'"]');if(!tile)return;
+  var r=tile.getBoundingClientRect();
+  var tw=tip.offsetWidth,th=tip.offsetHeight;
+  var left=r.left+r.width/2-tw/2;
+  left=Math.max(8,Math.min(left,window.innerWidth-tw-8));
+  var top=r.top-th-10;
+  if(top<8)top=r.bottom+10;
+  tip.style.left=left+'px';tip.style.top=top+'px';
+}
+function openUpgTip(key){
+  if(_tipKey===key){closeUpgTip();return;} // tap igen = stäng (toggle)
+  var v=_upgView[key];if(!v)return;
+  _tipKey=key;
+  var tip=ensureTipEl();
+  tip.innerHTML=tipInnerHtml(v);
+  tip.classList.add('open');
+  positionTip();
+}
+function refreshTip(){
+  if(!_tipKey)return;
+  var v=_upgView[_tipKey],tip=document.getElementById('upgTip');
+  if(!v||!tip){closeUpgTip();return;}
+  if(v.state==='owned'){closeUpgTip();return;} // engångs-upgrade nyss köpt → stäng
+  tip.innerHTML=tipInnerHtml(v);
+  positionTip();
+}
+function closeUpgTip(){
+  _tipKey=null;
+  var tip=document.getElementById('upgTip');
+  if(tip)tip.classList.remove('open');
+}
+function buyFromTip(){
+  var v=_upgView[_tipKey];if(!v)return;
+  if(v.type==='dbl')buyBuildingDoubling(v.i);
+  else if(v.type==='clk')buyClickUpgrade(v.id);
+  // köp-fn:erna anropar renderUpgrades() som uppdaterar/stänger tooltipen
+}
+// Tile-tap (delegering på #ulist, överlever omritning) + stäng vid tap utanför.
+(function(){
+  var ul=document.getElementById('ulist');
+  if(ul)ul.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.utile');if(t&&t.dataset.ukey)openUpgTip(t.dataset.ukey);});
+  document.addEventListener('click',function(e){
+    var tip=document.getElementById('upgTip');
+    if(!tip||!tip.classList.contains('open'))return;
+    if(tip.contains(e.target))return;
+    if(e.target.closest&&e.target.closest('.utile'))return;
+    closeUpgTip();
+  });
+})();
 // Generiskt köp av en (kvarvarande) upgrade via id. Returnerar true om köpet gick igenom.
 function buyUpgradeById(id){
   var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return false;
@@ -5213,7 +5499,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgrades();},500);
+setInterval(function(){updateBuildingClasses();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();},500);
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
 setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
@@ -5233,6 +5519,9 @@ if(savedData){
   G.offlineMult=savedData.offlineMult||0.5;
   G.petSlots=savedData.petSlots||1;G.currentWorld=savedData.currentWorld||0;
   G.owned=savedData.owned||new Array(20).fill(0);
+  G.buildingDoublings=Array.isArray(savedData.buildingDoublings)?savedData.buildingDoublings.slice(0,20):new Array(20).fill(0);
+  while(G.buildingDoublings.length<20)G.buildingDoublings.push(0);
+  G.clickUpgrades=(savedData.clickUpgrades&&typeof savedData.clickUpgrades==='object')?savedData.clickUpgrades:{};
   G.ulvl=savedData.ulvl||{craft:0,hatch:0};
   ['click','luck','offline'].forEach(function(k){if(G.ulvl[k]!==undefined)delete G.ulvl[k];});
   if(G.ulvl.craft==null)G.ulvl.craft=0;if(G.ulvl.hatch==null)G.ulvl.hatch=0;
