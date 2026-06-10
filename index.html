@@ -165,6 +165,28 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .shop-placeholder{text-align:center;padding:50px 20px;color:rgba(255,255,255,0.5);}
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
+/* ===== SHELL CODEX (Egg Shells-fliken) ===== */
+.shell-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.13em;display:inline-block;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.4));}
+.codex-intro{font-size:0.76rem;color:rgba(255,255,255,0.6);line-height:1.5;text-align:center;padding:4px 8px 12px;}
+.codex-stats{display:flex;gap:8px;margin-bottom:12px;}
+.cstat{flex:1;min-width:0;background:rgba(20,34,66,0.6);border:1.5px solid rgba(58,92,184,0.4);border-radius:14px;padding:10px 6px;text-align:center;}
+.cs-ic{font-size:1.4rem;}
+.cs-v{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cs-l{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:2px;text-transform:uppercase;letter-spacing:0.5px;}
+.codex-droprate{font-size:0.68rem;color:rgba(255,255,255,0.55);text-align:center;background:rgba(0,0,0,0.2);border-radius:10px;padding:8px 10px;margin-bottom:12px;line-height:1.5;}
+.codex-droprate b{color:#f5c842;}
+.codex-list{display:flex;flex-direction:column;gap:8px;padding-bottom:90px;}
+.codex-card{display:flex;align-items:center;gap:11px;background:rgba(20,34,66,0.5);border:1px solid rgba(58,92,184,0.3);border-left:4px solid;border-radius:12px;padding:10px 12px;}
+.codex-card.dim{opacity:0.5;}
+.cc-ic{font-size:1.7rem;flex:none;width:34px;text-align:center;}
+.cc-mid{flex:1;min-width:0;}
+.cc-name{font-family:'Fredoka One',cursive;font-size:0.86rem;}
+.cc-new{font-family:'Nunito',sans-serif;font-size:0.6rem;color:rgba(255,255,255,0.4);font-weight:700;font-style:italic;}
+.cc-meta{font-size:0.66rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+.cc-crafts{font-size:0.66rem;color:rgba(255,255,255,0.6);margin-top:3px;}
+.cc-own{flex:none;text-align:center;min-width:50px;}
+.cc-owncount{display:block;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;}
+.cc-ownlbl{font-size:0.56rem;color:rgba(255,255,255,0.4);text-transform:uppercase;}
 .shop-world-label{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;text-align:center;letter-spacing:0.5px;margin-bottom:9px;text-shadow:0 2px 4px rgba(0,0,0,0.5);}
 .shop-worlds{display:flex;gap:2px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px;-webkit-overflow-scrolling:touch;}
 .shop-world-chip{flex:0 0 auto;width:70px;text-align:center;cursor:pointer;opacity:0.8;}
@@ -1160,6 +1182,13 @@ var SHELL_RARITIES=[
   {id:'eternal',   name:'Eternal Shell',   icon:'✨',color:'#fff',   weight:0.01},
   {id:'cosmic',    name:'Cosmic Shell',    icon:'🌌',color:'#e040fb',weight:0.001},
 ];
+// Shell-ikoner: custom-PNG per raritet (assets/ui/shell/<id>-shell.png) med emoji-fallback.
+// OBS: eternal-shell.png saknas ännu → faller tillbaka till ✨ tills den laddas upp.
+function shellImgUrl(id){return ASSET_BASE+'/assets/ui/shell/'+id+'-shell.png';}
+function shellIcon(id,cls){
+  var r=SHELL_RARITIES.find(function(x){return x.id===id;})||{icon:'🐚'};
+  return '<img class="shell-ic'+(cls?' '+cls:'')+'" src="'+shellImgUrl(id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+r.icon+'\'))">';
+}
 
 // ============================================================
 // DATA: EGG SHOP
@@ -1574,7 +1603,7 @@ function showShellPop(r,idx){
   var sz=idx>=7?'2.1rem':idx>=3?'1.6rem':'1.15rem';
   var glow=idx>=3?'text-shadow:0 0 10px '+r.color+';':'';
   pop.style.cssText='position:absolute;pointer-events:none;z-index:20;left:'+sx+'px;top:'+sy+'px;font-size:'+sz+';'+glow+'--dx:'+dx+'px;--dy:'+dy+'px;animation:shellFly '+(dur/1000)+'s ease forwards;';
-  pop.innerHTML=r.icon; // bara ikonen, inget namn
+  pop.innerHTML=shellIcon(r.id); // bara ikonen, inget namn
   stage.appendChild(pop);
   setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},dur);
 }
@@ -1682,7 +1711,7 @@ function claimAdventure(index){
     G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+sh.amt;
     G.stats.shellsCollectedByRarity[sh.type]=(G.stats.shellsCollectedByRarity[sh.type]||0)+sh.amt;
     var shR=SHELL_RARITIES.find(function(s){return s.id===sh.type;});
-    parts.push('+'+sh.amt+' '+(shR?shR.icon+' '+shR.name:sh.type));
+    parts.push('+'+sh.amt+' '+(shR?shellIcon(sh.type)+' '+shR.name:sh.type));
   });
   if(pet)pet.advXp=(pet.advXp||0)+rw.xp;                 // pet-XP sparas (leveling byggs senare)
   G.stats.totalAdventureXp=(G.stats.totalAdventureXp||0)+rw.xp;
@@ -1787,7 +1816,7 @@ function renderAdventure(){
   html+='<div class="adv-dsec">Possible Rewards</div>';
   html+='<div class="adv-rewards">';
   html+=advRewItem('🪙','Egg Coins','~'+fmtShort(coinsNow),true);
-  var shTypes=sel.shellLoot.map(function(L){var r=SHELL_RARITIES.find(function(s){return s.id===L.type;});return r?r.icon:'';}).join('');
+  var shTypes=sel.shellLoot.map(function(L){var r=SHELL_RARITIES.find(function(s){return s.id===L.type;});return shellIcon(L.type);}).join('');
   html+=advRewItem(shTypes||'🐚','Shards','',true);
   html+=advRewItem('⭐','Pet XP','+'+sel.xp,true);
   (sel.bonusLoot||[]).forEach(function(B){
@@ -3194,7 +3223,7 @@ function renderInventory(){
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
-  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon">'+r.icon+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
+  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon">'+egg.icon+'</div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
@@ -3257,17 +3286,50 @@ function shopLockReason(egg){
   if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return '🔒 Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
   return '🔒 Locked';
 }
+function shellCraftedBy(id){return EGG_SHOP.filter(function(e){return e.shellType===id;});}
+function shellPctFmt(p){if(p>=1)return p.toFixed(1);if(p>=0.1)return p.toFixed(2);if(p>=0.001)return p.toFixed(3);return p.toFixed(4);}
+function shellCodexHtml(){
+  var w=getRarityWeights();var tot=w.reduce(function(a,b){return a+b;},0)||1;
+  var s=G.stats||{};
+  var rarest=SHELL_RARITIES.find(function(x){return x.id===s.highestRarityShellFound;});
+  var hasRarest=rarest&&(s.totalShellsCollected||0)>0;
+  var fav=SHELL_RARITIES.find(function(x){return x.id===s.favoriteShell;});
+  var hasFav=fav&&s.shellsCollectedByRarity&&(s.shellsCollectedByRarity[s.favoriteShell]||0)>0;
+  var h='<div class="codex-intro">🐚 Shells drop while you click and idle. Collect them to craft eggs — rarer eggs need rarer shells.</div>';
+  h+='<div class="codex-stats">';
+  h+='<div class="cstat"><div class="cs-ic">🐚</div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
+  h+='<div class="cstat"><div class="cs-ic">'+(hasRarest?shellIcon(rarest.id):'—')+'</div><div class="cs-v" style="color:'+(hasRarest?rarest.color:'rgba(255,255,255,0.45)')+'">'+(hasRarest?rarest.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Rarest found</div></div>';
+  h+='<div class="cstat"><div class="cs-ic">'+(hasFav?shellIcon(fav.id):'—')+'</div><div class="cs-v" style="color:'+(hasFav?fav.color:'rgba(255,255,255,0.45)')+'">'+(hasFav?fav.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Favorite</div></div>';
+  h+='</div>';
+  h+='<div class="codex-droprate">Drop chance: <b>15%</b> per click · <b>5%</b>/s idle · higher with 🍀 Luck. Rare+ odds rise as your production grows.</div>';
+  h+='<div class="codex-list">';
+  SHELL_RARITIES.forEach(function(r,i){
+    var owned=(G.shells&&G.shells[r.id])||0;
+    var life=(s.shellsCollectedByRarity&&s.shellsCollectedByRarity[r.id])||0;
+    var pct=w[i]/tot*100;
+    var crafts=shellCraftedBy(r.id).map(function(e){return e.icon+' '+e.name.replace(' Egg','');}).join(', ')||'—';
+    h+='<div class="codex-card'+(life>0?'':' dim')+'" style="border-left-color:'+r.color+'">';
+    h+='<div class="cc-ic">'+shellIcon(r.id)+'</div>';
+    h+='<div class="cc-mid"><div class="cc-name" style="color:'+r.color+'">'+r.name.replace(' Shell','')+(life>0?'':' <span class="cc-new">· not found yet</span>')+'</div>';
+    h+='<div class="cc-meta">Drop '+shellPctFmt(pct)+'% · Lifetime '+fmtShort(life)+'</div>';
+    h+='<div class="cc-crafts">Crafts: '+crafts+'</div></div>';
+    h+='<div class="cc-own"><span class="cc-owncount">'+fmtShort(owned)+'</span><span class="cc-ownlbl">owned</span></div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  return h;
+}
 function renderShop(){
   var wrap=document.getElementById('shop-wrap');if(!wrap)return;
   var html='';
   html+='<div class="shop-header">Shop</div>';
   html+='<div class="shop-tabs">';
   html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shop/basic-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><span class="stab-emoji">🐚</span>EGG SHELLS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">EGG SHELLS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
-    html+='<div class="shop-placeholder"><div style="font-size:2.6rem;">🐚</div><div class="sp-title">Egg Shells</div><div class="sp-sub">Här kommer du kunna se alla dina shells samlade på ett ställe. Byggs i ett senare steg.</div></div>';
+    html+=shellCodexHtml();
     wrap.innerHTML=html;return;
   }
 
@@ -3308,7 +3370,7 @@ function renderShop(){
     if(unlocked){
       html+='<div class="sec-cost">';
       html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
-      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'"><span class="sec-cshell">'+shellR.icon+'</span>'+sc+'</span>';
+      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+sc+'</span>';
       html+='</div>';
     }
     // Knappar (Craft över Hatch)
@@ -3393,7 +3455,7 @@ function showEggInfo(eggId){
   var shellR2=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
   var have2=G.shells[egg.shellType]||0;
   var shellOk2=have2>=cost;
-  reqs.push({icon:shellR2.icon,label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  reqs.push({icon:shellIcon(egg.shellType),label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
   reqs.push({icon:'🪙',label:'Egg Coins (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:'🪙',label:'Earn '+egg.coinReq+' Egg Coins',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
@@ -3786,7 +3848,7 @@ function renderShellFusion(){
   h+='<div class="shf-io">';
   h+='<div class="shf-box pick" onclick="openShellSrcPicker()">';
   if(src){
-    h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+sm.icon+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
+    h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+shellIcon(src)+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
   } else {
     h+='<div class="shf-box-ic">🐚</div><div class="shf-box-empty">Tap to choose a shell</div>';
   }
@@ -3794,7 +3856,7 @@ function renderShellFusion(){
   h+='<div class="shf-io-arrow">→</div>';
   h+='<div class="shf-box">';
   if(src&&next){
-    h+='<div class="shf-box-ic" style="color:'+nm.color+'">'+nm.icon+'</div><div class="shf-box-lbl">'+nm.label+'</div><div class="shf-box-sub">'+(qty>0?('get '+fmtShort(qty)):'—')+'</div>';
+    h+='<div class="shf-box-ic" style="color:'+nm.color+'">'+shellIcon(next)+'</div><div class="shf-box-lbl">'+nm.label+'</div><div class="shf-box-sub">'+(qty>0?('get '+fmtShort(qty)):'—')+'</div>';
   } else {
     h+='<div class="shf-box-ic" style="opacity:0.3">❔</div><div class="shf-box-empty">Result</div>';
   }
@@ -3830,7 +3892,7 @@ function renderShellSrcList(){
     if(!getNextRarity(rid))return; // cosmic kan inte konverteras
     var have=G.shells[rid]||0;if(have<=0)return;
     any=true;var sm=shellMeta(rid),maxOut=Math.floor(have/5);
-    h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+sm.icon+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Shell</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
+    h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+shellIcon(rid)+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Shell</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
   });
   if(!any)h='<div class="shf-empty">You have no shells that can be converted yet.<br>Collect shells by tapping and idling first.</div>';
   wrap.innerHTML=h;
