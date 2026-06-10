@@ -286,6 +286,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .stats-src{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:5px;font-size:0.66rem;color:rgba(255,255,255,0.55);}
 .stats-soon{opacity:0.5;font-style:italic;}
 .stats-foot{margin-top:14px;font-size:0.66rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.4;}
+/* Dev-meny */
+#dev-fab{position:absolute;left:10px;bottom:calc(var(--nav-h) + 10px);padding:7px 11px;background:rgba(20,10,30,0.8);border:1.5px dashed #e07a3a;border-radius:9px;color:#ffb37a;font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1px;cursor:pointer;z-index:95;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:transform 0.12s;}
+#dev-fab:active{transform:scale(0.93);}
+.dev-note{font-size:0.55rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-bottom:10px;}
+.dev-row{display:flex;gap:6px;margin-bottom:6px;}
 .modal-box.centered{border-radius:20px;width:320px;max-width:92vw;text-align:center;}
 .modal-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:10px;padding:7px 14px;margin-bottom:14px;text-align:center;box-shadow:0 2px 0 #2a1858,inset 0 1px 0 rgba(255,255,255,0.15);}
 .modal-close{float:right;background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;}
@@ -969,9 +974,17 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Shop</span></button>
     <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventure</span></button>
   </div>
+  <div id="dev-fab" onclick="openDevMenu()" title="Dev Menu">DEV</div>
 </div>
 
 <!-- MODALS -->
+<div id="dev-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeDevMenu()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDevMenu()" style="float:right">✕</button>
+    <div class="modal-title">🛠️ Dev Menu</div>
+    <div id="dev-modal-body"></div>
+  </div>
+</div>
 <div id="stats-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStatsPanel()">
   <div class="modal-box">
     <button class="modal-close" onclick="closeStatsPanel()" style="float:right">✕</button>
@@ -1617,7 +1630,7 @@ var G={
   stats:freshStats(),
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
-var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true};
+var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false};
 
 // ============================================================
 // UTILS
@@ -1982,6 +1995,31 @@ function addTestPets(){
   syncDiscoveredFromInventory();
 }
 function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
+
+// ===== DEV-MENY (flytande DEV-knapp) — tas bort innan release =====
+function applyPedestalVisibility(){
+  var p=document.getElementById('pedestal-img');
+  if(p)p.style.display=(G.settings&&G.settings.hidePedestal)?'none':'block';
+}
+function togglePedestal(){
+  if(!G.settings)G.settings={};
+  G.settings.hidePedestal=!G.settings.hidePedestal;
+  applyPedestalVisibility();
+  saveGame();
+  renderDevMenu();
+}
+function renderDevMenu(){
+  var w=EGG_WORLDS[G.currentWorld];
+  var pedOn=!(G.settings&&G.settings.hidePedestal);
+  var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
+  var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
+  html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
+  html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
+  html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
+  document.getElementById('dev-modal-body').innerHTML=html;
+}
+function openDevMenu(){renderDevMenu();document.getElementById('dev-modal').classList.add('open');}
+function closeDevMenu(){var m=document.getElementById('dev-modal');if(m)m.classList.remove('open');}
 
 // ============================================================
 // SCENE
@@ -2722,21 +2760,7 @@ function openMore(){
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
-  if(dev){
-    var w=EGG_WORLDS[G.currentWorld];
-    var bBlue='style="flex:1;padding:8px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;"';
-    dev.innerHTML=''
-      +'<div style="font-size:0.55rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-top:16px;margin-bottom:8px;">Dev / Test — tas bort innan release</div>'
-      +'<div style="display:flex;gap:6px;margin-bottom:6px;">'
-      +'<button onclick="event.stopPropagation();addTestShells()" '+bBlue+'>+300 Shells</button>'
-      +'<button onclick="event.stopPropagation();addTestPets()" '+bBlue+'>+10 Pets</button>'
-      +'<button onclick="event.stopPropagation();addTestCoins()" '+bBlue+'>+1B Eggs</button>'
-      +'</div>'
-      +'<div style="display:flex;gap:6px;">'
-      +'<button id="world-test-btn" onclick="event.stopPropagation();cycleWorld()" style="flex:2;padding:8px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button>'
-      +'<button onclick="resetGame()" style="flex:1;padding:8px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.72rem;font-family:inherit;cursor:pointer;">Reset</button>'
-      +'</div>';
-  }
+  if(dev){dev.innerHTML='';}  // Dev-verktygen bor nu i den flytande DEV-knappens meny
   document.getElementById('more-drawer').classList.add('open');
 }
 function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
@@ -5033,6 +5057,7 @@ if(savedData){
 }
 switchTab('buildings');
 initParticles();setWorld(G.currentWorld);
+applyPedestalVisibility();
 applySettings();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
