@@ -208,6 +208,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-slot{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:16px;padding:14px;margin-bottom:8px;backdrop-filter:blur(4px);}
 .hatch-slot.active-slot{border-color:rgba(245,200,66,0.5);}
 .hatch-slot.empty-slot{border-style:dashed;opacity:0.6;}
+.hatch-unlock{display:flex;align-items:center;gap:12px;background:rgba(27,45,78,0.45);border:2px dashed rgba(120,150,210,0.45);border-radius:16px;padding:13px 14px;margin-bottom:8px;}
+.hatch-unlock.afford{border-style:solid;border-color:rgba(179,136,255,0.6);cursor:pointer;box-shadow:0 0 12px rgba(124,77,255,0.25);}
+.hatch-unlock-icon{width:46px;height:46px;border-radius:13px;background:linear-gradient(180deg,#2a1f55,#1a1340);border:2px solid #7c4dff;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.hatch-unlock-info{flex:1;min-width:0;}
+.hatch-unlock-title{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;}
+.hatch-unlock-sub{font-size:0.7rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+.hatch-unlock-cost{flex:none;display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.82rem;color:#b388ff;}
+.hatch-unlock-cost.bad{color:rgba(255,255,255,0.4);}
+.hatch-unlock-cost img{width:16px;height:16px;object-fit:contain;}
 .hatch-slot-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
 .hatch-slot-icon{width:52px;height:52px;border-radius:14px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;}
 .hatch-slot-name{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
@@ -300,6 +309,68 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pra-name{flex:1;text-align:left;}
 .pra-tier{font-weight:900;}
 .pra-val{color:rgba(255,255,255,0.5);font-size:0.72rem;}
+
+/* ===== MUTATION SYSTEM (Extract / Mutate) ===== */
+#psub-panel-extract #extract-wrap{padding:6px 2px 90px;}
+.ex-modes{display:flex;gap:8px;margin-bottom:12px;}
+.ex-mode{flex:1;padding:11px;border:2px solid rgba(58,92,184,0.5);border-radius:13px;background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.86rem;cursor:pointer;}
+.ex-mode.active{border-color:#7c4dff;background:linear-gradient(180deg,#2a1f55,#1a1340);color:#fff;box-shadow:0 0 10px rgba(124,77,255,0.35);}
+.ex-intro{font-size:0.76rem;color:rgba(255,255,255,0.6);line-height:1.5;background:rgba(0,0,0,0.2);border-radius:12px;padding:11px 13px;margin-bottom:12px;}
+.ex-intro b{color:#b388ff;}
+.ex-subtitle{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#f5c842;margin-bottom:9px;}
+.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.ex-pcard{border:2px solid;border-radius:14px;padding:9px 7px;cursor:pointer;text-align:center;}
+.ex-pcard:active{transform:scale(0.96);}
+.ex-pcard-top{display:flex;align-items:center;justify-content:center;position:relative;min-height:20px;}
+.ex-pemoji{font-size:1.9rem;}
+.ex-eq{position:absolute;top:-4px;right:-2px;font-size:0.5rem;background:#f5c842;color:#0b1530;border-radius:6px;padding:2px 4px;font-family:'Baloo 2',cursive;font-weight:800;white-space:nowrap;}
+.ex-pname{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ex-prar{font-size:0.62rem;margin-top:1px;}
+.ex-pabils{font-size:0.62rem;color:rgba(255,255,255,0.55);margin-top:5px;line-height:1.5;min-height:1em;}
+.ex-empty{text-align:center;padding:36px 16px;color:rgba(255,255,255,0.4);}
+.ex-empty-i{font-size:2.6rem;margin-bottom:8px;}
+.ex-empty p{font-size:0.85rem;line-height:1.5;}
+.ex-empty b{color:#b388ff;}
+/* Mutation modal innehåll */
+#mutation-modal .modal-box{max-width:340px;}
+.mut-head{text-align:center;margin-bottom:12px;}
+.mut-emoji{font-size:3rem;}
+.mut-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fff;margin-top:2px;}
+.mut-sub{font-size:0.8rem;}
+.mut-q{font-size:0.82rem;color:rgba(255,255,255,0.8);text-align:center;margin-bottom:10px;line-height:1.45;}
+.mut-q b{font-weight:900;}
+.mut-q2{font-size:0.72rem;color:#f5c842;text-align:center;margin-bottom:8px;font-family:'Fredoka One',cursive;}
+.mut-ability{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:rgba(27,45,78,0.55);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:11px 12px;margin-bottom:8px;cursor:pointer;color:#fff;}
+.mut-ability:active{transform:scale(0.98);}
+.ma-icon{font-size:1.1rem;flex:none;}
+.ma-name{flex:1;font-family:'Fredoka One',cursive;font-size:0.82rem;}
+.ma-tier{font-size:0.72rem;font-weight:900;flex:none;}
+.ma-core{font-size:0.6rem;border-radius:7px;padding:3px 7px;flex:none;font-family:'Baloo 2',cursive;font-weight:800;}
+.ma-replace{font-size:0.72rem;color:#b388ff;flex:none;font-family:'Fredoka One',cursive;}
+.ma-count{font-size:0.74rem;color:rgba(255,255,255,0.6);flex:none;font-weight:900;}
+.mut-cancel{width:100%;padding:10px;border:none;border-radius:12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.82rem;cursor:pointer;margin-top:4px;}
+.mut-warn-i{font-size:2.6rem;text-align:center;}
+.mut-warn-t{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;text-align:center;margin:4px 0 8px;}
+.mut-warn-b{font-size:0.78rem;color:rgba(255,255,255,0.65);text-align:center;line-height:1.5;margin-bottom:10px;}
+.mut-warn-b b{color:#ef9a9a;}
+.mut-corebox{display:flex;align-items:center;gap:8px;justify-content:center;border:2px solid;border-radius:13px;padding:11px;margin-bottom:12px;}
+.mc-icon{font-size:1.3rem;}
+.mc-name{font-family:'Fredoka One',cursive;font-size:0.88rem;}
+.mc-val{color:rgba(255,255,255,0.55);font-size:0.74rem;}
+.mut-swap{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.mut-swap-side{flex:1;background:rgba(0,0,0,0.25);border-radius:12px;padding:10px 8px;text-align:center;}
+.mss-l{font-size:0.6rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;}
+.mss-v{font-family:'Fredoka One',cursive;font-size:0.8rem;margin-top:4px;}
+.mss-t{font-size:0.68rem;margin-top:2px;}
+.mut-swap-arrow{color:#b388ff;font-size:1.2rem;flex:none;}
+.mut-btns{display:flex;gap:9px;}
+.mut-cancel2{flex:1;padding:12px;border:none;border-radius:12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);font-family:'Fredoka One',cursive;font-size:0.85rem;cursor:pointer;}
+.mut-go{flex:1;padding:12px;border:none;border-radius:12px;background:linear-gradient(180deg,#5fd068,#2fb344);color:#fff;font-family:'Fredoka One',cursive;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 0 #1d7a2c;width:100%;}
+.mut-go.red{background:linear-gradient(180deg,#e0584a,#c0392b);box-shadow:0 3px 0 #7e241a;}
+.mut-go.purple{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;}
+.mut-res-i{font-size:3rem;text-align:center;}
+.mut-res-t{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;text-align:center;margin:4px 0 12px;}
+.mut-res-sub{font-size:0.74rem;color:rgba(255,255,255,0.5);text-align:center;line-height:1.5;margin-bottom:14px;}
 
 /* Active bonuses strip */
 .bonus-strip{background:rgba(0,0,0,0.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;}
@@ -760,7 +831,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
       <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
-      <div id="psub-panel-extract" class="psub-panel" style="display:none"><div class="placeholder"><div class="phi">🧪</div><h2>Extraction</h2><p>Förstör en pet för att spara dess ability som en Mutation Core. Byggs i ett senare steg (Fas 9).</p></div></div>
+      <div id="psub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
     </div>
     <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
@@ -815,6 +886,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="modal-box centered">
     <button class="modal-close" id="pet-detail-close" style="float:right">✕</button>
     <div id="pet-detail-content"></div>
+  </div>
+</div>
+
+<div id="mutation-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <div id="mutation-modal-body"></div>
   </div>
 </div>
 
@@ -935,6 +1012,10 @@ var UPGRADES=[
   {id:'offline',e:'💤',n:'Offline Gain',max:5,cost:[10000,100000,1000000,10000000,100000000],desc:function(l){return 'Offline: '+[50,60,70,80,90,100][l]+'% → '+[50,60,70,80,90,100][l+1]+'%';},apply:function(l){G.offlineMult=[0.5,0.6,0.7,0.8,0.9,1.0][l];}},
 ];
 var SLOTS=[{slot:2,cost:10000},{slot:3,cost:1e6},{slot:4,cost:1e8},{slot:5,cost:1e10}];
+// === HATCH SLOTS (separat från pet slots) ===
+// Spelaren börjar med 1 hatch slot, max 3 (spikat). Köps med Egg Coins i Hatchery.
+var HATCH_SLOT_MAX=3;
+var HATCH_SLOT_COSTS=[50000,5e6]; // Egg Coins för att låsa upp slot 2 resp 3 — PRELIMINÄRA värden, justeras vid balansering
 // === PET ADVENTURES (Phase 8) ===
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
@@ -1338,7 +1419,7 @@ var G={
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   ulvl:{click:0,craft:0,hatch:0,luck:0,offline:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchedPets:[],
+  eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   achievements:{unlocked:{},claimed:{}},
   gems:0,
   permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
@@ -1645,7 +1726,7 @@ function saveGame(){
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
   }));}catch(e){}
 }
@@ -1657,7 +1738,7 @@ function resetGame(){
   G.owned=new Array(20).fill(0);
   G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchedPets=[];
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
   G.gems=0;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.achievements={unlocked:{},claimed:{}};
@@ -1923,9 +2004,9 @@ function setPetSort(mode){petSortMode=mode;renderPets();}
 
 // Pet Detail Modal
 function openPetDetail(uid){
-  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});if(!pet)return;
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-  var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+  var isEquipped=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
   var html='<div style="text-align:center;margin-bottom:12px;">';
   html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+pet.e+'</div>';
@@ -1943,35 +2024,35 @@ function openPetDetail(uid){
   html+='</div>';
   // Equip / unequip button
   if(isEquipped){
-    var slotIdx=G.equippedPets.indexOf(pet.uid);
-    html+='<button onclick="unequipPet(\''+uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:#c0392b;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">Remove from Slot '+(slotIdx+1)+'</button>';
+    var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(pet.uid);});
+    html+='<button onclick="unequipPet(\''+pet.uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:#c0392b;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">Remove from Slot '+(slotIdx+1)+'</button>';
   } else {
-    html+='<button onclick="quickEquipPet(\''+uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">⚡ Equip Pet</button>';
+    html+='<button onclick="quickEquipPet(\''+pet.uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">⚡ Equip Pet</button>';
   }
   document.getElementById('pet-detail-content').innerHTML=html;
   document.getElementById('pet-detail-modal').classList.add('open');
 }
 function unequipPet(uid){
-  var slotIdx=G.equippedPets.indexOf(uid);
+  var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(uid);});
   if(slotIdx>=0){G.equippedPets[slotIdx]=null;}
-  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
   if(pet)pet.equippedSlot=-1;
   document.getElementById('pet-detail-modal').classList.remove('open');
   renderSlotRow();renderPets();updateHUD();
 }
 function quickEquipPet(uid){
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
   // Find first empty slot
   var emptySlot=-1;
   for(var i=0;i<G.petSlots;i++){if(!G.equippedPets[i]){emptySlot=i;break;}}
   if(emptySlot===-1){
     // Replace slot 0
-    var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[0];});
+    var oldPet=G.hatchedPets.find(function(p){return String(p.uid)===String(G.equippedPets[0]);});
     if(oldPet)oldPet.equippedSlot=-1;
     emptySlot=0;
   }
-  G.equippedPets[emptySlot]=uid;
-  var pet=G.hatchedPets.find(function(p){return p.uid===uid;});
-  if(pet)pet.equippedSlot=emptySlot;
+  G.equippedPets[emptySlot]=pet.uid; // lagra ALLTID det numeriska uid:t (matchar getActiveBonuses + slot-väljaren)
+  pet.equippedSlot=emptySlot;
   document.getElementById('pet-detail-modal').classList.remove('open');
   renderSlotRow();renderPets();updateHUD();
 }
@@ -2081,9 +2162,193 @@ function petsSub(sub){
   });
   if(sub==='pets')renderPets();
   else if(sub==='fusion')renderFusion();
-  // 'extract' är en statisk platshållare tills Fas 9 byggs
+  else if(sub==='extract')renderExtract();
 }
 function showPetsHub(){petsSub(petsSubTab);}
+
+// ============================================================
+// MUTATION SYSTEM (Fas 9–10): Extraction Chamber + Mutation Cores + Mutation Chamber
+// ============================================================
+// Core-raritet följer ability-tier: T1=Common ... T5=Legendary (enligt Mutation System-doc)
+var CORE_RARITY_BY_TIER={1:'common',2:'uncommon',3:'rare',4:'epic',5:'legendary'};
+function coreRarityId(tier){return CORE_RARITY_BY_TIER[tier]||'common';}
+function coreRarityConf(tier){return RARITY_CONFIG[coreRarityId(tier)]||RARITY_CONFIG.common;}
+function coreLabel(id,tier){var m=ABILITY_META[id]||{name:id};return coreRarityConf(tier).label+' '+m.name+' Core';}
+function petByUid(uid){return G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});}
+function destroyPetByUid(uid){
+  for(var i=0;i<G.equippedPets.length;i++){if(G.equippedPets[i]!=null&&String(G.equippedPets[i])===String(uid))G.equippedPets[i]=null;}
+  var idx=G.hatchedPets.findIndex(function(p){return String(p.uid)===String(uid);});
+  if(idx>=0)G.hatchedPets.splice(idx,1);
+}
+// Gruppera ägda cores för visning/val: nyckel = id_tier
+function groupedCores(){
+  var g={};
+  G.mutationCores.forEach(function(c){var k=c.id+'_'+c.tier;if(!g[k])g[k]={id:c.id,tier:c.tier,count:0};g[k].count++;});
+  return Object.keys(g).map(function(k){return g[k];}).sort(function(a,b){
+    if(b.tier!==a.tier)return b.tier-a.tier;
+    return ABILITIES.indexOf(a.id)-ABILITIES.indexOf(b.id);
+  });
+}
+
+var extractMode='extract'; // 'extract' | 'mutate'
+function setExtractMode(m){extractMode=m;renderExtract();}
+function renderExtract(){
+  var wrap=document.getElementById('extract-wrap');if(!wrap)return;
+  var html='<div class="ex-modes">';
+  html+='<button class="ex-mode'+(extractMode==='extract'?' active':'')+'" onclick="setExtractMode(\'extract\')">🧪 Extract</button>';
+  html+='<button class="ex-mode'+(extractMode==='mutate'?' active':'')+'" onclick="setExtractMode(\'mutate\')">🧬 Mutate</button>';
+  html+='</div>';
+  if(extractMode==='extract'){
+    html+='<div class="ex-intro">Destroy a pet to keep one of its abilities as a <b>Mutation Core</b>. The pet is gone for good — choose carefully.</div>';
+    html+='<div class="ex-subtitle">Pick a pet to extract from</div>';
+    html+=extractPetGridHtml('openExtractPet');
+  } else {
+    var coreCount=G.mutationCores.length;
+    html+='<div class="ex-intro">Apply a <b>Mutation Core</b> to swap one of a pet\'s abilities. You have <b>'+coreCount+'</b> core'+(coreCount===1?'':'s')+' stored.</div>';
+    if(coreCount===0){
+      html+='<div class="ex-empty"><div class="ex-empty-i">🧪</div><p>No cores yet. Switch to <b>🧪 Extract</b> to create some first.</p></div>';
+    } else {
+      html+='<div class="ex-subtitle">Pick a pet to improve</div>';
+      html+=extractPetGridHtml('openMutateTarget');
+    }
+  }
+  wrap.innerHTML=html;
+}
+function extractPetGridHtml(clickFn){
+  if(G.hatchedPets.length===0){
+    return '<div class="ex-empty"><div class="ex-empty-i">🐾</div><p>You have no pets yet. Hatch some eggs first!</p></div>';
+  }
+  var order=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var sorted=G.hatchedPets.slice().sort(function(a,b){return order.indexOf(b.rarity)-order.indexOf(a.rarity);});
+  var html='<div class="ex-grid">';
+  sorted.forEach(function(pet){
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    var isEq=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
+    var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+'T'+a.tier:'';}).join(' ');
+    html+='<div class="ex-pcard" onclick="'+clickFn+'(\''+pet.uid+'\')" style="border-color:'+rc.color+'66;background:linear-gradient(135deg,'+rc.color+'18,rgba(12,21,48,0.85));">';
+    html+='<div class="ex-pcard-top"><span class="ex-pemoji">'+pet.e+'</span>'+(isEq?'<span class="ex-eq">⚡ Active</span>':'')+'</div>';
+    html+='<div class="ex-pname">'+pet.name+'</div>';
+    html+='<div class="ex-prar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
+    html+='<div class="ex-pabils">'+abStr+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  return html;
+}
+function openMutationModal(html){document.getElementById('mutation-modal-body').innerHTML=html;document.getElementById('mutation-modal').classList.add('open');}
+function closeMutationModal(){document.getElementById('mutation-modal').classList.remove('open');}
+document.getElementById('mutation-modal').onclick=function(e){if(e.target===this)closeMutationModal();};
+
+// ---- EXTRACTION FLOW ----
+function openExtractPet(uid){
+  var pet=petByUid(uid);if(!pet)return;
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var h='<div class="mut-head"><div class="mut-emoji">'+pet.e+'</div><div class="mut-title">'+pet.name+'</div><div class="mut-sub" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div>';
+  h+='<div class="mut-q">Which ability do you want to keep as a Core?</div>';
+  pet.abilities.forEach(function(ab,i){
+    var m=ABILITY_META[ab.id];if(!m)return;var crc=coreRarityConf(ab.tier);
+    h+='<button class="mut-ability" onclick="confirmExtract(\''+uid+'\','+i+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="ma-core" style="background:'+crc.color+'22;color:'+crc.color+'">'+crc.label+' Core</span></button>';
+  });
+  h+='<button class="mut-cancel" onclick="closeMutationModal()">Cancel</button>';
+  openMutationModal(h);
+}
+function confirmExtract(uid,abIdx){
+  var pet=petByUid(uid);if(!pet)return;var ab=pet.abilities[abIdx];if(!ab)return;
+  var m=ABILITY_META[ab.id];var crc=coreRarityConf(ab.tier);
+  var h='<div class="mut-warn-i">⚠️</div><div class="mut-warn-t">Destroy '+pet.name+'?</div>';
+  h+='<div class="mut-warn-b">This <b>permanently destroys</b> '+pet.name+'. In return you receive:</div>';
+  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="closeMutationModal()">Cancel</button><button class="mut-go red" onclick="doExtract(\''+uid+'\','+abIdx+')">⚗️ Extract</button></div>';
+  openMutationModal(h);
+}
+function doExtract(uid,abIdx){
+  var pet=petByUid(uid);if(!pet)return;var ab=pet.abilities[abIdx];if(!ab)return;
+  var savedAb={id:ab.id,tier:ab.tier};
+  G.mutationCores.push(savedAb);
+  destroyPetByUid(uid);
+  G.stats.abilitiesExtracted=(G.stats.abilitiesExtracted||0)+1;
+  G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+1;
+  G.stats.petsSacrificed=(G.stats.petsSacrificed||0)+1;
+  if(typeof buzz==='function')buzz(25);
+  var m=ABILITY_META[savedAb.id];var crc=coreRarityConf(savedAb.tier);
+  var h='<div class="mut-res-i">✨</div><div class="mut-res-t">Core Created!</div>';
+  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(savedAb.id,savedAb.tier)+'</span><span class="mc-val">+'+TIER_VALUES[savedAb.tier]+'%</span></div>';
+  h+='<div class="mut-res-sub">Stored in your 🎒 Inventory → Cores. Apply it in the 🧬 Mutate tab.</div>';
+  h+='<button class="mut-go" onclick="closeMutationModal()">Done</button>';
+  openMutationModal(h);
+  if(typeof renderSlotRow==='function')renderSlotRow();
+  if(typeof updateHUD==='function')updateHUD();
+  renderExtract();saveGame();
+}
+
+// ---- MUTATION FLOW (apply core to pet) ----
+function openMutateTarget(uid){
+  var pet=petByUid(uid);if(!pet)return;
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var h='<div class="mut-head"><div class="mut-emoji">'+pet.e+'</div><div class="mut-title">'+pet.name+'</div><div class="mut-sub" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div>';
+  h+='<div class="mut-q">Tap an ability slot to replace with a Core:</div>';
+  pet.abilities.forEach(function(ab,i){
+    var m=ABILITY_META[ab.id];if(!m)return;
+    h+='<button class="mut-ability" onclick="openCorePicker(\''+uid+'\','+i+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="ma-replace">Replace ›</span></button>';
+  });
+  h+='<button class="mut-cancel" onclick="closeMutationModal()">Cancel</button>';
+  openMutationModal(h);
+}
+function openCorePicker(uid,slotIdx){
+  var pet=petByUid(uid);if(!pet)return;var cur=pet.abilities[slotIdx];if(!cur)return;
+  var curM=ABILITY_META[cur.id];var groups=groupedCores();
+  var h='<div class="mut-q">Replacing <b style="color:'+curM.color+'">'+curM.icon+' '+curM.name+' T'+cur.tier+'</b> on '+pet.name+'</div>';
+  if(groups.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🧪</div><p>No cores available. Extract some first.</p></div>';}
+  else{
+    h+='<div class="mut-q2">Choose a Core to apply:</div>';
+    groups.forEach(function(g){
+      var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);
+      h+='<button class="mut-ability" onclick="confirmMutate(\''+uid+'\','+slotIdx+',\''+g.id+'\','+g.tier+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-tier">+'+TIER_VALUES[g.tier]+'%</span><span class="ma-count">×'+g.count+'</span></button>';
+    });
+  }
+  h+='<button class="mut-cancel" onclick="openMutateTarget(\''+uid+'\')">‹ Back</button>';
+  openMutationModal(h);
+}
+function confirmMutate(uid,slotIdx,coreId,coreTier){
+  var pet=petByUid(uid);if(!pet)return;var cur=pet.abilities[slotIdx];if(!cur)return;
+  var curM=ABILITY_META[cur.id];var newM=ABILITY_META[coreId];var crc=coreRarityConf(coreTier);
+  var h='<div class="mut-warn-i">🧬</div><div class="mut-warn-t">Apply Core?</div>';
+  h+='<div class="mut-swap"><div class="mut-swap-side"><div class="mss-l">Current</div><div class="mss-v" style="color:'+curM.color+'">'+curM.icon+' '+curM.name+'</div><div class="mss-t" style="color:'+curM.color+'">T'+cur.tier+' (+'+TIER_VALUES[cur.tier]+'%)</div></div>';
+  h+='<div class="mut-swap-arrow">→</div>';
+  h+='<div class="mut-swap-side"><div class="mss-l">New</div><div class="mss-v" style="color:'+crc.color+'">'+newM.icon+' '+newM.name+'</div><div class="mss-t" style="color:'+crc.color+'">T'+coreTier+' (+'+TIER_VALUES[coreTier]+'%)</div></div></div>';
+  h+='<div class="mut-warn-b">The core is consumed. The current ability is permanently replaced.</div>';
+  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="openCorePicker(\''+uid+'\','+slotIdx+')">‹ Back</button><button class="mut-go purple" onclick="doMutate(\''+uid+'\','+slotIdx+',\''+coreId+'\','+coreTier+')">🧬 Apply</button></div>';
+  openMutationModal(h);
+}
+function doMutate(uid,slotIdx,coreId,coreTier){
+  var pet=petByUid(uid);if(!pet)return;if(!pet.abilities[slotIdx])return;
+  var ci=G.mutationCores.findIndex(function(c){return c.id===coreId&&c.tier===coreTier;});
+  if(ci<0){closeMutationModal();return;}
+  G.mutationCores.splice(ci,1);
+  pet.abilities[slotIdx]={id:coreId,tier:coreTier};
+  G.stats.totalPetsMutated=(G.stats.totalPetsMutated||0)+1;
+  G.stats.mutationCoresUsed=(G.stats.mutationCoresUsed||0)+1;
+  if(typeof buzz==='function')buzz([10,30,12]);
+  var newM=ABILITY_META[coreId];var crc=coreRarityConf(coreTier);
+  var h='<div class="mut-res-i">✅</div><div class="mut-res-t">'+pet.name+' Mutated!</div>';
+  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+newM.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+newM.name+' Tier '+coreTier+'</span><span class="mc-val">+'+TIER_VALUES[coreTier]+'%</span></div>';
+  h+='<div class="mut-res-sub">'+(G.equippedPets.some(function(u){return u!=null&&String(u)===String(uid);})?'This pet is active — your bonuses updated.':'Equip this pet to use its new ability.')+'</div>';
+  h+='<button class="mut-go" onclick="closeMutationModal()">Done</button>';
+  openMutationModal(h);
+  if(typeof renderSlotRow==='function')renderSlotRow();
+  if(typeof updateHUD==='function')updateHUD();
+  renderExtract();saveGame();
+}
+// Cores-sektionen i Inventory
+function coresInvHtml(){
+  var groups=groupedCores();
+  if(groups.length===0)return '<div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets in the 🧬 Mutation tab.</p></div>';
+  var html='<div class="inv-total"><span class="inv-total-label">Total Cores</span><span class="inv-total-val">'+G.mutationCores.length+'</span></div><div class="inv-grid">';
+  groups.forEach(function(g){var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);
+    html+='<div class="inv-card" style="border-color:'+crc.color+'66"><div class="inv-icon">'+m.icon+'</div><div><div class="inv-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</div><div class="inv-count">×'+g.count+'</div></div></div>';});
+  html+='</div>';
+  return html;
+}
 
 // ============================================================
 // NAVIGATION (rebuild step 1): More drawer, EPS info, placeholders
@@ -2305,7 +2570,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.0<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.1<br>An idle pet collection game · Made with 💜</div></div>';
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -2345,7 +2610,7 @@ function resetFromSettings(){
     G.owned=new Array(20).fill(0);
     G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchedPets=[];
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
     G.gems=0;
     G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
@@ -2690,7 +2955,7 @@ function renderInventory(){
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon">'+egg.icon+'</div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
-  html+='<div id="isec-cores" style="display:none;"><div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets.</p></div></div>';
+  html+='<div id="isec-cores" style="display:none;">'+coresInvHtml()+'</div>';
   html+='<div id="isec-loot" style="display:none;"><div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here when pets return from missions.</p></div></div>';
   wrap.innerHTML=html;
   showInvSection(activeInvSection);
@@ -2776,7 +3041,7 @@ function renderShop(){
 
   // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
   var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  var slotFree=active<G.petSlots;
+  var slotFree=active<G.hatchSlotCount;
   EGG_SHOP.forEach(function(egg){
     var state=getEggState(egg);
     var unlocked=state==='unlocked';
@@ -2839,7 +3104,7 @@ function hatchFromShop(id){
   var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
   if(getEggState(egg)!=='unlocked')return;
   var activeSlots=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  if(activeSlots>=G.petSlots)return; // ingen ledig slot
+  if(activeSlots>=G.hatchSlotCount)return; // ingen ledig slot
   var owned=G.eggsOwned[egg.id]||0;
   if(owned<=0){
     // Inget i lager → crafta ett nytt först (betala coins + shells)
@@ -2869,7 +3134,7 @@ function showEggInfo(eggId){
   var total=Object.keys(weights).reduce(function(s,k){return s+weights[k];},0);
   var hatchSecs=Math.floor(getHatchDuration(eggId)/1000);
   var activeCount=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  var canHatch=activeCount<G.petSlots&&(G.eggsOwned[eggId]||0)>0;
+  var canHatch=activeCount<G.hatchSlotCount&&(G.eggsOwned[eggId]||0)>0;
 
   var html='<div style="text-align:center;margin-bottom:12px;">';
   html+='<div style="font-size:3rem;margin-bottom:4px;"><img src="'+eggShopIconUrl(eggId)+'" alt="" style="width:78px;height:78px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div>';
@@ -2943,13 +3208,24 @@ function startHatchingFromInfo(eggId){
 document.getElementById('egg-info-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
 
 function startHatching(eggId){
-  var maxSlots=G.petSlots;
+  var maxSlots=G.hatchSlotCount;
   var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
   if(active>=maxSlots)return;
   if((G.eggsOwned[eggId]||0)<=0)return;
   G.eggsOwned[eggId]--;
   G.hatchSlots.push({eggId:eggId,startTime:Date.now(),duration:getHatchDuration(eggId),done:false});
   renderHatchery();
+}
+function buyHatchSlot(){
+  if(G.hatchSlotCount>=HATCH_SLOT_MAX)return;
+  var cost=HATCH_SLOT_COSTS[G.hatchSlotCount-1];
+  if(G.coins<cost)return;
+  G.coins-=cost;
+  G.hatchSlotCount++;
+  buzz(15);
+  if(typeof updateHUD==='function')updateHUD();
+  renderHatchery();
+  saveGame();
 }
 function collectHatch(idx){
   var slot=G.hatchSlots[idx];if(!slot||!slot.done)return;
@@ -3004,8 +3280,8 @@ function showPetResult(pet){
 }
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
-  var maxSlots=G.petSlots;var now=Date.now();
-  var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' max)</div>';
+  var maxSlots=G.hatchSlotCount;var now=Date.now();
+  var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
   for(var i=0;i<maxSlots;i++){
     var slot=G.hatchSlots[i];
     if(slot){
@@ -3019,6 +3295,16 @@ function renderHatchery(){
     } else {
       html+='<div class="hatch-slot empty-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">🪹</div><div><div class="hatch-slot-name">Empty Slot</div><div class="hatch-slot-time">Select an egg below</div></div></div></div>';
     }
+  }
+  // Upplåsnings-kort för nästa hatch slot (separat system, max 3, betalas med Egg Coins)
+  if(maxSlots<HATCH_SLOT_MAX){
+    var hcost=HATCH_SLOT_COSTS[maxSlots-1];
+    var hafford=G.coins>=hcost;
+    html+='<div class="hatch-unlock'+(hafford?' afford':'')+'" '+(hafford?'onclick="buyHatchSlot()"':'')+'>'+
+      '<div class="hatch-unlock-icon">🔓</div>'+
+      '<div class="hatch-unlock-info"><div class="hatch-unlock-title">Unlock Hatch Slot '+(maxSlots+1)+'</div>'+
+      '<div class="hatch-unlock-sub">Hatch more eggs at the same time.</div></div>'+
+      '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(hcost)+'</div></div>';
   }
   var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;});
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Eggs in Inventory</div>';
@@ -4308,7 +4594,11 @@ if(savedData){
   SHELL_RARITIES.forEach(function(r){if(G.shells[r.id]===null||G.shells[r.id]===undefined)G.shells[r.id]=0;});
   G.eggsOwned=savedData.eggsOwned||{};G.eggsHatched=savedData.eggsHatched||{};
   G.hatchSlots=savedData.hatchSlots||[];
+  // Hatch slots är numera ett eget system (max 3). Gamla sparfiler saknar fältet → ärv från petSlots (men aldrig över 3) så ingen tappar kläck-kapacitet
+  if(typeof savedData.hatchSlotCount==='number')G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.hatchSlotCount));
+  else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
   G.hatchedPets=savedData.hatchedPets||[];
+  G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   // Ensure UIDs are numbers for comparison
   G.hatchedPets=G.hatchedPets.map(function(p){if(!p.uid)p.uid=Date.now()+Math.random();return p;});
   if(savedData.stats){
