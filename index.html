@@ -372,6 +372,93 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .mut-res-t{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;text-align:center;margin:4px 0 12px;}
 .mut-res-sub{font-size:0.74rem;color:rgba(255,255,255,0.5);text-align:center;line-height:1.5;margin-bottom:14px;}
 
+/* ===== EXTRACTION LAB / MUTATION CHAMBER ===== */
+#extract-wrap,#mutate-wrap{padding:6px 2px 90px;}
+.lab-head{text-align:center;margin-bottom:14px;}
+.lab-title{font-family:'Fredoka One',cursive;font-size:1.25rem;color:#fff;}
+.lab-sub{font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.45;margin-top:3px;padding:0 8px;}
+.lab-sectitle{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#f5c842;margin:18px 0 9px;}
+.chamber-list{display:flex;flex-direction:column;gap:11px;}
+/* Plattform = bakgrundslager där peten "landar" (art-redo). Fallback = gradient + ring. */
+.chamber{border:2px solid rgba(58,92,184,0.5);border-radius:18px;background:rgba(20,34,66,0.55);padding:13px;}
+.chamber.empty{cursor:pointer;display:flex;align-items:center;gap:13px;border-style:dashed;border-color:rgba(120,150,210,0.45);}
+.chamber.empty:active{transform:scale(0.99);}
+.chamber.empty.dim{opacity:0.55;cursor:default;}
+.chamber.locked{display:flex;align-items:center;gap:11px;opacity:0.85;}
+.ch-platform{width:66px;height:66px;flex:none;border-radius:50%;background:radial-gradient(circle at 50% 35%,rgba(124,77,255,0.35),rgba(12,21,48,0.6) 70%);border:2px solid rgba(124,77,255,0.5);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 -6px 12px rgba(0,0,0,0.4);}
+.ch-plus{font-size:1.8rem;color:rgba(179,136,255,0.9);font-family:'Fredoka One',cursive;}
+.ch-pet{font-size:2.1rem;}
+.ch-emptytxt,.ch-lockinfo,.ch-runinfo{flex:1;min-width:0;}
+.ch-name{font-family:'Fredoka One',cursive;font-size:0.86rem;color:#fff;}
+.ch-sub{font-size:0.68rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+.ch-lockico{font-size:1.5rem;flex:none;width:44px;text-align:center;}
+.ch-unlock{flex:none;display:flex;align-items:center;gap:5px;border:none;border-radius:11px;padding:9px 12px;font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;cursor:pointer;}
+.ch-unlock.no{background:rgba(255,255,255,0.1);box-shadow:none;color:rgba(255,255,255,0.4);}
+.ch-unlock img{width:15px;height:15px;object-fit:contain;}
+.ch-top{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.ch-extracting{font-size:0.74rem;margin-top:3px;font-family:'Baloo 2',cursive;font-weight:700;}
+.ch-bar{height:9px;background:rgba(0,0,0,0.35);border-radius:6px;overflow:hidden;margin-bottom:9px;}
+.ch-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:6px;transition:width 0.4s linear;}
+.ch-botrow{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ch-time{font-size:0.76rem;color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;}
+.ch-speed{border:none;border-radius:10px;padding:7px 12px;font-family:'Fredoka One',cursive;font-size:0.74rem;color:#0b1530;background:linear-gradient(180deg,#f5d76e,#f5c842);box-shadow:0 3px 0 #b8860b;cursor:pointer;}
+.ch-collect{width:100%;border:none;border-radius:12px;padding:11px;font-family:'Fredoka One',cursive;font-size:0.88rem;color:#0b1530;background:linear-gradient(180deg,#f5d76e,#f5c842);box-shadow:0 3px 0 #b8860b;cursor:pointer;}
+.ch-collect.green{color:#fff;background:linear-gradient(180deg,#5fd068,#2fb344);box-shadow:0 3px 0 #1d7a2c;}
+/* Setup-flöde (i mutation-modal) */
+.setup-head{text-align:center;margin-bottom:10px;}
+.setup-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fff;}
+.setup-sub{font-size:0.72rem;color:rgba(255,255,255,0.5);}
+.setup-step{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#f5c842;margin:12px 0 7px;}
+.setup-platform{display:flex;align-items:center;gap:12px;border:2px dashed rgba(124,77,255,0.5);border-radius:14px;padding:14px;cursor:pointer;background:radial-gradient(circle at 30% 0%,rgba(124,77,255,0.18),rgba(12,21,48,0.5));}
+.setup-platform.filled{border-style:solid;}
+.sp-plus{font-size:1.7rem;color:rgba(179,136,255,0.9);font-family:'Fredoka One',cursive;width:46px;text-align:center;}
+.sp-txt{font-size:0.82rem;color:rgba(255,255,255,0.6);}
+.sp-emoji{font-size:2.2rem;flex:none;}
+.sp-info{flex:1;min-width:0;}
+.sp-name{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;}
+.sp-rar{font-size:0.72rem;margin-top:1px;}
+.sp-change{font-size:0.7rem;color:#b388ff;flex:none;font-family:'Fredoka One',cursive;}
+.setup-ability{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:rgba(27,45,78,0.55);border:2px solid rgba(58,92,184,0.45);border-radius:12px;padding:11px 12px;margin-bottom:7px;cursor:pointer;color:#fff;}
+.setup-ability.sel{border-color:#f5c842;background:rgba(245,200,66,0.12);}
+.setup-check{flex:none;color:#f5c842;font-weight:900;width:14px;text-align:center;}
+.setup-ability.dupdis{opacity:0.4;cursor:default;}
+.ma-dup{flex:none;font-size:0.62rem;color:rgba(255,255,255,0.55);font-style:italic;white-space:nowrap;}
+.setup-result{display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(0,0,0,0.25);border-radius:11px;padding:10px 12px;margin:10px 0 6px;}
+.sr-l{font-size:0.72rem;color:rgba(255,255,255,0.5);}
+.sr-core{font-family:'Fredoka One',cursive;font-size:0.82rem;text-align:right;}
+.setup-warn{font-size:0.72rem;color:#ef9a9a;text-align:center;margin-bottom:10px;line-height:1.4;}
+.setup-preview{display:flex;align-items:center;gap:8px;margin:10px 0;}
+.spv-side{flex:1;background:rgba(0,0,0,0.25);border-radius:11px;padding:9px 7px;text-align:center;}
+.spv-l{font-size:0.58rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;}
+.spv-v{font-family:'Fredoka One',cursive;font-size:0.76rem;margin-top:3px;}
+.spv-arrow{color:#b388ff;font-size:1.2rem;flex:none;}
+.setup-go{width:100%;border:none;border-radius:13px;padding:13px;font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px;}
+.setup-go.red{background:linear-gradient(180deg,#e0584a,#c0392b);box-shadow:0 3px 0 #7e241a;}
+.setup-go.purple{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;}
+.setup-go.no{background:rgba(255,255,255,0.1);box-shadow:none;color:rgba(255,255,255,0.4);}
+.setup-go img{width:15px;height:15px;object-fit:contain;}
+.setup-cancel{width:100%;padding:10px;border:none;border-radius:12px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.82rem;cursor:pointer;margin-top:8px;}
+/* Pet-picker popup */
+#pet-picker-modal .modal-box{max-width:360px;max-height:80vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.pp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;position:sticky;top:0;}
+.pp-title{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;}
+.pp-x{border:none;background:rgba(255,255,255,0.1);color:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;font-size:0.9rem;}
+.pp-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.pp-fchip{border:2px solid rgba(58,92,184,0.5);background:rgba(27,45,78,0.5);border-radius:10px;padding:6px 11px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.74rem;color:rgba(255,255,255,0.7);cursor:pointer;}
+.pp-fchip.active{border-color:var(--rc,#f5c842);color:#fff;background:rgba(245,200,66,0.12);}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.pp-card{border:2px solid;border-radius:13px;padding:9px 6px;text-align:center;cursor:pointer;}
+.pp-card:active{transform:scale(0.96);}
+.pp-emoji{font-size:1.9rem;}
+.pp-name{font-family:'Fredoka One',cursive;font-size:0.72rem;color:#fff;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pp-rar{font-size:0.6rem;margin-top:1px;}
+.pp-ab{font-size:0.6rem;color:rgba(255,255,255,0.55);margin-top:4px;line-height:1.4;min-height:1em;}
+/* Pets sort dropdown */
+.pet-sort-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.pet-sort-lbl{font-size:0.72rem;color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;}
+.pet-sort-select{flex:1;background:rgba(27,45,78,0.6);border:1.5px solid rgba(58,92,184,0.6);border-radius:10px;color:#fff;font-family:'Baloo 2',cursive;font-weight:700;font-size:0.78rem;padding:8px 10px;cursor:pointer;-webkit-appearance:none;appearance:none;}
+.pet-sort-select option{background:#15264e;color:#fff;}
+
 /* Active bonuses strip */
 .bonus-strip{background:rgba(0,0,0,0.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;}
 .bonus-chip{font-size:0.62rem;font-weight:800;color:rgba(180,136,255,0.9);white-space:nowrap;}
@@ -828,10 +915,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
         <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span>⚗️</span> Fusion</button>
         <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span>🧪</span> Extract</button>
+        <button class="psub-btn" id="psub-mutate" onclick="petsSub('mutate')"><span>🧬</span> Mutate</button>
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
       <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
       <div id="psub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
+      <div id="psub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
     </div>
     <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
@@ -892,6 +981,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="mutation-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
     <div id="mutation-modal-body"></div>
+  </div>
+</div>
+
+<div id="pet-picker-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <div id="pet-picker-body"></div>
   </div>
 </div>
 
@@ -1420,6 +1515,7 @@ var G={
   ulvl:{click:0,craft:0,hatch:0,luck:0,offline:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
+  extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
   permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
@@ -1466,14 +1562,15 @@ function dropShell(){
 }
 function showShellPop(r,idx){
   var stage=document.getElementById('egg-stage');if(!stage)return;
-  var rect=stage.getBoundingClientRect();
+  // Oskalade mått (egg-stage är CSS-skalat) så shellsen sprids runt mitten, inte åt höger
+  var w=stage.offsetWidth||140,h=stage.offsetHeight||160;
   var dur=idx>=5?3500:idx>=3?2200:idx>=2?1400:900;
   var pop=document.createElement('div');
-  // Slumpa startpunkt runt övre delen/sidorna av ägget + en slumpmässig drift uppåt/utåt så de inte alla åker rakt upp
-  var sx=rect.width/2+(Math.random()*2-1)*44;
-  var sy=rect.height*(0.12+Math.random()*0.36);
-  var dx=(Math.random()*2-1)*40;
-  var dy=-(42+Math.random()*46);
+  // Slumpa startpunkt runt hela ägget + en slumpmässig drift uppåt/utåt så de inte alla åker rakt upp
+  var sx=w/2+(Math.random()*2-1)*50;
+  var sy=h*(0.1+Math.random()*0.5);
+  var dx=(Math.random()*2-1)*46;
+  var dy=-(40+Math.random()*48);
   var sz=idx>=7?'2.1rem':idx>=3?'1.6rem':'1.15rem';
   var glow=idx>=3?'text-shadow:0 0 10px '+r.color+';':'';
   pop.style.cssText='position:absolute;pointer-events:none;z-index:20;left:'+sx+'px;top:'+sy+'px;font-size:'+sz+';'+glow+'--dx:'+dx+'px;--dy:'+dy+'px;animation:shellFly '+(dur/1000)+'s ease forwards;';
@@ -1727,6 +1824,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
+    extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
   }));}catch(e){}
 }
@@ -1739,6 +1837,7 @@ function resetGame(){
   G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
+  G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.gems=0;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.achievements={unlocked:{},claimed:{}};
@@ -1821,13 +1920,15 @@ function eggTap(clientX,clientY){
   if(Math.random()<getDropChance(0.15))dropShell();
   var stage=document.getElementById('egg-stage');if(!stage)return;
   if(!G.settings||G.settings.damageNumbers!==false){
-    var r=stage.getBoundingClientRect();
+    // OBS: #egg-stage är skalat (CSS transform scale 1.5). Absolut-positionering sker i
+    // OSKALADE koordinater → använd offsetWidth/offsetHeight, inte getBoundingClientRect (skalad).
+    var w=stage.offsetWidth||140,hh=stage.offsetHeight||160;
     var pop=document.createElement('div');pop.className='click-pop';
     pop.textContent='+'+fmt(clickVal);
-    // Slumpa fram en position runt ägget (sidled + övre delen) så siffrorna sprids som crits istället för att stapla på samma ställe
-    var ox=(Math.random()*2-1)*46;
-    var oy=r.height*(0.16+Math.random()*0.4);
-    pop.style.left=(r.width/2+ox-14)+'px';
+    // Sprid runt hela ägget (sidled + höjd) så siffrorna inte staplar på samma ställe
+    var ox=(Math.random()*2-1)*52;
+    var oy=hh*(0.12+Math.random()*0.55);
+    pop.style.left=(w/2+ox-14)+'px';
     pop.style.top=oy+'px';
     stage.appendChild(pop);
     setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},800);
@@ -1950,13 +2051,11 @@ function renderPets(){
     html+='</div>';
   }
 
-  // Sort buttons
-  html+='<div class="pet-sort-row">';
-  var sorts=[['newest','🕐 Newest'],['oldest','🕰️ Oldest'],['rarity_desc','⭐ Rarity ↓'],['rarity_asc','⭐ Rarity ↑'],['name','🔤 Name']];
-  sorts.forEach(function(s){
-    html+='<div class="pet-sort-btn'+(petSortMode===s[0]?' active':'')+'" onclick="setPetSort(\''+s[0]+'\')">'+s[1]+'</div>';
-  });
-  html+='</div>';
+  // Sort dropdown (sparar plats jämfört med knappraden)
+  var sorts=[['newest','🕐 Newest first'],['oldest','🕰️ Oldest first'],['rarity_desc','⭐ Rarity: High → Low'],['rarity_asc','⭐ Rarity: Low → High'],['name','🔤 Name (A–Z)']];
+  html+='<div class="pet-sort-bar"><span class="pet-sort-lbl">Sort</span><select class="pet-sort-select" onchange="setPetSort(this.value)">';
+  sorts.forEach(function(s){html+='<option value="'+s[0]+'"'+(petSortMode===s[0]?' selected':'')+'>'+s[1]+'</option>';});
+  html+='</select></div>';
 
   // Sort pets
   var sorted=G.hatchedPets.slice();
@@ -2156,13 +2255,14 @@ function goHome(){
 var petsSubTab='pets';
 function petsSub(sub){
   petsSubTab=sub;
-  ['pets','fusion','extract'].forEach(function(s){
+  ['pets','fusion','extract','mutate'].forEach(function(s){
     var p=document.getElementById('psub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('psub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='pets')renderPets();
   else if(sub==='fusion')renderFusion();
   else if(sub==='extract')renderExtract();
+  else if(sub==='mutate')renderMutate();
 }
 function showPetsHub(){petsSub(petsSubTab);}
 
@@ -2190,156 +2290,299 @@ function groupedCores(){
   });
 }
 
-var extractMode='extract'; // 'extract' | 'mutate'
-function setExtractMode(m){extractMode=m;renderExtract();}
-function renderExtract(){
-  var wrap=document.getElementById('extract-wrap');if(!wrap)return;
-  var html='<div class="ex-modes">';
-  html+='<button class="ex-mode'+(extractMode==='extract'?' active':'')+'" onclick="setExtractMode(\'extract\')">🧪 Extract</button>';
-  html+='<button class="ex-mode'+(extractMode==='mutate'?' active':'')+'" onclick="setExtractMode(\'mutate\')">🧬 Mutate</button>';
-  html+='</div>';
-  if(extractMode==='extract'){
-    html+='<div class="ex-intro">Destroy a pet to keep one of its abilities as a <b>Mutation Core</b>. The pet is gone for good — choose carefully.</div>';
-    html+='<div class="ex-subtitle">Pick a pet to extract from</div>';
-    html+=extractPetGridHtml('openExtractPet');
-  } else {
-    var coreCount=G.mutationCores.length;
-    html+='<div class="ex-intro">Apply a <b>Mutation Core</b> to swap one of a pet\'s abilities. You have <b>'+coreCount+'</b> core'+(coreCount===1?'':'s')+' stored.</div>';
-    if(coreCount===0){
-      html+='<div class="ex-empty"><div class="ex-empty-i">🧪</div><p>No cores yet. Switch to <b>🧪 Extract</b> to create some first.</p></div>';
-    } else {
-      html+='<div class="ex-subtitle">Pick a pet to improve</div>';
-      html+=extractPetGridHtml('openMutateTarget');
-    }
-  }
-  wrap.innerHTML=html;
-}
-function extractPetGridHtml(clickFn){
-  if(G.hatchedPets.length===0){
-    return '<div class="ex-empty"><div class="ex-empty-i">🐾</div><p>You have no pets yet. Hatch some eggs first!</p></div>';
-  }
+// ---- MUTATION/EXTRACTION CHAMBERS (tidsstyrda) ----
+// PRELIMINÄRA värden (justeras vid balansering): chamber-tider, upplåsningskostnader, action-kostnader.
+var EXTRACT_CHAMBER_MAX=3, MUTATE_CHAMBER_MAX=3;
+var EXTRACT_CHAMBER_DUR=[30000,90000,180000];   // ms: snabb / långsammare / långsammast
+var MUTATE_CHAMBER_DUR=[45000,150000,300000];
+var EXTRACT_CHAMBER_UNLOCK=[100000,2500000];     // coins för att låsa upp chamber 2,3
+var MUTATE_CHAMBER_UNLOCK=[150000,4000000];
+var EXTRACT_COST=25000;  // coins per extraction (från konceptbild)
+var MUTATE_COST=500;     // coins per mutation (från konceptbild)
+var CHAMBER_SPEED_LABEL=['Fast','Slow','Slowest'];
+function chamberSpeedCost(endAt){var remain=Math.max(0,endAt-Date.now());return Math.max(2,Math.ceil(remain/3600000*15));}
+function fmtDur(ms){return formatTime(Math.max(0,Math.ceil(ms/1000)));}
+
+// Pets valbara i picker: allt du äger som INTE är ute på adventure (chamber-pets ligger redan utanför hatchedPets)
+function pickerEligiblePets(){return G.hatchedPets.filter(function(p){return !isPetBusy(p.uid);});}
+var pickerCb=null,pickerRarity='all';
+function openPetPicker(cb){pickerCb=cb;pickerRarity='all';renderPetPicker();document.getElementById('pet-picker-modal').classList.add('open');}
+function closePetPicker(){document.getElementById('pet-picker-modal').classList.remove('open');}
+function setPickerRarity(r){pickerRarity=r;renderPetPicker();}
+function pickPet(uid){var cb=pickerCb;pickerCb=null;closePetPicker();if(cb)cb(String(uid));}
+function renderPetPicker(){
+  var b=document.getElementById('pet-picker-body');if(!b)return;
+  var pets=pickerEligiblePets();
   var order=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
-  var sorted=G.hatchedPets.slice().sort(function(a,b){return order.indexOf(b.rarity)-order.indexOf(a.rarity);});
-  var html='<div class="ex-grid">';
-  sorted.forEach(function(pet){
-    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    var isEq=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
-    var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+'T'+a.tier:'';}).join(' ');
-    html+='<div class="ex-pcard" onclick="'+clickFn+'(\''+pet.uid+'\')" style="border-color:'+rc.color+'66;background:linear-gradient(135deg,'+rc.color+'18,rgba(12,21,48,0.85));">';
-    html+='<div class="ex-pcard-top"><span class="ex-pemoji">'+pet.e+'</span>'+(isEq?'<span class="ex-eq">⚡ Active</span>':'')+'</div>';
-    html+='<div class="ex-pname">'+pet.name+'</div>';
-    html+='<div class="ex-prar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
-    html+='<div class="ex-pabils">'+abStr+'</div>';
-    html+='</div>';
-  });
-  html+='</div>';
-  return html;
+  var present=order.filter(function(r){return pets.some(function(p){return p.rarity===r;});});
+  var h='<div class="pp-head"><div class="pp-title">🐾 Select a Pet</div><button class="pp-x" onclick="closePetPicker()">✕</button></div>';
+  h+='<div class="pp-filters"><button class="pp-fchip'+(pickerRarity==='all'?' active':'')+'" onclick="setPickerRarity(\'all\')">All</button>';
+  present.forEach(function(r){var rc=RARITY_CONFIG[r];h+='<button class="pp-fchip'+(pickerRarity===r?' active':'')+'" style="--rc:'+rc.color+'" onclick="setPickerRarity(\''+r+'\')">'+rc.icon+'</button>';});
+  h+='</div>';
+  var list=pets.slice().sort(function(a,b){return order.indexOf(b.rarity)-order.indexOf(a.rarity);});
+  if(pickerRarity!=='all')list=list.filter(function(p){return p.rarity===pickerRarity;});
+  if(list.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🐾</div><p>No pets available'+(pickerRarity!=='all'?' for this rarity':'')+'.</p></div>';}
+  else{
+    h+='<div class="pp-grid">';
+    list.forEach(function(pet){
+      var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+      var ab=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+'T'+a.tier:'';}).join(' ');
+      h+='<div class="pp-card" onclick="pickPet(\''+pet.uid+'\')" style="border-color:'+rc.color+'66;background:linear-gradient(135deg,'+rc.color+'18,rgba(12,21,48,0.85));"><div class="pp-emoji">'+pet.e+'</div><div class="pp-name">'+pet.name+'</div><div class="pp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pp-ab">'+ab+'</div></div>';
+    });
+    h+='</div>';
+  }
+  b.innerHTML=h;
 }
+document.getElementById('pet-picker-modal').onclick=function(e){if(e.target===this)closePetPicker();};
+
+// Mutation-modal hjälpare (återinförda — föll bort vid chamber-ombyggnaden)
 function openMutationModal(html){document.getElementById('mutation-modal-body').innerHTML=html;document.getElementById('mutation-modal').classList.add('open');}
 function closeMutationModal(){document.getElementById('mutation-modal').classList.remove('open');}
 document.getElementById('mutation-modal').onclick=function(e){if(e.target===this)closeMutationModal();};
 
-// ---- EXTRACTION FLOW ----
-function openExtractPet(uid){
-  var pet=petByUid(uid);if(!pet)return;
-  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-  var h='<div class="mut-head"><div class="mut-emoji">'+pet.e+'</div><div class="mut-title">'+pet.name+'</div><div class="mut-sub" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div>';
-  h+='<div class="mut-q">Which ability do you want to keep as a Core?</div>';
-  pet.abilities.forEach(function(ab,i){
-    var m=ABILITY_META[ab.id];if(!m)return;var crc=coreRarityConf(ab.tier);
-    h+='<button class="mut-ability" onclick="confirmExtract(\''+uid+'\','+i+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="ma-core" style="background:'+crc.color+'22;color:'+crc.color+'">'+crc.label+' Core</span></button>';
-  });
-  h+='<button class="mut-cancel" onclick="closeMutationModal()">Cancel</button>';
-  openMutationModal(h);
+// ============================================================
+// EXTRACTION LAB
+// ============================================================
+function renderExtract(){
+  var wrap=document.getElementById('extract-wrap');if(!wrap)return;
+  var h='<div class="lab-head"><div class="lab-title">🧪 Extraction Lab</div><div class="lab-sub">Extract an ability from a pet to create a Mutation Core. The pet is destroyed.</div></div>';
+  h+='<div class="chamber-list">';
+  for(var i=0;i<EXTRACT_CHAMBER_MAX;i++){h+=extractChamberHtml(i);}
+  h+='</div>';
+  h+='<div class="lab-sectitle">🧫 My Mutation Cores</div>';
+  h+=coresInvHtml();
+  wrap.innerHTML=h;
 }
-function confirmExtract(uid,abIdx){
-  var pet=petByUid(uid);if(!pet)return;var ab=pet.abilities[abIdx];if(!ab)return;
+function extractChamberHtml(i){
+  var unlocked=i<G.extractUnlocked;
+  var c=G.extractChambers[i];
+  var label='Chamber '+(i+1)+' · '+CHAMBER_SPEED_LABEL[i]+' (~'+fmtDur(EXTRACT_CHAMBER_DUR[i])+')';
+  if(!unlocked){
+    var cost=EXTRACT_CHAMBER_UNLOCK[i-1];var afford=G.coins>=cost;
+    return '<div class="chamber locked"><div class="ch-lockico">🔒</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to extract more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockExtractChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
+  }
+  if(!c){
+    return '<div class="chamber empty" onclick="openExtractSetup('+i+')"><div class="ch-platform"><div class="ch-plus">＋</div></div><div class="ch-emptytxt"><div class="ch-name">'+label+'</div><div class="ch-sub">Tap to load a pet</div></div></div>';
+  }
+  var now=Date.now();var done=now>=c.endAt;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;
+  var crc=coreRarityConf(c.coreTier);var m=ABILITY_META[c.coreId]||{icon:'❔'};
+  var html='<div class="chamber active">';
+  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+c.petE+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.petName+'</div><div class="ch-extracting" style="color:'+crc.color+'">'+m.icon+' '+coreLabel(c.coreId,c.coreTier)+'</div></div></div>';
+  if(done){html+='<button class="ch-collect" onclick="collectExtract('+i+')">✨ Collect Core</button>';}
+  else{
+    html+='<div class="ch-bar"><div class="ch-fill" id="exfill'+i+'" style="width:'+pct+'%"></div></div>';
+    html+='<div class="ch-botrow"><span class="ch-time" id="extime'+i+'">⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000))+'</span><button class="ch-speed" onclick="speedExtract('+i+')">⚡ 💎'+chamberSpeedCost(c.endAt)+'</button></div>';
+  }
+  html+='</div>';
+  return html;
+}
+function unlockExtractChamber(){
+  if(G.extractUnlocked>=EXTRACT_CHAMBER_MAX)return;
+  var cost=EXTRACT_CHAMBER_UNLOCK[G.extractUnlocked-1];if(G.coins<cost)return;
+  G.coins-=cost;G.extractUnlocked++;if(typeof buzz==='function')buzz(15);updateHUD();renderExtract();saveGame();
+}
+function speedExtract(i){var c=G.extractChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderExtract();}
+function collectExtract(i){
+  var c=G.extractChambers[i];if(!c||Date.now()<c.endAt)return;
+  G.mutationCores.push({id:c.coreId,tier:c.coreTier});
+  G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+1;
+  G.extractChambers[i]=null;if(typeof buzz==='function')buzz(20);renderExtract();saveGame();
+}
+var extractSetup=null; // {ci, petUid, abilityIdx}
+function openExtractSetup(ci){
+  if(ci>=G.extractUnlocked||G.extractChambers[ci])return;
+  if(pickerEligiblePets().length===0){showGenericModal('🐾','No Pets','You have no pets available to extract from. Hatch some first!');return;}
+  extractSetup={ci:ci,petUid:null,abilityIdx:null};renderExtractSetup();document.getElementById('mutation-modal').classList.add('open');
+}
+function extractPickPet(){openPetPicker(function(uid){extractSetup.petUid=uid;extractSetup.abilityIdx=null;renderExtractSetup();});}
+function extractPickAbility(idx){extractSetup.abilityIdx=idx;renderExtractSetup();}
+function renderExtractSetup(){
+  var s=extractSetup;if(!s)return;
+  var pet=s.petUid?petByUid(s.petUid):null;
+  var h='<div class="setup-head"><div class="setup-title">🧪 Chamber '+(s.ci+1)+'</div><div class="setup-sub">'+CHAMBER_SPEED_LABEL[s.ci]+' · ~'+fmtDur(EXTRACT_CHAMBER_DUR[s.ci])+'</div></div>';
+  h+='<div class="setup-step">1 · Select Pet</div>';
+  if(!pet){h+='<div class="setup-platform" onclick="extractPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
+  else{
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-step">2 · Select Ability to Extract</div>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="extractPickAbility('+idx+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    });
+    if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
+      var ab=pet.abilities[s.abilityIdx];var crc=coreRarityConf(ab.tier);var m2=ABILITY_META[ab.id];
+      h+='<div class="setup-result"><span class="sr-l">You\'ll get</span><span class="sr-core" style="color:'+crc.color+'">'+m2.icon+' '+coreLabel(ab.id,ab.tier)+'</span></div>';
+      h+='<div class="setup-warn">⚠️ '+pet.name+' will be permanently destroyed.</div>';
+      var afford=G.coins>=EXTRACT_COST;
+      h+='<button class="setup-go red'+(afford?'':' no')+'"'+(afford?'':' disabled')+' onclick="confirmExtractStart()">⚗️ Start — '+COIN_IMG+' '+fmtShort(EXTRACT_COST)+'</button>';
+    }
+  }
+  h+='<button class="setup-cancel" onclick="closeMutationModal()">Cancel</button>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+}
+function confirmExtractStart(){
+  var s=extractSetup;if(!s||s.abilityIdx==null)return;
+  var pet=petByUid(s.petUid);if(!pet)return;
+  if(G.coins<EXTRACT_COST||G.extractChambers[s.ci])return;
+  var ab=pet.abilities[s.abilityIdx];if(!ab)return;
   var m=ABILITY_META[ab.id];var crc=coreRarityConf(ab.tier);
   var h='<div class="mut-warn-i">⚠️</div><div class="mut-warn-t">Destroy '+pet.name+'?</div>';
-  h+='<div class="mut-warn-b">This <b>permanently destroys</b> '+pet.name+'. In return you receive:</div>';
+  h+='<div class="mut-warn-b">'+pet.name+' will be <b>permanently destroyed</b> in the extraction. In return you receive:</div>';
   h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
-  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="closeMutationModal()">Cancel</button><button class="mut-go red" onclick="doExtract(\''+uid+'\','+abIdx+')">⚗️ Extract</button></div>';
-  openMutationModal(h);
+  h+='<div class="mut-warn-b" style="font-size:0.72rem;">This action cannot be undone.</div>';
+  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="renderExtractSetup()">Cancel</button><button class="mut-go red" onclick="doExtractStart()">⚗️ Extract</button></div>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
 }
-function doExtract(uid,abIdx){
-  var pet=petByUid(uid);if(!pet)return;var ab=pet.abilities[abIdx];if(!ab)return;
-  var savedAb={id:ab.id,tier:ab.tier};
-  G.mutationCores.push(savedAb);
-  destroyPetByUid(uid);
+function doExtractStart(){
+  var s=extractSetup;if(!s||s.abilityIdx==null)return;
+  var pet=petByUid(s.petUid);if(!pet)return;
+  if(G.coins<EXTRACT_COST||G.extractChambers[s.ci])return;
+  var ab=pet.abilities[s.abilityIdx];if(!ab)return;
+  G.coins-=EXTRACT_COST;
   G.stats.abilitiesExtracted=(G.stats.abilitiesExtracted||0)+1;
-  G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+1;
   G.stats.petsSacrificed=(G.stats.petsSacrificed||0)+1;
-  if(typeof buzz==='function')buzz(25);
-  var m=ABILITY_META[savedAb.id];var crc=coreRarityConf(savedAb.tier);
-  var h='<div class="mut-res-i">✨</div><div class="mut-res-t">Core Created!</div>';
-  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(savedAb.id,savedAb.tier)+'</span><span class="mc-val">+'+TIER_VALUES[savedAb.tier]+'%</span></div>';
-  h+='<div class="mut-res-sub">Stored in your 🎒 Inventory → Cores. Apply it in the 🧬 Mutate tab.</div>';
-  h+='<button class="mut-go" onclick="closeMutationModal()">Done</button>';
-  openMutationModal(h);
-  if(typeof renderSlotRow==='function')renderSlotRow();
-  if(typeof updateHUD==='function')updateHUD();
-  renderExtract();saveGame();
+  G.extractChambers[s.ci]={petName:pet.name,petE:pet.e,petRarity:pet.rarity,coreId:ab.id,coreTier:ab.tier,startAt:Date.now(),endAt:Date.now()+EXTRACT_CHAMBER_DUR[s.ci]};
+  destroyPetByUid(pet.uid);
+  extractSetup=null;closeMutationModal();updateHUD();renderExtract();if(typeof renderSlotRow==='function')renderSlotRow();saveGame();
 }
 
-// ---- MUTATION FLOW (apply core to pet) ----
-function openMutateTarget(uid){
-  var pet=petByUid(uid);if(!pet)return;
-  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-  var h='<div class="mut-head"><div class="mut-emoji">'+pet.e+'</div><div class="mut-title">'+pet.name+'</div><div class="mut-sub" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div>';
-  h+='<div class="mut-q">Tap an ability slot to replace with a Core:</div>';
-  pet.abilities.forEach(function(ab,i){
-    var m=ABILITY_META[ab.id];if(!m)return;
-    h+='<button class="mut-ability" onclick="openCorePicker(\''+uid+'\','+i+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="ma-replace">Replace ›</span></button>';
-  });
-  h+='<button class="mut-cancel" onclick="closeMutationModal()">Cancel</button>';
-  openMutationModal(h);
+// ============================================================
+// MUTATION CHAMBER
+// ============================================================
+function renderMutate(){
+  var wrap=document.getElementById('mutate-wrap');if(!wrap)return;
+  var h='<div class="lab-head"><div class="lab-title">🧬 Mutation Chamber</div><div class="lab-sub">Apply a Mutation Core to swap one of a pet\'s abilities. The pet survives.</div></div>';
+  h+='<div class="chamber-list">';
+  for(var i=0;i<MUTATE_CHAMBER_MAX;i++){h+=mutateChamberHtml(i);}
+  h+='</div>';
+  h+='<div class="lab-sectitle">🧫 My Mutation Cores</div>';
+  h+=coresInvHtml();
+  wrap.innerHTML=h;
 }
-function openCorePicker(uid,slotIdx){
-  var pet=petByUid(uid);if(!pet)return;var cur=pet.abilities[slotIdx];if(!cur)return;
-  var curM=ABILITY_META[cur.id];var groups=groupedCores();
-  var h='<div class="mut-q">Replacing <b style="color:'+curM.color+'">'+curM.icon+' '+curM.name+' T'+cur.tier+'</b> on '+pet.name+'</div>';
-  if(groups.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🧪</div><p>No cores available. Extract some first.</p></div>';}
-  else{
-    h+='<div class="mut-q2">Choose a Core to apply:</div>';
-    groups.forEach(function(g){
-      var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);
-      h+='<button class="mut-ability" onclick="confirmMutate(\''+uid+'\','+slotIdx+',\''+g.id+'\','+g.tier+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-tier">+'+TIER_VALUES[g.tier]+'%</span><span class="ma-count">×'+g.count+'</span></button>';
-    });
+function mutateChamberHtml(i){
+  var unlocked=i<G.mutateUnlocked;
+  var c=G.mutateChambers[i];
+  var label='Chamber '+(i+1)+' · '+CHAMBER_SPEED_LABEL[i]+' (~'+fmtDur(MUTATE_CHAMBER_DUR[i])+')';
+  if(!unlocked){
+    var cost=MUTATE_CHAMBER_UNLOCK[i-1];var afford=G.coins>=cost;
+    return '<div class="chamber locked"><div class="ch-lockico">🔒</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to mutate more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockMutateChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
   }
-  h+='<button class="mut-cancel" onclick="openMutateTarget(\''+uid+'\')">‹ Back</button>';
-  openMutationModal(h);
+  if(!c){
+    if(G.mutationCores.length===0){
+      return '<div class="chamber empty dim"><div class="ch-platform"><div class="ch-plus">＋</div></div><div class="ch-emptytxt"><div class="ch-name">'+label+'</div><div class="ch-sub">Need a Core — extract one first</div></div></div>';
+    }
+    return '<div class="chamber empty" onclick="openMutateSetup('+i+')"><div class="ch-platform"><div class="ch-plus">＋</div></div><div class="ch-emptytxt"><div class="ch-name">'+label+'</div><div class="ch-sub">Tap to load a pet</div></div></div>';
+  }
+  var now=Date.now();var done=now>=c.endAt;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;
+  var crc=coreRarityConf(c.coreTier);var m=ABILITY_META[c.coreId]||{icon:'❔',name:'?'};
+  var html='<div class="chamber active">';
+  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+c.pet.e+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.pet.name+'</div><div class="ch-extracting" style="color:'+crc.color+'">→ '+m.icon+' '+m.name+' T'+c.coreTier+'</div></div></div>';
+  if(done){html+='<button class="ch-collect green" onclick="collectMutate('+i+')">✅ Collect Pet</button>';}
+  else{
+    html+='<div class="ch-bar"><div class="ch-fill" id="mufill'+i+'" style="width:'+pct+'%"></div></div>';
+    html+='<div class="ch-botrow"><span class="ch-time" id="mutime'+i+'">⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000))+'</span><button class="ch-speed" onclick="speedMutate('+i+')">⚡ 💎'+chamberSpeedCost(c.endAt)+'</button></div>';
+  }
+  html+='</div>';
+  return html;
 }
-function confirmMutate(uid,slotIdx,coreId,coreTier){
-  var pet=petByUid(uid);if(!pet)return;var cur=pet.abilities[slotIdx];if(!cur)return;
-  var curM=ABILITY_META[cur.id];var newM=ABILITY_META[coreId];var crc=coreRarityConf(coreTier);
-  var h='<div class="mut-warn-i">🧬</div><div class="mut-warn-t">Apply Core?</div>';
-  h+='<div class="mut-swap"><div class="mut-swap-side"><div class="mss-l">Current</div><div class="mss-v" style="color:'+curM.color+'">'+curM.icon+' '+curM.name+'</div><div class="mss-t" style="color:'+curM.color+'">T'+cur.tier+' (+'+TIER_VALUES[cur.tier]+'%)</div></div>';
-  h+='<div class="mut-swap-arrow">→</div>';
-  h+='<div class="mut-swap-side"><div class="mss-l">New</div><div class="mss-v" style="color:'+crc.color+'">'+newM.icon+' '+newM.name+'</div><div class="mss-t" style="color:'+crc.color+'">T'+coreTier+' (+'+TIER_VALUES[coreTier]+'%)</div></div></div>';
-  h+='<div class="mut-warn-b">The core is consumed. The current ability is permanently replaced.</div>';
-  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="openCorePicker(\''+uid+'\','+slotIdx+')">‹ Back</button><button class="mut-go purple" onclick="doMutate(\''+uid+'\','+slotIdx+',\''+coreId+'\','+coreTier+')">🧬 Apply</button></div>';
-  openMutationModal(h);
-}
-function doMutate(uid,slotIdx,coreId,coreTier){
-  var pet=petByUid(uid);if(!pet)return;if(!pet.abilities[slotIdx])return;
-  var ci=G.mutationCores.findIndex(function(c){return c.id===coreId&&c.tier===coreTier;});
-  if(ci<0){closeMutationModal();return;}
-  G.mutationCores.splice(ci,1);
-  pet.abilities[slotIdx]={id:coreId,tier:coreTier};
+function unlockMutateChamber(){if(G.mutateUnlocked>=MUTATE_CHAMBER_MAX)return;var cost=MUTATE_CHAMBER_UNLOCK[G.mutateUnlocked-1];if(G.coins<cost)return;G.coins-=cost;G.mutateUnlocked++;if(typeof buzz==='function')buzz(15);updateHUD();renderMutate();saveGame();}
+function speedMutate(i){var c=G.mutateChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderMutate();}
+function collectMutate(i){
+  var c=G.mutateChambers[i];if(!c||Date.now()<c.endAt)return;
+  var pet=c.pet;
+  if(pet.abilities&&pet.abilities[c.slot])pet.abilities[c.slot]={id:c.coreId,tier:c.coreTier};
+  G.hatchedPets.push(pet);
+  if(typeof discoverPet==='function')discoverPet(pet.name,pet.rarity);
   G.stats.totalPetsMutated=(G.stats.totalPetsMutated||0)+1;
-  G.stats.mutationCoresUsed=(G.stats.mutationCoresUsed||0)+1;
-  if(typeof buzz==='function')buzz([10,30,12]);
-  var newM=ABILITY_META[coreId];var crc=coreRarityConf(coreTier);
-  var h='<div class="mut-res-i">✅</div><div class="mut-res-t">'+pet.name+' Mutated!</div>';
-  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+newM.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+newM.name+' Tier '+coreTier+'</span><span class="mc-val">+'+TIER_VALUES[coreTier]+'%</span></div>';
-  h+='<div class="mut-res-sub">'+(G.equippedPets.some(function(u){return u!=null&&String(u)===String(uid);})?'This pet is active — your bonuses updated.':'Equip this pet to use its new ability.')+'</div>';
-  h+='<button class="mut-go" onclick="closeMutationModal()">Done</button>';
-  openMutationModal(h);
-  if(typeof renderSlotRow==='function')renderSlotRow();
-  if(typeof updateHUD==='function')updateHUD();
-  renderExtract();saveGame();
+  G.mutateChambers[i]=null;if(typeof buzz==='function')buzz([10,30,12]);renderMutate();if(typeof renderSlotRow==='function')renderSlotRow();saveGame();
 }
-// Cores-sektionen i Inventory
+var mutateSetup=null; // {ci, petUid, slot, coreId, coreTier}
+function openMutateSetup(ci){
+  if(ci>=G.mutateUnlocked||G.mutateChambers[ci])return;
+  if(G.mutationCores.length===0){showGenericModal('🧫','No Cores','Extract an ability first to get a Mutation Core.');return;}
+  if(pickerEligiblePets().length===0){showGenericModal('🐾','No Pets','You have no pets available to mutate.');return;}
+  mutateSetup={ci:ci,petUid:null,slot:null,coreId:null,coreTier:null};renderMutateSetup();document.getElementById('mutation-modal').classList.add('open');
+}
+function mutatePickPet(){openPetPicker(function(uid){mutateSetup.petUid=uid;mutateSetup.slot=null;mutateSetup.coreId=null;mutateSetup.coreTier=null;renderMutateSetup();});}
+function mutatePickSlot(idx){mutateSetup.slot=idx;mutateSetup.coreId=null;mutateSetup.coreTier=null;renderMutateSetup();}
+function mutatePickCore(id,tier){
+  // Dubblett-spärr: ability:n får inte redan sitta i en annan slot på peten
+  var s=mutateSetup;var pet=s&&s.petUid?petByUid(s.petUid):null;
+  if(pet&&pet.abilities.some(function(ab,idx){return idx!==s.slot&&ab.id===id;}))return;
+  mutateSetup.coreId=id;mutateSetup.coreTier=tier;renderMutateSetup();
+}
+function renderMutateSetup(){
+  var s=mutateSetup;if(!s)return;
+  var pet=s.petUid?petByUid(s.petUid):null;
+  var h='<div class="setup-head"><div class="setup-title">🧬 Chamber '+(s.ci+1)+'</div><div class="setup-sub">'+CHAMBER_SPEED_LABEL[s.ci]+' · ~'+fmtDur(MUTATE_CHAMBER_DUR[s.ci])+'</div></div>';
+  h+='<div class="setup-step">1 · Select Pet</div>';
+  if(!pet){h+='<div class="setup-platform" onclick="mutatePickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
+  else{
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-step">2 · Select Ability to Replace</div>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickSlot('+idx+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    });
+    if(s.slot!=null){
+      h+='<div class="setup-step">3 · Choose Core</div>';
+      // Dubblett-skydd: en ability som redan sitter i en ANNAN slot får inte läggas på igen
+      // (samma ability flera gånger ska bara kunna uppstå via RNG vid kläckning).
+      var otherAbils={};
+      pet.abilities.forEach(function(ab,idx){if(idx!==s.slot)otherAbils[ab.id]=true;});
+      var groups=groupedCores();
+      if(groups.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🧫</div><p>No cores available.</p></div>';}
+      else{groups.forEach(function(g){var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);var sel=s.coreId===g.id&&s.coreTier===g.tier;var dup=!!otherAbils[g.id];
+        if(dup){
+          h+='<div class="setup-ability dupdis"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-dup">Already on this pet</span></div>';
+        } else {
+          h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickCore(\''+g.id+'\','+g.tier+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-tier">+'+TIER_VALUES[g.tier]+'%</span><span class="ma-count">×'+g.count+'</span></button>';
+        }
+      });}
+      if(s.coreId&&pet.abilities[s.slot]){
+        var cur=pet.abilities[s.slot];var curM=ABILITY_META[cur.id];var newM=ABILITY_META[s.coreId];var crc2=coreRarityConf(s.coreTier);
+        h+='<div class="setup-preview"><div class="spv-side"><div class="spv-l">Now</div><div class="spv-v" style="color:'+curM.color+'">'+curM.icon+' '+curM.name+' T'+cur.tier+'</div></div><div class="spv-arrow">→</div><div class="spv-side"><div class="spv-l">After</div><div class="spv-v" style="color:'+crc2.color+'">'+newM.icon+' '+newM.name+' T'+s.coreTier+'</div></div></div>';
+        var afford=G.coins>=MUTATE_COST;
+        h+='<button class="setup-go purple'+(afford?'':' no')+'"'+(afford?'':' disabled')+' onclick="doMutateStart()">🧬 Start — '+COIN_IMG+' '+fmtShort(MUTATE_COST)+'</button>';
+      }
+    }
+  }
+  h+='<button class="setup-cancel" onclick="closeMutationModal()">Cancel</button>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+}
+function doMutateStart(){
+  var s=mutateSetup;if(!s||s.slot==null||!s.coreId)return;
+  var pet=petByUid(s.petUid);if(!pet)return;
+  // Dubblett-spärr: avbryt om ability:n redan finns i en annan slot (skapar inte två likadana)
+  if(pet.abilities.some(function(ab,idx){return idx!==s.slot&&ab.id===s.coreId;}))return;
+  if(G.coins<MUTATE_COST||G.mutateChambers[s.ci])return;
+  var ci=G.mutationCores.findIndex(function(c){return c.id===s.coreId&&c.tier===s.coreTier;});
+  if(ci<0)return;
+  G.coins-=MUTATE_COST;
+  G.mutationCores.splice(ci,1);
+  G.stats.mutationCoresUsed=(G.stats.mutationCoresUsed||0)+1;
+  destroyPetByUid(pet.uid); // tar bort ur hatchedPets + avrustar; objektet hålls i chamber
+  G.mutateChambers[s.ci]={pet:pet,slot:s.slot,coreId:s.coreId,coreTier:s.coreTier,startAt:Date.now(),endAt:Date.now()+MUTATE_CHAMBER_DUR[s.ci]};
+  mutateSetup=null;closeMutationModal();updateHUD();renderMutate();if(typeof renderSlotRow==='function')renderSlotRow();saveGame();
+}
+
+// ---- chamber-tick (1s) ----
+var extractSig='',mutateSig='';
+function chamberSig(arr,unlocked){var now=Date.now();return arr.map(function(c){return c?(now>=c.endAt?'2':'1'):'0';}).join('')+'|'+unlocked;}
+function tickChambers(){
+  if(document.getElementById('tab-pets').style.display!=='block')return;
+  if(petsSubTab==='extract'){
+    var sig=chamberSig(G.extractChambers,G.extractUnlocked);
+    if(sig!==extractSig){extractSig=sig;renderExtract();return;}
+    var now=Date.now();
+    G.extractChambers.forEach(function(c,i){if(!c||now>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;var f=document.getElementById('exfill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('extime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000));});
+  } else if(petsSubTab==='mutate'){
+    var sig2=chamberSig(G.mutateChambers,G.mutateUnlocked);
+    if(sig2!==mutateSig){mutateSig=sig2;renderMutate();return;}
+    var now2=Date.now();
+    G.mutateChambers.forEach(function(c,i){if(!c||now2>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now2-c.startAt)/span*100)):100;var f=document.getElementById('mufill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('mutime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now2)/1000));});
+  }
+}
 function coresInvHtml(){
   var groups=groupedCores();
   if(groups.length===0)return '<div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets in the 🧬 Mutation tab.</p></div>';
@@ -2570,7 +2813,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.1<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.2<br>An idle pet collection game · Made with 💜</div></div>';
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -2611,6 +2854,7 @@ function resetFromSettings(){
     G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
+    G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.gems=0;
     G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
@@ -4571,6 +4815,7 @@ function softUpdateUpgrades(){
 setInterval(function(){updateBuildingClasses();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgrades();},500);
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
+setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
 setInterval(saveGame,15000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveGame();});
 
@@ -4599,6 +4844,12 @@ if(savedData){
   else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
   G.hatchedPets=savedData.hatchedPets||[];
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
+  G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
+  while(G.extractChambers.length<3)G.extractChambers.push(null);
+  G.mutateChambers=Array.isArray(savedData.mutateChambers)?savedData.mutateChambers.slice(0,3):[null,null,null];
+  while(G.mutateChambers.length<3)G.mutateChambers.push(null);
+  G.extractUnlocked=Math.max(1,Math.min(3,savedData.extractUnlocked||1));
+  G.mutateUnlocked=Math.max(1,Math.min(3,savedData.mutateUnlocked||1));
   // Ensure UIDs are numbers for comparison
   G.hatchedPets=G.hatchedPets.map(function(p){if(!p.uid)p.uid=Date.now()+Math.random();return p;});
   if(savedData.stats){
