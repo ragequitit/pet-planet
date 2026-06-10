@@ -9,7 +9,7 @@
 *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;outline:none;touch-action:manipulation;}
 :root{--bg:#0b1530;--gold:#f5c842;--text:#fff;--muted:rgba(255,255,255,0.45);--border:rgba(58,92,184,0.6);--w:390px;--top-h:56px;--nav-h:88px;}
 html,body{height:100%;background:#000;display:flex;justify-content:center;font-family:'Nunito',sans-serif;color:var(--text);overflow:hidden;}
-#app{width:var(--w);max-width:100vw;height:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;}
+#app{width:var(--w);max-width:100vw;height:100%;background:var(--bg);display:flex;flex-direction:column;overflow:hidden;position:relative;}
 #topbar{flex-shrink:0;height:var(--top-h);background:linear-gradient(180deg,#15264e,#0b1530);border-bottom:2px solid #2b4d92;display:flex;align-items:center;padding:0 8px;gap:6px;z-index:100;}
 .top-btn{flex:1;height:36px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);}
 .top-btn:active{transform:translateY(1px);}
@@ -20,7 +20,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #main::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
 #scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
 #scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
-#scene-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
+#scene-fade{display:none;position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
 .side-btns{position:absolute;top:24px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
@@ -276,6 +276,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:20px;width:var(--w);max-width:100vw;max-height:75vh;overflow-y:auto;}
+/* Stats-panel */
+.stats-asc{background:rgba(122,90,208,0.15);border:1px solid rgba(122,90,208,0.4);border-radius:10px;padding:8px 12px;font-size:0.82rem;color:#fff;margin-bottom:12px;text-align:center;}
+.stats-cat{font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1.2px;text-transform:uppercase;color:#b488ff;margin:14px 0 6px;border-bottom:1px solid rgba(122,90,208,0.25);padding-bottom:4px;}
+.stats-row{background:rgba(255,255,255,0.03);border:1px solid rgba(58,92,184,0.35);border-radius:10px;padding:8px 11px;margin-bottom:7px;}
+.stats-row-top{display:flex;justify-content:space-between;align-items:center;}
+.stats-name{font-weight:700;font-size:0.86rem;color:#fff;}
+.stats-total{font-family:'Fredoka One',cursive;font-size:0.95rem;color:var(--gold);}
+.stats-src{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:5px;font-size:0.66rem;color:rgba(255,255,255,0.55);}
+.stats-soon{opacity:0.5;font-style:italic;}
+.stats-foot{margin-top:14px;font-size:0.66rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.4;}
 .modal-box.centered{border-radius:20px;width:320px;max-width:92vw;text-align:center;}
 .modal-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:10px;padding:7px 14px;margin-bottom:14px;text-align:center;box-shadow:0 2px 0 #2a1858,inset 0 1px 0 rgba(255,255,255,0.15);}
 .modal-close{float:right;background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;}
@@ -898,6 +908,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       </div>
       <div class="side-btns" id="right-btns">
         <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
+        <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon">📊</span><span class="sb-label">Stats</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon">🎉</span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -911,9 +922,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
           <div id="egg-shadow"></div>
         </div>
       </div>
-    </div>
-    <div id="coin-display">
-      <div id="pet-bonus-display"></div>
     </div>
     <div id="home-sheet">
       <div id="sheet-handle" onclick="toggleHomeSheet()">
@@ -964,6 +972,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 
 <!-- MODALS -->
+<div id="stats-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStatsPanel()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeStatsPanel()" style="float:right">✕</button>
+    <div class="modal-title">📊 Your Stats</div>
+    <div id="stats-modal-body"></div>
+  </div>
+</div>
 <div id="pet-modal" class="modal-overlay">
   <div class="modal-box">
     <button class="modal-close" id="pet-modal-close">✕</button>
@@ -1487,6 +1502,48 @@ function getActiveBonuses(){
   }
   return bonuses;
 }
+
+// Uppdelning av varje stat per källa: pets / achievements / ascension (ascension = platshållare tills systemet byggs)
+function getBonusBreakdown(){
+  var out={};
+  ABILITIES.forEach(function(k){out[k]={pets:0,ach:0,asc:0,total:0};});
+  G.equippedPets.forEach(function(petUid){
+    if(!petUid)return;
+    var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});
+    if(!pet)return;
+    pet.abilities.forEach(function(ab){if(out[ab.id])out[ab.id].pets+=TIER_VALUES[ab.tier];});
+  });
+  ABILITIES.forEach(function(k){
+    out[k].ach=(G.permBonus&&G.permBonus[k])||0;
+    out[k].asc=(G.ascensionBonus&&G.ascensionBonus[k])||0; // finns ej än → 0
+    out[k].total=out[k].pets+out[k].ach+out[k].asc;
+  });
+  return out;
+}
+// Endast IMPLEMENTERADE stats listas här. Nya abilities (Adventure, XP, Utility, m.fl.) läggs till när de byggs in.
+var STAT_PANEL_GROUPS=[
+  {cat:'Economy',    items:[{id:'coinGain',name:'Egg Coin Gain'},{id:'idleGain',name:'Offline / Idle Income'},{id:'clickPower',name:'Click Income'}]},
+  {cat:'Hatching',   items:[{id:'hatchSpeed',name:'Hatch Speed',invert:true},{id:'luck',name:'Luck'}]},
+  {cat:'Collection', items:[{id:'shellGain',name:'Shell Gain'}]}
+];
+function renderStatsPanel(){
+  var bd=getBonusBreakdown();
+  var asc=G.ascensions||0;
+  var html='<div class="stats-asc">🔼 Ascensions: <b>'+asc+'</b> <span class="stats-soon">— system coming soon</span></div>';
+  STAT_PANEL_GROUPS.forEach(function(g){
+    html+='<div class="stats-cat">'+g.cat+'</div>';
+    g.items.forEach(function(it){
+      var d=bd[it.id]||{pets:0,ach:0,asc:0,total:0};
+      var s=it.invert?'-':'+';
+      html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+it.name+'</span><span class="stats-total">'+s+d.total+'%</span></div>';
+      html+='<div class="stats-src"><span>🐾 Pets '+s+d.pets+'%</span><span>🏆 Achievements '+s+d.ach+'%</span><span class="stats-soon">🔼 Ascension '+s+d.asc+'%</span></div></div>';
+    });
+  });
+  html+='<div class="stats-foot">Fler abilities (Adventure, XP, Utility, Rare m.fl.) dyker upp här automatiskt när de byggs in i spelet.</div>';
+  document.getElementById('stats-modal-body').innerHTML=html;
+}
+function openStatsPanel(){renderStatsPanel();document.getElementById('stats-modal').classList.add('open');}
+function closeStatsPanel(){var m=document.getElementById('stats-modal');if(m)m.classList.remove('open');}
 
 function getEpsMultiplier(){
   var b=getActiveBonuses();
@@ -3358,7 +3415,7 @@ function renderShop(){
   var html='';
   html+='<div class="shop-header">Shop</div>';
   html+='<div class="shop-tabs">';
-  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shop/basic-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
+  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
   html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">EGG SHELLS</div>';
   html+='</div>';
 
@@ -4842,16 +4899,7 @@ function updateHUD(){
   var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
   var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsDispVal);
-  // Pet bonus display
-  var b=getActiveBonuses();
-  var parts=[];
-  if(b.coinGain>0)parts.push('+'+b.coinGain+'% coins');
-  if(b.idleGain>0)parts.push('+'+b.idleGain+'% idle');
-  if(b.clickPower>0)parts.push('+'+b.clickPower+'% click');
-  if(b.luck>0)parts.push('+'+b.luck+'% luck');
-  if(b.shellGain>0)parts.push('+'+b.shellGain+'% shells');
-  if(b.hatchSpeed>0)parts.push('-'+b.hatchSpeed+'% hatch time');
-  document.getElementById('pet-bonus-display').textContent=parts.length>0?'🐾 '+parts.join(' · '):'';
+  // (Den gamla mörkblå pet-bonus-raden är borttagen — alla bonusar visas nu i stats-panelen via 📊-knappen.)
 }
 
 function showOfflineModal(ms,coins){
