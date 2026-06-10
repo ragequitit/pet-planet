@@ -861,6 +861,41 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-soon-icon{font-size:2.4rem;margin-bottom:10px;}
 .prof-soon-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);margin-bottom:6px;}
 .prof-soon-body{font-size:0.72rem;line-height:1.5;}
+.ttl-hint{font-size:0.66rem;color:rgba(255,255,255,0.5);text-align:center;margin:10px 0 4px;}
+.ttl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.ttl-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:10px;cursor:pointer;display:flex;flex-direction:column;gap:3px;}
+.ttl-card.locked{opacity:0.5;cursor:default;}
+.ttl-card.equipped{border-color:var(--gold);background:rgba(245,200,66,0.1);box-shadow:0 0 10px rgba(245,200,66,0.25);}
+.ttl-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:var(--gold);line-height:1.2;}
+.ttl-card.locked .ttl-name{color:rgba(255,255,255,0.55);}
+.ttl-desc{font-size:0.6rem;color:rgba(255,255,255,0.55);line-height:1.35;}
+.ttl-tag{font-size:0.58rem;font-weight:800;margin-top:2px;color:#7be08a;}
+.ttl-tag.tap{color:rgba(255,255,255,0.4);}
+.bdg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.bdg-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:9px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.bdg-card.locked{opacity:0.45;}
+.bdg-card:not(.locked){border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,0.2);}
+.bdg-icon{font-size:1.8rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4));}
+.bdg-card.locked .bdg-icon{filter:grayscale(1);opacity:0.8;}
+.bdg-name{font-family:'Fredoka One',cursive;font-size:0.62rem;color:var(--gold);line-height:1.15;}
+.bdg-card.locked .bdg-name{color:rgba(255,255,255,0.55);}
+.bdg-desc{font-size:0.52rem;color:rgba(255,255,255,0.5);line-height:1.3;}
+.mvupg{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+.mvupg.afford{border-color:#7c4dff;cursor:pointer;box-shadow:0 0 10px rgba(124,77,255,0.25);}
+.mvupg.maxed{border-color:var(--gold);}
+.mvupg.poor{opacity:0.7;}
+.mvupg-icon{font-size:1.6rem;width:38px;text-align:center;flex-shrink:0;}
+.mvupg-info{flex:1;min-width:0;}
+.mvupg-name{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#fff;}
+.mvupg-desc{font-size:0.64rem;color:rgba(255,255,255,0.6);margin:1px 0 3px;}
+.mvupg-cost{font-family:'Fredoka One',cursive;font-size:0.8rem;color:var(--gold);flex-shrink:0;white-space:nowrap;}
+.mvupg-cost.bad{color:rgba(255,255,255,0.4);}
+.mvupg.maxed .mvupg-cost{color:var(--gold);}
+.upg-reserved{text-align:center;padding:34px 20px;color:rgba(255,255,255,0.45);}
+.upg-reserved-icon{font-size:2.4rem;margin-bottom:10px;}
+.upg-reserved-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:rgba(255,255,255,0.7);margin-bottom:6px;}
+.upg-reserved-body{font-size:0.72rem;line-height:1.5;max-width:300px;margin:0 auto;}
+.pet-pos.unlockable .ppi{opacity:1;border:2px dashed #f5c842;color:var(--gold);cursor:pointer;background:rgba(245,200,66,0.12);box-shadow:0 0 8px rgba(245,200,66,0.4);}
 .pst-card{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:13px;margin-bottom:10px;overflow:hidden;}
 .pst-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid rgba(58,92,184,0.35);border-left:4px solid var(--cat,#f5c842);background:rgba(255,255,255,0.025);}
 .pst-head-icon{font-size:1rem;}
@@ -942,8 +977,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
           <div id="blist"></div>
         </div>
         <div id="tab-upgrades" class="tab-content">
-          <div class="sec-title">⚡ Efficiency Upgrades</div><div id="ulist"></div>
-          <div class="sec-title" style="margin-top:10px">🐾 Pet Slots</div><div id="slist"></div>
+          <div class="upg-reserved">
+            <div class="upg-reserved-icon">🚧</div>
+            <div class="upg-reserved-title">Coming Soon</div>
+            <div class="upg-reserved-body">This space is reserved for a new system. Egg Crafting moved to the Shop, Hatch Speed to the Hatchery, and Pet Slots are now unlocked around the egg.</div>
+          </div>
         </div>
         <div id="tab-inventory" class="tab-content"><div id="inv-wrap"></div></div>
       </div>
@@ -1153,12 +1191,12 @@ var BUILDINGS=[
   {n:"Moon Base",e:"🌙",b:4e19,p:1.6e12},{n:"Pet Planet",e:"🌍",b:4.2e20,p:8e12},
 ];
 var UPGRADES=[
-  {id:'click',e:'🖱️',n:'Click Power',max:5,cost:[125,1250,12500,125000,1250000],desc:function(l){return 'Click: '+Math.pow(2,l)+' → '+Math.pow(2,l+1)+' eggs';},apply:function(l){G.clickPower=Math.pow(2,l);}},
-  {id:'craft',e:'💎',n:'Shell Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Shell cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
-  {id:'hatch',e:'🥚',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
-  {id:'luck',e:'🍀',n:'Luck',max:5,cost:[5000,50000,500000,5000000,50000000],desc:function(l){return 'Shell drop: +'+(l*2)+'% → +'+((l+1)*2)+'%';},apply:function(l){G.luck=l*2;}},
-  {id:'offline',e:'💤',n:'Offline Gain',max:5,cost:[10000,100000,1000000,10000000,100000000],desc:function(l){return 'Offline: '+[50,60,70,80,90,100][l]+'% → '+[50,60,70,80,90,100][l+1]+'%';},apply:function(l){G.offlineMult=[0.5,0.6,0.7,0.8,0.9,1.0][l];}},
+  {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
+  {id:'hatch',e:'⏩',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
 ];
+// PARKERADE upgrades (flyttar till Ascension): Click Power borttagen helt (ersätts av nytt klick-system);
+// Luck + Offline Gain vilande — deras nuvarande effekt (G.luck/G.offlineMult) ligger kvar via save/load,
+// men de är inte köpbara förrän Ascension-systemet byggs.
 var SLOTS=[{slot:2,cost:10000},{slot:3,cost:1e6},{slot:4,cost:1e8},{slot:5,cost:1e10}];
 // === HATCH SLOTS (separat från pet slots) ===
 // Spelaren börjar med 1 hatch slot, max 3 (spikat). Köps med Egg Coins i Hatchery.
@@ -1214,7 +1252,7 @@ var SHELL_RARITIES=[
   {id:'cosmic',    name:'Cosmic Shell',    icon:'🌌',color:'#e040fb',weight:0.001},
 ];
 // Shell-ikoner: custom-PNG per raritet (assets/ui/shell/<id>-shell.png) med emoji-fallback.
-// OBS: eternal-shell.png saknas ännu → faller tillbaka till ✨ tills den laddas upp.
+// Alla shell-PNG:er finns nu (inkl. eternal-shell.png). ✨ används bara som onerror-fallback om en bild inte laddar.
 function shellImgUrl(id){return ASSET_BASE+'/assets/ui/shell/'+id+'-shell.png';}
 function shellIcon(id,cls){
   var r=SHELL_RARITIES.find(function(x){return x.id===id;})||{icon:'🐚'};
@@ -1614,7 +1652,7 @@ var G={
   craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
   equippedPets:[null,null,null,null,null],
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  ulvl:{click:0,craft:0,hatch:0,luck:0,offline:0},
+  ulvl:{craft:0,hatch:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
@@ -1625,7 +1663,7 @@ var G={
   titlesEarned:{},
   adventureSlots:1,
   adventures:[],
-  profile:{name:'Player',favoritePet:null},
+  profile:{name:'Player',favoritePet:null,equippedTitle:null},
   settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true},
   stats:freshStats(),
 };
@@ -1955,9 +1993,10 @@ function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse
 function resetGame(){
   if(!confirm('Reset all progress?'))return;
   G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
+  G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
   G.equippedPets=[null,null,null,null,null];
   G.owned=new Array(20).fill(0);
-  G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
+  G.ulvl={craft:0,hatch:0};
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
@@ -2117,6 +2156,11 @@ function renderSlotRow(){
     if(unlocked){
       inner.innerHTML=pet?('<span style="font-size:1.3rem">'+pet.e+'</span>'):'<span style="font-size:0.7rem;opacity:0.4">+</span>';
       (function(idx){d.onclick=function(ev){ev.stopPropagation();openPetSlotModal(idx);};})(i);
+    } else if(i===G.petSlots){
+      // Nästa slot i tur: klickbar för att låsas upp
+      d.classList.add('unlockable');
+      inner.innerHTML='<span style="font-size:0.9rem">🔓</span>';
+      d.onclick=function(ev){ev.stopPropagation();tryUnlockPetSlot();};
     } else {inner.innerHTML='🔒';}
     d.appendChild(inner);row.appendChild(d);
   }
@@ -2947,7 +2991,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.4<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.5<br>An idle pet collection game · Made with 💜</div></div>';
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -2983,9 +3027,10 @@ function doImportSave(){
 function resetFromSettings(){
   showConfirm('Reset Everything?','This permanently wipes ALL your coins, pets, shells, achievements and progress. There is no undo. Are you absolutely sure?','Reset Everything',function(){
     G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
+    G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
     G.equippedPets=[null,null,null,null,null];
     G.owned=new Array(20).fill(0);
-    G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
+    G.ulvl={craft:0,hatch:0};
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
@@ -3022,6 +3067,159 @@ function saveProfileName(){
 }
 function profOvCard(icon,lbl,val){return '<div class="prof-ov-card"><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div></div>';}
 function profSoon(icon,title,body){return '<div class="prof-soon"><div class="prof-soon-icon">'+icon+'</div><div class="prof-soon-title">'+title+'</div><div class="prof-soon-body">'+body+'</div></div>';}
+// ============================================================
+// TITLES — central katalog. check() avgör om titeln är upplåst.
+// Milstolpe-titlar beräknas live från G.stats/achievements.
+// Petdex-titlar läses ur G.titlesEarned (sätts vid World Completion-claim).
+// ============================================================
+function titleAchCount(){return ACHIEVEMENTS.filter(function(a){return G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];}).length;}
+function tEarned(name){return !!(G.titlesEarned&&G.titlesEarned[name]);}
+var TITLE_DEFS=[
+  // Starter
+  {name:'Newcomer',cat:'Starter',desc:'The journey begins. Always available.',check:function(){return true;}},
+  // Hatching
+  {name:'Hatchling',cat:'Hatching',desc:'Hatch 10 eggs.',check:function(){return (G.stats.eggsHatched||0)>=10;}},
+  {name:'Egg Whisperer',cat:'Hatching',desc:'Hatch 100 eggs.',check:function(){return (G.stats.eggsHatched||0)>=100;}},
+  {name:'Master Hatcher',cat:'Hatching',desc:'Hatch 1,000 eggs.',check:function(){return (G.stats.eggsHatched||0)>=1000;}},
+  // Collection
+  {name:'Pet Friend',cat:'Collection',desc:'Discover 10 unique pets.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=10;}},
+  {name:'Critter Keeper',cat:'Collection',desc:'Discover 25 unique pets.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=25;}},
+  {name:'Zookeeper',cat:'Collection',desc:'Discover 50 unique pets.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=50;}},
+  {name:'Beastmaster',cat:'Collection',desc:'Discover 75 unique pets.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=75;}},
+  {name:'Pet Hoarder',cat:'Collection',desc:'Discover 100 unique pets.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=100;}},
+  // Mastery
+  {name:'Tapper',cat:'Mastery',desc:'Tap the egg 1,000 times.',check:function(){return (G.stats.totalClicks||0)>=1000;}},
+  {name:'Click Fiend',cat:'Mastery',desc:'Tap the egg 50,000 times.',check:function(){return (G.stats.totalClicks||0)>=50000;}},
+  {name:'Fusionist',cat:'Mastery',desc:'Perform 10 fusions.',check:function(){return (G.stats.totalFusions||0)>=10;}},
+  {name:'Geneticist',cat:'Mastery',desc:'Mutate 10 pets.',check:function(){return (G.stats.totalPetsMutated||0)>=10;}},
+  {name:'Tycoon',cat:'Mastery',desc:'Earn 1,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1000000;}},
+  // Achievements
+  {name:'Achiever',cat:'Achievements',desc:'Unlock 10 achievements.',check:function(){return titleAchCount()>=10;}},
+  {name:'Trophy Hunter',cat:'Achievements',desc:'Unlock 50 achievements.',check:function(){return titleAchCount()>=50;}},
+  {name:'Completionist',cat:'Achievements',desc:'Unlock every achievement.',check:function(){return ACHIEVEMENTS.length>0&&titleAchCount()>=ACHIEVEMENTS.length;}},
+  // Petdex (tjänas via World Completion-claim → G.titlesEarned)
+  {name:'Starter Tamer',cat:'Petdex',desc:'Complete the Starter Petdex (100%).',check:function(){return tEarned('Starter Tamer');}},
+  {name:'Forest Guardian',cat:'Petdex',desc:'Complete the Forest Petdex (100%).',check:function(){return tEarned('Forest Guardian');}},
+  {name:'Peak Climber',cat:'Petdex',desc:'Complete the Mountain Petdex (100%).',check:function(){return tEarned('Peak Climber');}},
+  {name:'Dune Walker',cat:'Petdex',desc:'Complete the Desert Petdex (100%).',check:function(){return tEarned('Dune Walker');}},
+  {name:'Tide Master',cat:'Petdex',desc:'Complete the Ocean Petdex (100%).',check:function(){return tEarned('Tide Master');}},
+  {name:'Jungle Lord',cat:'Petdex',desc:'Complete the Jungle Petdex (100%).',check:function(){return tEarned('Jungle Lord');}},
+  {name:'Frost Warden',cat:'Petdex',desc:'Complete the Arctic Petdex (100%).',check:function(){return tEarned('Frost Warden');}},
+  {name:'Ember Sovereign',cat:'Petdex',desc:'Complete the Volcano Petdex (100%).',check:function(){return tEarned('Ember Sovereign');}},
+  {name:'Arcane Sage',cat:'Petdex',desc:'Complete the Mystic Petdex (100%).',check:function(){return tEarned('Arcane Sage');}},
+  {name:'Star Voyager',cat:'Petdex',desc:'Complete the Celestial Petdex (100%).',check:function(){return tEarned('Star Voyager');}},
+  {name:'Cosmic Collector',cat:'Petdex',desc:'Complete the Cosmic Petdex (100%).',check:function(){return tEarned('Cosmic Collector');}},
+  {name:'Living Petdex',cat:'Petdex',desc:'Complete the entire Petdex (all 110 pets).',check:function(){return tEarned('Living Petdex');}}
+];
+function titleIsEarned(t){try{return !!t.check();}catch(e){return false;}}
+function getEquippedTitle(){
+  var eq=G.profile&&G.profile.equippedTitle;
+  if(eq){var def=TITLE_DEFS.find(function(t){return t.name===eq;});if(def&&titleIsEarned(def))return eq;}
+  return 'Newcomer';
+}
+function equipTitle(name){
+  var def=TITLE_DEFS.find(function(t){return t.name===name;});
+  if(!def||!titleIsEarned(def))return;
+  if(!G.profile)G.profile={};
+  G.profile.equippedTitle=(name==='Newcomer')?null:name;
+  saveGame();renderProfile();
+}
+function renderProfileTitles(){
+  var cur=getEquippedTitle();
+  var earned=TITLE_DEFS.filter(titleIsEarned).length;
+  var total=TITLE_DEFS.length;
+  var tpct=total>0?Math.round(earned/total*100):0;
+  var cats=['Starter','Hatching','Collection','Mastery','Achievements','Petdex'];
+  var catIcons={Starter:'🌱',Hatching:'🍳',Collection:'🐾',Mastery:'⚔️',Achievements:'🏆',Petdex:'📖'};
+  var h='';
+  h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Titles Earned</span><span class="prof-compl-pct">'+earned+'/'+total+'</span></div>';
+  h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+tpct+'%"></div></div></div>';
+  h+='<div class="ttl-hint">Tap an earned title to display it under your name.</div>';
+  cats.forEach(function(cat){
+    var list=TITLE_DEFS.filter(function(t){return t.cat===cat;});
+    if(!list.length)return;
+    h+='<div class="prof-section-title" style="margin-top:14px;">'+(catIcons[cat]||'')+' '+cat+'</div>';
+    h+='<div class="ttl-grid">';
+    list.forEach(function(t){
+      var ok=titleIsEarned(t);
+      var isCur=ok&&t.name===cur;
+      var cls='ttl-card'+(ok?'':' locked')+(isCur?' equipped':'');
+      var nm=t.name.replace(/'/g,"\\'");
+      h+='<div class="'+cls+'"'+(ok?' onclick="equipTitle(\''+nm+'\')"':'')+'>';
+      h+='<div class="ttl-name">'+(ok?'':'🔒 ')+profEsc(t.name)+'</div>';
+      h+='<div class="ttl-desc">'+profEsc(t.desc)+'</div>';
+      if(isCur)h+='<div class="ttl-tag">✓ Equipped</div>';
+      else if(ok)h+='<div class="ttl-tag tap">Tap to equip</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  return h;
+}
+// ============================================================
+// BADGES — emblem som tänds AUTOMATISKT från din data (ingen claim).
+// check() beräknas live, precis som titlar. Inget nytt sparat state behövs.
+// ============================================================
+function badgeRarityIndex(r){return ['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'].indexOf(r||'common');}
+function badgeWorldsComplete(){var n=0;(PETDEX_WORLDS||[]).forEach(function(w){var c=getWorldSpeciesCount(w.id);if(c.total>0&&c.found>=c.total)n++;});return n;}
+function badgePetdexPct(){var o=getTotalSpeciesCount();return o.total>0?(o.found/o.total*100):0;}
+var BADGE_DEFS=[
+  // Hatching
+  {name:'First Crack',icon:'🥚',cat:'Hatching',desc:'Hatch your first egg.',check:function(){return (G.stats.eggsHatched||0)>=1;}},
+  {name:'Dedicated Hatcher',icon:'🍳',cat:'Hatching',desc:'Hatch 500 eggs.',check:function(){return (G.stats.eggsHatched||0)>=500;}},
+  {name:'Hatchery Tycoon',icon:'🐣',cat:'Hatching',desc:'Hatch 5,000 eggs.',check:function(){return (G.stats.eggsHatched||0)>=5000;}},
+  // Collection
+  {name:'Companion',icon:'🐾',cat:'Collection',desc:'Discover your first pet.',check:function(){return (G.stats.uniquePetsDiscovered||0)>=1;}},
+  {name:'Legendary Holder',icon:'💎',cat:'Collection',desc:'Obtain a Legendary-rarity pet.',check:function(){return badgeRarityIndex(G.stats.highestRarityOwned)>=4;}},
+  {name:'Cosmic Keeper',icon:'✨',cat:'Collection',desc:'Obtain a Cosmic-rarity pet.',check:function(){return badgeRarityIndex(G.stats.highestRarityOwned)>=9;}},
+  // Petdex
+  {name:'Petdex Initiate',icon:'📖',cat:'Petdex',desc:'Complete 25% of the Petdex.',check:function(){return badgePetdexPct()>=25;}},
+  {name:'Petdex Scholar',icon:'📚',cat:'Petdex',desc:'Complete 50% of the Petdex.',check:function(){return badgePetdexPct()>=50;}},
+  {name:'World Tamer',icon:'🌍',cat:'Petdex',desc:"Fully complete one world's Petdex.",check:function(){return badgeWorldsComplete()>=1;}},
+  {name:'World Conqueror',icon:'🗺️',cat:'Petdex',desc:"Fully complete every world's Petdex.",check:function(){return (PETDEX_WORLDS||[]).length>0&&badgeWorldsComplete()>=PETDEX_WORLDS.length;}},
+  {name:'Living Petdex',icon:'🏆',cat:'Petdex',desc:'Complete 100% of the Petdex.',check:function(){return badgePetdexPct()>=100;}},
+  // Economy
+  {name:'Millionaire',icon:'💰',cat:'Economy',desc:'Earn 1,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1e6;}},
+  {name:'Billionaire',icon:'🏦',cat:'Economy',desc:'Earn 1,000,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1e9;}},
+  {name:'Power Plant',icon:'⚡',cat:'Economy',desc:'Reach 1,000 EPS.',check:function(){return (G.stats.highestEpsReached||0)>=1000;}},
+  // Crafting
+  {name:'Alchemist',icon:'⚗️',cat:'Crafting',desc:'Perform 25 fusions.',check:function(){return (G.stats.totalFusions||0)>=25;}},
+  {name:'Geneticist',icon:'🧬',cat:'Crafting',desc:'Mutate 25 pets.',check:function(){return (G.stats.totalPetsMutated||0)>=25;}},
+  {name:'Shell Baron',icon:'🐚',cat:'Crafting',desc:'Collect 10,000 shells.',check:function(){return (G.stats.totalShellsCollected||0)>=10000;}},
+  // Dedication
+  {name:'Click Champion',icon:'👆',cat:'Dedication',desc:'Tap the egg 25,000 times.',check:function(){return (G.stats.totalClicks||0)>=25000;}},
+  {name:'Well Rested',icon:'😴',cat:'Dedication',desc:'Claim an 8-hour offline reward.',check:function(){return (G.stats.offlineRewardsClaimed||0)>=1;}},
+  {name:'Adventurer',icon:'🧭',cat:'Dedication',desc:'Complete 25 adventures.',check:function(){return (G.stats.adventuresCompleted||0)>=25;}},
+  {name:'Trophy Wall',icon:'🏅',cat:'Dedication',desc:'Unlock 25 achievements.',check:function(){return titleAchCount()>=25;}},
+  {name:'Grand Champion',icon:'👑',cat:'Dedication',desc:'Unlock every achievement.',check:function(){return ACHIEVEMENTS.length>0&&titleAchCount()>=ACHIEVEMENTS.length;}}
+];
+function badgeIsEarned(b){try{return !!b.check();}catch(e){return false;}}
+function renderProfileBadges(){
+  var earned=BADGE_DEFS.filter(badgeIsEarned).length;
+  var total=BADGE_DEFS.length;
+  var pct=total>0?Math.round(earned/total*100):0;
+  var cats=['Hatching','Collection','Petdex','Economy','Crafting','Dedication'];
+  var h='';
+  h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Badges Earned</span><span class="prof-compl-pct">'+earned+'/'+total+'</span></div>';
+  h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+pct+'%"></div></div></div>';
+  h+='<div class="ttl-hint">Badges light up automatically as you reach milestones.</div>';
+  cats.forEach(function(cat){
+    var list=BADGE_DEFS.filter(function(b){return b.cat===cat;});
+    if(!list.length)return;
+    h+='<div class="prof-section-title" style="margin-top:14px;">'+cat+'</div>';
+    h+='<div class="bdg-grid">';
+    list.forEach(function(b){
+      var ok=badgeIsEarned(b);
+      h+='<div class="bdg-card'+(ok?'':' locked')+'">';
+      h+='<div class="bdg-icon">'+(ok?b.icon:'🔒')+'</div>';
+      h+='<div class="bdg-name">'+profEsc(b.name)+'</div>';
+      h+='<div class="bdg-desc">'+profEsc(b.desc)+'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  });
+  return h;
+}
 function renderProfile(){
   var body=document.getElementById('prof-body');if(!body)return;
   var name=(G.profile&&G.profile.name)||'Player';
@@ -3038,7 +3236,7 @@ function renderProfile(){
   h+='<div class="prof-avatar-wrap"><div class="prof-avatar">'+profAvatarInner()+'</div><div class="prof-shield">🐾</div></div>';
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
-  h+='<div class="prof-titletext">Newcomer</div>';
+  h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
   h+='<div class="prof-level-row"><span class="prof-lvl">Lv 1</span><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:0%"></div></div></div>';
   h+='<div class="prof-xp-soon">XP &amp; Levels — coming soon</div>';
   h+='</div></div>';
@@ -3073,9 +3271,9 @@ function renderProfile(){
   } else if(profileSubTab==='customize'){
     h+=renderProfileCustomize();
   } else if(profileSubTab==='titles'){
-    h+=profSoon('🏷️','Titles','Titlar tjänas via achievements och milstolpar. Title-systemet byggs senare.');
+    h+=renderProfileTitles();
   } else if(profileSubTab==='badges'){
-    h+=profSoon('🛡️','Badges','Märken visar dina prestationer. Badge-systemet byggs senare.');
+    h+=renderProfileBadges();
   }
   h+='</div>';
   body.innerHTML=h;
@@ -3262,23 +3460,47 @@ document.getElementById('blist').addEventListener('click',function(e){
 // UPGRADES
 // ============================================================
 function renderUpgrades(){
-  var ul=document.getElementById('ulist');ul.innerHTML='';
-  UPGRADES.forEach(function(u){
-    var l=G.ulvl[u.id];var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
-    var d=document.createElement('div');d.className='upg '+(maxed?'maxed':afford?'can-buy':'poor');
-    d.dataset.upgId=u.id;
-    d.setAttribute('data-upg-id',u.id);
-    d.innerHTML='<div class="upg-img">'+u.e+'</div><div style="flex:1"><div class="un">'+u.n+'</div><div class="ud">'+(maxed?'Maxed out!':u.desc(l))+'</div><div class="udots">'+dots(l,u.max)+'</div></div><div class="ur"><div class="uc" style="color:'+(maxed?'var(--gold)':afford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(maxed?'MAX':COIN_IMG+' '+fmtShort(c))+'</div></div>';
-    ul.appendChild(d);
-  });
-  var sl=document.getElementById('slist');sl.innerHTML='';
+  /* Upgrades-fliken är tömd och reserverad för ett kommande system.
+     Egg Crafting → Shop, Hatch Speed → Hatchery, Pet Slots → runt ägget. */
+}
+// Generiskt köp av en (kvarvarande) upgrade via id. Returnerar true om köpet gick igenom.
+function buyUpgradeById(id){
+  var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return false;
+  var l=G.ulvl[u.id]||0;if(l>=u.max)return false;
+  var c=u.cost[l];if(G.coins<c)return false;
+  G.coins-=c;G.ulvl[u.id]++;G.stats.totalUpgradesPurchased++;G.stats.totalCoinsSpent+=c;
+  u.apply(G.ulvl[u.id]);
+  if(typeof updateHUD==='function')updateHUD();
+  saveGame();
+  return true;
+}
+// HTML för ett flyttat upgrade-kort (används i Shop + Hatchery).
+function movedUpgCardHtml(id,onclick){
+  var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return '';
+  var l=G.ulvl[u.id]||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
+  return '<div class="mvupg'+(maxed?' maxed':afford?' afford':' poor')+'"'+((!maxed&&afford)?' onclick="'+onclick+'"':'')+'>'+
+    '<div class="mvupg-icon">'+u.e+'</div>'+
+    '<div class="mvupg-info"><div class="mvupg-name">'+u.n+'</div><div class="mvupg-desc">'+(maxed?'Maxed out!':u.desc(l))+'</div><div class="udots">'+dots(l,u.max)+'</div></div>'+
+    '<div class="mvupg-cost'+(maxed||afford?'':' bad')+'">'+(maxed?'MAX':COIN_IMG+' '+fmtShort(c))+'</div></div>';
+}
+function buyEggCrafting(){if(buyUpgradeById('craft'))renderShop();}
+function buyHatchSpeed(){if(buyUpgradeById('hatch'))renderHatchery();}
+// Pet Slots låses nu upp genom att trycka på nästa lediga slot runt ägget.
+function tryUnlockPetSlot(){
   var next=null;for(var k=0;k<SLOTS.length;k++){if(G.petSlots<SLOTS[k].slot){next=SLOTS[k];break;}}
-  var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
-  var sd=document.createElement('div');sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
-  sd.dataset.upgId='slot';
-  sd.setAttribute('data-upg-id','slot');
-  sd.innerHTML='<div class="upg-img">🐾</div><div style="flex:1"><div class="un">Pet Slots</div><div class="ud">'+(allDone?'All slots unlocked':'Unlock slot '+(G.petSlots+1))+'</div><div class="udots">'+dots(G.petSlots,5)+'</div></div><div class="ur"><div class="uc" style="color:'+(allDone?'var(--gold)':slotAfford?'#b388ff':'rgba(255,255,255,0.4)')+'">'+(allDone?'MAX':COIN_IMG+' '+fmtShort(next?next.cost:0))+'</div></div>';
-  sl.appendChild(sd);
+  if(!next)return;
+  var cost=next.cost;var slotNum=next.slot;
+  if(G.coins<cost){
+    showConfirm('Pet Slot '+slotNum,'You need '+fmtShort(cost)+' Egg Coins to unlock Pet Slot '+slotNum+'. Keep earning!','OK',null);
+    return;
+  }
+  showConfirm('Unlock Pet Slot '+slotNum+'?','Unlock a new active pet slot for '+fmtShort(cost)+' Egg Coins?','Unlock',function(){
+    var nx=null;for(var k=0;k<SLOTS.length;k++){if(G.petSlots<SLOTS[k].slot){nx=SLOTS[k];break;}}
+    if(!nx||G.coins<nx.cost)return;
+    G.coins-=nx.cost;G.petSlots=nx.slot;
+    if(typeof updateHUD==='function')updateHUD();
+    renderSlotRow();saveGame();
+  });
 }
 
 // Event delegation för shop
@@ -3449,6 +3671,8 @@ function renderShop(){
   }
 
   // Världsväljare (scrollar till ägget i listan)
+  html+='<div class="shop-world-label">Egg Crafting Upgrade</div>';
+  html+=movedUpgCardHtml('craft','buyEggCrafting()');
   html+='<div class="shop-world-label">Select Egg World</div>';
   html+='<div class="shop-worlds">';
   EGG_SHOP.forEach(function(egg){
@@ -3728,6 +3952,8 @@ function renderHatchery(){
       '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(hcost)+'</div></div>';
   }
   var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;});
+  html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
+  html+=movedUpgCardHtml('hatch','buyHatchSpeed()');
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Eggs in Inventory</div>';
   if(!hasEggs){
     html+='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No eggs — craft some in the 🛍️ Shop!</div>';
@@ -4188,7 +4414,7 @@ var ACHIEVEMENTS=[
   {id:'infinite_incubator',cat:'Collection',icon:'🥚',name:'Infinite Incubator',desc:'Hatch 10,000 Eggs',check:function(){return G.stats.eggsHatched>=10000;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,10000),max:10000};}},
 
   // PET COLLECTION
-  {id:'first_friend',cat:'Collection',icon:'🐾',name:'First Friend',desc:'Obtain your first Pet',check:function(){return G.stats.totalPetsCollected>=1;},progress:function(){return {cur:Math.min(G.stats.totalPetsCollected,1),max:1};}},
+  {id:'first_friend',cat:'Collection',icon:'🐾',name:'First Friend',desc:'Obtain your first Pet',check:function(){return getCollectedPetCount()>=1;},progress:function(){return {cur:Math.min(getCollectedPetCount(),1),max:1};}},
   {id:'small_collection',cat:'Collection',icon:'🐾',name:'Small Collection',desc:'Own 10 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=10;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,10),max:10};}},
   {id:'growing_zoo',cat:'Collection',icon:'🐾',name:'Growing Zoo',desc:'Own 25 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=25;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,25),max:25};}},
   {id:'pet_enthusiast',cat:'Collection',icon:'🐾',name:'Pet Enthusiast',desc:'Own 50 unique Pets',check:function(){return G.stats.uniquePetsDiscovered>=50;},progress:function(){return {cur:Math.min(G.stats.uniquePetsDiscovered,50),max:50};}},
@@ -4656,7 +4882,14 @@ function discoverPet(name,rarity){
 // Allt du ÄGER ska räknas som upptäckt (hatch/fusion/fusk/trade/adventures).
 function syncDiscoveredFromInventory(){
   (G.hatchedPets||[]).forEach(function(p){if(p&&p.name&&p.rarity)discoverPet(p.name,p.rarity);});
+  // "Samlade pets" räknas från det faktiska inventariet → källagnostiskt (hatch/fusion/
+  // mutation/dev/adventure/framtida trading). High-water mark: går bara upp, så
+  // titlar/achievements aldrig av-låses om man fuserar/extraherar bort pets.
+  if(G.stats){var owned=(G.hatchedPets||[]).length;if(owned>(G.stats.totalPetsCollected||0))G.stats.totalPetsCollected=owned;}
 }
+// Robust antal "samlade pets": max av lifetime-räknaren och nuvarande inventarie.
+// Reflekterar nyss tillagda pets direkt (innan en sync hunnit köra) och sjunker aldrig.
+function getCollectedPetCount(){return Math.max((G.stats&&G.stats.totalPetsCollected)||0,(G.hatchedPets||[]).length);}
 
 function getTotalPetdexCount(){
   var entries=buildPetdexEntries();
@@ -4994,13 +5227,15 @@ var offlineCoins=0,offlineMs=0;
 var savedData=loadGame();
 if(savedData){
   G.coins=savedData.coins||0;G.total=savedData.total||0;G.clicks=savedData.clicks||0;
-  G.clickPower=savedData.clickPower||1;G.luck=savedData.luck||0;
+  G.clickPower=1;G.luck=savedData.luck||0;
   G.craftDiscount=savedData.craftDiscount||1;
   G.hatchDiscount=savedData.hatchDiscount||1;
   G.offlineMult=savedData.offlineMult||0.5;
   G.petSlots=savedData.petSlots||1;G.currentWorld=savedData.currentWorld||0;
   G.owned=savedData.owned||new Array(20).fill(0);
-  G.ulvl=savedData.ulvl||{click:0,craft:0,hatch:0,luck:0,offline:0};
+  G.ulvl=savedData.ulvl||{craft:0,hatch:0};
+  ['click','luck','offline'].forEach(function(k){if(G.ulvl[k]!==undefined)delete G.ulvl[k];});
+  if(G.ulvl.craft==null)G.ulvl.craft=0;if(G.ulvl.hatch==null)G.ulvl.hatch=0;
   G.equippedPets=savedData.equippedPets||[null,null,null,null,null];
   G.shells=savedData.shells||{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   // Sanera null-värden till 0
@@ -5034,7 +5269,7 @@ if(savedData){
   G.titlesEarned=savedData.titlesEarned||{};
   G.adventureSlots=savedData.adventureSlots||1;
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
-  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
+  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
   // Migrera gammalt format (v2.9: sfx-boolean + skipConfirm) så ljudet inte plötsligt slår på
