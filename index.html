@@ -662,6 +662,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .amb-ic{font-size:1.5rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6));}
 .amb-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;margin-top:auto;line-height:1.05;text-shadow:0 1px 3px rgba(0,0,0,0.95);}
 .amb-meta{display:flex;flex-direction:column;gap:2px;margin-top:3px;}
+.adv-mbtn.busy{filter:grayscale(0.35) brightness(0.7);}
+.adv-mbtn.busy.sel{filter:grayscale(0.2) brightness(0.82);}
+.amb-busy{margin-top:3px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.6rem;color:#ffd86b;background:rgba(0,0,0,0.45);border-radius:6px;padding:2px 4px;text-align:center;letter-spacing:0.3px;text-shadow:0 1px 2px rgba(0,0,0,0.9);}
 .amb-time{font-size:0.58rem;color:rgba(255,255,255,0.9);font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,0.95);}
 .amb-chance{font-size:0.54rem;font-weight:800;padding:1px 5px;border-radius:5px;align-self:flex-start;text-transform:uppercase;letter-spacing:0.3px;}
 .c-high{background:#2e7d32;color:#fff;}
@@ -1588,12 +1591,15 @@ function dropShell(){
   rarityOrder.forEach(function(rid){if((G.stats.shellsCollectedByRarity[rid]||0)>favMax){favMax=G.stats.shellsCollectedByRarity[rid];G.stats.favoriteShell=rid;}});
   var idx=SHELL_RARITIES.findIndex(function(s){return s.id===r.id;});
   if(idx>=0)showShellPop(r,idx);
+  var invTab=document.getElementById('tab-inventory');
+  if(invTab&&invTab.style.display==='block'&&typeof softUpdateInventory==='function')softUpdateInventory();
 }
 function showShellPop(r,idx){
   var stage=document.getElementById('egg-stage');if(!stage)return;
   // Oskalade mått (egg-stage är CSS-skalat) så shellsen sprids runt mitten, inte åt höger
   var w=stage.offsetWidth||140,h=stage.offsetHeight||160;
-  var dur=idx>=5?3500:idx>=3?2200:idx>=2?1400:900;
+  // Epic+ ~3,5s, rare 2s, uncommon 1,5s, common 1s
+  var dur=idx>=3?3500:idx===2?2000:idx===1?1500:1000;
   var pop=document.createElement('div');
   // Slumpa startpunkt runt hela ägget + en slumpmässig drift uppåt/utåt så de inte alla åker rakt upp
   var sx=w/2+(Math.random()*2-1)*50;
@@ -1601,7 +1607,9 @@ function showShellPop(r,idx){
   var dx=(Math.random()*2-1)*46;
   var dy=-(40+Math.random()*48);
   var sz=idx>=7?'2.1rem':idx>=3?'1.6rem':'1.15rem';
-  var glow=idx>=3?'text-shadow:0 0 10px '+r.color+';':'';
+  // ALLA shells glöder i sin raritetsfärg (drop-shadow funkar på PNG-ikonen); glöden växer lite med raritet.
+  var gb=4+Math.min(idx,9)*0.9;
+  var glow='filter:drop-shadow(0 0 '+gb.toFixed(1)+'px '+r.color+') drop-shadow(0 0 '+(gb*1.8).toFixed(1)+'px '+r.color+');';
   pop.style.cssText='position:absolute;pointer-events:none;z-index:20;left:'+sx+'px;top:'+sy+'px;font-size:'+sz+';'+glow+'--dx:'+dx+'px;--dy:'+dy+'px;animation:shellFly '+(dur/1000)+'s ease forwards;';
   pop.innerHTML=shellIcon(r.id); // bara ikonen, inget namn
   stage.appendChild(pop);
@@ -1630,6 +1638,14 @@ function tickAdventures(){
 function advAsset(id,kind){return ASSET_BASE+'/assets/ui/adventures/'+id+'-'+kind+'.png';}
 function advById(id){return ADVENTURES.find(function(a){return a.id===id;});}
 function selectAdv(id){advSelected=id;renderAdventure();}
+// Ett uppdrag (t.ex. Ocean) får bara vara aktivt EN gång åt gången — låst tills det är klart/claimat.
+function isAdvActive(advId){return G.adventures.some(function(a){return a.advId===advId;});}
+// Tom slot: skicka på det valda uppdraget, men om det redan är igång → hoppa till första lediga uppdraget.
+function openAdvPickerSmart(){
+  var id=advSelected;
+  if(isAdvActive(id)){var f=ADVENTURES.find(function(a){return !isAdvActive(a.id);});if(f){selectAdv(f.id);id=f.id;}}
+  openAdvPicker(id);
+}
 function speedUpCost(a){var remain=Math.max(0,a.endAt-Date.now());return Math.max(2,Math.ceil(remain/3600000*15));}
 function speedUpAdventure(index){
   var a=G.adventures[index];if(!a||Date.now()>=a.endAt)return;
@@ -1685,6 +1701,7 @@ function buyAdventureSlot(){
 }
 function startAdventure(advId,petUid){
   var adv=ADVENTURES.find(function(a){return a.id===advId;});if(!adv)return;
+  if(isAdvActive(advId))return;                         // samma uppdragstyp redan igång → blockera
   if(G.adventures.length>=G.adventureSlots)return;     // ingen ledig slot
   if(isPetBusy(petUid))return;                          // redan ute
   var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});if(!pet)return;
@@ -1733,6 +1750,10 @@ function openAdvPicker(advId){
   if(G.adventures.length>=G.adventureSlots)return;
   pendingAdvId=advId;
   var adv=ADVENTURES.find(function(a){return a.id===advId;});if(!adv)return;
+  if(isAdvActive(advId)){
+    document.getElementById('adv-modal-body').innerHTML='<div class="adv-pick-title">'+adv.icon+' '+adv.name+'</div><div class="adv-pick-empty">⏳ This adventure is already in progress. It\'ll be available again when your pet returns — pick a different adventure from the map.</div>';
+    document.getElementById('adv-modal').classList.add('open');return;
+  }
   var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid);});
   avail.sort(function(a,b){return RARITY_PROGRESSION.indexOf(b.rarity)-RARITY_PROGRESSION.indexOf(a.rarity);});
   var html='<div class="adv-pick-title">Send a pet on<br><b>'+adv.icon+' '+adv.name+'</b></div>';
@@ -1771,13 +1792,15 @@ function renderAdventure(){
   html+='<div class="adv-mapgrid">';
   ADVENTURES.forEach(function(adv){
     var asel=advSelected===adv.id;
+    var abusy=isAdvActive(adv.id);
     var nm=adv.name.replace(' Expedition','').replace('Ancient ','');
     var clab=adv.special?'Special':adv.chance;
     var cc=clab.replace(/ /g,'').toLowerCase();
-    html+='<div class="adv-mbtn'+(asel?' sel':'')+(adv.special?' special':'')+'" style="background-color:'+adv.col+';background-image:url('+advAsset(adv.id,'btn')+')" onclick="selectAdv(\''+adv.id+'\')">';
+    html+='<div class="adv-mbtn'+(asel?' sel':'')+(adv.special?' special':'')+(abusy?' busy':'')+'" style="background-color:'+adv.col+';background-image:url('+advAsset(adv.id,'btn')+')" onclick="selectAdv(\''+adv.id+'\')">';
     html+='<div class="amb-ic">'+adv.icon+'</div>';
     html+='<div class="amb-name">'+nm+'</div>';
-    html+='<div class="amb-meta"><span class="amb-time">'+formatTime(Math.floor(adv.dur/1000))+'</span><span class="amb-chance c-'+cc+'">'+clab+'</span></div>';
+    if(abusy)html+='<div class="amb-busy">⏳ In Progress</div>';
+    else html+='<div class="amb-meta"><span class="amb-time">'+formatTime(Math.floor(adv.dur/1000))+'</span><span class="amb-chance c-'+cc+'">'+clab+'</span></div>';
     html+='</div>';
   });
   html+='</div></div>';
@@ -1796,7 +1819,7 @@ function renderAdventure(){
       else{html+='<div class="as-time" id="astime'+i+'">'+formatTime(remain)+'</div><button class="as-speed" onclick="event.stopPropagation();speedUpAdventure('+i+')">SPEED UP 💎'+speedUpCost(a)+'</button>';}
       html+='</div>';
     } else if(i<G.adventureSlots){
-      html+='<div class="adv-slot empty" onclick="openAdvPicker(advSelected)"><div class="as-plus">+</div><div class="as-emptyt">Tap to send a pet</div></div>';
+      html+='<div class="adv-slot empty" onclick="openAdvPickerSmart()"><div class="as-plus">+</div><div class="as-emptyt">Tap to send a pet</div></div>';
     } else {
       var isNext=(i===G.adventureSlots);var ucost=ADVENTURE_SLOT_COSTS[i-1];
       html+='<div class="adv-slot locked"><div class="as-lock">🔒</div>';
@@ -1835,8 +1858,9 @@ function renderAdventure(){
     recs.forEach(function(sp){html+='<div class="adv-recpet"><span class="arp-e">'+sp.e+'</span><span class="arp-n">'+sp.name+'</span></div>';});
     html+='</div>';
   }
-  var canSend=freeSlots>0;
-  html+='<button class="adv-detail-send'+(canSend?'':' no')+'"'+(canSend?' onclick="openAdvPicker(\''+sel.id+'\')"':' disabled')+'>'+(canSend?'🚀 Send a Pet':'All Slots Busy')+'</button>';
+  var selBusy=isAdvActive(sel.id);
+  var canSend=freeSlots>0&&!selBusy;
+  html+='<button class="adv-detail-send'+(canSend?'':' no')+'"'+(canSend?' onclick="openAdvPicker(\''+sel.id+'\')"':' disabled')+'>'+(selBusy?'⏳ Already on this Adventure':(freeSlots>0?'🚀 Send a Pet':'All Slots Busy'))+'</button>';
   html+='</div></div>';
   wrap.innerHTML=html;
   advReadyState=advStateSig();
@@ -2842,7 +2866,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.2<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.4<br>An idle pet collection game · Made with 💜</div></div>';
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -3217,16 +3241,16 @@ function renderInventory(){
   var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
   var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
   var html='<div class="inv-tabs">';
-  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')">💎 Shells</div>';
-  html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')">🥚 Eggs</div>';
+  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"> Shells</div>';
+  html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:-0.18em" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"> Eggs</div>';
   html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')">🧪 Cores</div>';
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
-  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
+  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
-  EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon">'+egg.icon+'</div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
+  EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-cores" style="display:none;">'+coresInvHtml()+'</div>';
   html+='<div id="isec-loot" style="display:none;"><div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here when pets return from missions.</p></div></div>';
@@ -3240,7 +3264,17 @@ function softUpdateInventory(){
   var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
   var el=document.getElementById('inv-shell-total');if(el)el.textContent=totalShells;
   var el2=document.getElementById('inv-egg-total');if(el2)el2.textContent=totalEggs;
-  SHELL_RARITIES.forEach(function(r){var el=document.getElementById('inv-s-'+r.id);if(el)el.textContent=G.shells[r.id]||0;});
+  SHELL_RARITIES.forEach(function(r){
+    var count=G.shells[r.id]||0;
+    var el=document.getElementById('inv-s-'+r.id);if(el)el.textContent=count;
+    var card=document.getElementById('inv-scard-'+r.id);
+    if(card){
+      card.classList.toggle('empty',count===0);
+      card.style.borderColor=count>0?r.color+'66':'rgba(58,92,184,0.6)';
+    }
+    var icon=document.getElementById('inv-sicon-'+r.id);
+    if(icon)icon.style.filter=count>0?'drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+')':'';
+  });
   EGG_SHOP.forEach(function(egg){var el=document.getElementById('inv-e-'+egg.id);if(el)el.textContent=G.eggsOwned[egg.id]||0;});
 }
 var activeInvSection='shells';
@@ -3297,7 +3331,7 @@ function shellCodexHtml(){
   var hasFav=fav&&s.shellsCollectedByRarity&&(s.shellsCollectedByRarity[s.favoriteShell]||0)>0;
   var h='<div class="codex-intro">🐚 Shells drop while you click and idle. Collect them to craft eggs — rarer eggs need rarer shells.</div>';
   h+='<div class="codex-stats">';
-  h+='<div class="cstat"><div class="cs-ic">🐚</div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
+  h+='<div class="cstat"><div class="cs-ic"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"></div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
   h+='<div class="cstat"><div class="cs-ic">'+(hasRarest?shellIcon(rarest.id):'—')+'</div><div class="cs-v" style="color:'+(hasRarest?rarest.color:'rgba(255,255,255,0.45)')+'">'+(hasRarest?rarest.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Rarest found</div></div>';
   h+='<div class="cstat"><div class="cs-ic">'+(hasFav?shellIcon(fav.id):'—')+'</div><div class="cs-v" style="color:'+(hasFav?fav.color:'rgba(255,255,255,0.45)')+'">'+(hasFav?fav.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Favorite</div></div>';
   h+='</div>';
