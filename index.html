@@ -54,6 +54,29 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #particles{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1;}
 .spark{position:absolute;border-radius:50%;opacity:0;animation:sparkle var(--dur,3s) ease-in-out infinite;}
 @keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(1);}30%{opacity:1;}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
+/* Inställningar: dölj partiklar */
+.no-particles #particles{display:none!important;}
+/* Inställningar: mindre rörelse — stäng av ägg-animationer och svävning */
+.reduce-motion #egg-img{animation:none!important;}
+.reduce-motion .spark{display:none!important;}
+.reduce-motion .click-pop{animation-duration:0.4s!important;}
+/* Settings-sidan */
+.set-sec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:6px 14px;margin-bottom:14px;}
+.set-sec-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#f5c842;padding:10px 0 4px;letter-spacing:0.3px;}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-top:1px solid rgba(255,255,255,0.06);}
+.set-sec-title + .set-row{border-top:none;}
+.set-row-info{flex:1;min-width:0;}
+.set-row-label{font-family:'Fredoka One',cursive;font-size:0.86rem;color:#fff;}
+.set-row-desc{font-size:0.7rem;color:rgba(255,255,255,0.5);line-height:1.4;margin-top:2px;}
+.set-toggle{flex:none;width:50px;height:28px;border-radius:99px;background:rgba(255,255,255,0.14);border:none;cursor:pointer;position:relative;transition:background 0.2s;}
+.set-toggle .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.4);}
+.set-toggle.on{background:linear-gradient(180deg,#5fd068,#2fb344);}
+.set-toggle.on .knob{left:25px;}
+.set-btn{flex:none;border:none;border-radius:12px;padding:9px 16px;font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;cursor:pointer;}
+.set-btn.purple{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;}
+.set-btn.red{background:linear-gradient(180deg,#c0392b,#922b21);box-shadow:0 3px 0 #5e1a12;}
+.set-about{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.45);line-height:1.6;padding:8px 0 4px;}
+.set-savebox{width:100%;min-height:80px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#cfe0ff;font-family:monospace;font-size:0.68rem;padding:8px;margin-top:8px;resize:vertical;word-break:break-all;}
 .click-pop{position:absolute;pointer-events:none;font-size:1.1rem;font-weight:900;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.8);animation:floatUp 0.8s ease forwards;white-space:nowrap;z-index:20;font-family:'Fredoka One',cursive;}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-60px) scale(1.4);}}
 @keyframes shellFly{0%{opacity:0;transform:translate(0,0) scale(0.4);}15%{opacity:1;transform:translate(calc(var(--dx,0px)*0.3),calc(var(--dy,-40px)*0.3)) scale(1.25);}70%{opacity:1;transform:translate(calc(var(--dx,0px)*0.85),calc(var(--dy,-40px)*0.85)) scale(1);}100%{opacity:0;transform:translate(var(--dx,0px),var(--dy,-40px)) scale(0.85);}}
@@ -653,7 +676,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','Battle Pass-menyn — claima belöningar och köp premium-track. Byggs i ett senare steg.')">🎟️</div>
       <div class="tb-rbtn profile" onclick="showProfile()">👤</div>
       <div class="tb-rbtn" onclick="openMore()">⋯</div>
-      <div class="tb-rbtn" onclick="showComingSoon('⚙️ Inställningar','Inställningar byggs i ett senare steg.')">⚙️</div>
+      <div class="tb-rbtn" onclick="showSettings()">⚙️</div>
     </div>
   </div>
   <div id="main">
@@ -800,6 +823,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="document.getElementById('profile-modal').classList.remove('open')">✕</button>
     </div>
     <div class="prof-body" id="prof-body"></div>
+  </div>
+</div>
+<div id="settings-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">⚙️ Settings</div>
+      <button class="prof-x" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="prof-body" id="settings-body"></div>
   </div>
 </div>
 <div id="confirm-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -1289,8 +1321,11 @@ var G={
   adventureSlots:1,
   adventures:[],
   profile:{name:'Player',favoritePet:null},
+  settings:{sfx:false,vibrate:true,particles:true,reduceMotion:false,skipConfirm:false},
   stats:freshStats(),
 };
+// Standardinställningar — används för att fylla i saknade fält vid load (så nya inställningar inte blir "undefined")
+var DEFAULT_SETTINGS={sfx:false,vibrate:true,particles:true,reduceMotion:false,skipConfirm:false};
 
 // ============================================================
 // UTILS
@@ -1585,7 +1620,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchedPets:G.hatchedPets,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -1606,6 +1641,8 @@ function resetGame(){
   G.adventures=[];
   G.stats=freshStats();
   G._discoveredPets={};
+  G.settings={sfx:false,vibrate:true,particles:true,reduceMotion:false,skipConfirm:false};
+  applySettings();
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 }
@@ -1689,6 +1726,7 @@ function eggTap(clientX,clientY){
   var img=document.getElementById('egg-img');
   img.style.animation='none';void img.offsetWidth;
   img.style.animation='eggPop 0.08s ease forwards, float 3s ease-in-out 0.08s infinite';
+  playSfx('click');buzz(8);
 }
 (function(){
   var stage=document.getElementById('egg-stage');if(!stage)return;
@@ -2071,7 +2109,9 @@ function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 
 // ===== CONFIRM-DIALOG (återanvändbar) =====
 var _confirmCb=null;
-function showConfirm(title,bodyHtml,okLabel,cb){
+function showConfirm(title,bodyHtml,okLabel,cb,skippable){
+  // Om spelaren slagit på "Skip Confirmations" och denna ruta är markerad som hoppbar → kör direkt
+  if(skippable&&G.settings&&G.settings.skipConfirm){if(typeof cb==='function')cb();return;}
   _confirmCb=cb;
   var t=document.getElementById('confirm-title');if(t)t.textContent=title;
   var b=document.getElementById('confirm-body');if(b)b.innerHTML=bodyHtml;
@@ -2080,6 +2120,132 @@ function showConfirm(title,bodyHtml,okLabel,cb){
 }
 function closeConfirm(){document.getElementById('confirm-modal').classList.remove('open');_confirmCb=null;}
 function runConfirm(){var cb=_confirmCb;closeConfirm();if(typeof cb==='function')cb();}
+
+// ============================================================
+// SETTINGS (inställningar)
+// ============================================================
+// Tillämpar alla inställningar på spelet (kallas vid start, vid ändring och vid reset)
+function applySettings(){
+  if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
+  var app=document.getElementById('app')||document.body;
+  app.classList.toggle('no-particles',!G.settings.particles);
+  app.classList.toggle('reduce-motion',!!G.settings.reduceMotion);
+}
+
+// Litet klick-ljud genererat i webbläsaren (WebAudio) — inga ljudfiler behövs.
+var _audioCtx=null;
+function getAudioCtx(){
+  if(_audioCtx)return _audioCtx;
+  try{var AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;_audioCtx=new AC();}catch(e){_audioCtx=null;}
+  return _audioCtx;
+}
+function playSfx(type){
+  if(!G.settings||!G.settings.sfx)return;
+  var ctx=getAudioCtx();if(!ctx)return;
+  try{
+    if(ctx.state==='suspended')ctx.resume();
+    var o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    var t=ctx.currentTime;
+    if(type==='hatch'){o.type='triangle';o.frequency.setValueAtTime(523,t);o.frequency.exponentialRampToValueAtTime(1046,t+0.18);g.gain.setValueAtTime(0.14,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);o.start(t);o.stop(t+0.3);}
+    else{o.type='sine';o.frequency.setValueAtTime(660,t);o.frequency.exponentialRampToValueAtTime(880,t+0.05);g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.09);o.start(t);o.stop(t+0.1);}
+  }catch(e){}
+}
+function buzz(ms){if(G.settings&&G.settings.vibrate&&navigator.vibrate){try{navigator.vibrate(ms||10);}catch(e){}}}
+
+function showSettings(){renderSettings();document.getElementById('settings-modal').classList.add('open');}
+function closeSettings(){document.getElementById('settings-modal').classList.remove('open');}
+
+// Bygger en toggle-rad
+function setToggleRow(key,label,desc){
+  var on=!!(G.settings&&G.settings[key]);
+  return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">'+label+'</div><div class="set-row-desc">'+desc+'</div></div>'+
+    '<button class="set-toggle'+(on?' on':'')+'" onclick="toggleSetting(\''+key+'\')"><span class="knob"></span></button></div>';
+}
+function toggleSetting(key){
+  if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
+  G.settings[key]=!G.settings[key];
+  applySettings();
+  saveGame();
+  // Direkt feedback: spela ett ljud när man slår PÅ sfx, vibbra när man slår på vibration
+  if(key==='sfx'&&G.settings.sfx)playSfx('click');
+  if(key==='vibrate'&&G.settings.vibrate)buzz(15);
+  renderSettings();
+}
+function renderSettings(){
+  var b=document.getElementById('settings-body');if(!b)return;
+  var h='';
+  h+='<div class="set-sec"><div class="set-sec-title">🔊 Sound & Feel</div>';
+  h+=setToggleRow('sfx','Sound Effects','A soft pop when you tap the egg and hatch pets.');
+  h+=setToggleRow('vibrate','Vibration','Gentle haptic feedback on taps (mobile only).');
+  h+=setToggleRow('particles','Background Sparkles','Floating particles on the home screen. Turn off to save battery.');
+  h+=setToggleRow('reduceMotion','Reduced Motion','Calms the egg bounce and animations.');
+  h+='</div>';
+
+  h+='<div class="set-sec"><div class="set-sec-title">🎮 Gameplay</div>';
+  h+=setToggleRow('skipConfirm','Skip Confirmations','Fuse and convert instantly without the "are you sure?" pop-up. For experienced players.');
+  h+='</div>';
+
+  h+='<div class="set-sec"><div class="set-sec-title">💾 Save Data</div>';
+  h+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Backup Your Save</div><div class="set-row-desc">Copy a backup code you can paste back later or on another device.</div></div><button class="set-btn purple" onclick="exportSave()">Export</button></div>';
+  h+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Restore a Save</div><div class="set-row-desc">Paste a backup code to load it. This replaces your current progress.</div></div><button class="set-btn purple" onclick="openImportSave()">Import</button></div>';
+  h+='<div id="set-save-io"></div>';
+  h+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Reset Everything</div><div class="set-row-desc">Wipes ALL progress and starts fresh. This cannot be undone.</div></div><button class="set-btn red" onclick="resetFromSettings()">Reset</button></div>';
+  h+='</div>';
+
+  h+='<div class="set-about">Pet Planet — v2.9<br>An idle pet collection game.<br>Made with 💜</div>';
+  b.innerHTML=h;
+}
+// Export: visa en backup-kod och försök kopiera till urklipp
+function exportSave(){
+  saveGame();
+  var code='';
+  try{code=localStorage.getItem(SAVE_KEY)||'';}catch(e){code='';}
+  var io=document.getElementById('set-save-io');if(!io)return;
+  var copied=false;
+  try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code);copied=true;}}catch(e){}
+  io.innerHTML='<div class="set-row-desc" style="padding-top:10px;">'+(copied?'✅ Copied to clipboard! ':'')+'Here is your backup code — select and copy it to keep it safe:</div>'+
+    '<textarea class="set-savebox" readonly onclick="this.select()">'+profEsc(code)+'</textarea>';
+}
+// Import: visa en ruta att klistra in i
+function openImportSave(){
+  var io=document.getElementById('set-save-io');if(!io)return;
+  io.innerHTML='<div class="set-row-desc" style="padding-top:10px;">Paste your backup code below, then press Load:</div>'+
+    '<textarea class="set-savebox" id="import-box" placeholder="Paste backup code here..."></textarea>'+
+    '<button class="set-btn purple" style="width:100%;margin-top:8px;" onclick="doImportSave()">Load This Save</button>';
+}
+function doImportSave(){
+  var box=document.getElementById('import-box');if(!box)return;
+  var raw=(box.value||'').trim();
+  if(!raw){showGenericModal('⚠️','Empty','Please paste a backup code first.');return;}
+  var parsed=null;
+  try{parsed=JSON.parse(raw);}catch(e){parsed=null;}
+  if(!parsed||typeof parsed!=='object'){showGenericModal('❌','Invalid Code','That doesn\'t look like a valid Pet Planet backup code. Make sure you copied the whole thing.');return;}
+  showConfirm('Restore This Save?','This will REPLACE your current progress with the backup. Your current save will be lost. Continue?','Restore',function(){
+    try{localStorage.setItem(SAVE_KEY,raw);}catch(e){}
+    location.reload();
+  });
+}
+// Reset via den snygga bekräftelse-rutan (ersätter den gamla webbläsar-confirm i Dev/Test)
+function resetFromSettings(){
+  showConfirm('Reset Everything?','This permanently wipes ALL your coins, pets, shells, achievements and progress. There is no undo. Are you absolutely sure?','Reset Everything',function(){
+    G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
+    G.equippedPets=[null,null,null,null,null];
+    G.owned=new Array(20).fill(0);
+    G.ulvl={click:0,craft:0,hatch:0,luck:0,offline:0};
+    G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchedPets=[];
+    G.gems=0;
+    G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+    G.achievements={unlocked:{},claimed:{}};
+    G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
+    G.stats=freshStats();G._discoveredPets={};
+    try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+    closeSettings();
+    switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+    showGenericModal('🌱','Fresh Start','All progress has been reset. Welcome back to the beginning!');
+  });
+}
 
 // ===== PROFILE HUB =====
 var profileSubTab='overview';
@@ -2706,6 +2872,7 @@ function collectHatch(idx){
   G.hatchedPets.push(pet);
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
+  playSfx('hatch');buzz([12,40,18]);
   showPetResult(pet);
   renderHatchery();
 }
@@ -2827,7 +2994,7 @@ function tryFusePets(){
   var next=getNextRarity(firstPet.rarity);
   if(!next){alert('Already at max rarity!');return;}
   var cur=RARITY_CONFIG[firstPet.rarity]||{},nm=RARITY_CONFIG[next]||{};
-  showConfirm('Fuse Pets','This will permanently destroy <b>5 '+(cur.label||firstPet.rarity)+' pets</b> to create <b style="color:'+(nm.color||'#fff')+'">1 '+(nm.label||next)+' pet</b>.<br><br>The fused pets cannot be recovered.','⚗️ Fuse',function(){doFusion();});
+  showConfirm('Fuse Pets','This will permanently destroy <b>5 '+(cur.label||firstPet.rarity)+' pets</b> to create <b style="color:'+(nm.color||'#fff')+'">1 '+(nm.label||next)+' pet</b>.<br><br>The fused pets cannot be recovered.','⚗️ Fuse',function(){doFusion();},true);
 }
 function doFusion(){
   if(!canFuse())return;
@@ -3035,7 +3202,7 @@ function tryFuseShells(){
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
   if(qty<1)return;
   var sm=shellMeta(src),nm=shellMeta(next),cost=qty*5;
-  showConfirm('Fuse Shells','This will permanently destroy <b style="color:'+sm.color+'">'+fmtShort(cost)+' '+sm.label+' Shell'+(cost>1?'s':'')+'</b> to create <b style="color:'+nm.color+'">'+fmtShort(qty)+' '+nm.label+' Shell'+(qty>1?'s':'')+'</b>.<br><br>Destroyed shells cannot be recovered.','🐚 Fuse',function(){convertShells(src,qty);shellFuseQty=1;renderFusion();});
+  showConfirm('Fuse Shells','This will permanently destroy <b style="color:'+sm.color+'">'+fmtShort(cost)+' '+sm.label+' Shell'+(cost>1?'s':'')+'</b> to create <b style="color:'+nm.color+'">'+fmtShort(qty)+' '+nm.label+' Shell'+(qty>1?'s':'')+'</b>.<br><br>Destroyed shells cannot be recovered.','🐚 Fuse',function(){convertShells(src,qty);shellFuseQty=1;renderFusion();},true);
 }
 
 function autoSelectFusion(){
@@ -4048,6 +4215,7 @@ if(savedData){
   G.adventureSlots=savedData.adventureSlots||1;
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;}
+  G.settings=Object.assign({},DEFAULT_SETTINGS,savedData.settings||{});
   G.stats.totalSessions++;
   G.stats.currentSessionStart=Date.now();
   UPGRADES.forEach(function(u){u.apply(G.ulvl[u.id]);});
@@ -4064,6 +4232,7 @@ if(savedData){
 }
 switchTab('buildings');
 initParticles();setWorld(G.currentWorld);
+applySettings();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 requestAnimationFrame(tick);
