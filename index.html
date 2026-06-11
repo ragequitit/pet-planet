@@ -185,9 +185,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #pet-bonus-display{font-size:0.68rem;font-weight:700;color:rgba(180,136,255,0.8);min-height:14px;}
 .tab-content{display:none;padding:10px;}
 .tab-content.active{display:block;}
-.bld{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:8px 8px 8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:8px;backdrop-filter:blur(4px);}
-.bld.buyable{border-color:rgba(245,200,66,0.85);box-shadow:0 0 12px rgba(245,200,66,0.18);background:rgba(40,62,100,0.55);cursor:pointer;}
-.bld.poor{opacity:0.5;border-color:rgba(58,92,184,0.3);cursor:default;}
+.bld{background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;padding:6px 10px;display:flex;align-items:center;gap:8px;margin-bottom:9px;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.bld.buyable{border:2px solid #ffce4a;background:linear-gradient(180deg,#324272,#1c2c4e);box-shadow:0 0 10px rgba(245,200,66,0.35),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22);cursor:pointer;}
+.bld.buyable:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.bld.poor{opacity:0.55;box-shadow:0 2px 0 #0b1326,inset 0 1px 0 rgba(255,255,255,0.1),inset 0 -4px 7px rgba(0,0,0,0.4);cursor:default;}
 .bld-price{font-family:'Fredoka One',cursive;font-size:0.82rem;margin-top:2px;display:flex;align-items:center;gap:4px;white-space:nowrap;}
 .bld.buyable .bld-price{color:#74e08c;}
 .bld.poor .bld-price{color:#e07a7a;}
@@ -198,7 +199,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .bld.ghost{opacity:0.15;cursor:default;}
 .bld-left{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .bld-owned{font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.5);min-width:18px;text-align:center;}
-.bld-img{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.bld-img{width:62px;height:62px;flex-shrink:0;margin-left:15px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;}
+.bld-pic{width:1.4em;height:1.4em;object-fit:contain;vertical-align:middle;display:inline-block;}
+.bld-img .bld-pic{width:60px;height:60px;}
+.dbl-icon .bld-pic{width:30px;height:30px;}
 .bld-info{flex:1;min-width:0;}
 .bld-info-btn{flex-shrink:0;width:30px;height:30px;border-radius:9px;border:1px solid rgba(140,170,225,0.35);background:rgba(27,45,78,0.6);color:rgba(255,255,255,0.7);font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin-right:2px;}
 .bld-info-btn:active{transform:translateY(1px);}
@@ -233,6 +237,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .inv-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:12px;display:flex;align-items:center;gap:10px;}
 .inv-card.empty{opacity:0.35;}
 .inv-icon{font-size:1.8rem;flex-shrink:0;width:36px;text-align:center;}
+.core-img{width:1.4em;height:1.4em;object-fit:contain;vertical-align:middle;display:inline-block;}
+.inv-icon .core-img{width:34px;height:34px;}
 .inv-name{font-family:'Fredoka One',cursive;font-size:0.75rem;line-height:1.2;}
 .inv-count{font-size:1.1rem;font-weight:900;color:var(--gold);font-family:'Fredoka One',cursive;}
 .inv-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:8px;color:rgba(255,255,255,0.3);text-align:center;}
@@ -359,7 +365,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .modal-box{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:20px;width:var(--w);max-width:100vw;max-height:75vh;overflow-y:auto;}
 /* Stats-panel */
 .stats-asc{background:rgba(122,90,208,0.15);border:1px solid rgba(122,90,208,0.4);border-radius:10px;padding:8px 12px;font-size:0.82rem;color:#fff;margin-bottom:12px;text-align:center;}
-.stats-cat{font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1.2px;text-transform:uppercase;color:#b488ff;margin:14px 0 6px;border-bottom:1px solid rgba(122,90,208,0.25);padding-bottom:4px;}
+.stats-cat{font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1.2px;text-transform:uppercase;color:#b488ff;margin:14px 0 6px;border-bottom:1px solid rgba(122,90,208,0.25);padding-bottom:4px;display:flex;align-items:center;gap:8px;}
+.stats-cat-ico{display:flex;align-items:center;font-size:1.2rem;}
+.stats-cat-ico img{height:31px;width:31px;object-fit:contain;display:block;}
 .stats-row{background:rgba(255,255,255,0.03);border:1px solid rgba(58,92,184,0.35);border-radius:10px;padding:8px 11px;margin-bottom:7px;}
 .stats-row-top{display:flex;justify-content:space-between;align-items:center;}
 .stats-name{font-weight:700;font-size:0.86rem;color:#fff;}
@@ -411,7 +419,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-card-world{font-size:0.55rem;color:rgba(255,255,255,0.35);margin-top:1px;}
 .pet-abilities{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1;}
 .pet-ability-row{display:flex;align-items:center;gap:4px;font-size:0.58rem;}
-.pa-icon{font-size:0.7rem;width:14px;text-align:center;}
+.pa-icon{font-size:0.7rem;width:16px;text-align:center;}
+.abil-img{width:1.4em;height:1.4em;object-fit:contain;vertical-align:middle;display:inline-block;}
+.pa-icon .abil-img{width:16px;height:16px;}
+.pra-icon .abil-img{width:21px;height:21px;}
+.ma-icon .abil-img{width:23px;height:23px;}
 .pa-name{color:rgba(255,255,255,0.6);flex:1;}
 .pa-tier{font-weight:900;font-size:0.6rem;}
 .pa-val{color:rgba(255,255,255,0.4);font-size:0.55rem;}
@@ -426,7 +438,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pra-icon{font-size:1rem;width:20px;text-align:center;}
 .pra-name{flex:1;text-align:left;}
 .pra-tier{font-weight:900;}
-.pra-val{color:rgba(255,255,255,0.5);font-size:0.72rem;}
+.pra-val{color:rgba(255,255,255,0.82);font-size:0.92rem;font-weight:800;}
 
 /* ===== MUTATION SYSTEM (Extract / Mutate) ===== */
 #psub-panel-extract #extract-wrap{padding:6px 2px 90px;}
@@ -740,10 +752,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ach-overall-count{font-size:0.7rem;color:rgba(255,255,255,0.4);}
 .ach-progress-bar{width:100%;height:8px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;}
 .ach-progress-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:4px;}
-.ach-cat-tabs{display:flex;gap:4px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;}
+.ach-cat-tabs{display:flex;gap:6px;overflow-x:auto;padding:10px 8px;margin-bottom:8px;}
 .ach-cat-tabs::-webkit-scrollbar{height:3px;}
-.ach-cat-tab{flex-shrink:0;padding:5px 10px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;}
-.ach-cat-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.ach-cat-tab{flex-shrink:0;min-width:62px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;padding:9px 4px 8px;font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.72);cursor:pointer;}
+.ach-cat-tab.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2px solid #ffce4a;color:#ffe08a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 0 3px rgba(245,200,66,0.8),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
+.ach-cat-tab{display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.ach-cat-tab:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.act-ico{display:flex;align-items:center;justify-content:center;height:44px;font-size:2.5rem;line-height:1;}
+.act-ico img{height:44px;width:44px;object-fit:contain;display:block;transform:scale(1.25);}
 .ach-group-head{font-family:'Fredoka One',cursive;font-size:0.72rem;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1px;margin:16px 0 7px;padding-bottom:5px;border-bottom:1.5px solid rgba(58,92,184,0.4);}
 .ach-group-head.ready{color:var(--gold);border-bottom-color:rgba(245,200,66,0.55);}
 .ach-group-head.first{margin-top:4px;}
@@ -823,13 +839,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .app-name{font-family:'Fredoka One',cursive;font-size:0.86rem;}
 .app-rar{font-size:0.66rem;color:rgba(255,255,255,0.55);}
 .app-go{flex-shrink:0;font-family:'Fredoka One',cursive;font-size:0.74rem;color:var(--gold);}
-.ach-filter-row{display:flex;gap:4px;margin-bottom:10px;}
-.ach-filter-btn{flex:1;padding:5px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
-.ach-filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
-.ach-card{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.5);border-radius:14px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
-.ach-card.unlocked{border-color:rgba(245,200,66,0.5);background:rgba(245,200,66,0.05);}
-.ach-card.claimable{border-color:#4caf50;box-shadow:0 0 10px rgba(76,175,80,0.2);}
-.ach-icon{width:44px;height:44px;border-radius:12px;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ach-filter-row{display:flex;gap:6px;margin-bottom:10px;padding:2px 2px 6px;}
+.ach-filter-btn{flex:1;padding:8px 5px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:12px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.72);cursor:pointer;text-align:center;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -4px 7px rgba(0,0,0,0.35);transition:transform 0.1s;}
+.ach-filter-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2px solid #ffce4a;color:#ffe08a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.26);}
+.ach-filter-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.16),inset 0 -3px 6px rgba(0,0,0,0.35);}
+.ach-card{background:linear-gradient(180deg,#22345f,#16243f);border:1.5px solid #0f1a33;border-radius:16px;padding:11px 12px;margin-bottom:11px;display:flex;align-items:center;gap:10px;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.14),inset 0 -5px 9px rgba(0,0,0,0.35);}
+.ach-card.unlocked{border-color:rgba(245,200,66,0.6);background:linear-gradient(180deg,#2c3a5f,#1d2a44);}
+.ach-card.claimable{border:2px solid #5fd068;box-shadow:0 0 12px rgba(76,175,80,0.4),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18);}
+.ach-icon{width:46px;height:46px;border-radius:13px;background:rgba(0,0,0,0.32);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;box-shadow:inset 0 2px 5px rgba(0,0,0,0.45),inset 0 -1px 0 rgba(255,255,255,0.08);}
 .ach-info{flex:1;min-width:0;}
 .ach-name{font-family:'Fredoka One',cursive;font-size:0.85rem;color:#fff;}
 .ach-desc{font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:1px;}
@@ -837,7 +854,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ach-prog-fill{height:100%;background:linear-gradient(90deg,#b388ff,#f5c842);border-radius:3px;}
 .ach-prog-label{font-size:0.55rem;color:rgba(255,255,255,0.3);margin-top:2px;}
 .ach-right{flex-shrink:0;text-align:right;}
-.ach-claim-btn{padding:6px 12px;border:none;border-radius:8px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;box-shadow:0 2px 0 #1b5e20;}
+.ach-claim-btn{padding:8px 14px;border:none;border-radius:11px;font-family:'Fredoka One',cursive;font-size:0.74rem;cursor:pointer;background:linear-gradient(180deg,#5fd068,#2e9e3a);color:#fff;box-shadow:0 3px 0 #1b6e26,inset 0 2px 0 rgba(255,255,255,0.3),inset 0 -3px 6px rgba(0,0,0,0.25);transition:transform 0.1s;}
+.ach-claim-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #1b6e26,inset 0 2px 0 rgba(255,255,255,0.25);}
 .ach-done{font-size:0.9rem;color:var(--gold);}
 .ach-popup{position:fixed;bottom:150px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#15264e,#0b1530);border:2px solid var(--gold);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:9999;box-shadow:0 4px 20px rgba(245,200,66,0.3);animation:achSlideIn 0.4s ease;min-width:260px;max-width:340px;}
 @keyframes achSlideIn{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
@@ -928,9 +946,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-qc{background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:11px;padding:9px 4px;text-align:center;}
 .prof-qc-val{font-family:'Fredoka One',cursive;font-size:0.82rem;color:var(--gold);}
 .prof-qc-lbl{font-size:0.5rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
-.prof-subtabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto;padding-bottom:2px;}
+.prof-subtabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto;padding:10px 8px;}
 .prof-subtab{flex:1;min-width:62px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;padding:9px 4px 8px;font-size:0.62rem;color:rgba(255,255,255,0.72);font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
-.prof-subtab.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;color:#ffe08a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
+.prof-subtab.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2px solid #ffce4a;color:#ffe08a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 0 3px rgba(245,200,66,0.8),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
 .prof-subtab:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
 .prof-subtab{display:flex;flex-direction:column;align-items:center;gap:5px;}
 .pst-ico{display:flex;align-items:center;justify-content:center;height:44px;font-size:2.5rem;line-height:1;}
@@ -1080,7 +1098,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon">🎁</span><span class="sb-label">Daily</span></div>
       </div>
       <div class="side-btns" id="right-btns">
-        <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon">🎒</span><span class="sb-label">Bag</span></div>
+        <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
         <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon">📊</span><span class="sb-label">Stats</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon">🎉</span><span class="sb-label">Events</span></div>
       </div>
@@ -1362,14 +1380,19 @@ var EGG_WORLDS=[
 // DATA: BUILDINGS & UPGRADES
 // ============================================================
 var BUILDINGS=[
-  {n:"Egg Tapper",e:"🥚",b:17,p:0.1},{n:"Nest",e:"🪺",b:120,p:0.8},{n:"Nursery",e:"🌱",b:1300,p:5},
-  {n:"Pet House",e:"🏠",b:14000,p:28},{n:"Pet Trainer",e:"🎯",b:150000,p:150},{n:"Pet Ranch",e:"🌾",b:1.6e6,p:800},
-  {n:"Pet Shop",e:"🏪",b:1.7e7,p:4200},{n:"Egg Vault",e:"🏦",b:1.8e8,p:22000},{n:"Resort",e:"🏖️",b:1.9e9,p:115000},
-  {n:"Zoo",e:"🦁",b:2e10,p:600000},{n:"Research Lab",e:"🔬",b:2.2e11,p:3.1e6},{n:"Breeding Center",e:"🧬",b:2.4e12,p:1.6e7},
-  {n:"Clone Lab",e:"🧪",b:2.6e13,p:8.2e7},{n:"Arcade",e:"🕹️",b:2.8e14,p:4.2e8},{n:"Pet Mall",e:"🛍️",b:3e15,p:2.2e9},
-  {n:"Theme Park",e:"🎡",b:3.2e16,p:1.1e10},{n:"Pet City",e:"🏙️",b:3.5e17,p:5.7e10},{n:"Spaceport",e:"🚀",b:3.8e18,p:3e11},
-  {n:"Moon Base",e:"🌙",b:4e19,p:1.6e12},{n:"Pet Planet",e:"🌍",b:4.2e20,p:8e12},
+  {n:"Egg Tapper",e:"🥚",b:17,p:0.1,img:"egg-tapper"},{n:"Nest",e:"🪺",b:120,p:0.8,img:"nest"},{n:"Nursery",e:"🌱",b:1300,p:5,img:"nursery"},
+  {n:"Pet House",e:"🏠",b:14000,p:28,img:"pet-house"},{n:"Pet Trainer",e:"🎯",b:150000,p:150,img:"pet-trainer"},{n:"Pet Ranch",e:"🌾",b:1.6e6,p:800,img:"pet-ranch"},
+  {n:"Pet Shop",e:"🏪",b:1.7e7,p:4200,img:"pet-shop"},{n:"Egg Vault",e:"🏦",b:1.8e8,p:22000,img:"egg-vault"},{n:"Resort",e:"🏖️",b:1.9e9,p:115000,img:"resort"},
+  {n:"Zoo",e:"🦁",b:2e10,p:600000,img:"zoo"},{n:"Research Lab",e:"🔬",b:2.2e11,p:3.1e6,img:"research-lab"},{n:"Breeding Center",e:"🧬",b:2.4e12,p:1.6e7,img:"breeding-center"},
+  {n:"Clone Lab",e:"🧪",b:2.6e13,p:8.2e7,img:"clone-lab"},{n:"Arcade",e:"🕹️",b:2.8e14,p:4.2e8,img:"arcade"},{n:"Pet Mall",e:"🛍️",b:3e15,p:2.2e9,img:"pet-mall"},
+  {n:"Theme Park",e:"🎡",b:3.2e16,p:1.1e10,img:"theme-park"},{n:"Pet City",e:"🏙️",b:3.5e17,p:5.7e10,img:"pet-city"},{n:"Spaceport",e:"🚀",b:3.8e18,p:3e11,img:"spaceport"},
+  {n:"Moon Base",e:"🌙",b:4e19,p:1.6e12,img:"moonbase"},{n:"Pet Planet",e:"🌍",b:4.2e20,p:8e12,img:"pet-planet"},
 ];
+// Byggnads-ikon = custom-PNG per byggnad (b.img), emoji-fallback
+function buildingIconImg(b){
+  if(!b||!b.img)return (b&&b.e)||'🏠';
+  return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/buildings/'+b.img+'.png" alt="" onerror="this.parentNode.textContent=\''+b.e+'\'">';
+}
 var UPGRADES=[
   {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
   {id:'hatch',e:'⏩',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
@@ -1738,6 +1761,14 @@ var ABILITY_META={
   hatchSpeed:{name:'Hatch Speed',      icon:'⏱️', color:'#ffcc80', desc:function(v){return '-'+v+'% hatch time';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
+// Ability-ikon = custom-PNG (id→filnamn-slug; shellGain heter shelldrop), emoji-fallback
+var ABILITY_IMG={coinGain:'coingain',idleGain:'idlegain',clickPower:'clickpower',luck:'luck',shellGain:'shelldrop',hatchSpeed:'hatchspeed'};
+function abilityIconImg(id){
+  var m=ABILITY_META[id]||{icon:'❔'};
+  var slug=ABILITY_IMG[id];
+  if(!slug)return m.icon;
+  return '<img class="abil-img" src="'+ASSET_BASE+'/assets/ui/pet-abilities/pet-ability-'+slug+'.png" alt="" onerror="this.parentNode.textContent=\''+m.icon+'\'">';
+}
 
 // ============================================================
 // PET GENERATION
@@ -1828,16 +1859,16 @@ function getBonusBreakdown(){
 }
 // Endast IMPLEMENTERADE stats listas här. Nya abilities (Adventure, XP, Utility, m.fl.) läggs till när de byggs in.
 var STAT_PANEL_GROUPS=[
-  {cat:'Economy',    items:[{id:'coinGain',name:'Egg Coin Gain'},{id:'idleGain',name:'Offline / Idle Income'},{id:'clickPower',name:'Click Income'}]},
-  {cat:'Hatching',   items:[{id:'hatchSpeed',name:'Hatch Speed',invert:true},{id:'luck',name:'Luck'}]},
-  {cat:'Collection', items:[{id:'shellGain',name:'Shell Gain'}]}
+  {cat:'Economy',ico:'💰',    items:[{id:'coinGain',name:'Egg Coin Gain'},{id:'idleGain',name:'Offline / Idle Income'},{id:'clickPower',name:'Click Income'}]},
+  {cat:'Hatching',ico:'🥚',   items:[{id:'hatchSpeed',name:'Hatch Speed',invert:true},{id:'luck',name:'Luck'}]},
+  {cat:'Collection',ico:'🐾', items:[{id:'shellGain',name:'Shell Gain'}]}
 ];
 function renderStatsPanel(){
   var bd=getBonusBreakdown();
   var asc=G.ascensions||0;
   var html='<div class="stats-asc">🔼 Ascensions: <b>'+asc+'</b> &nbsp;·&nbsp; ✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
   STAT_PANEL_GROUPS.forEach(function(g){
-    html+='<div class="stats-cat">'+g.cat+'</div>';
+    html+='<div class="stats-cat"><span class="stats-cat-ico"><img src="'+ASSET_BASE+'/assets/ui/stats-panel/stats-panel-'+g.cat.toLowerCase()+'.png" alt="" onerror="this.parentNode.textContent=\''+g.ico+'\'"></span>'+g.cat+'</div>';
     g.items.forEach(function(it){
       var d=bd[it.id]||{pets:0,ach:0,asc:0,total:0};
       var s=it.invert?'-':'+';
@@ -2649,7 +2680,7 @@ function renderPets(){
       html+='<div class="pet-abilities">';
       pet.abilities.forEach(function(ab){
         var m=ABILITY_META[ab.id];if(!m)return;
-        html+='<div class="pet-ability-row"><span class="pa-icon">'+m.icon+'</span><span class="pa-name">'+m.name+'</span><span class="pa-tier" style="color:'+m.color+'">T'+ab.tier+'</span><span class="pa-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+        html+='<div class="pet-ability-row"><span class="pa-icon">'+abilityIconImg(ab.id)+'</span><span class="pa-name">'+m.name+'</span><span class="pa-tier" style="color:'+m.color+'">T'+ab.tier+'</span><span class="pa-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
       });
       html+='</div></div>';
     });
@@ -2676,7 +2707,7 @@ function openPetDetail(uid){
   html+='<div class="pet-result-abilities">';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    html+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
   });
   html+='</div>';
   // Equip / unequip button
@@ -2832,6 +2863,12 @@ var CORE_RARITY_BY_TIER={1:'common',2:'uncommon',3:'rare',4:'epic',5:'legendary'
 function coreRarityId(tier){return CORE_RARITY_BY_TIER[tier]||'common';}
 function coreRarityConf(tier){return RARITY_CONFIG[coreRarityId(tier)]||RARITY_CONFIG.common;}
 function coreLabel(id,tier){var m=ABILITY_META[id]||{name:id};return coreRarityConf(tier).label+' '+m.name+' Core';}
+// Core-ikon = custom-PNG per raritet (tier→rarity), med raritets-färgad emoji som fallback
+function coreIconImg(tier){
+  var rid=coreRarityId(tier);
+  var fb=({common:'⚪',uncommon:'🟢',rare:'🔵',epic:'🟣',legendary:'🟠'})[rid]||'🧬';
+  return '<img class="core-img" src="'+ASSET_BASE+'/assets/ui/mutation/mutation-cores-'+rid+'.png" alt="" onerror="this.parentNode.textContent=\''+fb+'\'">';
+}
 function petByUid(uid){return G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});}
 function destroyPetByUid(uid){
   for(var i=0;i<G.equippedPets.length;i++){if(G.equippedPets[i]!=null&&String(G.equippedPets[i])===String(uid))G.equippedPets[i]=null;}
@@ -2925,7 +2962,7 @@ function extractChamberHtml(i){
   var now=Date.now();var done=now>=c.endAt;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;
   var crc=coreRarityConf(c.coreTier);var m=ABILITY_META[c.coreId]||{icon:'❔'};
   var html='<div class="chamber active">';
-  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+c.petE+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.petName+'</div><div class="ch-extracting" style="color:'+crc.color+'">'+m.icon+' '+coreLabel(c.coreId,c.coreTier)+'</div></div></div>';
+  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+c.petE+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.petName+'</div><div class="ch-extracting" style="color:'+crc.color+'">'+coreIconImg(c.coreTier)+' '+coreLabel(c.coreId,c.coreTier)+'</div></div></div>';
   if(done){html+='<button class="ch-collect" onclick="collectExtract('+i+')">✨ Collect Core</button>';}
   else{
     html+='<div class="ch-bar"><div class="ch-fill" id="exfill'+i+'" style="width:'+pct+'%"></div></div>';
@@ -2965,11 +3002,11 @@ function renderExtractSetup(){
     h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="extractPickAbility('+idx+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="extractPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var crc=coreRarityConf(ab.tier);var m2=ABILITY_META[ab.id];
-      h+='<div class="setup-result"><span class="sr-l">You\'ll get</span><span class="sr-core" style="color:'+crc.color+'">'+m2.icon+' '+coreLabel(ab.id,ab.tier)+'</span></div>';
+      h+='<div class="setup-result"><span class="sr-l">You\'ll get</span><span class="sr-core" style="color:'+crc.color+'">'+coreIconImg(ab.tier)+' '+coreLabel(ab.id,ab.tier)+'</span></div>';
       h+='<div class="setup-warn">⚠️ '+pet.name+' will be permanently destroyed.</div>';
       var afford=G.coins>=EXTRACT_COST;
       h+='<button class="setup-go red'+(afford?'':' no')+'"'+(afford?'':' disabled')+' onclick="confirmExtractStart()">⚗️ Start — '+COIN_IMG+' '+fmtShort(EXTRACT_COST)+'</button>';
@@ -3080,7 +3117,7 @@ function renderMutateSetup(){
     h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickSlot('+idx+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickSlot('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
     });
     if(s.slot!=null){
       h+='<div class="setup-step">3 · Choose Core</div>';
@@ -3092,14 +3129,14 @@ function renderMutateSetup(){
       if(groups.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🧫</div><p>No cores available.</p></div>';}
       else{groups.forEach(function(g){var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);var sel=s.coreId===g.id&&s.coreTier===g.tier;var dup=!!otherAbils[g.id];
         if(dup){
-          h+='<div class="setup-ability dupdis"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-dup">Already on this pet</span></div>';
+          h+='<div class="setup-ability dupdis"><span class="ma-icon">'+coreIconImg(g.tier)+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-dup">Already on this pet</span></div>';
         } else {
-          h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickCore(\''+g.id+'\','+g.tier+')"><span class="ma-icon">'+m.icon+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-tier">+'+TIER_VALUES[g.tier]+'%</span><span class="ma-count">×'+g.count+'</span></button>';
+          h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickCore(\''+g.id+'\','+g.tier+')"><span class="ma-icon">'+coreIconImg(g.tier)+'</span><span class="ma-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</span><span class="ma-tier">+'+TIER_VALUES[g.tier]+'%</span><span class="ma-count">×'+g.count+'</span></button>';
         }
       });}
       if(s.coreId&&pet.abilities[s.slot]){
         var cur=pet.abilities[s.slot];var curM=ABILITY_META[cur.id];var newM=ABILITY_META[s.coreId];var crc2=coreRarityConf(s.coreTier);
-        h+='<div class="setup-preview"><div class="spv-side"><div class="spv-l">Now</div><div class="spv-v" style="color:'+curM.color+'">'+curM.icon+' '+curM.name+' T'+cur.tier+'</div></div><div class="spv-arrow">→</div><div class="spv-side"><div class="spv-l">After</div><div class="spv-v" style="color:'+crc2.color+'">'+newM.icon+' '+newM.name+' T'+s.coreTier+'</div></div></div>';
+        h+='<div class="setup-preview"><div class="spv-side"><div class="spv-l">Now</div><div class="spv-v" style="color:'+curM.color+'">'+abilityIconImg(cur.id)+' '+curM.name+' T'+cur.tier+'</div></div><div class="spv-arrow">→</div><div class="spv-side"><div class="spv-l">After</div><div class="spv-v" style="color:'+crc2.color+'">'+abilityIconImg(s.coreId)+' '+newM.name+' T'+s.coreTier+'</div></div></div>';
         var afford=G.coins>=MUTATE_COST;
         h+='<button class="setup-go purple'+(afford?'':' no')+'"'+(afford?'':' disabled')+' onclick="doMutateStart()">🧬 Start — '+COIN_IMG+' '+fmtShort(MUTATE_COST)+'</button>';
       }
@@ -3130,12 +3167,14 @@ function chamberSig(arr,unlocked){var now=Date.now();return arr.map(function(c){
 function tickChambers(){
   if(document.getElementById('tab-pets').style.display!=='block')return;
   if(petsSubTab==='extract'){
-    var sig=chamberSig(G.extractChambers,G.extractUnlocked);
+    var canUnlE=G.extractUnlocked<EXTRACT_CHAMBER_MAX&&G.coins>=EXTRACT_CHAMBER_UNLOCK[G.extractUnlocked-1];
+    var sig=chamberSig(G.extractChambers,G.extractUnlocked)+(canUnlE?'A':'a');
     if(sig!==extractSig){extractSig=sig;renderExtract();return;}
     var now=Date.now();
     G.extractChambers.forEach(function(c,i){if(!c||now>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;var f=document.getElementById('exfill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('extime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000));});
   } else if(petsSubTab==='mutate'){
-    var sig2=chamberSig(G.mutateChambers,G.mutateUnlocked);
+    var canUnlM=G.mutateUnlocked<MUTATE_CHAMBER_MAX&&G.coins>=MUTATE_CHAMBER_UNLOCK[G.mutateUnlocked-1];
+    var sig2=chamberSig(G.mutateChambers,G.mutateUnlocked)+(canUnlM?'A':'a');
     if(sig2!==mutateSig){mutateSig=sig2;renderMutate();return;}
     var now2=Date.now();
     G.mutateChambers.forEach(function(c,i){if(!c||now2>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now2-c.startAt)/span*100)):100;var f=document.getElementById('mufill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('mutime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now2)/1000));});
@@ -3146,7 +3185,7 @@ function coresInvHtml(){
   if(groups.length===0)return '<div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets in the 🧬 Mutation tab.</p></div>';
   var html='<div class="inv-total"><span class="inv-total-label">Total Cores</span><span class="inv-total-val">'+G.mutationCores.length+'</span></div><div class="inv-grid">';
   groups.forEach(function(g){var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);
-    html+='<div class="inv-card" style="border-color:'+crc.color+'66"><div class="inv-icon">'+m.icon+'</div><div><div class="inv-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</div><div class="inv-count">×'+g.count+'</div></div></div>';});
+    html+='<div class="inv-card" style="border-color:'+crc.color+'66"><div class="inv-icon">'+coreIconImg(g.tier)+'</div><div><div class="inv-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</div><div class="inv-count">×'+g.count+'</div></div></div>';});
   html+='</div>';
   return html;
 }
@@ -3543,6 +3582,9 @@ function renderSettings(){
     '</div>';
 
   b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v4.9<br>An idle pet collection game · Made with 💜</div></div>';
+  // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
+  var stbar=b.querySelector('.set-tabs');
+  if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -4101,7 +4143,7 @@ function renderBuildings(){
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
       var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s':'';
-      d.innerHTML='<div class="bld-img" data-info-icon="'+i+'">'+BUILDINGS[i].e+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
+      d.innerHTML='<div class="bld-img" data-info-icon="'+i+'">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -4192,7 +4234,7 @@ function doublingCardHtml(c,unlockedFlag){
   var sub=unlockedFlag?('Doubles '+b.n+' production (×2)'):('Own '+c.thr+' '+b.n+' to unlock');
   var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
   return '<div class="'+cls+'" data-dbl="'+c.i+'"'+click+'>'+
-    '<div class="dbl-icon">'+b.e+'<span class="dbl-x2">×2</span></div>'+
+    '<div class="dbl-icon"><span class="dbl-bld">'+buildingIconImg(b)+'</span><span class="dbl-x2">×2</span></div>'+
     '<div class="dbl-info"><div class="dbl-name">'+b.n+' Boost '+roman+'</div><div class="dbl-sub">'+sub+'</div></div>'+
     '<div class="dbl-right">'+right+'</div></div>';
 }
@@ -4801,7 +4843,7 @@ function showPetResult(pet){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
   });
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-modal').classList.add('open');
@@ -5003,7 +5045,7 @@ function showFusionResult(pet,perfect){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+m.icon+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-tier" style="color:'+m.color+'">Tier '+ab.tier+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
   });
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-modal').classList.add('open');
@@ -5487,8 +5529,14 @@ function renderAchievements(){
 
   // Category tabs
   var cats=['All','Collection','Progression','Gameplay','Secret'];
+  var achCatIcons={All:'⭐',Collection:'🐾',Progression:'📈',Gameplay:'🎮',Secret:'🔒'};
   html+='<div class="ach-cat-tabs">';
-  cats.forEach(function(c){html+='<div class="ach-cat-tab'+(achCatFilter===c?' active':'')+'" onclick="setAchCat(\''+c+'\')">'+c+'</div>';});
+  cats.forEach(function(c){
+    var ico=(c==='All')
+      ? '<span class="act-ico">'+achCatIcons[c]+'</span>'
+      : '<span class="act-ico"><img src="'+ASSET_BASE+'/assets/ui/achievement-category/achievement-category-'+c.toLowerCase()+'.png" alt="" onerror="this.parentNode.textContent=\''+achCatIcons[c]+'\'"></span>';
+    html+='<div class="ach-cat-tab'+(achCatFilter===c?' active':'')+'" onclick="setAchCat(\''+c+'\')">'+ico+'<span>'+c+'</span></div>';
+  });
   html+='</div>';
 
   // Status filter
