@@ -72,6 +72,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .set-toggle .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.4);}
 .set-toggle.on{background:linear-gradient(180deg,#5fd068,#2fb344);}
 .set-toggle.on .knob{left:25px;}
+.nf-segwrap{display:flex;gap:7px;margin:0 0 14px;}
+.nf-seg{flex:1;padding:9px 4px;border-radius:11px;border:1.5px solid rgba(120,150,230,0.3);background:rgba(10,18,40,0.5);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.82rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1;}
+.nf-seg.on{border-color:var(--gold);background:linear-gradient(180deg,#23316a,#16234c);color:#fff;}
+.nf-ex{font-family:'Nunito',sans-serif;font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:700;}
+.nf-seg.on .nf-ex{color:#ffe082;}
 .set-btn{flex:none;border:none;border-radius:12px;padding:9px 16px;font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;cursor:pointer;}
 .set-btn.purple{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;}
 .set-btn.red{background:linear-gradient(180deg,#c0392b,#922b21);box-shadow:0 3px 0 #5e1a12;}
@@ -80,6 +85,41 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Settings-fönstret: egen solid bakgrund + fast topp + scrollbart innehåll (fixar genomskinlig/oscrollbar bugg) */
 #settings-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #settings-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px 30px;}
+/* Ascension-skärmen */
+#ascension-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#ascension-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+#favpicker-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#favpicker-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;}
+.favpick-controls{padding:10px 14px;border-bottom:1px solid rgba(58,92,184,0.3);flex:none;background:linear-gradient(180deg,#13224a,#101d40);}
+.favpick-search{width:100%;box-sizing:border-box;padding:9px 11px;border-radius:10px;border:1px solid rgba(120,150,230,0.35);background:rgba(10,18,40,0.6);color:#fff;font-family:'Nunito',sans-serif;font-size:0.85rem;margin-bottom:8px;}
+.favpick-row2{display:flex;gap:8px;}
+.favpick-sel{flex:1;min-width:0;padding:8px 9px;border-radius:10px;border:1px solid rgba(120,150,230,0.35);background:rgba(10,18,40,0.7);color:#fff;font-family:'Nunito',sans-serif;font-size:0.82rem;}
+.favpick-none{padding:11px;border-radius:11px;border:1px dashed rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);text-align:center;font-size:0.82rem;cursor:pointer;margin-bottom:12px;}
+.favpick-none.sel{border-color:var(--gold);color:#fff;}
+.favpick-count{font-size:0.7rem;color:rgba(255,255,255,0.45);margin-bottom:8px;}
+.favpick-age{font-size:0.58rem;color:rgba(255,255,255,0.45);margin-top:2px;}
+.asc-hero{background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(120,150,230,0.35);border-radius:16px;padding:16px;text-align:center;margin-bottom:12px;}
+.asc-bal{font-family:'Fredoka One',cursive;font-size:1.35rem;color:#ffe082;}
+.asc-sub{font-size:0.82rem;color:rgba(255,255,255,0.72);margin-top:4px;}
+.asc-act{background:rgba(255,255,255,0.04);border:1px solid rgba(120,150,230,0.25);border-radius:14px;padding:14px;text-align:center;margin-bottom:16px;}
+.asc-gain{font-size:0.95rem;color:#fff;margin-bottom:10px;}
+.asc-gain.dim{color:rgba(255,255,255,0.6);}
+.asc-need{font-size:0.8rem;color:rgba(255,255,255,0.62);margin-bottom:10px;}
+.asc-btn{width:100%;padding:13px;border:none;border-radius:13px;background:linear-gradient(180deg,#f5c842,#e0a020);color:#3a2600;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 #9c6f12;}
+.asc-btn.dim{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);box-shadow:none;cursor:not-allowed;}
+.asc-info{font-size:0.72rem;color:rgba(255,255,255,0.6);line-height:1.5;margin-top:11px;}
+.asc-shop-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#cfe0ff;margin:4px 2px 10px;}
+.asc-row{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#16284f,#0e1c3c);border:1px solid rgba(120,150,230,0.22);border-radius:13px;padding:11px;margin-bottom:9px;}
+.asc-row.maxed{opacity:0.78;}
+.asc-ico{font-size:1.5rem;width:34px;text-align:center;flex:none;}
+.asc-mid{flex:1;min-width:0;}
+.asc-name{font-family:'Fredoka One',cursive;font-size:0.92rem;color:#fff;}
+.asc-lvl{font-family:'Nunito',sans-serif;font-size:0.72rem;color:#9fc0ff;font-weight:700;}
+.asc-desc{font-size:0.74rem;color:rgba(255,255,255,0.65);margin:2px 0;}
+.asc-cur{font-size:0.76rem;color:#8fe0a0;}
+.asc-buy{flex:none;align-self:stretch;min-width:74px;padding:0 12px;border:none;border-radius:11px;background:linear-gradient(180deg,#5a8de0,#3a5cb8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.82rem;cursor:pointer;box-shadow:0 3px 0 #243a78;display:flex;align-items:center;justify-content:center;}
+.asc-buy.dim{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:not-allowed;}
+.asc-buy.maxed{background:transparent;color:#8fe0a0;box-shadow:none;font-size:0.8rem;}
 .set-content{padding-top:14px;}
 .set-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:11px 14px;margin:0 -14px;position:sticky;top:0;z-index:4;background:linear-gradient(180deg,#13224a,#101d40);border-bottom:1px solid rgba(58,92,184,0.35);flex:none;scrollbar-width:none;}
 .set-tabs::-webkit-scrollbar{display:none;}
@@ -113,14 +153,22 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .tab-content{display:none;padding:10px;}
 .tab-content.active{display:block;}
 .bld{background:rgba(27,45,78,0.45);border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:8px 8px 8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:8px;backdrop-filter:blur(4px);}
-.bld.buyable{border-color:rgba(245,200,66,0.8);box-shadow:0 0 12px rgba(245,200,66,0.15);}
-.bld.poor{opacity:0.8;cursor:default;}
+.bld.buyable{border-color:rgba(245,200,66,0.85);box-shadow:0 0 12px rgba(245,200,66,0.18);background:rgba(40,62,100,0.55);cursor:pointer;}
+.bld.poor{opacity:0.5;border-color:rgba(58,92,184,0.3);cursor:default;}
+.bld-price{font-family:'Fredoka One',cursive;font-size:0.82rem;margin-top:2px;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.bld.buyable .bld-price{color:#74e08c;}
+.bld.poor .bld-price{color:#e07a7a;}
+.bld-price-ic{display:inline-flex;align-items:center;}
+.bld-count{flex-shrink:0;font-family:'Fredoka One',cursive;font-size:1.7rem;color:rgba(255,255,255,0.22);min-width:30px;text-align:center;line-height:1;padding-right:4px;}
+.bld.buyable .bld-count{color:rgba(255,255,255,0.45);}
 .bld.semi{opacity:0.35;cursor:default;}
 .bld.ghost{opacity:0.15;cursor:default;}
 .bld-left{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .bld-owned{font-family:'Fredoka One',cursive;font-size:0.8rem;color:rgba(255,255,255,0.5);min-width:18px;text-align:center;}
 .bld-img{width:44px;height:44px;border-radius:12px;flex-shrink:0;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
 .bld-info{flex:1;min-width:0;}
+.bld-info-btn{flex-shrink:0;width:30px;height:30px;border-radius:9px;border:1px solid rgba(140,170,225,0.35);background:rgba(27,45,78,0.6);color:rgba(255,255,255,0.7);font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin-right:2px;}
+.bld-info-btn:active{transform:translateY(1px);}
 .bn{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;line-height:1.2;}
 .bp{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
 .bld-buy{flex-shrink:0;width:88px;height:44px;border-radius:12px;border:2px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;box-shadow:0 3px 0 rgba(0,0,0,0.4);transition:transform 0.08s;}
@@ -797,7 +845,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #home-toggle{display:flex;gap:8px;padding:22px 16px 0;position:relative;z-index:1;}
 /* Innehållet är ett upphöjt kort som flikarna tuckar in UNDER (3D-känsla) */
 #tab-buildings,#tab-upgrades{position:relative;z-index:2;margin-top:-9px;padding:13px 12px 12px;background:linear-gradient(180deg,#16284f,#0e1c3c);border-top:1px solid rgba(140,170,225,0.25);border-radius:16px 16px 0 0;box-shadow:0 -5px 14px rgba(0,0,0,0.45);}
-.ub-tab{flex:1;height:46px;border-radius:12px 12px 0 0;border:2px solid #0f1a33;border-bottom:none;background:linear-gradient(180deg,#2c4673,#142136);color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.ub-tab{flex:1;height:46px;box-sizing:border-box;padding-bottom:9px;border-radius:12px 12px 0 0;border:2px solid #0f1a33;border-bottom:none;background:linear-gradient(180deg,#2c4673,#142136);color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
 .ub-tab:active{transform:translateY(1px);}
 #ub-upgrades.active{background:linear-gradient(180deg,#6791e8,#284ba6);color:#fff;border-color:#84a8ef;}
 /* Köp-glow: tänds när minst en upgrade är köpbar (.deal sätts av updateUpgradeGlow) */
@@ -928,6 +976,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .utile-check{position:absolute;font-size:0.85rem;right:-3px;bottom:-3px;}
 #upgTip{position:fixed;z-index:9999;width:198px;background:linear-gradient(180deg,#16284f,#0e1c3c);border:2px solid var(--gold);border-radius:12px;padding:10px 11px;box-shadow:0 8px 24px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity 0.12s,transform 0.12s;}
 #upgTip.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+#bldTip{position:fixed;z-index:9999;background:linear-gradient(180deg,#16284f,#0e1c3c);border:2px solid var(--gold);border-radius:11px;padding:8px 12px;box-shadow:0 8px 24px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity 0.12s,transform 0.12s;}
+#bldTip.open{opacity:1;pointer-events:auto;transform:translateY(0);}
+.btip-row{font-size:0.73rem;color:rgba(255,255,255,0.78);line-height:1.65;white-space:nowrap;}
+.btip-row b{color:#fff;}
+.bld-img[data-info-icon]{cursor:pointer;}
 .utip-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
 .utip-ic{font-size:1.3rem;line-height:1;}
 .utip-name{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;line-height:1.15;}
@@ -974,8 +1027,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">EPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
     </div>
     <div class="tb-right">
-      <div class="tb-gems" onclick="showComingSoon('💎 Gems','Premiumvalutan Gems. Här kommer du kunna se hur du tjänar Gems (achievements, dailies, battle pass) och köpa fler. Byggs i ett senare steg.')"><span style="font-size:0.95rem">💎</span><span class="tg-val" id="tb-gems-val">0</span></div>
-      <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','Battle Pass-menyn — claima belöningar och köp premium-track. Byggs i ett senare steg.')">🎟️</div>
+      <div class="tb-gems" onclick="showComingSoon('💎 Gems','The premium currency Gems. Here you will be able to see how to earn Gems (achievements, dailies, battle pass) and buy more. Coming in a later update.')"><span style="font-size:0.95rem">💎</span><span class="tg-val" id="tb-gems-val">0</span></div>
+      <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','The Battle Pass menu — claim rewards and buy the premium track. Coming in a later update.')">🎟️</div>
       <div class="tb-rbtn profile" onclick="showProfile()">👤</div>
       <div class="tb-rbtn" onclick="openMore()">⋯</div>
       <div class="tb-rbtn" onclick="showSettings()">⚙️</div>
@@ -1042,7 +1095,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div id="tab-hatch" class="tab-content"><div id="hatch-wrap"></div></div>
     <div id="tab-adventure" class="tab-content"><div id="adv-wrap" style="padding:14px 13px 90px;"></div></div>
     <div id="tab-shop" class="tab-content"><div id="shop-wrap"></div></div>
-    <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly och event-quests byggs i ett senare steg.</p></div></div>
+    <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly and event quests are coming in a later update.</p></div></div>
   </div>
   <div id="bottomnav">
     <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
@@ -1125,7 +1178,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="modal-close" onclick="closeMore()">✕</button>
     <div class="modal-title">More</div>
     <div class="more-grid" id="more-grid"></div>
-    <div class="more-note">Petdex och Achievements bor här. Inventory finns även som 🎒-knapp på hemskärmen — den här posten är en reservväg.</div>
+    <div class="more-note">Petdex and Achievements live here. Inventory is also a 🎒 button on the home screen — this entry is a backup route.</div>
     <div id="more-dev"></div>
   </div>
 </div>
@@ -1160,6 +1213,36 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeSettings()">✕</button>
     </div>
     <div class="prof-body" id="settings-body"></div>
+  </div>
+</div>
+<div id="ascension-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">🔼 Ascension</div>
+      <button class="prof-x" onclick="closeAscension()">✕</button>
+    </div>
+    <div class="prof-body" id="ascension-body"></div>
+  </div>
+</div>
+<div id="favpicker-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">⭐ Choose Favorite Pet</div>
+      <button class="prof-x" onclick="closeFavPicker()">✕</button>
+    </div>
+    <div class="favpick-controls">
+      <input id="favpick-search" class="favpick-search" placeholder="Search by name…" oninput="favPickSearch=this.value;renderFavPickerList()">
+      <div class="favpick-row2">
+        <select id="favpick-rarity" class="favpick-sel" onchange="favPickRarity=this.value;renderFavPickerList()"></select>
+        <select id="favpick-sort" class="favpick-sel" onchange="favPickSort=this.value;renderFavPickerList()">
+          <option value="rarity">Sort: Rarity</option>
+          <option value="name">Sort: Name A–Z</option>
+          <option value="new">Sort: Newest</option>
+          <option value="old">Sort: Oldest</option>
+        </select>
+      </div>
+    </div>
+    <div class="prof-body" id="favpick-list"></div>
   </div>
 </div>
 <div id="confirm-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -1254,7 +1337,23 @@ var CLICK_EPS_SHARE=0.08;
 var DOUBLING_THRESHOLDS=[1,10,25,50,100];
 var DOUBLING_PRICE_MULT=6;
 var DOUBLING_MAX=5;
-// === KLICK-UPGRADES (Steg 2) — EPS-skalande klick + Thousand Fingers ===
+// === ASCENSION (v1) — prestige-reset + Stardust ✨ + Ascension Shop ===
+// Stardust man FÅR vid ascension = floor( (coins denna runda / ASC_STARDUST_DIV) ^ ASC_STARDUST_EXP ).
+// Med DIV=1e6, EXP=0.5: 1M coins → 1 ✨, 4M → 2, 9M → 3, 100M → 10, 10B → 100 (lugn sqrt-kurva).
+// >>> TUNING: "för lätt att ascenda / för mkt Stardust?" → höj ASC_STARDUST_DIV. "vill ha brantare kurva?" → höj ASC_STARDUST_EXP.
+var ASC_STARDUST_DIV=1e6;   // hur många coins som krävs för 1:a Stardust (= även kravet för första ascension)
+var ASC_STARDUST_EXP=0.5;   // kurvans form (0.5 = sqrt, lugn). Högre = du får mer Stardust late-game.
+// Ascension-shoppen. perLevel = +% per nivå, max = antal nivåer, baseCost/costMult = Stardust-pris (pris nivå L→L+1 = ceil(baseCost*costMult^L)).
+// >>> TUNING: dyrare köp → höj baseCost eller costMult. Svagare/starkare bonus → ändra perLevel.
+var ASC_SHOP=[
+  {id:'coinGain',  icon:'✨',name:'Coin Mastery', desc:'Permanent +Egg Coin income',        perLevel:5,max:20,baseCost:1,costMult:2},
+  {id:'idleGain',  icon:'🌙',name:'Idle Mastery', desc:'Permanent +offline/idle income',     perLevel:5,max:20,baseCost:1,costMult:2},
+  {id:'clickPower',icon:'👆',name:'Click Mastery',desc:'Permanent +click income',            perLevel:5,max:20,baseCost:1,costMult:2},
+  {id:'luck',      icon:'🍀',name:'Lucky Star',   desc:'Permanent +luck (better rarities)',  perLevel:4,max:15,baseCost:2,costMult:2},
+  {id:'shellGain', icon:'🐚',name:'Shell Hunter', desc:'Permanent +shell find',             perLevel:4,max:15,baseCost:2,costMult:2},
+  {id:'hatchSpeed',icon:'⚡',name:'Quick Hatch',  desc:'Permanent faster hatching',         perLevel:3,max:10,baseCost:3,costMult:2},
+];
+// === KLICK-UPGRADES (Steg 2) — EPS-skalande klick + "Helping Paws" (flat per byggnad/klick) ===
 // Köps en gång var, låses upp vid milstolpar. ALLT tunbart (epsAdd/fingerBase/trösklar/cost).
 // EPS-linjen ökar andelen av EPS varje klick ger (additivt ovanpå CLICK_EPS_SHARE).
 // Finger-linjen ger klick +flat per ägd icke-Egg-Tapper-byggnad (Egg Tapper, index 0, = "klick-byggnaden").
@@ -1264,9 +1363,9 @@ var CLICK_UPGRADES=[
   {id:'eps2',line:'eps',name:'Precision Tapping',desc:'Clicking gains +1% of your EPS.',epsAdd:0.01,unlockClicks:1000,cost:100000},
   {id:'eps3',line:'eps',name:'Power Tapping',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:10000,cost:1e7},
   {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
-  {id:'tf1',line:'finger',name:'Thousand Fingers',desc:'+0.1 per non-Egg-Tapper building, per click.',fingerBase:0.1,unlockBuildings:25,cost:100000},
-  {id:'tf2',line:'finger',name:'Million Fingers',desc:'Thousand Fingers bonus ×5.',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
-  {id:'tf3',line:'finger',name:'Billion Fingers',desc:'Thousand Fingers bonus ×10.',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
+  {id:'tf1',line:'finger',name:'Helping Paws',desc:'+0.1 per other building, per tap.',fingerBase:0.1,unlockBuildings:25,cost:100000},
+  {id:'tf2',line:'finger',name:'Pack Instinct',desc:'Helping Paws bonus ×5.',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
+  {id:'tf3',line:'finger',name:'Stampede',desc:'Helping Paws bonus ×10.',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
 ];
 function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
@@ -1299,30 +1398,31 @@ function buyClickUpgrade(id){
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Egg Coins för att låsa upp slot 2,3,4,5
-// coinRate = andel av EPS pet:en jobbar i (0.5 = som bas-offline). coinFloor = golv för tidig game (EPS≈0).
+// coinRate = andel av EPS pet:en jobbar i (0.2 = LÅGT med flit, så äventyr ger en liten coin-bonus, inte en faucet som slår idle/klick). coinFloor = golv för tidig game (EPS≈0).
+// >>> TUNING (känns äventyr för givmilt/för spammigt?): sänk coinRate/coinFloor. Vill du längre/kortare uppdrag: ändra dur (minuter).
 // shellLoot = blandad belöning; varje rad delas ut (min–max), tyngdpunkt enligt uppdragets nivå.
 var ADVENTURES=[
-  {id:'forest', name:'Forest Expedition', icon:'🌲', affinity:'forest', chance:'High', col:'#3f7d3a', dur:30*60*1000, coinRate:0.5, coinFloor:1500, xp:20,
+  {id:'forest', name:'Forest Expedition', icon:'🌲', affinity:'forest', chance:'High', col:'#3f7d3a', dur:10*60*1000, coinRate:0.2, coinFloor:150, xp:20,
     desc:'A peaceful tramp through the forest. Great for gathering resources and discovering surprises!',
     shellLoot:[{type:'common',min:3,max:7},{type:'uncommon',min:2,max:6}],
     bonusLoot:[{type:'gems',min:1,max:2,chance:0.08},{type:'egg',id:'forest',chance:0.04},{type:'egg',id:'mountain',chance:0.02}]},
-  {id:'ocean', name:'Ocean Expedition', icon:'🌊', affinity:'ocean', chance:'Medium', col:'#2a6ea8', dur:80*60*1000, coinRate:0.5, coinFloor:5000, xp:40,
+  {id:'ocean', name:'Ocean Expedition', icon:'🌊', affinity:'ocean', chance:'Medium', col:'#2a6ea8', dur:30*60*1000, coinRate:0.2, coinFloor:400, xp:40,
     desc:'Dive the open seas for richer hauls and the odd deep-water treasure.',
     shellLoot:[{type:'common',min:2,max:5},{type:'uncommon',min:5,max:12},{type:'rare',min:0,max:2}],
     bonusLoot:[{type:'gems',min:1,max:3,chance:0.10},{type:'egg',id:'ocean',chance:0.05},{type:'egg',id:'desert',chance:0.03}]},
-  {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:165*60*1000, coinRate:0.5, coinFloor:15000, xp:70,
+  {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:120*60*1000, coinRate:0.2, coinFloor:1000, xp:70,
     desc:'Cross the dunes under a blazing sun. Long, hot, and surprisingly rewarding.',
     shellLoot:[{type:'uncommon',min:6,max:14},{type:'rare',min:1,max:4}],
     bonusLoot:[{type:'gems',min:2,max:4,chance:0.12},{type:'egg',id:'desert',chance:0.05},{type:'egg',id:'ocean',chance:0.04},{type:'egg',id:'jungle',chance:0.03}]},
-  {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:270*60*1000, coinRate:0.5, coinFloor:40000, xp:110,
+  {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:360*60*1000, coinRate:0.2, coinFloor:2500, xp:110,
     desc:'Brave the frozen north. Few make it far, but the spoils are worth the chill.',
     shellLoot:[{type:'uncommon',min:5,max:12},{type:'rare',min:4,max:10},{type:'epic',min:0,max:2}],
     bonusLoot:[{type:'gems',min:2,max:6,chance:0.14},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'volcano',chance:0.02}]},
-  {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:510*60*1000, coinRate:0.5, coinFloor:120000, xp:180,
+  {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:720*60*1000, coinRate:0.2, coinFloor:6000, xp:180,
     desc:'Descend into molten depths. Dangerous, but the rarest shards smoulder here.',
     shellLoot:[{type:'rare',min:8,max:18},{type:'epic',min:1,max:4}],
     bonusLoot:[{type:'gems',min:3,max:7,chance:0.16},{type:'egg',id:'volcano',chance:0.04},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'mystic',chance:0.02}]},
-  {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:720*60*1000, coinRate:0.5, coinFloor:400000, xp:350,
+  {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:1440*60*1000, coinRate:0.2, coinFloor:15000, xp:350,
     desc:'A long, rewarding dig through forgotten ruins. The ultimate prize hunt.',
     shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
     bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002}]}
@@ -1644,6 +1744,10 @@ function getActiveBonuses(){
   if(G.permBonus){
     ABILITIES.forEach(function(k){bonuses[k]=(bonuses[k]||0)+(G.permBonus[k]||0);});
   }
+  // Permanenta Ascension-bonusar (från Ascension Shop)
+  if(G.ascensionBonus){
+    ABILITIES.forEach(function(k){bonuses[k]=(bonuses[k]||0)+(G.ascensionBonus[k]||0);});
+  }
   return bonuses;
 }
 
@@ -1673,17 +1777,17 @@ var STAT_PANEL_GROUPS=[
 function renderStatsPanel(){
   var bd=getBonusBreakdown();
   var asc=G.ascensions||0;
-  var html='<div class="stats-asc">🔼 Ascensions: <b>'+asc+'</b> <span class="stats-soon">— system coming soon</span></div>';
+  var html='<div class="stats-asc">🔼 Ascensions: <b>'+asc+'</b> &nbsp;·&nbsp; ✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
   STAT_PANEL_GROUPS.forEach(function(g){
     html+='<div class="stats-cat">'+g.cat+'</div>';
     g.items.forEach(function(it){
       var d=bd[it.id]||{pets:0,ach:0,asc:0,total:0};
       var s=it.invert?'-':'+';
       html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+it.name+'</span><span class="stats-total">'+s+d.total+'%</span></div>';
-      html+='<div class="stats-src"><span>🐾 Pets '+s+d.pets+'%</span><span>🏆 Achievements '+s+d.ach+'%</span><span class="stats-soon">🔼 Ascension '+s+d.asc+'%</span></div></div>';
+      html+='<div class="stats-src"><span>🐾 Pets '+s+d.pets+'%</span><span>🏆 Achievements '+s+d.ach+'%</span><span>🔼 Ascension '+s+d.asc+'%</span></div></div>';
     });
   });
-  html+='<div class="stats-foot">Fler abilities (Adventure, XP, Utility, Rare m.fl.) dyker upp här automatiskt när de byggs in i spelet.</div>';
+  html+='<div class="stats-foot">More abilities (Adventure, XP, Utility, Rare and more) appear here automatically as they are built into the game.</div>';
   document.getElementById('stats-modal-body').innerHTML=html;
 }
 function openStatsPanel(){renderStatsPanel();document.getElementById('stats-modal').classList.add('open');}
@@ -1754,6 +1858,9 @@ var G={
   achievements:{unlocked:{},claimed:{}},
   gems:0,
   permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
+  stardust:0,ascensions:0,
+  ascensionUpgrades:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
+  ascensionBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   worldClaims:{},
   titlesEarned:{},
   adventureSlots:1,
@@ -1763,13 +1870,43 @@ var G={
   stats:freshStats(),
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
-var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false};
+var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short'};
 
 // ============================================================
 // UTILS
 // ============================================================
-function fmtShort(n){if(n<1e3)return Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(1)+'K';if(n<1e9)return (n/1e6).toFixed(1)+'M';if(n<1e12)return (n/1e9).toFixed(1)+'B';if(n<1e15)return (n/1e12).toFixed(1)+'T';return (n/1e15).toFixed(1)+'Qa';}
-function fmt(n){if(n<1e3)return n<10?n.toFixed(1):Math.floor(n)+'';if(n<1e6)return (n/1e3).toFixed(2)+' Thousand';if(n<1e9)return (n/1e6).toFixed(2)+' Million';if(n<1e12)return (n/1e9).toFixed(2)+' Billion';if(n<1e15)return (n/1e12).toFixed(2)+' Trillion';if(n<1e18)return (n/1e15).toFixed(2)+' Quadrillion';return (n/1e18).toFixed(2)+' Quintillion';}
+// === TAL-FORMAT (central, styrs av inställningen G.settings.numFormat: 'short' | 'full' | 'sci') ===
+var FMT_SUFFIX=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UD','DD','TD','QaD','QiD','SxD','SpD','OcD','NoD','Vg'];
+var FULL_MAX=1e12; // Full-läget visar fulla siffror upp hit, sen faller det tillbaka till kort stil (annars oläsligt). TUNBART.
+function fmtCompact(n){ // alltid kort suffix-stil (1.5K, 8.3M) — för trånga ytor som toppmätaren
+  if(n===Infinity)return '∞';if(isNaN(n))return '0';
+  if(n<0)return '-'+fmtCompact(-n);
+  if(n<1e3)return (n<10&&n%1!==0)?n.toFixed(1):Math.floor(n)+'';
+  var tier=Math.floor(Math.log10(n)/3);
+  if(tier<FMT_SUFFIX.length){var s=n/Math.pow(10,tier*3);return s.toFixed(2).replace(/\.?0+$/,'')+FMT_SUFFIX[tier];}
+  var exp=Math.floor(Math.log10(n));return (n/Math.pow(10,exp)).toFixed(2)+'e'+exp; // bortom listan → scientific
+}
+function fmtFull(n){ // fulla siffror med tusentalsavgränsare (15,000), tak sen fallback
+  if(n<0)return '-'+fmtFull(-n);
+  if(n<1e3)return (n<10&&n%1!==0)?n.toFixed(1):Math.floor(n)+''; // små decimaler bevaras (t.ex. 0.1/s)
+  if(n<FULL_MAX)return Math.floor(n).toLocaleString('en-US');
+  return fmtCompact(n);
+}
+function fmtSci(n){ // scientific (1.50e4)
+  if(n===Infinity)return '∞';if(isNaN(n))return '0';
+  if(n<0)return '-'+fmtSci(-n);
+  if(n<1e3)return (n<10&&n%1!==0)?n.toFixed(1):Math.floor(n)+'';
+  var exp=Math.floor(Math.log10(n));return (n/Math.pow(10,exp)).toFixed(2)+'e'+exp;
+}
+function fmtNum(n){ // central — väljer stil efter inställning
+  var f=(G&&G.settings&&G.settings.numFormat)||'short';
+  if(f==='full')return fmtFull(n);
+  if(f==='sci')return fmtSci(n);
+  return fmtCompact(n);
+}
+// Bakåtkompatibelt: alla gamla anrop går nu via den inställnings-styrda formateraren
+function fmtShort(n){return fmtNum(n);}
+function fmt(n){return fmtNum(n);}
 function bcost(i){return Math.ceil(BUILDINGS[i].b*Math.pow(1.15,G.owned[i]));}
 function buildingMult(i){return Math.pow(2,(G.buildingDoublings&&G.buildingDoublings[i])||0);}
 function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildingMult(i);return s*getEpsMultiplier();}
@@ -1948,7 +2085,7 @@ function claimAdventure(index){
   if(typeof softUpdateInventory==='function')softUpdateInventory();
   saveGame();renderAdventure();
   parts.push('+'+rw.xp+' Pet XP');
-  if(typeof showRewardPopup==='function')showRewardPopup(parts);
+  if(typeof showRewardPopup==='function')showRewardPopup(parts,true);
 }
 function openAdvPicker(advId){
   if(G.adventures.length>=G.adventureSlots)return;
@@ -2082,7 +2219,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -2100,6 +2237,9 @@ function resetGame(){
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.gems=0;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  G.stardust=0;G.ascensions=0;
+  G.ascensionUpgrades={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.achievements={unlocked:{},claimed:{}};
   G.worldClaims={};
   G.titlesEarned={};
@@ -2889,6 +3029,7 @@ function coresInvHtml(){
 // Tillfällig More-meny — håller vyer som ännu inte fått sin permanenta plats
 // i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
 var MORE_ITEMS=[
+  {label:'Ascension',icon:'🔼',action:'ascension'},
   {label:'Petdex',icon:'📖',tab:'petdex'},
   {label:'Achievements',icon:'🏆',tab:'more'},
   {label:'Inventory',icon:'🎒',tab:'inventory'},
@@ -2898,7 +3039,7 @@ function openMore(){
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
     d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();switchTab(it.tab);};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -2907,6 +3048,127 @@ function openMore(){
 }
 function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
 document.getElementById('more-drawer').onclick=function(e){if(e.target===this)closeMore();};
+
+// ============================================================
+// ASCENSION (v1) — Stardust ✨ + Ascension Shop
+// ============================================================
+// Hur mycket Stardust en ascension SKULLE ge just nu (baserat på coins denna runda = G.total).
+function calcPendingStardust(){
+  if(!G.total||G.total<=0)return 0;
+  return Math.floor(Math.pow(G.total/ASC_STARDUST_DIV,ASC_STARDUST_EXP));
+}
+function canAscend(){return calcPendingStardust()>=1;}
+// Coins kvar till NÄSTA Stardust-poäng (för "Need X more"-texten).
+function coinsToNextStardust(){
+  var next=calcPendingStardust()+1;
+  var need=Math.pow(next,1/ASC_STARDUST_EXP)*ASC_STARDUST_DIV;
+  return Math.max(0,need-(G.total||0));
+}
+// Pris för att köpa nästa nivå av en shop-rad (L = nuvarande nivå).
+function ascUpgradeCost(item,L){return Math.ceil(item.baseCost*Math.pow(item.costMult,L));}
+// Räkna om G.ascensionBonus från köpta nivåer (körs efter köp + vid load).
+function recomputeAscensionBonus(){
+  if(!G.ascensionBonus)G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  ABILITIES.forEach(function(k){G.ascensionBonus[k]=0;});
+  var highest=0;
+  ASC_SHOP.forEach(function(it){
+    var L=(G.ascensionUpgrades&&G.ascensionUpgrades[it.id])||0;
+    var b=L*it.perLevel;
+    G.ascensionBonus[it.id]=(G.ascensionBonus[it.id]||0)+b;
+    if(b>highest)highest=b;
+  });
+  G.stats.highestAscensionBonus=Math.max(G.stats.highestAscensionBonus||0,highest);
+}
+// Själva ascension-handlingen: dela ut Stardust, nollställ ekonomin, behåll samling.
+function doAscension(){
+  var gain=calcPendingStardust();
+  if(gain<1)return;
+  G.stardust=(G.stardust||0)+gain;
+  G.ascensions=(G.ascensions||0)+1;
+  G.stats.ascensionsCompleted=(G.stats.ascensionsCompleted||0)+1;
+  G.stats.totalAscensionCurrency=(G.stats.totalAscensionCurrency||0)+gain;
+  // NOLLSTÄLLS (låsta regler): coins, byggnader, doublingar, upgrade-nivåer, klick-upgrades, världs-progression, ägda ägg.
+  G.coins=0;G.total=0;G.clickPower=1;G.currentWorld=0;
+  G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
+  G.owned=new Array(20).fill(0);
+  G.buildingDoublings=new Array(20).fill(0);
+  G.clickUpgrades={};
+  G.ulvl={craft:0,hatch:0};
+  G.eggsOwned={};
+  UPGRADES.forEach(function(u){u.apply(G.ulvl[u.id]);}); // återställ craft/hatch-effekter
+  // BEHÅLLS: pets, equippedPets, petSlots, hatch-slots, shells, gems, cores, kammare, Petdex, achievements, permBonus, titlar, adventures, stats, profil, settings, + Stardust & shop-köp.
+  recomputeAscensionBonus();
+  saveGame();
+  closeAscension();
+  switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+  showGenericModal('🔼','Ascended!','You ascended and gained <b>'+fmtShort(gain)+' ✨ Stardust</b>! Your economy resets, but your collection and permanent bonuses stay. Spend Stardust in the Ascension Shop to grow permanently stronger.');
+}
+// Köp en nivå i Ascension-shoppen.
+function buyAscensionUpgrade(id){
+  var item=null;ASC_SHOP.forEach(function(it){if(it.id===id)item=it;});
+  if(!item)return;
+  if(!G.ascensionUpgrades)G.ascensionUpgrades={};
+  var L=G.ascensionUpgrades[id]||0;
+  if(L>=item.max)return;
+  var cost=ascUpgradeCost(item,L);
+  if((G.stardust||0)<cost)return;
+  G.stardust-=cost;
+  G.ascensionUpgrades[id]=L+1;
+  recomputeAscensionBonus();
+  saveGame();updateHUD();renderAscension();
+}
+// Bygg/öppna Ascension-skärmen.
+function openAscension(){renderAscension();document.getElementById('ascension-modal').classList.add('open');}
+function closeAscension(){document.getElementById('ascension-modal').classList.remove('open');}
+function renderAscension(){
+  var pending=calcPendingStardust();
+  var able=pending>=1;
+  var h='';
+  // Header: nuvarande Stardust + ascension-räknare
+  h+='<div class="asc-hero">';
+  h+='<div class="asc-bal">✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
+  h+='<div class="asc-sub">🔼 Ascensions: '+(G.ascensions||0)+'</div>';
+  h+='</div>';
+  // Ascend-knappen
+  h+='<div class="asc-act">';
+  if(able){
+    h+='<div class="asc-gain">Ascend now → <b>+'+fmtShort(pending)+' ✨</b></div>';
+    h+='<button class="asc-btn" onclick="confirmAscension()">🔼 Ascend</button>';
+  }else{
+    h+='<div class="asc-gain dim">Earn more to ascend</div>';
+    h+='<div class="asc-need">Need about <b>'+fmtShort(coinsToNextStardust())+'</b> more coins for 1 ✨</div>';
+    h+='<button class="asc-btn dim" disabled>🔼 Ascend</button>';
+  }
+  h+='<div class="asc-info">Resets: coins, buildings, boosts, upgrades & world. <b>Keeps:</b> pets, Petdex, achievements, shells, Gems & Stardust.</div>';
+  h+='</div>';
+  // Shop
+  h+='<div class="asc-shop-title">Ascension Shop</div>';
+  ASC_SHOP.forEach(function(it){
+    var L=(G.ascensionUpgrades&&G.ascensionUpgrades[it.id])||0;
+    var maxed=L>=it.max;
+    var cur=L*it.perLevel;
+    var inv=(it.id==='hatchSpeed');
+    var sign=inv?'-':'+';
+    var cost=maxed?0:ascUpgradeCost(it,L);
+    var afford=(G.stardust||0)>=cost;
+    h+='<div class="asc-row'+(maxed?' maxed':'')+'">';
+    h+='<div class="asc-ico">'+it.icon+'</div>';
+    h+='<div class="asc-mid"><div class="asc-name">'+it.name+' <span class="asc-lvl">Lv '+L+'/'+it.max+'</span></div>';
+    h+='<div class="asc-desc">'+it.desc+'</div>';
+    h+='<div class="asc-cur">Current: <b>'+sign+cur+'%</b>'+(maxed?'':' → '+sign+((L+1)*it.perLevel)+'%')+'</div></div>';
+    if(maxed){
+      h+='<div class="asc-buy maxed">MAX</div>';
+    }else{
+      h+='<button class="asc-buy'+(afford?'':' dim')+'" onclick="buyAscensionUpgrade(\''+it.id+'\')"'+(afford?'':' disabled')+'>✨ '+fmtShort(cost)+'</button>';
+    }
+    h+='</div>';
+  });
+  document.getElementById('ascension-body').innerHTML=h;
+}
+function confirmAscension(){
+  var gain=calcPendingStardust();
+  showConfirm('Ascend?','You will gain <b>'+fmtShort(gain)+' ✨ Stardust</b>.<br><br>Your economy resets (coins, buildings, boosts, upgrades, world), but <b>all pets, Petdex, achievements, shells, Gems and Stardust are kept</b>. Ascend now?','Ascend',function(){doAscension();});
+}
 function showGenericModal(icon,title,body){
   document.getElementById('generic-modal-icon').textContent=icon;
   document.getElementById('generic-modal-title').textContent=title;
@@ -2915,7 +3177,7 @@ function showGenericModal(icon,title,body){
 }
 function showEpsInfo(){
   showGenericModal('🥚','Eggs Per Second',
-    'EPS är hur många Egg Coins du tjänar passivt varje sekund. Den kommer från dina byggnader (Buildings) och ökar när du köper fler eller högre nivåer. Aktiva pets med Coin Gain eller Idle Gain ökar den ytterligare. Att klicka på ägget ger coins direkt ovanpå din EPS.');
+    'EPS is how many Egg Coins you earn passively every second. It comes from your Buildings and grows as you buy more or higher levels. Active pets with Coin Gain or Idle Gain increase it further. Tapping the egg gives coins directly on top of your EPS.');
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 
@@ -3014,6 +3276,21 @@ function toggleSetting(key){
   if(key==='vibrate'&&G.settings.vibrate)buzz(15);
   renderSettings();
 }
+// ---- Tal-format-väljare (Short / Full / Sci) ----
+function numFormatRow(){
+  var cur=(G.settings&&G.settings.numFormat)||'short';
+  var opts=[['short','Short','1.5K'],['full','Full','1,500'],['sci','Sci','1.5e3']];
+  var seg='';
+  opts.forEach(function(o){seg+='<button class="nf-seg'+(cur===o[0]?' on':'')+'" onclick="setNumFormat(\''+o[0]+'\')">'+o[1]+'<span class="nf-ex">'+o[2]+'</span></button>';});
+  return '<div class="set-row" style="border-bottom:none;padding-bottom:4px"><div class="set-row-info"><div class="set-row-label">Number Format</div><div class="set-row-desc">How big numbers are shown across the game. The top coin/EPS meter always stays compact so it fits.</div></div></div><div class="nf-segwrap">'+seg+'</div>';
+}
+function setNumFormat(v){
+  if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
+  G.settings.numFormat=v;saveGame();
+  if(typeof updateHUD==='function')updateHUD();
+  if(typeof updateBuildingClasses==='function')updateBuildingClasses();
+  renderSettings();
+}
 // ---- volym-reglage ----
 function setVolLive(key,val){
   if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
@@ -3039,6 +3316,7 @@ function renderSettings(){
   if(settingsTab==='general'){
     c+='<div class="set-sec"><div class="set-sec-title">⚙️ General</div>';
     c+=setToggleRow('vibrate','Vibration','Gentle haptic feedback on taps (mobile only).');
+    c+=numFormatRow();
     c+='</div>';
     c+='<div class="set-sec"><div class="set-sec-title">💾 Save Data</div>';
     c+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Backup Your Save</div><div class="set-row-desc">Copy a backup code to keep it safe or move to another device.</div></div><button class="set-btn purple" onclick="exportSave()">Export</button></div>';
@@ -3136,6 +3414,9 @@ function resetFromSettings(){
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.gems=0;
     G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+    G.stardust=0;G.ascensions=0;
+    G.ascensionUpgrades={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+    G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
     G.stats=freshStats();G._discoveredPets={};
@@ -3152,7 +3433,7 @@ function profEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').
 function showProfile(){profileSubTab='overview';renderProfile();document.getElementById('profile-modal').classList.add('open');}
 function closeProfile(){document.getElementById('profile-modal').classList.remove('open');}
 function profileSub(s){profileSubTab=s;renderProfile();}
-function profActiveSince(){var d=new Date(G.stats.firstPlayDate||Date.now());return (d.getMonth()+1)+'/'+(d.getFullYear()+'').slice(-2);}
+function profActiveSince(){var d=new Date(G.stats.firstPlayDate||Date.now());return d.getDate()+'/'+(d.getMonth()+1)+'/'+(d.getFullYear()+'').slice(-2);}
 function profPlaytime(){var s=G.stats.totalTimePlayed||0;if(s<3600)return Math.max(0,Math.floor(s/60))+'m';if(s<86400)return (s/3600).toFixed(1)+'h';return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';}
 function startRenameProfile(){
   var row=document.getElementById('prof-name-row');if(!row)return;
@@ -3333,7 +3614,7 @@ function renderProfile(){
   var h='';
   // HEADER
   h+='<div class="prof-header">';
-  h+='<div class="prof-avatar-wrap"><div class="prof-avatar">'+profAvatarInner()+'</div><div class="prof-shield">🐾</div></div>';
+  h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div><div class="prof-shield">🐾</div></div>';
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
   h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
@@ -3467,6 +3748,55 @@ var profPickerOpen=false;
 function toggleFavPicker(){profPickerOpen=!profPickerOpen;renderProfile();}
 function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();renderProfile();}
 function clearFavoritePet(){if(G.profile)G.profile.favoritePet=null;saveGame();renderProfile();}
+// ---- Favorit-djur-väljare (popup med sök + raritets-filter + sortering inkl. ålder) ----
+var favPickSearch='',favPickRarity='all',favPickSort='rarity';
+var FAV_RARITY_ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+function petAgeMs(p){var u=(typeof p.uid==='number')?Math.floor(p.uid):0;return u>0?Math.max(0,Date.now()-u):0;}
+function petAgeLabel(p){var ms=petAgeMs(p);if(!ms)return '';var s=Math.floor(ms/1000);if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d';}
+function openFavPicker(){
+  favPickSearch='';favPickRarity='all';favPickSort='rarity';
+  var owned={};(G.hatchedPets||[]).forEach(function(p){owned[p.rarity]=true;});
+  var sel=document.getElementById('favpick-rarity');
+  if(sel){var opts='<option value="all">All rarities</option>';FAV_RARITY_ORDER.forEach(function(r){if(owned[r]){var rc=RARITY_CONFIG[r];opts+='<option value="'+r+'">'+(rc?rc.label:r)+'</option>';}});sel.innerHTML=opts;sel.value='all';}
+  var ss=document.getElementById('favpick-search');if(ss)ss.value='';
+  var srt=document.getElementById('favpick-sort');if(srt)srt.value='rarity';
+  renderFavPickerList();
+  document.getElementById('favpicker-modal').classList.add('open');
+}
+function closeFavPicker(){document.getElementById('favpicker-modal').classList.remove('open');}
+function pickFav(uid){setFavoritePet(uid);closeFavPicker();}
+function renderFavPickerList(){
+  var list=document.getElementById('favpick-list');if(!list)return;
+  var pets=(G.hatchedPets||[]).slice();
+  var q=favPickSearch.trim().toLowerCase();
+  pets=pets.filter(function(p){
+    if(favPickRarity!=='all'&&p.rarity!==favPickRarity)return false;
+    if(q&&String(p.name||'').toLowerCase().indexOf(q)<0)return false;
+    return true;
+  });
+  if(favPickSort==='name')pets.sort(function(a,b){return String(a.name).localeCompare(String(b.name));});
+  else if(favPickSort==='new')pets.sort(function(a,b){return (b.uid||0)-(a.uid||0);});
+  else if(favPickSort==='old')pets.sort(function(a,b){return (a.uid||0)-(b.uid||0);});
+  else pets.sort(function(a,b){var d=FAV_RARITY_ORDER.indexOf(b.rarity)-FAV_RARITY_ORDER.indexOf(a.rarity);return d!==0?d:String(a.name).localeCompare(String(b.name));});
+  var curNone=!(G.profile&&G.profile.favoritePet);
+  var h='<div class="favpick-none'+(curNone?' sel':'')+'" onclick="clearFavoritePet();closeFavPicker()">🚫 No favorite (default avatar)</div>';
+  if(pets.length===0){
+    h+='<div class="prof-cz-empty">No pets match. Try clearing the filter or search.</div>';
+  }else{
+    h+='<div class="favpick-count">'+pets.length+' pet'+(pets.length===1?'':'s')+'</div><div class="prof-petgrid">';
+    pets.forEach(function(p){
+      var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#aaa';
+      var sel=(G.profile&&G.profile.favoritePet===p.uid)?' sel':'';
+      var age=petAgeLabel(p);
+      h+='<div class="prof-petpick'+sel+'" style="border-color:'+(sel?'var(--gold)':(col+'66'))+'" onclick="pickFav('+JSON.stringify(p.uid)+')">';
+      h+='<div class="prof-petpick-e">'+(p.e||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div>';
+      if(age)h+='<div class="favpick-age">'+age+' old</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  list.innerHTML=h;
+}
 function renderProfileCustomize(){
   var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   var h='<div class="prof-section-title">Customize</div>';
@@ -3510,15 +3840,48 @@ function refreshHomeButtons(){
 function claimDaily(){
   var btn=document.getElementById('daily-btn');
   if(btn)btn.style.display='none';
-  showComingSoon('🎁 Daily Reward','Dagliga belöningar byggs i ett senare steg. Knappen döljs tills nästa gång du öppnar spelet.');
+  showComingSoon('🎁 Daily Reward','Daily rewards are coming in a later update. This button hides until the next time you open the game.');
 }
 function openEvents(){
-  showComingSoon('🎉 Events','Event-systemet byggs i ett senare steg. Den här knappen visas bara när ett event är aktivt.');
+  showComingSoon('🎉 Events','The event system is coming in a later update. This button only shows when an event is active.');
 }
 
 // ============================================================
 // BUILDINGS
 // ============================================================
+var _bldTipIdx=null;
+function ensureBldTip(){var t=document.getElementById('bldTip');if(!t){t=document.createElement('div');t.id='bldTip';document.body.appendChild(t);}return t;}
+function closeBldTip(){_bldTipIdx=null;var t=document.getElementById('bldTip');if(t)t.classList.remove('open');}
+function bldTipHtml(i){
+  var b=BUILDINGS[i];var owned=G.owned[i]||0;var mult=buildingMult(i);
+  var each=b.p*mult;var totalThis=each*owned;
+  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*(G.owned[k]||0)*buildingMult(k);
+  var share=rawTotal>0?(totalThis/rawTotal*100):0;
+  return '<div class="btip-row">Production each: <b>'+fmt(each)+'/s</b></div>'+
+    '<div class="btip-row">Total from this building: <b>'+fmt(totalThis)+'/s</b></div>'+
+    '<div class="btip-row">Share of your EPS: <b>'+share.toFixed(1)+'%</b></div>';
+}
+function positionBldTip(anchor){
+  var t=document.getElementById('bldTip');if(!t||_bldTipIdx===null)return;
+  if(!anchor)anchor=document.querySelector('[data-info-icon="'+_bldTipIdx+'"]');
+  if(!anchor)return;
+  var r=anchor.getBoundingClientRect();var tw=t.offsetWidth,th=t.offsetHeight;
+  var left=r.left+r.width/2-tw/2;left=Math.max(8,Math.min(left,window.innerWidth-tw-8));
+  var top=r.top-th-8;if(top<8)top=r.bottom+8;
+  t.style.left=left+'px';t.style.top=top+'px';
+}
+function showBuildingInfo(i,anchor){
+  if(_bldTipIdx===i){closeBldTip();return;} // tap igen = stäng (toggle)
+  if(BUILDINGS[i]===undefined)return;
+  _bldTipIdx=i;
+  var t=ensureBldTip();t.innerHTML=bldTipHtml(i);t.classList.add('open');
+  positionBldTip(anchor);
+}
+function refreshBldTip(){
+  if(_bldTipIdx===null)return;
+  var t=document.getElementById('bldTip');if(!t){_bldTipIdx=null;return;}
+  t.innerHTML=bldTipHtml(_bldTipIdx);positionBldTip();
+}
 function renderBuildings(){
   var bl=document.getElementById('blist');bl.innerHTML='';
   var unlocked=numUnlocked();var show=Math.min(unlocked+2,20);
@@ -3528,7 +3891,7 @@ function renderBuildings(){
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
       var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s':'';
-      d.innerHTML='<div class="bld-left"><div class="bld-owned" id="bo'+i+'">'+G.owned[i]+'</div><div class="bld-img">'+BUILDINGS[i].e+'</div></div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div></div><button class="bld-buy '+(canAfford?'affordable':'expensive')+'" id="bb'+i+'"><span class="buy-icon">'+COIN_IMG+'</span><span class="buy-price" id="bc'+i+'">'+fmtShort(c)+'</span></button>';
+      d.innerHTML='<div class="bld-img" data-info-icon="'+i+'">'+BUILDINGS[i].e+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -3543,13 +3906,14 @@ function updateBuildingClasses(){
     var d=document.querySelector('[data-idx="'+i+'"]');if(!d){renderBuildings();return;}
     var c=bcost(i);var canAfford=G.coins>=c;
     d.className='bld '+(canAfford?'buyable':'poor');
-    var bp=document.getElementById('bp'+i),bo=document.getElementById('bo'+i),bc=document.getElementById('bc'+i),bb=document.getElementById('bb'+i);
+    var bp=document.getElementById('bp'+i),bo=document.getElementById('bo'+i),bc=document.getElementById('bc'+i);
     if(bp)bp.textContent=fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+(G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s total':'');
     if(bo)bo.textContent=G.owned[i];if(bc)bc.textContent=fmtShort(c);
-    if(bb)bb.className='bld-buy '+(canAfford?'affordable':'expensive');
   }
 }
 document.getElementById('blist').addEventListener('click',function(e){
+  // byggnads-ikon = info-popup (ska INTE köpa byggnaden)
+  var inf=e.target;while(inf&&inf!==this){if(inf.dataset&&inf.dataset.infoIcon!==undefined){showBuildingInfo(parseInt(inf.dataset.infoIcon),inf);return;}inf=inf.parentNode;}
   var d=e.target;while(d&&d!==this){if(d.dataset&&d.dataset.idx!==undefined)break;d=d.parentNode;}
   if(!d||d.dataset.idx===undefined)return;
   var i=parseInt(d.dataset.idx);if(isNaN(i)||i>=numUnlocked())return;
@@ -3994,8 +4358,8 @@ function renderShop(){
   html+='</div>';
 
   // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
-  var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  var slotFree=active<G.hatchSlotCount;
+  var occupied=G.hatchSlots.length;
+  var slotFree=occupied<G.hatchSlotCount;
   EGG_SHOP.forEach(function(egg){
     var state=getEggState(egg);
     var unlocked=state==='unlocked';
@@ -4057,8 +4421,8 @@ function buyEgg(id){
 function hatchFromShop(id){
   var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
   if(getEggState(egg)!=='unlocked')return;
-  var activeSlots=G.hatchSlots.filter(function(s){return !s.done;}).length;
-  if(activeSlots>=G.hatchSlotCount)return; // ingen ledig slot
+  var activeSlots=G.hatchSlots.length;
+  if(activeSlots>=G.hatchSlotCount)return; // ingen ledig slot (klar-men-oupphämtad räknas också)
   var owned=G.eggsOwned[egg.id]||0;
   if(owned<=0){
     // Inget i lager → crafta ett nytt först (betala coins + shells)
@@ -4087,7 +4451,7 @@ function showEggInfo(eggId){
   var weights=EGG_RARITY_WEIGHTS[eggId]||{};
   var total=Object.keys(weights).reduce(function(s,k){return s+weights[k];},0);
   var hatchSecs=Math.floor(getHatchDuration(eggId)/1000);
-  var activeCount=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  var activeCount=G.hatchSlots.length;
   var canHatch=activeCount<G.hatchSlotCount&&(G.eggsOwned[eggId]||0)>0;
 
   var html='<div style="text-align:center;margin-bottom:12px;">';
@@ -4163,7 +4527,7 @@ document.getElementById('egg-info-modal').onclick=function(e){if(e.target===this
 
 function startHatching(eggId){
   var maxSlots=G.hatchSlotCount;
-  var active=G.hatchSlots.filter(function(s){return !s.done;}).length;
+  var active=G.hatchSlots.length;
   if(active>=maxSlots)return;
   if((G.eggsOwned[eggId]||0)<=0)return;
   G.eggsOwned[eggId]--;
@@ -4267,7 +4631,7 @@ function renderHatchery(){
   if(!hasEggs){
     html+='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No eggs — craft some in the 🛍️ Shop!</div>';
   } else {
-    var activeCount=G.hatchSlots.filter(function(s){return !s.done;}).length;
+    var activeCount=G.hatchSlots.length;
     html+='<div class="hatch-egg-list">';
     EGG_SHOP.forEach(function(egg){
       var count=G.eggsOwned[egg.id]||0;if(count<=0)return;
@@ -5111,11 +5475,22 @@ function rewardShortText(id){
   if(r.perm)Object.keys(r.perm).forEach(function(st){p.push('+'+r.perm[st]+'% '+PERM_LABELS[st]);});
   return p.join(' · ');
 }
-function showRewardPopup(parts){
-  var pop=document.createElement('div');pop.className='ach-popup';
-  pop.innerHTML='<div class="ach-popup-icon">🎁</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div></div>';
+function showRewardPopup(parts,sticky){
+  if(sticky){ // ta bort ev. tidigare sticky-rutor så de inte staplas
+    var olds=document.querySelectorAll('.ach-popup.reward-sticky');
+    for(var i=0;i<olds.length;i++){if(olds[i].parentNode)olds[i].parentNode.removeChild(olds[i]);}
+  }
+  var pop=document.createElement('div');pop.className='ach-popup'+(sticky?' reward-sticky':'');
+  var x=sticky?'<div class="ach-popup-x" style="position:absolute;top:6px;right:9px;font-size:0.8rem;color:rgba(255,255,255,0.6);">✕</div>':'';
+  var tap=sticky?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:5px;">Tap to dismiss</div>':'';
+  pop.innerHTML=x+'<div class="ach-popup-icon">🎁</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
   document.body.appendChild(pop);
-  setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},3500);
+  if(sticky){
+    pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
+    pop.onclick=function(){if(pop.parentNode)pop.parentNode.removeChild(pop);};
+  }else{
+    setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},3500);
+  }
 }
 
 function claimAchievement(id){
@@ -5410,7 +5785,7 @@ function renderWorldCompletion(){
     h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);">🔒 Reward: 100💎 + “Living Petdex” title + profile frame</div>';
   }
   h+='</div>';
-  h+='<div class="wc-note">Titlar &amp; profil-ram sparas och visas när cosmetics-systemet byggs.</div>';
+  h+='<div class="wc-note">Titles &amp; profile frame are saved and shown once the cosmetics system is built.</div>';
   wrap.innerHTML=h;
 }
 
@@ -5460,9 +5835,9 @@ function setPetdexWorld(worldId){
   renderPetdex();
 }
 function updateHUD(){
-  var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmt(G.coins);
-  var tbg=document.getElementById('tb-gems-val');if(tbg)tbg.textContent=fmtShort(G.gems||0);
-  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmt(epsDispVal);
+  var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmtCompact(G.coins);
+  var tbg=document.getElementById('tb-gems-val');if(tbg)tbg.textContent=fmtCompact(G.gems||0);
+  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmtCompact(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
   var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsDispVal);
   // (Den gamla mörkblå pet-bonus-raden är borttagen — alla bonusar visas nu i stats-panelen via 📊-knappen.)
@@ -5522,7 +5897,30 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();},500);
+setInterval(function(){updateBuildingClasses();updateUpgradeGlow();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+// Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
+document.addEventListener('click',function(e){
+  if(_bldTipIdx===null)return;
+  var onIcon=e.target.closest&&e.target.closest('[data-info-icon]');
+  var tip=document.getElementById('bldTip');var onTip=tip&&tip.contains(e.target);
+  if(!onIcon&&!onTip)closeBldTip();
+});
+// Live-uppdatera shoppens äggkort (Craft-knapp + kostnads-chip + Hatch/Full) — bygger bara om när nåt faktiskt ändras (ingen flimmer)
+var _shopSig='';
+function softUpdateShop(){
+  if(typeof shopTab!=='undefined'&&shopTab!=='eggs')return;
+  var slotFree=G.hatchSlots.length<G.hatchSlotCount;
+  var sig=String(slotFree);
+  EGG_SHOP.forEach(function(egg){
+    var unlocked=getEggState(egg)==='unlocked';
+    var sc=getEggCost(egg),cc=getEggCoinCost(egg);
+    var afford=unlocked&&(G.shells[egg.shellType]||0)>=sc&&G.coins>=cc;
+    var owned=(G.eggsOwned[egg.id]||0)>0;
+    sig+='|'+egg.id+(unlocked?'1':'0')+(afford?'1':'0')+(owned?'1':'0');
+  });
+  if(sig!==_shopSig){_shopSig=sig;renderShop();}
+}
+setInterval(function(){if(document.getElementById('tab-shop').style.display==='block')softUpdateShop();},700);
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
 setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
@@ -5577,6 +5975,11 @@ if(savedData){
   G.gems=savedData.gems||0;
   G.permBonus=savedData.permBonus||{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   ['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'].forEach(function(k){if(G.permBonus[k]==null)G.permBonus[k]=0;});
+  G.stardust=savedData.stardust||0;
+  G.ascensions=savedData.ascensions||0;
+  G.ascensionUpgrades=(savedData.ascensionUpgrades&&typeof savedData.ascensionUpgrades==='object')?savedData.ascensionUpgrades:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
+  ABILITIES.forEach(function(k){if(G.ascensionUpgrades[k]==null)G.ascensionUpgrades[k]=0;});
+  recomputeAscensionBonus();
   G.worldClaims=savedData.worldClaims||{};
   G.titlesEarned=savedData.titlesEarned||{};
   G.adventureSlots=savedData.adventureSlots||1;
