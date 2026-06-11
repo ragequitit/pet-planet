@@ -156,7 +156,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .set-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:11px 14px;margin:0 -14px;position:sticky;top:0;z-index:4;background:linear-gradient(180deg,#13224a,#101d40);border-bottom:1px solid rgba(58,92,184,0.35);flex:none;scrollbar-width:none;}
 .set-tabs::-webkit-scrollbar{display:none;}
 .set-tab{flex:none;display:flex;align-items:center;gap:5px;padding:8px 13px;border-radius:12px;background:rgba(255,255,255,0.06);border:2px solid transparent;color:rgba(255,255,255,0.72);font-family:'Baloo 2','Fredoka One',cursive;font-weight:800;font-size:0.78rem;cursor:pointer;white-space:nowrap;}
-.set-tab .st-ico{font-size:0.95rem;}
+.set-tab .st-ico{font-size:0.95rem;display:flex;align-items:center;}
+.set-tab .st-ico img{height:24px;width:24px;object-fit:contain;display:block;}
 .set-tab.active{background:linear-gradient(180deg,#1c356e,#16294f);border-color:#f5c842;color:#fff;box-shadow:0 0 10px rgba(245,200,66,0.4);}
 .vol-row{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-top:1px solid rgba(255,255,255,0.06);}
 .set-sec-title + .vol-row{border-top:none;}
@@ -928,11 +929,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-qc-val{font-family:'Fredoka One',cursive;font-size:0.82rem;color:var(--gold);}
 .prof-qc-lbl{font-size:0.5rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
 .prof-subtabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto;padding-bottom:2px;}
-.prof-subtab{flex:1;min-width:62px;background:linear-gradient(180deg,#1a2c54,#13224a);border:1px solid rgba(58,92,184,0.5);border-radius:10px;padding:8px 4px;text-align:center;font-size:0.62rem;color:rgba(255,255,255,0.6);font-weight:700;cursor:pointer;white-space:nowrap;}
-.prof-subtab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
-.prof-subtab{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.pst-ico{display:flex;align-items:center;justify-content:center;height:22px;font-size:1rem;line-height:1;}
-.pst-ico img{height:22px;width:22px;object-fit:contain;display:block;}
+.prof-subtab{flex:1;min-width:62px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;padding:9px 4px 8px;font-size:0.62rem;color:rgba(255,255,255,0.72);font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+.prof-subtab.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;color:#ffe08a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
+.prof-subtab:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
+.prof-subtab{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.pst-ico{display:flex;align-items:center;justify-content:center;height:44px;font-size:2.5rem;line-height:1;}
+.pst-ico img{height:44px;width:44px;object-fit:contain;display:block;transform:scale(1.25);}
 .prof-tabcontent{margin-top:14px;}
 .prof-section-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:9px;padding:6px 12px;margin-bottom:10px;box-shadow:0 2px 0 #2a1858;}
 .prof-ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -3480,7 +3482,7 @@ function renderSettings(){
   // Flik-rad
   var tabs='<div class="set-tabs">';
   SETTINGS_TABS.forEach(function(t){
-    tabs+='<div class="set-tab'+(settingsTab===t.id?' active':'')+'" onclick="setSettingsTab(\''+t.id+'\')"><span class="st-ico">'+t.ico+'</span>'+t.label+'</div>';
+    tabs+='<div class="set-tab'+(settingsTab===t.id?' active':'')+'" onclick="setSettingsTab(\''+t.id+'\')"><span class="st-ico"><img src="'+ASSET_BASE+'/assets/ui/settings/settings-'+t.id+'.png" alt="" onerror="this.parentNode.textContent=\''+t.ico+'\'"></span>'+t.label+'</div>';
   });
   tabs+='</div>';
 
