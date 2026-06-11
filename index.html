@@ -51,11 +51,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
 #egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes shadowAnim{0%,100%{width:80px;height:16px;opacity:0.9;}50%{width:54px;height:10px;opacity:0.4;}}
-#particles{position:absolute;width:100%;height:100%;pointer-events:none;z-index:1;}
+#particles,#particles-front{position:absolute;width:100%;height:100%;pointer-events:none;}
+#particles{z-index:1;}
+#particles-front{z-index:3;}
 .spark{position:absolute;border-radius:50%;opacity:0;animation:sparkle var(--dur,3s) ease-in-out infinite;}
 @keyframes sparkle{0%{opacity:0;transform:translate(0,0) scale(1);}30%{opacity:1;}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0);}}
 /* Inställningar: dölj partiklar */
-.no-particles #particles{display:none!important;}
+.no-particles #particles,.no-particles #particles-front{display:none!important;}
 /* Inställningar: mindre rörelse — stäng av ägg-animationer och svävning */
 .reduce-motion #egg-img{animation:none!important;}
 .reduce-motion .spark{display:none!important;}
@@ -81,6 +83,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .set-btn.purple{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 3px 0 #4a148c;}
 .set-btn.red{background:linear-gradient(180deg,#c0392b,#922b21);box-shadow:0 3px 0 #5e1a12;}
 .set-about{text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.45);line-height:1.6;padding:8px 0 4px;}
+/* Redeem Code-fönstret */
+#redeem-modal{z-index:10000;}
+.redeem-input{width:100%;box-sizing:border-box;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(120,150,230,0.4);background:rgba(10,18,40,0.6);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;text-align:center;letter-spacing:1px;text-transform:uppercase;}
+.redeem-input:focus{outline:none;border-color:var(--gold);}
+.redeem-input::placeholder{color:rgba(255,255,255,0.3);letter-spacing:0.5px;text-transform:none;}
+.redeem-msg{min-height:16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.76rem;margin:10px 0 0;line-height:1.4;}
+.redeem-msg.ok{color:#5fd068;}
+.redeem-msg.err{color:#ff8a80;}
+.redeem-go{width:100%;padding:12px;border:none;border-radius:12px;margin-top:12px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;}
 .set-savebox{width:100%;min-height:80px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.12);border-radius:10px;color:#cfe0ff;font-family:monospace;font-size:0.68rem;padding:8px;margin-top:8px;resize:vertical;word-break:break-all;}
 /* Settings-fönstret: egen solid bakgrund + fast topp + scrollbart innehåll (fixar genomskinlig/oscrollbar bugg) */
 #settings-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
@@ -88,6 +99,27 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Ascension-skärmen */
 #ascension-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #ascension-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+/* Trading-skärmen (skal — server kopplas in senare) */
+#trading-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#trading-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+.trade-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1.5px solid rgba(120,150,230,0.4);border-radius:14px;padding:12px 14px;margin-bottom:16px;}
+.trade-banner .tb-ico{font-size:1.5rem;flex:none;}
+.trade-banner .tb-txt{font-family:'Nunito',sans-serif;font-size:0.74rem;color:rgba(255,255,255,0.7);line-height:1.45;font-weight:700;}
+.trade-banner .tb-txt b{color:#ffe082;font-family:'Fredoka One',cursive;font-weight:400;}
+.trade-arena{display:flex;gap:10px;align-items:stretch;margin-bottom:8px;}
+.trade-side{flex:1;min-width:0;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:12px 10px;display:flex;flex-direction:column;gap:9px;}
+.trade-side-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;text-align:center;}
+.trade-side.theirs .trade-side-title{color:#b8c6ff;}
+.trade-slots{display:flex;flex-direction:column;gap:7px;}
+.trade-slot{height:52px;border-radius:11px;border:1.5px dashed rgba(120,150,230,0.35);background:rgba(10,18,40,0.4);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.28);font-size:1.4rem;}
+.trade-addbtn{margin-top:2px;border:none;border-radius:11px;padding:9px;font-family:'Fredoka One',cursive;font-size:0.74rem;cursor:not-allowed;background:rgba(120,150,230,0.18);color:rgba(255,255,255,0.4);}
+.trade-swap{flex:none;align-self:center;font-size:1.3rem;color:rgba(255,255,255,0.4);padding:0 2px;}
+.trade-locknote{text-align:center;font-size:0.66rem;color:rgba(255,255,255,0.4);font-weight:700;font-family:'Nunito',sans-serif;margin:6px 0 14px;}
+.trade-propose{width:100%;border:none;border-radius:13px;padding:13px;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:not-allowed;background:rgba(120,150,230,0.2);color:rgba(255,255,255,0.42);box-shadow:0 3px 0 rgba(0,0,0,0.25);}
+.trade-how{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:12px 14px;margin-top:18px;}
+.trade-how-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:var(--gold);margin-bottom:8px;}
+.trade-how-row{display:flex;gap:9px;align-items:flex-start;padding:6px 0;font-family:'Nunito',sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.62);line-height:1.45;font-weight:700;}
+.trade-how-row .thn{flex:none;color:#b8c6ff;}
 #favpicker-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #favpicker-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;}
 .favpick-controls{padding:10px 14px;border-bottom:1px solid rgba(58,92,184,0.3);flex:none;background:linear-gradient(180deg,#13224a,#101d40);}
@@ -898,6 +930,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-subtabs{display:flex;gap:4px;margin-top:14px;overflow-x:auto;padding-bottom:2px;}
 .prof-subtab{flex:1;min-width:62px;background:linear-gradient(180deg,#1a2c54,#13224a);border:1px solid rgba(58,92,184,0.5);border-radius:10px;padding:8px 4px;text-align:center;font-size:0.62rem;color:rgba(255,255,255,0.6);font-weight:700;cursor:pointer;white-space:nowrap;}
 .prof-subtab.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
+.prof-subtab{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pst-ico{display:flex;align-items:center;justify-content:center;height:22px;font-size:1rem;line-height:1;}
+.pst-ico img{height:22px;width:22px;object-fit:contain;display:block;}
 .prof-tabcontent{margin-top:14px;}
 .prof-section-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;border-radius:9px;padding:6px 12px;margin-bottom:10px;box-shadow:0 2px 0 #2a1858;}
 .prof-ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
@@ -1054,6 +1089,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
           <div id="egg-glow2"></div>
           <div id="egg-glow"></div>
           <div id="particles"></div>
+          <div id="particles-front"></div>
           <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="">
           <div id="egg-shadow"></div>
         </div>
@@ -1197,6 +1233,17 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
   </div>
 </div>
+<div id="redeem-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <button class="modal-close" onclick="closeRedeem()" style="float:right">✕</button>
+    <div style="font-size:2.3rem;margin-bottom:4px;">🎁</div>
+    <div class="modal-title" style="margin-bottom:6px;">Redeem Code</div>
+    <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.45;margin-bottom:14px;">Enter a code to claim free rewards.</div>
+    <input id="redeem-input" class="redeem-input" type="text" placeholder="Enter code" autocomplete="off" autocapitalize="characters" spellcheck="false" onkeydown="if(event.key==='Enter')doRedeem()">
+    <div id="redeem-msg" class="redeem-msg"></div>
+    <button class="redeem-go" onclick="doRedeem()">Redeem</button>
+  </div>
+</div>
 <div id="profile-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -1222,6 +1269,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeAscension()">✕</button>
     </div>
     <div class="prof-body" id="ascension-body"></div>
+  </div>
+</div>
+<div id="trading-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">🔄 Trading</div>
+      <button class="prof-x" onclick="closeTrading()">✕</button>
+    </div>
+    <div class="prof-body" id="trading-body"></div>
   </div>
 </div>
 <div id="favpicker-modal" class="modal-overlay">
@@ -1846,6 +1902,7 @@ function freshStats(){
 }
 var G={
   coins:0,total:0,clicks:0,clickPower:1,luck:0,petSlots:1,currentWorld:0,
+  redeemedCodes:[],
   craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
   equippedPets:[null,null,null,null,null],
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1871,6 +1928,18 @@ var G={
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
 var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short'};
+
+// === REDEEM CODES (lokala, inbakade i spelet) ===
+// Koder lösas in EN gång per spelare (sparas i G.redeemedCodes). Nyckeln matchas
+// versalokänsligt (input görs till versaler + trimmas). Belöning kan ha valfri
+// kombination av: coins (tal), gems (tal), shells ({rarity:antal}). label = visas
+// i bekräftelsen. Lägg bara till en ny rad här för att skapa en ny kod.
+var REDEEM_CODES={
+  'WELCOME':  {coins:25000, gems:50, label:'Welcome to Pet Planet!'},
+  'LAUNCH':   {coins:100000, label:'Launch celebration'},
+  'SHELLSTART':{shells:{common:50,uncommon:25,rare:10}, label:'Starter shell pack'},
+  'GEMS100':  {gems:100, label:'Gem bonus'},
+};
 
 // ============================================================
 // UTILS
@@ -2219,7 +2288,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -2245,6 +2314,7 @@ function resetGame(){
   G.titlesEarned={};
   G.adventureSlots=1;
   G.adventures=[];
+  G.redeemedCodes=[];
   G.stats=freshStats();
   G._discoveredPets={};
   G.settings=Object.assign({},DEFAULT_SETTINGS);
@@ -2312,6 +2382,7 @@ function setWorld(idx){
   setImg('egg-img',w.egg,fb.egg);
   setImg('pedestal-img',w.pedestal,fb.pedestal);
   G.currentWorld=idx;
+  initParticles();
 }
 // TEST-knapp: bläddra genom alla världar för att granska konst. TAS BORT INNAN RELEASE.
 function cycleWorld(){
@@ -2320,15 +2391,70 @@ function cycleWorld(){
   var b=document.getElementById('world-test-btn');
   if(b)b.textContent='🌍 World: '+EGG_WORLDS[n].id+' ('+(n+1)+'/'+EGG_WORLDS.length+')';
 }
+// === PER-VÄRLD-PARTIKLAR (tunbart) ===
+// Varje värld får egen känsla: colors = palett (slumpas per partikel), count = mängd,
+// sizeMin/Max = storlek (px), durMin/Max = livslängd (s), drift = riktning
+// ('up' stiger, 'down' faller, 'float' svävar), driftAmt = hur långt de driftar.
+// Fallback till 'starter' om en värld saknar tema.
+var WORLD_PARTICLES={
+  starter:  {count:12, colors:['rgba(120,230,150,0.9)','rgba(255,255,255,0.9)','rgba(180,255,200,0.8)'],                          sizeMin:2,sizeMax:4,durMin:4.6,durMax:5.8,drift:'up',   driftAmt:22},
+  forest:   {count:15, colors:['rgba(140,220,90,0.9)','rgba(230,240,120,0.95)','rgba(120,200,80,0.85)'],                         sizeMin:2,sizeMax:4,durMin:5.0,durMax:6.5,drift:'float',driftAmt:18},
+  mountain: {count:11, colors:['rgba(235,240,250,0.85)','rgba(200,210,225,0.8)','rgba(255,255,255,0.7)'],                        sizeMin:2,sizeMax:3,durMin:5.5,durMax:7.0,drift:'down', driftAmt:20},
+  desert:   {count:11, colors:['rgba(240,210,130,0.85)','rgba(225,180,110,0.8)','rgba(255,230,170,0.75)'],                       sizeMin:2,sizeMax:4,durMin:5.2,durMax:6.6,drift:'float',driftAmt:24},
+  ocean:    {count:21, colors:['rgba(120,200,255,0.85)','rgba(150,225,255,0.9)','rgba(90,170,240,0.8)','rgba(200,240,255,0.8)'], sizeMin:2,sizeMax:5,durMin:4.8,durMax:6.2,drift:'up',   driftAmt:30},
+  jungle:   {count:18, colors:['rgba(110,210,90,0.9)','rgba(180,240,110,0.9)','rgba(80,180,70,0.85)'],                          sizeMin:2,sizeMax:4,durMin:5.0,durMax:6.4,drift:'float',driftAmt:20},
+  arctic:   {count:21, colors:['rgba(255,255,255,0.9)','rgba(210,235,255,0.85)','rgba(230,245,255,0.8)'],                       sizeMin:2,sizeMax:4,durMin:5.6,durMax:7.5,drift:'down', driftAmt:28},
+  volcano:  {count:9,  colors:['rgba(255,140,50,0.95)','rgba(255,90,40,0.9)','rgba(255,190,80,0.9)'],                           sizeMin:2,sizeMax:4,durMin:4.2,durMax:5.4,drift:'up',   driftAmt:32},
+  mystic:   {count:15, colors:['rgba(190,110,255,0.9)','rgba(225,120,230,0.9)','rgba(160,90,240,0.85)','rgba(255,255,255,0.7)'],sizeMin:2,sizeMax:4,durMin:4.8,durMax:6.2,drift:'float',driftAmt:22},
+  celestial:{count:17, colors:['rgba(255,225,130,0.95)','rgba(255,255,255,0.9)','rgba(255,240,180,0.85)'],                      sizeMin:2,sizeMax:4,durMin:4.4,durMax:5.8,drift:'float',driftAmt:16},
+  cosmic:   {count:24, colors:['rgba(190,110,255,0.9)','rgba(120,200,255,0.9)','rgba(255,120,200,0.9)','rgba(255,255,255,0.85)','rgba(140,255,210,0.85)'],sizeMin:2,sizeMax:5,durMin:4.6,durMax:6.4,drift:'float',driftAmt:26},
+};
+// Slumpa fram partiklar utifrån ett tema (positioner inom ägg-rutan ~140×160px).
+// Hälften läggs BAKOM ägget längst ut på kanten med drift UTÅT (glider fram under ägget),
+// hälften FRAMFÖR ägget med temats vanliga drift. layer = 'back' | 'front'.
+function genWorldParticles(theme){
+  function rnd(a,b){return a+Math.random()*(b-a);}
+  var out=[];
+  var cx=70, cy=82, rx=48, ry=58; // ägg-centrum + ungefärlig radie i rutan
+  var backN=Math.floor(theme.count/2);
+  for(var i=0;i<theme.count;i++){
+    var amt=theme.driftAmt;
+    var size=rnd(theme.sizeMin,theme.sizeMax);
+    var col=theme.colors[Math.floor(Math.random()*theme.colors.length)];
+    var dur=rnd(theme.durMin,theme.durMax);
+    var delay=rnd(0,2.4);
+    if(i<backN){
+      // BAKOM: sitter på ägg-kanten, driftar utåt (bort från ägg-centrum)
+      var ang=rnd(0,Math.PI*2), rr=rnd(0.8,1.05);
+      out.push({
+        x:cx+Math.cos(ang)*rx*rr, y:cy+Math.sin(ang)*ry*rr,
+        w:size, h:size, col:col, dur:dur,
+        tx:Math.cos(ang)*amt, ty:Math.sin(ang)*amt, d:delay, layer:'back'
+      });
+    } else {
+      // FRAMFÖR: var som helst i rutan, temats drift-riktning
+      var ty;
+      if(theme.drift==='up')ty=-rnd(amt*0.6,amt);
+      else if(theme.drift==='down')ty=rnd(amt*0.6,amt);
+      else ty=rnd(-amt*0.6,amt*0.6);
+      out.push({
+        x:rnd(6,132), y:rnd(12,150),
+        w:size, h:size, col:col, dur:dur,
+        tx:rnd(-amt*0.5,amt*0.5), ty:ty, d:delay, layer:'front'
+      });
+    }
+  }
+  return out;
+}
 function initParticles(){
-  var c=document.getElementById('particles');c.innerHTML='';
-  var sp=[
-    {x:12,y:20,w:2,h:2,col:'rgba(255,255,255,0.9)',dur:2.8,tx:-15,ty:-25,d:0},{x:85,y:12,w:2,h:2,col:'rgba(255,255,255,0.9)',dur:3.2,tx:12,ty:-30,d:0.3},
-    {x:118,y:28,w:2,h:2,col:'rgba(255,255,255,0.85)',dur:2.5,tx:20,ty:-20,d:0.6},{x:8,y:72,w:2,h:2,col:'rgba(255,255,255,0.8)',dur:3.6,tx:-18,ty:-15,d:0.9},
-    {x:30,y:45,w:4,h:4,col:'rgba(255,255,255,0.7)',dur:3.5,tx:-20,ty:-22,d:0.4},{x:100,y:40,w:4,h:4,col:'rgba(255,255,255,0.65)',dur:4.0,tx:18,ty:-25,d:0.8},
-    {x:20,y:35,w:2,h:2,col:'rgba(180,100,255,0.9)',dur:3.3,tx:-14,ty:-20,d:0.2},{x:95,y:18,w:2,h:2,col:'rgba(160,80,255,0.85)',dur:2.7,tx:16,ty:-28,d:0.7},
-  ];
-  sp.forEach(function(s){var el=document.createElement('div');el.className='spark';el.style.left=s.x+'px';el.style.top=s.y+'px';el.style.width=s.w+'px';el.style.height=s.h+'px';el.style.background=s.col;el.style.setProperty('--tx',s.tx+'px');el.style.setProperty('--ty',s.ty+'px');el.style.setProperty('--dur',s.dur+'s');el.style.animationDelay=s.d+'s';c.appendChild(el);});
+  var back=document.getElementById('particles');if(!back)return;
+  var front=document.getElementById('particles-front');
+  back.innerHTML='';if(front)front.innerHTML='';
+  var w=EGG_WORLDS[G.currentWorld];
+  var id=(w&&w.id)||'starter';
+  var theme=WORLD_PARTICLES[id]||WORLD_PARTICLES.starter;
+  var sp=genWorldParticles(theme);
+  sp.forEach(function(s){var el=document.createElement('div');el.className='spark';el.style.left=s.x+'px';el.style.top=s.y+'px';el.style.width=s.w+'px';el.style.height=s.h+'px';el.style.background=s.col;el.style.setProperty('--tx',s.tx+'px');el.style.setProperty('--ty',s.ty+'px');el.style.setProperty('--dur',s.dur+'s');el.style.animationDelay=s.d+'s';((s.layer==='front'&&front)?front:back).appendChild(el);});
 }
 
 // ============================================================
@@ -3033,13 +3159,14 @@ var MORE_ITEMS=[
   {label:'Petdex',icon:'📖',tab:'petdex'},
   {label:'Achievements',icon:'🏆',tab:'more'},
   {label:'Inventory',icon:'🎒',tab:'inventory'},
+  {label:'Trading',icon:'🔄',action:'trading'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
     d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else{switchTab(it.tab);}};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -3120,6 +3247,52 @@ function buyAscensionUpgrade(id){
 // Bygg/öppna Ascension-skärmen.
 function openAscension(){renderAscension();document.getElementById('ascension-modal').classList.add('open');}
 function closeAscension(){document.getElementById('ascension-modal').classList.remove('open');}
+
+// ============================================================
+// TRADING (skal — v1: gränssnitt klart, server/nätverk kopplas in senare)
+// ============================================================
+// Allt här är medvetet inaktivt. Spelet är en enda offline-fil (localStorage),
+// så riktig spelare-mot-spelare-handel kräver en backend som inte finns ännu.
+// När en server tillkommer behöver bara de stubbade knapparna kopplas in —
+// layout, vyer och ikon-väg ligger redan på plats.
+function openTrading(){renderTrading();document.getElementById('trading-modal').classList.add('open');}
+function closeTrading(){document.getElementById('trading-modal').classList.remove('open');}
+document.getElementById('trading-modal').onclick=function(e){if(e.target===this)closeTrading();};
+function renderTrading(){
+  function side(cls,title){
+    return '<div class="trade-side '+cls+'">'+
+      '<div class="trade-side-title">'+title+'</div>'+
+      '<div class="trade-slots">'+
+        '<div class="trade-slot">+</div>'+
+        '<div class="trade-slot">+</div>'+
+        '<div class="trade-slot">+</div>'+
+      '</div>'+
+      '<button class="trade-addbtn" disabled>+ Add Pet</button>'+
+    '</div>';
+  }
+  function how(n,txt){
+    return '<div class="trade-how-row"><span class="thn">'+n+'</span><span>'+txt+'</span></div>';
+  }
+  var h='';
+  h+='<div class="trade-banner">'+
+       '<span class="tb-ico">🌐</span>'+
+       '<span class="tb-txt"><b>Online trading coming soon.</b> Trading with other players needs an internet connection, which isn\'t available yet. The screen below is a preview of how it will work.</span>'+
+     '</div>';
+  h+='<div class="trade-arena">'+
+       side('yours','Your Offer')+
+       '<span class="trade-swap">⇄</span>'+
+       side('theirs','Their Offer')+
+     '</div>';
+  h+='<div class="trade-locknote">🔒 Requires an online connection</div>';
+  h+='<button class="trade-propose" disabled>Propose Trade</button>';
+  h+='<div class="trade-how">'+
+       '<div class="trade-how-title">How trading will work</div>'+
+       how('1','Pick pets, cores, or cosmetics to put in your offer.')+
+       how('2','The other player adds what they\'d give in return.')+
+       how('3','Both players confirm — the trade only happens if you both agree.')+
+     '</div>';
+  document.getElementById('trading-body').innerHTML=h;
+}
 function renderAscension(){
   var pending=calcPendingStardust();
   var able=pending>=1;
@@ -3362,12 +3535,12 @@ function renderSettings(){
 
   // Knappar längst ner (alltid synliga oavsett kategori)
   var actions='<div class="set-actions">'+
-    '<button class="set-action-btn blue" onclick="showComingSoon(\'🎁 Redeem Code\',\'Code redemption will be added with the events/rewards update.\')">🎁 Redeem Code</button>'+
+    '<button class="set-action-btn blue" onclick="openRedeem()">🎁 Redeem Code</button>'+
     '<button class="set-action-btn purple" onclick="showComingSoon(\'❓ Help & Support\',\'A help & support page is coming soon.\')">❓ Help &amp; Support</button>'+
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v3.5<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v4.9<br>An idle pet collection game · Made with 💜</div></div>';
 }
 // Export: visa en backup-kod och försök kopiera till urklipp
 function exportSave(){
@@ -3419,12 +3592,47 @@ function resetFromSettings(){
     G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
+    G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
     closeSettings();
     switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
     showGenericModal('🌱','Fresh Start','All progress has been reset. Welcome back to the beginning!');
   });
+}
+
+// ===== REDEEM CODES (lokal inlösning) =====
+function openRedeem(){
+  var inp=document.getElementById('redeem-input');var msg=document.getElementById('redeem-msg');
+  if(inp)inp.value='';if(msg){msg.textContent='';msg.className='redeem-msg';}
+  document.getElementById('redeem-modal').classList.add('open');
+  setTimeout(function(){if(inp)inp.focus();},50);
+}
+function closeRedeem(){document.getElementById('redeem-modal').classList.remove('open');}
+document.getElementById('redeem-modal').onclick=function(e){if(e.target===this)closeRedeem();};
+function redeemMsg(txt,ok){var m=document.getElementById('redeem-msg');if(!m)return;m.textContent=txt;m.className='redeem-msg '+(ok?'ok':'err');}
+// Dela ut belöningen och bygg en lista med vad spelaren fick (för bekräftelsen)
+function applyRedeemReward(rw){
+  var parts=[];
+  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtNum(rw.coins)+' Coins');}
+  if(rw.gems){G.gems=(G.gems||0)+rw.gems;parts.push('💎 +'+rw.gems+' Gems');}
+  if(rw.shells){Object.keys(rw.shells).forEach(function(id){var amt=rw.shells[id];if(!amt)return;G.shells[id]=(G.shells[id]||0)+amt;parts.push('+'+amt+' '+id.charAt(0).toUpperCase()+id.slice(1)+' Shells');});}
+  return parts;
+}
+function doRedeem(){
+  var inp=document.getElementById('redeem-input');if(!inp)return;
+  var code=(inp.value||'').trim().toUpperCase();
+  if(!code){redeemMsg('Please enter a code.',false);return;}
+  var rw=REDEEM_CODES[code];
+  if(!rw){redeemMsg('Invalid code. Double-check the spelling.',false);return;}
+  if(!Array.isArray(G.redeemedCodes))G.redeemedCodes=[];
+  if(G.redeemedCodes.indexOf(code)>=0){redeemMsg("You've already used this code.",false);return;}
+  var parts=applyRedeemReward(rw);
+  if(parts.length===0){redeemMsg('This code has no rewards.',false);return;}
+  G.redeemedCodes.push(code);
+  updateHUD();saveGame();
+  redeemMsg('✓ Redeemed: '+parts.join(' · '),true);
+  inp.value='';
 }
 
 // ===== PROFILE HUB =====
@@ -3629,9 +3837,9 @@ function renderProfile(){
   h+='<div class="prof-qc"><div class="prof-qc-val">'+profActiveSince()+'</div><div class="prof-qc-lbl">Since</div></div>';
   h+='</div>';
   // SUBTABS
-  var tabs=[['overview','Overview'],['customize','Customize'],['titles','Titles'],['badges','Badges'],['stats','Stats']];
+  var tabs=[['overview','Overview','📋'],['customize','Customize','🎨'],['titles','Titles','🏷️'],['badges','Badges','🛡️'],['stats','Stats','📊']];
   h+='<div class="prof-subtabs">';
-  tabs.forEach(function(t){h+='<div class="prof-subtab'+(profileSubTab===t[0]?' active':'')+'" onclick="profileSub(\''+t[0]+'\')">'+t[1]+'</div>';});
+  tabs.forEach(function(t){h+='<div class="prof-subtab'+(profileSubTab===t[0]?' active':'')+'" onclick="profileSub(\''+t[0]+'\')"><span class="pst-ico"><img src="'+ASSET_BASE+'/assets/ui/profiles/profile-'+t[0]+'.png" alt="" onerror="this.parentNode.textContent=\''+t[2]+'\'"></span><span class="pst-lbl">'+t[1]+'</span></div>';});
   h+='</div>';
   // CONTENT
   h+='<div class="prof-tabcontent">';
@@ -5385,11 +5593,11 @@ var ACH_REWARDS={
   shell_hoarder:{eggs:{mountain:1},gems:4},
   shell_empire:{eggs:{ocean:2},gems:8,perm:{shellGain:5}},
   lucky_drop:{gems:2},
-  legendary_treasure:{eggs:{mountain:1},gems:4},
+  legendary_treasure:{shells:{rare:5},gems:4},
   cosmic_miracle:{gems:10,pet:'legendary',perm:{shellGain:3}},
   // Nya shell-firsts (anti-cirkulär: inga shells)
   epic_fortune:{gems:3},
-  mythical_discovery:{eggs:{mountain:1},gems:6},
+  mythical_discovery:{shells:{rare:8},gems:6},
   artifact_find:{eggs:{ocean:1},gems:7},
   heavenly_luck:{eggs:{ocean:1},gems:8},
   eternal_shell:{eggs:{ocean:1},gems:9},
@@ -5984,6 +6192,7 @@ if(savedData){
   G.titlesEarned=savedData.titlesEarned||{};
   G.adventureSlots=savedData.adventureSlots||1;
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
+  G.redeemedCodes=Array.isArray(savedData.redeemedCodes)?savedData.redeemedCodes:[];
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
@@ -6006,7 +6215,7 @@ if(savedData){
   }
 }
 switchTab('buildings');
-initParticles();setWorld(G.currentWorld);
+setWorld(G.currentWorld);
 applyPedestalVisibility();
 applySettings();
 refreshHomeButtons();
