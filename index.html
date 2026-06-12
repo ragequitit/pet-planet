@@ -6925,7 +6925,7 @@ var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
 var sb=null;
 try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);}}catch(e){sb=null;}
-var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudLocked=false;
+var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudLocked=false, cloudClaimed=false;
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
@@ -6978,7 +6978,25 @@ function cloudPull(){
     }
   },function(){cloudStatus('Could not reach the cloud. Try again.');});
 }
-function cloudEnter(){cloudClaimSession(function(){cloudPull();});}
+function cloudActiveCheck(cb){
+  if(!sb||!cloudUser){if(cb)cb(null);return;}
+  sb.from('saves').select('active_session,updated_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){cb(res&&res.data?{session:res.data.active_session,updatedAt:res.data.updated_at}:null);},function(){cb(null);});
+}
+function cloudHeartbeat(){
+  if(!sb||!cloudUser||cloudLocked||!cloudClaimed)return;
+  cloudActiveCheck(function(info){if(info&&info.session&&info.session!==cloudSession){cloudLocked=true;cloudShowLock();}});
+}
+function cloudEnter(){
+  cloudActiveCheck(function(info){
+    var recentOther=false;
+    if(info&&info.session&&info.session!==cloudSession){var t=Date.parse(info.updatedAt||'');recentOther=!!t&&(Date.now()-t<30000);}
+    cloudClaimSession(function(){
+      cloudClaimed=true;
+      if(recentOther)cloudStatus('You are now playing on this device. Your other open window is now locked.');
+      cloudPull();
+    });
+  });
+}
 function cloudRefreshUI(){if(typeof renderSettings==='function')renderSettings();}
 function cloudInputs(){return [(document.getElementById('cloud-email')||{}).value||'',(document.getElementById('cloud-pwd')||{}).value||''];}
 function cloudDoSignUp(){
@@ -7004,7 +7022,7 @@ function cloudDoLogIn(){
 }
 function cloudDoLogOut(){
   if(!sb)return;
-  cloudPushNow(function(){sb.auth.signOut().then(function(){cloudUser=null;cloudRefreshUI();});});
+  cloudPushNow(function(){sb.auth.signOut().then(function(){cloudUser=null;cloudClaimed=false;cloudLocked=false;cloudRefreshUI();});});
 }
 function cloudSyncNow(){if(!sb||!cloudUser)return;cloudStatus('Syncing...');cloudPull();}
 function cloudAccountHtml(){
@@ -7030,7 +7048,8 @@ if(sb){
     sb.auth.onAuthStateChange(function(_e,session){cloudUser=session?session.user:null;cloudRefreshUI();});
   }catch(e){}
   setInterval(cloudFlush,15000);
-  try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')cloudFlush();});}catch(e){}
+  setInterval(cloudHeartbeat,8000);
+  try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){cloudHeartbeat();}else{cloudFlush();}});}catch(e){}
 }
 </script>
 </body>
