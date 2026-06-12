@@ -102,6 +102,102 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Trading-skärmen (skal — server kopplas in senare) */
 #trading-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #trading-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+#events-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#events-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 34px;}
+.ev-intro{font-size:0.66rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.4;padding:10px 18px 2px;}
+.ev-feat{position:relative;margin:10px 12px 0;border-radius:16px;overflow:hidden;border:1.5px solid rgba(120,180,255,0.35);background:linear-gradient(135deg,#234b86,#16294f);min-height:108px;display:flex;align-items:center;}
+.ev-feat-art{position:absolute;right:0;top:0;bottom:0;width:46%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;opacity:0.95;}
+.ev-feat-art img{width:100%;height:100%;object-fit:cover;}
+.ev-feat-l{position:relative;z-index:2;padding:12px 14px;max-width:64%;}
+.ev-feat-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;line-height:1.05;text-shadow:0 2px 6px rgba(0,0,0,0.6);}
+.ev-feat-tag{font-size:0.64rem;color:rgba(255,255,255,0.82);margin-top:3px;}
+.ev-timer{display:inline-flex;align-items:center;gap:5px;margin-top:9px;background:rgba(8,14,28,0.72);border:1px solid rgba(255,255,255,0.16);border-radius:9px;padding:5px 9px;font-size:0.66rem;font-weight:800;color:#cfe3ff;}
+.ev-feat-i{position:absolute;top:8px;right:8px;z-index:3;width:24px;height:24px;border-radius:50%;background:rgba(8,14,28,0.6);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:0.72rem;font-style:italic;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.ev-tabs{display:flex;gap:6px;padding:12px 12px 4px;}
+.ev-tab{flex:1;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:13px;padding:9px 4px;font-size:0.6rem;font-weight:800;color:rgba(255,255,255,0.72);text-align:center;cursor:pointer;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2);}
+.ev-tab.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2px solid #ffce4a;color:#ffe08a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 3px 0 #0b1326;}
+.ev-tab:active{transform:translateY(2px);}
+.ev-wrap{padding:8px 12px;}
+.ev-currency{display:flex;align-items:center;justify-content:center;gap:6px;background:rgba(8,14,28,0.5);border:1px solid rgba(255,255,255,0.12);border-radius:11px;padding:8px;margin-bottom:10px;font-weight:800;color:#cfe3ff;font-size:0.82rem;}
+.ev-card{background:linear-gradient(180deg,#16284f,#0e1c3c);border:1px solid rgba(90,130,210,0.3);border-radius:14px;padding:11px 12px;margin-bottom:10px;}
+.ev-card-h{font-family:'Fredoka One',cursive;font-size:0.72rem;color:#cfe0ff;letter-spacing:0.5px;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:9px;}
+.ev-prog-num{text-align:center;font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;}
+.ev-prog-num small{color:rgba(255,255,255,0.5);font-size:0.7rem;}
+.ev-bar{height:9px;border-radius:6px;background:rgba(0,0,0,0.4);overflow:hidden;margin:7px 0 12px;border:1px solid rgba(255,255,255,0.08);}
+.ev-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#5aa9e6,#a9d6ff);}
+.ev-chests{display:flex;justify-content:space-between;gap:5px;}
+.ev-chest{flex:1;text-align:center;}
+.ev-chest-ic{font-size:1.7rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.5));}
+.ev-chest.locked .ev-chest-ic{filter:grayscale(1) brightness(0.7);opacity:0.55;}
+.ev-chest.ready .ev-chest-ic{animation:pulse 1.4s ease-in-out infinite;}
+.ev-chest-v{font-size:0.55rem;color:rgba(255,255,255,0.7);margin-top:2px;font-weight:700;}
+.ev-chest-rw{font-size:0.48rem;color:#ffe08a;font-weight:800;line-height:1.15;margin-top:2px;min-height:1.5em;}
+.ev-chest-claim{margin-top:4px;width:100%;border:none;border-radius:7px;padding:3px 0;font-family:'Fredoka One',cursive;font-size:0.52rem;cursor:pointer;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 2px 0 #8a6000;}
+.ev-chest-done{margin-top:4px;font-size:0.53rem;color:#8be08b;font-weight:800;}
+.ev-quest{display:flex;align-items:center;gap:9px;background:rgba(0,0,0,0.18);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:8px 9px;margin-bottom:7px;}
+.ev-quest-ic{width:30px;height:30px;border-radius:9px;background:linear-gradient(180deg,#2a3c6c,#172643);display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;}
+.ev-quest-mid{flex:1;min-width:0;}
+.ev-quest-name{font-size:0.68rem;font-weight:800;color:#fff;}
+.ev-quest-bar{height:6px;border-radius:4px;background:rgba(0,0,0,0.4);overflow:hidden;margin:4px 0 3px;}
+.ev-quest-bar-fill{height:100%;background:linear-gradient(90deg,#6cc24a,#9be86c);}
+.ev-quest-prog{font-size:0.55rem;color:rgba(255,255,255,0.6);}
+.ev-quest-rw{text-align:center;font-size:0.5rem;color:rgba(255,255,255,0.55);flex-shrink:0;line-height:1.3;}
+.ev-quest-rw b{display:block;color:#ffe08a;font-size:0.62rem;}
+.ev-go{flex-shrink:0;border:none;border-radius:9px;padding:7px 11px;font-family:'Fredoka One',cursive;font-size:0.6rem;cursor:pointer;background:linear-gradient(180deg,#4a78d8,#2a4c9e);color:#fff;box-shadow:0 2px 0 #16306a;}
+.ev-go:active{transform:translateY(2px);}
+.ev-claim{flex-shrink:0;border:none;border-radius:9px;padding:7px 11px;font-family:'Fredoka One',cursive;font-size:0.6rem;cursor:pointer;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 2px 0 #8a6000;}
+.ev-claim:active{transform:translateY(2px);}
+.ev-qdone{flex-shrink:0;width:32px;text-align:center;font-size:1.05rem;}
+.ev-newq{text-align:center;font-size:0.58rem;color:rgba(255,255,255,0.45);padding:7px;background:rgba(0,0,0,0.2);border-radius:9px;margin-top:3px;}
+.ev-pet{text-align:center;}
+.ev-pet-art{width:100%;height:120px;border-radius:12px;background:radial-gradient(circle at 50% 38%,#2a3f70,#101d3a);display:flex;align-items:center;justify-content:center;font-size:3.4rem;margin-bottom:8px;overflow:hidden;}
+.ev-pet-art img{width:100%;height:100%;object-fit:contain;}
+.ev-pet-name{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
+.ev-pet-rar{font-size:0.66rem;font-weight:800;margin-bottom:8px;}
+.ev-pet-abils{display:flex;gap:5px;}
+.ev-pet-ab{flex:1;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:6px 3px;}
+.ev-pet-ab-n{font-size:0.5rem;color:rgba(255,255,255,0.6);}
+.ev-pet-ab-v{font-size:0.66rem;font-weight:800;color:#8be08b;}
+.ev-coll-bar{height:10px;border-radius:6px;background:rgba(0,0,0,0.4);overflow:hidden;margin:8px 0;}
+.ev-coll-fill{height:100%;background:linear-gradient(90deg,#5aa9e6,#a9d6ff);}
+.ev-coll-btn{width:100%;border:none;border-radius:10px;padding:9px;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;background:linear-gradient(180deg,#4a78d8,#2a4c9e);color:#fff;box-shadow:0 3px 0 #16306a;}
+.ev-soon{text-align:center;padding:40px 22px;color:rgba(255,255,255,0.6);}
+.ev-soon-ic{font-size:2.6rem;margin-bottom:10px;}
+.ev-soon h3{font-family:'Fredoka One',cursive;color:#fff;font-size:1rem;margin-bottom:6px;}
+.ev-soon p{font-size:0.68rem;line-height:1.5;}
+.evs-sec{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#cfe0ff;text-transform:uppercase;letter-spacing:0.5px;margin:12px 2px 7px;}
+.evs-card{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#16284f,#0e1c3c);border:1px solid rgba(90,130,210,0.3);border-radius:13px;padding:9px 11px;margin-bottom:8px;}
+.evs-card.evs-egg{border-color:rgba(120,180,255,0.55);background:linear-gradient(135deg,#234b86,#16294f);}
+.evs-card.soon{opacity:0.62;}
+.evs-ic{width:40px;height:40px;border-radius:10px;background:rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
+.evs-mid{flex:1;min-width:0;}
+.evs-name{font-size:0.74rem;font-weight:800;color:#fff;}
+.evs-desc{font-size:0.56rem;color:rgba(255,255,255,0.6);line-height:1.3;margin:2px 0 4px;}
+.evs-cost{font-size:0.66rem;font-weight:800;color:#cfe3ff;}
+.evs-buy{flex-shrink:0;border:none;border-radius:10px;padding:9px 14px;font-family:'Fredoka One',cursive;font-size:0.66rem;cursor:pointer;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 3px 0 #8a6000;}
+.evs-buy:active{transform:translateY(2px);box-shadow:0 1px 0 #8a6000;}
+.evs-buy.dim{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.4);box-shadow:none;cursor:default;}
+.evs-soon{flex-shrink:0;text-align:center;font-size:0.56rem;font-weight:800;color:rgba(255,255,255,0.5);line-height:1.2;padding:0 6px;}
+.evs-note{text-align:center;font-size:0.56rem;color:rgba(255,255,255,0.4);padding:10px 6px 2px;line-height:1.4;}
+.evs-owned{flex-shrink:0;text-align:center;font-size:0.58rem;font-weight:800;color:#8be08b;padding:0 8px;}
+.evs-act{font-size:0.5rem;font-weight:800;color:#ffd96b;background:rgba(0,0,0,0.3);border-radius:6px;padding:1px 5px;margin-left:4px;}
+.ev-collback{font-size:0.66rem;font-weight:800;color:#cfe3ff;padding:10px 14px 2px;cursor:pointer;}
+.ev-collback:active{opacity:0.7;}
+.ev-ms-row{display:flex;gap:5px;margin-top:8px;}
+.ev-ms{flex:1;text-align:center;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.08);border-radius:9px;padding:6px 3px;}
+.ev-ms.ready{border-color:#ffce4a;}
+.ev-ms.done{opacity:0.6;}
+.ev-ms-at{font-family:'Fredoka One',cursive;font-size:0.58rem;color:#fff;}
+.ev-ms-rw{font-size:0.48rem;color:#ffe08a;font-weight:800;margin:2px 0 4px;line-height:1.2;min-height:1.7em;}
+.ev-ms-claim{width:100%;border:none;border-radius:7px;padding:3px 0;font-family:'Fredoka One',cursive;font-size:0.48rem;cursor:pointer;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 2px 0 #8a6000;}
+.ev-ms-tag{font-size:0.46rem;color:rgba(255,255,255,0.45);font-weight:800;}
+.ev-ms-tag.done{color:#8be08b;}
+.ev-pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.ev-pcell{text-align:center;background:rgba(0,0,0,0.2);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:9px 4px;}
+.ev-pemoji{font-size:1.9rem;line-height:1;margin-bottom:4px;}
+.ev-pcell.locked .ev-pemoji{filter:grayscale(1) brightness(0.6);opacity:0.7;}
+.ev-pname{font-size:0.6rem;font-weight:800;}
+.ev-prar{font-size:0.5rem;font-weight:700;margin-top:1px;}
 .trade-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1.5px solid rgba(120,150,230,0.4);border-radius:14px;padding:12px 14px;margin-bottom:16px;}
 .trade-banner .tb-ico{font-size:1.5rem;flex:none;}
 .trade-banner .tb-txt{font-family:'Nunito',sans-serif;font-size:0.74rem;color:rgba(255,255,255,0.7);line-height:1.45;font-weight:700;}
@@ -361,6 +457,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .psub-btn:active{transform:translateY(2px);}
 .psub-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;color:#0b1530;box-shadow:0 2px 0 #8a6000;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
+#generic-modal{z-index:1200;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:20px;width:var(--w);max-width:100vw;max-height:75vh;overflow-y:auto;}
 /* Stats-panel */
@@ -1249,7 +1346,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="modal-close" onclick="document.getElementById('generic-modal').classList.remove('open')" style="float:right">✕</button>
     <div id="generic-modal-icon" style="font-size:2.5rem;margin-bottom:6px;"></div>
     <div class="modal-title" id="generic-modal-title" style="margin-bottom:8px;"></div>
-    <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;"></div>
+    <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;white-space:pre-line;"></div>
     <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
   </div>
 </div>
@@ -1298,6 +1395,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeTrading()">✕</button>
     </div>
     <div class="prof-body" id="trading-body"></div>
+  </div>
+</div>
+<div id="events-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">🎉 Events</div>
+      <button class="prof-x" onclick="closeEvents()">✕</button>
+    </div>
+    <div class="prof-body" id="events-body"></div>
   </div>
 </div>
 <div id="favpicker-modal" class="modal-overlay">
@@ -1795,7 +1901,21 @@ function rollSpecies(eggId,rarity){
   return rarPool[Math.floor(Math.random()*rarPool.length)];
 }
 
+var EVENT_EGG_ID='event_egg';
+function eventEggMeta(){
+  var se=null;((typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.shop)||[]).forEach(function(x){if(x.kind==='egg')se=x;});
+  return {id:EVENT_EGG_ID, name:(se&&se.name)||'Event Egg', icon:(se&&se.icon)||'\ud83e\udd5a'};
+}
+function generateEventPet(){
+  ensureEventState();
+  var cfg=rollEventPet()||{};
+  var rarity=cfg.rarity||'common';
+  var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
+  var abilities=[],i;for(i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
+  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1};
+}
 function generatePet(eggId){
+  if(eggId===EVENT_EGG_ID)return generateEventPet();
   var rarity=rollRarity(eggId);
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var species=rollSpecies(eggId,rarity);
@@ -1884,11 +2004,11 @@ function closeStatsPanel(){var m=document.getElementById('stats-modal');if(m)m.c
 
 function getEpsMultiplier(){
   var b=getActiveBonuses();
-  return 1+(b.coinGain/100)+(b.idleGain/100);
+  return (1+(b.coinGain/100)+(b.idleGain/100))*boostCoinMult();
 }
 function getClickMultiplier(){
   var b=getActiveBonuses();
-  return 1+(b.coinGain/100)+(b.clickPower/100);
+  return (1+(b.coinGain/100)+(b.clickPower/100))*boostCoinMult();
 }
 function getLuckBonus(){
   return getActiveBonuses().luck/100;
@@ -1957,6 +2077,9 @@ var G={
   adventures:[],
   profile:{name:'Player',favoritePet:null,equippedTitle:null},
   settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true},
+  event:null,
+  boosts:{coin:0,luck:0},
+  cosmeticsOwned:{},
   stats:freshStats(),
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
@@ -1974,10 +2097,91 @@ var REDEEM_CODES={
   'GEMS100':  {gems:100, label:'Gem bonus'},
 };
 
+// === EVENT SYSTEM (data-styrt — ETT recept = ETT event) ===
+// Byt hela ACTIVE_EVENT for nasta event (eller satt ACTIVE_EVENT=null for att stanga av
+// events helt — da goms den flytande Events-knappen). durationDays = hur lange eventet pagar;
+// nedrakningen startar forsta gangen spelaren oppnar spelet under eventet (stamplas i
+// G.event.startedAt) sa timern aldrig blir negativ. currency = event-token (namn+ikon byts
+// per event). progressMax + chests = milstolpe-matararen. quests/pet/collection ritas i
+// Overview (quests racknas inte an — kopplas in i steg 2). TUNBART.
+var ACTIVE_EVENT={
+  id:'winter_wonderland_2026',
+  name:'Winter Wonderland',
+  tagline:'Celebrate the magic of the season!',
+  intro:'Join special events, earn limited rewards, and collect exclusive items!',
+  emoji:'\u2744\ufe0f',
+  durationDays:28,
+  bannerImg:ASSET_BASE+'/assets/ui/events/winter-wonderland-banner.png', // saknas an -> emoji-scen som fallback
+  bannerEmoji:'\ud83d\udc3a\ud83c\udf84\ud83c\udf81',
+  currency:{name:'Snowflakes',emoji:'\u2744\ufe0f',img:ASSET_BASE+'/assets/ui/events/snowflake.png'},
+  progressMax:5000,
+  snowPerHatch:60,
+  snowPerAdventure:120,
+  questCycleHours:24,
+  chests:[
+    {at:1000, reward:{coins:50000}},
+    {at:2500, reward:{gems:50}},
+    {at:4000, reward:{shells:{rare:10}}},
+    {at:5000, reward:{gems:150, coins:250000}}
+  ],
+  quests:[
+    {id:'q_hatch', type:'hatch',     icon:'\ud83e\udd5a', name:'Hatch 15 Eggs',            target:15,   reward:{coins:50000}},
+    {id:'q_snow',  type:'snow',      icon:'\u2744\ufe0f', name:'Collect 1,000 Snowflakes', target:1000, reward:{gems:25}},
+    {id:'q_adv',   type:'adventure', icon:'\ud83d\uddfa\ufe0f', name:'Complete 5 Adventures',    target:5,    reward:{coins:120000}},
+    {id:'q_tap',   type:'tap',       icon:'\ud83d\udc46', name:'Tap the Egg 300 times',    target:300,  reward:{shells:{rare:5}}},
+    {id:'q_fuse',  type:'fusion',    icon:'\u2697\ufe0f', name:'Fuse 2 Pets',              target:2,    reward:{gems:40}}
+  ],
+  pet:{name:'Festive Reindeer', rarity:'mythical', emoji:'\ud83e\udd8c',
+       img:ASSET_BASE+'/assets/ui/events/festive-reindeer.png',
+       abilities:[{name:'Coin Gain',val:'+55%'},{name:'Luck',val:'+40%'},{name:'Shard Gain',val:'+45%'}]},
+  eggPityN:8,
+  eggHatchSeconds:15,
+  pets:[
+    {id:'frostpup',       name:'Frostpup',         rarity:'common',   weight:15, emoji:'🐶'},
+    {id:'snowbun',        name:'Snow Bun',         rarity:'common',   weight:15, emoji:'🐰'},
+    {id:'mittencat',      name:'Mitten Cat',       rarity:'common',   weight:15, emoji:'🐱'},
+    {id:'cocoacub',       name:'Cocoa Cub',        rarity:'uncommon', weight:14, emoji:'🐻'},
+    {id:'icesparrow',     name:'Icicle Sparrow',   rarity:'uncommon', weight:14, emoji:'🐦'},
+    {id:'aurorafox',      name:'Aurora Fox',       rarity:'rare',     weight:9,  emoji:'🦊'},
+    {id:'pinemarten',     name:'Pine Marten',      rarity:'rare',     weight:9,  emoji:'🦡'},
+    {id:'blizzstag',      name:'Blizzard Stag',    rarity:'epic',     weight:4,  emoji:'🫎'},
+    {id:'glacierbear',    name:'Glacier Bear',     rarity:'epic',     weight:4,  emoji:'🐻‍❄️'},
+    {id:'festivereindeer',name:'Festive Reindeer', rarity:'mythical', weight:1,  emoji:'🦌'}
+  ],
+  collection:{total:10, milestones:[
+    {at:3,  reward:{shells:{rare:15}}},
+    {at:6,  reward:{gems:75}},
+    {at:9,  reward:{cores:1, coreTier:3}},
+    {at:10, reward:{gems:250, title:'Winter Champion', cosmetic:'frame_winter'}}
+  ]},
+  // EVENT SHOP (data-styrt; spenderar Snowflakes-SALDOT, inte matararen). status:'live'|'soon'.
+  // kind: egg(centerpiece, last tills petsen finns) | bundle(resurser, live) | boost(soon) | cosmetic(soon).
+  shop:[
+    {id:'egg_winter', kind:'egg',    status:'live', icon:'\ud83e\udd5a', name:'Winter Event Egg', desc:'A real egg \u2014 hatch it in your Hatchery for a limited Winter pet.', cost:250},
+    {id:'coins_s',  kind:'bundle',   status:'live', icon:'\ud83e\ude99', name:'Coin Cache',      desc:'A quick boost of Egg Coins.',   cost:60,  reward:{coins:150000}},
+    {id:'coins_l',  kind:'bundle',   status:'live', icon:'\ud83e\ude99', name:'Coin Vault',      desc:'A big pile of Egg Coins.',      cost:200, reward:{coins:750000}},
+    {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Rare Shell Pack', desc:'10 Rare shells for crafting.',  cost:120, reward:{shells:{rare:10}}},
+    {id:'core_1',   kind:'bundle',   status:'live', icon:'\u2b21',       name:'Mutation Core',   desc:'A random Uncommon ability core.', cost:180, reward:{cores:1, coreTier:2}},
+    {id:'gems_s',   kind:'bundle',   status:'live', icon:'\ud83d\udc8e', name:'Gem Pouch',       desc:'A small pouch of Gems.',        cost:300, reward:{gems:25}},
+    {id:'frenzy',   kind:'boost',    status:'live', icon:'\ud83d\udd25', name:'Winter Frenzy',   desc:'x2 Egg Coins for 30 minutes.',  cost:150, boostType:'coin', durationS:1800},
+    {id:'lucky',    kind:'boost',    status:'live', icon:'\ud83c\udf40', name:'Lucky Charm',     desc:'x2 Luck for 30 minutes.',       cost:150, boostType:'luck', durationS:1800},
+    {id:'title_winter', kind:'cosmetic', status:'live', icon:'\ud83c\udff7\ufe0f', name:'Title: Winterborn', desc:'A seasonal profile title you can equip.', cost:200, cosmeticType:'title', titleName:'Winterborn'},
+    {id:'frame_winter', kind:'cosmetic', status:'live', icon:'\ud83d\uddbc\ufe0f', name:'Frostgift Frame', desc:'A snowy profile frame (saved for the cosmetics update).', cost:400, cosmeticType:'flag'},
+    {id:'skin_egg',     kind:'cosmetic', status:'live', icon:'\u2744\ufe0f',       name:'Snow Egg Skin',   desc:'A frosty egg skin (saved for the cosmetics update).',    cost:500, cosmeticType:'flag'}
+  ]
+};
+
 // ============================================================
 // UTILS
 // ============================================================
 // === TAL-FORMAT (central, styrs av inställningen G.settings.numFormat: 'short' | 'full' | 'sci') ===
+// Petdex: event-petsen exponeras som världen 'event' (källa = ACTIVE_EVENT.pets).
+(function(){
+  if(typeof ACTIVE_EVENT==='undefined'||!ACTIVE_EVENT||!ACTIVE_EVENT.pets)return;
+  var pool={};
+  ACTIVE_EVENT.pets.forEach(function(p){(pool[p.rarity]=pool[p.rarity]||[]).push({name:p.name,e:p.emoji||'\ud83d\udc3e'});});
+  PET_POOL['event']=pool;
+})();
 var FMT_SUFFIX=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UD','DD','TD','QaD','QiD','SxD','SpD','OcD','NoD','Vg'];
 var FULL_MAX=1e12; // Full-läget visar fulla siffror upp hit, sen faller det tillbaka till kort stil (annars oläsligt). TUNBART.
 function fmtCompact(n){ // alltid kort suffix-stil (1.5K, 8.3M) — för trånga ytor som toppmätaren
@@ -2016,7 +2220,12 @@ function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else 
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
 function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
 function formatTime(secs){if(secs<60)return secs+'s';if(secs<3600)return Math.floor(secs/60)+'m '+(secs%60)+'s';return Math.floor(secs/3600)+'h '+Math.floor((secs%3600)/60)+'m';}
-function getDropChance(base){return base+G.luck*0.01+getLuckBonus();}
+var BOOST_MULT=2; // x2 event-boostar (tunbart)
+function boostActive(kind){return !!(G.boosts&&G.boosts[kind]&&G.boosts[kind]>Date.now());}
+function boostCoinMult(){return boostActive('coin')?BOOST_MULT:1;}
+function boostLuckMult(){return boostActive('luck')?BOOST_MULT:1;}
+function boostLeftMs(kind){return (G.boosts&&G.boosts[kind])?Math.max(0,G.boosts[kind]-Date.now()):0;}
+function getDropChance(base){return base+(G.luck*0.01+getLuckBonus())*boostLuckMult();}
 function getRarityWeights(){var boost=Math.max(1,1+Math.log10(Math.max(1,eps()/1000)));return SHELL_RARITIES.map(function(r,i){return i>=3?r.weight*boost:r.weight;});}
 function rollShell(){var w=getRarityWeights();var total=w.reduce(function(a,b){return a+b;},0);var roll=Math.random()*total,acc=0;for(var i=0;i<SHELL_RARITIES.length;i++){acc+=w[i];if(roll<=acc)return SHELL_RARITIES[i];}return SHELL_RARITIES[0];}
 function dropShell(){
@@ -2176,6 +2385,7 @@ function claimAdventure(index){
   if(pet)pet.advXp=(pet.advXp||0)+rw.xp;                 // pet-XP sparas (leveling byggs senare)
   G.stats.totalAdventureXp=(G.stats.totalAdventureXp||0)+rw.xp;
   G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;
+  eventOnAdventure();
   G.stats.adventureHoursLogged=(G.stats.adventureHoursLogged||0)+adv.dur/3600000;
   // Bonus-loot (chans-baserad)
   (rw.bonus||[]).forEach(function(b){
@@ -2321,7 +2531,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
   }));}catch(e){}
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
@@ -2348,6 +2558,9 @@ function resetGame(){
   G.adventureSlots=1;
   G.adventures=[];
   G.redeemedCodes=[];
+  G.event=null;
+  G.boosts={coin:0,luck:0};
+  G.cosmeticsOwned={};
   G.stats=freshStats();
   G._discoveredPets={};
   G.settings=Object.assign({},DEFAULT_SETTINGS);
@@ -2394,6 +2607,7 @@ function renderDevMenu(){
   var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
+  html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
@@ -2661,7 +2875,7 @@ function renderPets(){
     sorted.forEach(function(pet){
       var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
       var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
-      var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+      var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
       // Bakgrundsfärg baserad på raritet
       var bgColor='rgba(27,45,78,0.5)';
       var borderColor=rc.color+'55';
@@ -2695,7 +2909,7 @@ function openPetDetail(uid){
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var isEquipped=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
-  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
   var html='<div style="text-align:center;margin-bottom:12px;">';
   html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+pet.e+'</div>';
   html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#fff;">'+pet.name+'</div>';
@@ -3299,6 +3513,7 @@ function closeAscension(){document.getElementById('ascension-modal').classList.r
 function openTrading(){renderTrading();document.getElementById('trading-modal').classList.add('open');}
 function closeTrading(){document.getElementById('trading-modal').classList.remove('open');}
 document.getElementById('trading-modal').onclick=function(e){if(e.target===this)closeTrading();};
+var _evm=document.getElementById('events-modal');if(_evm)_evm.onclick=function(e){if(e.target===this)closeEvents();};
 function renderTrading(){
   function side(cls,title){
     return '<div class="trade-side '+cls+'">'+
@@ -3636,6 +3851,7 @@ function resetFromSettings(){
     G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
+    G.event=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
     G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
@@ -3742,7 +3958,10 @@ var TITLE_DEFS=[
   {name:'Arcane Sage',cat:'Petdex',desc:'Complete the Mystic Petdex (100%).',check:function(){return tEarned('Arcane Sage');}},
   {name:'Star Voyager',cat:'Petdex',desc:'Complete the Celestial Petdex (100%).',check:function(){return tEarned('Star Voyager');}},
   {name:'Cosmic Collector',cat:'Petdex',desc:'Complete the Cosmic Petdex (100%).',check:function(){return tEarned('Cosmic Collector');}},
-  {name:'Living Petdex',cat:'Petdex',desc:'Complete the entire Petdex (all 110 pets).',check:function(){return tEarned('Living Petdex');}}
+  {name:'Living Petdex',cat:'Petdex',desc:'Complete the entire Petdex (all 110 pets).',check:function(){return tEarned('Living Petdex');}},
+  // Events (tjänas via Event Shop)
+  {name:'Winterborn',cat:'Events',desc:'Unlocked at the Winter Wonderland event shop.',check:function(){return tEarned('Winterborn');}},
+  {name:'Winter Champion',cat:'Events',desc:'Complete the Winter Wonderland collection (10/10).',check:function(){return tEarned('Winter Champion');}}
 ];
 function titleIsEarned(t){try{return !!t.check();}catch(e){return false;}}
 function getEquippedTitle(){
@@ -3762,8 +3981,8 @@ function renderProfileTitles(){
   var earned=TITLE_DEFS.filter(titleIsEarned).length;
   var total=TITLE_DEFS.length;
   var tpct=total>0?Math.round(earned/total*100):0;
-  var cats=['Starter','Hatching','Collection','Mastery','Achievements','Petdex'];
-  var catIcons={Starter:'🌱',Hatching:'🍳',Collection:'🐾',Mastery:'⚔️',Achievements:'🏆',Petdex:'📖'};
+  var cats=['Starter','Hatching','Collection','Mastery','Achievements','Petdex','Events'];
+  var catIcons={Starter:'🌱',Hatching:'🍳',Collection:'🐾',Mastery:'⚔️',Achievements:'🏆',Petdex:'📖',Events:'❄️'};
   var h='';
   h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Titles Earned</span><span class="prof-compl-pct">'+earned+'/'+total+'</span></div>';
   h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+tpct+'%"></div></div></div>';
@@ -3794,7 +4013,7 @@ function renderProfileTitles(){
 // check() beräknas live, precis som titlar. Inget nytt sparat state behövs.
 // ============================================================
 function badgeRarityIndex(r){return ['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'].indexOf(r||'common');}
-function badgeWorldsComplete(){var n=0;(PETDEX_WORLDS||[]).forEach(function(w){var c=getWorldSpeciesCount(w.id);if(c.total>0&&c.found>=c.total)n++;});return n;}
+function badgeWorldsComplete(){var n=0;corePetdexWorlds().forEach(function(w){var c=getWorldSpeciesCount(w.id);if(c.total>0&&c.found>=c.total)n++;});return n;}
 function badgePetdexPct(){var o=getTotalSpeciesCount();return o.total>0?(o.found/o.total*100):0;}
 var BADGE_DEFS=[
   // Hatching
@@ -3809,7 +4028,7 @@ var BADGE_DEFS=[
   {name:'Petdex Initiate',icon:'📖',cat:'Petdex',desc:'Complete 25% of the Petdex.',check:function(){return badgePetdexPct()>=25;}},
   {name:'Petdex Scholar',icon:'📚',cat:'Petdex',desc:'Complete 50% of the Petdex.',check:function(){return badgePetdexPct()>=50;}},
   {name:'World Tamer',icon:'🌍',cat:'Petdex',desc:"Fully complete one world's Petdex.",check:function(){return badgeWorldsComplete()>=1;}},
-  {name:'World Conqueror',icon:'🗺️',cat:'Petdex',desc:"Fully complete every world's Petdex.",check:function(){return (PETDEX_WORLDS||[]).length>0&&badgeWorldsComplete()>=PETDEX_WORLDS.length;}},
+  {name:'World Conqueror',icon:'🗺️',cat:'Petdex',desc:"Fully complete every world's Petdex.",check:function(){return corePetdexWorlds().length>0&&badgeWorldsComplete()>=corePetdexWorlds().length;}},
   {name:'Living Petdex',icon:'🏆',cat:'Petdex',desc:'Complete 100% of the Petdex.',check:function(){return badgePetdexPct()>=100;}},
   // Economy
   {name:'Millionaire',icon:'💰',cat:'Economy',desc:'Earn 1,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1e6;}},
@@ -4084,7 +4303,7 @@ function renderProfileCustomize(){
 }
 
 // Hemskärmens flytande knappar (nav rebuild — step 3)
-var EVENT_ACTIVE=false; // sätts true när event-systemet finns
+var EVENT_ACTIVE=(typeof ACTIVE_EVENT!=='undefined'&&!!ACTIVE_EVENT); // styrs av ACTIVE_EVENT
 function refreshHomeButtons(){
   var ev=document.getElementById('events-btn');
   if(ev)ev.style.display=EVENT_ACTIVE?'flex':'none';
@@ -4094,8 +4313,414 @@ function claimDaily(){
   if(btn)btn.style.display='none';
   showComingSoon('🎁 Daily Reward','Daily rewards are coming in a later update. This button hides until the next time you open the game.');
 }
+// ============================================================
+// EVENT SYSTEM (steg 2: levande quests + daglig cykel + Snowflake-intjaning)
+// Quest-framsteg lases fran spelets riktiga statistik (eggsHatched/adventuresCompleted/
+// totalClicks/totalPetsFused) jamfort med en nollpunkt (questBase) tagen vid varje
+// dygnscykel. Snowflakes tjanas in vid klackning + aventyr (eventOnHatch/eventOnAdventure)
+// och fyller den sasongslanga matararen (earned). 'snow'-questen raknar snowflakes tjanade
+// UNDER detta dygn (cycleEarned). Quests nollstalls var questCycleHours:e timme.
+// ============================================================
+var eventTab='overview';
+var _evTimer=null;
+var EVENT_QUEST_STAT={hatch:'eggsHatched',adventure:'adventuresCompleted',tap:'totalClicks',fusion:'totalPetsFused'};
+function snapshotQuestStats(){
+  var s=G.stats||{};
+  return {eggsHatched:s.eggsHatched||0,adventuresCompleted:s.adventuresCompleted||0,totalClicks:s.totalClicks||0,totalPetsFused:s.totalPetsFused||0};
+}
+function questCycleMs(){return ((ACTIVE_EVENT&&ACTIVE_EVENT.questCycleHours)||24)*3600000;}
+function advanceQuestCycle(){
+  var E=G.event;if(!E)return false;
+  var cyc=questCycleMs(),changed=false,guard=0;
+  while(Date.now()>=E.cycleStart+cyc&&guard<10000){
+    E.cycleStart+=cyc;E.cycleEarned=0;E.questsClaimed={};E.questBase=snapshotQuestStats();changed=true;guard++;
+  }
+  return changed;
+}
+function questCycleLeftMs(){if(!G.event)return 0;return Math.max(0,G.event.cycleStart+questCycleMs()-Date.now());}
+function ensureEventState(){
+  if(!ACTIVE_EVENT)return;
+  if(!G.event||G.event.id!==ACTIVE_EVENT.id){
+    G.event={id:ACTIVE_EVENT.id,startedAt:Date.now(),earned:0,currency:0,chestsClaimed:[],
+             cycleStart:Date.now(),cycleEarned:0,questsClaimed:{},questBase:snapshotQuestStats()};
+  }
+  var E=G.event;
+  if(typeof E.startedAt!=='number')E.startedAt=Date.now();
+  if(typeof E.earned!=='number')E.earned=(typeof E.points==='number'?E.points:0); // migrera steg 1
+  if('points' in E)delete E.points;
+  if(typeof E.currency!=='number')E.currency=E.earned;
+  if(!Array.isArray(E.chestsClaimed))E.chestsClaimed=[];
+  if(typeof E.cycleStart!=='number')E.cycleStart=Date.now();
+  if(typeof E.cycleEarned!=='number')E.cycleEarned=0;
+  if(!E.questsClaimed||typeof E.questsClaimed!=='object')E.questsClaimed={};
+  if(!E.questBase||typeof E.questBase!=='object')E.questBase=snapshotQuestStats();
+  if(!E.petsOwned||typeof E.petsOwned!=='object')E.petsOwned={};
+  if(typeof E.eggMisses!=='number')E.eggMisses=0;
+  if(!Array.isArray(E.collectionClaimed))E.collectionClaimed=[];
+  advanceQuestCycle();
+}
+function eventTimeLeftMs(){
+  if(!ACTIVE_EVENT||!G.event)return 0;
+  var end=G.event.startedAt+(ACTIVE_EVENT.durationDays||30)*86400000;
+  return Math.max(0,end-Date.now());
+}
+function fmtEventTime(ms){
+  var sec=Math.floor(ms/1000);
+  var d=Math.floor(sec/86400);sec-=d*86400;
+  var hh=Math.floor(sec/3600);sec-=hh*3600;
+  var mm=Math.floor(sec/60);
+  if(d>0)return d+'d '+hh+'h';
+  if(hh>0)return hh+'h '+mm+'m';
+  return mm+'m';
+}
+function addSnowflakes(n){
+  if(!ACTIVE_EVENT||!n)return;
+  ensureEventState();
+  if(eventTimeLeftMs()<=0)return;
+  G.event.earned+=n;G.event.currency+=n;G.event.cycleEarned=(G.event.cycleEarned||0)+n;
+  var m=document.getElementById('events-modal');
+  if(m&&m.classList&&m.classList.contains('open')&&eventTab==='overview')renderEvents();
+}
+function eventOnHatch(){if(ACTIVE_EVENT)addSnowflakes(ACTIVE_EVENT.snowPerHatch||0);}
+function eventOnAdventure(){if(ACTIVE_EVENT)addSnowflakes(ACTIVE_EVENT.snowPerAdventure||0);}
 function openEvents(){
-  showComingSoon('🎉 Events','The event system is coming in a later update. This button only shows when an event is active.');
+  if(!ACTIVE_EVENT){showComingSoon('\ud83c\udf89 Events','No event is active right now. Check back soon!');return;}
+  ensureEventState();
+  eventTab='overview';
+  renderEvents();
+  document.getElementById('events-modal').classList.add('open');
+  if(_evTimer)clearInterval(_evTimer);
+  _evTimer=setInterval(function(){
+    var open=document.getElementById('events-modal').classList.contains('open');
+    if(advanceQuestCycle()){if(open&&eventTab==='overview')renderEvents();return;}
+    var el=document.getElementById('ev-timer-val');if(el)el.textContent=fmtEventTime(eventTimeLeftMs());
+    var nq=document.getElementById('ev-newq-val');if(nq)nq.textContent=fmtEventTime(questCycleLeftMs());
+  },20000);
+}
+function closeEvents(){
+  var m=document.getElementById('events-modal');if(m)m.classList.remove('open');
+  if(_evTimer){clearInterval(_evTimer);_evTimer=null;}
+  saveGame();
+}
+function setEventTab(t){eventTab=t;renderEvents();}
+function eventInfo(){
+  var ev=ACTIVE_EVENT;
+  var body=ev.tagline+'\n\n'+
+    'Earn '+ev.currency.name+' '+ev.currency.emoji+' by hatching eggs and completing adventures. Fill the event meter to unlock milestone chests, finish daily quests, and collect the limited '+ev.pet.name+'.\n\n'+
+    'Event ends in '+fmtEventTime(eventTimeLeftMs())+'. Limited pets return in future events, so you can never permanently miss out.';
+  showGenericModal(ev.emoji||'\ud83c\udf89',ev.name,body);
+}
+function goEventQuest(goto){
+  closeEvents();
+  if(!goto)return;
+  try{navTab(goto);}catch(e){}
+}
+function grantEventReward(rw){
+  var parts=[];
+  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtShort(rw.coins)+' Egg Coins');}
+  if(rw.gems){G.gems+=rw.gems;parts.push('+'+rw.gems+' \ud83d\udc8e Gems');}
+  if(rw.shells){for(var r in rw.shells){G.shells[r]=(G.shells[r]||0)+rw.shells[r];parts.push('+'+rw.shells[r]+' '+r.charAt(0).toUpperCase()+r.slice(1)+' Shells');}}
+  if(rw.cores){var _ct=rw.coreTier||1,_i;for(_i=0;_i<rw.cores;_i++){G.mutationCores.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_ct});}if(G.stats)G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+rw.cores;parts.push('+'+rw.cores+' Mutation Core'+(rw.cores>1?'s':''));}
+  if(rw.title){if(!G.titlesEarned)G.titlesEarned={};G.titlesEarned[rw.title]=true;parts.push('Title: '+rw.title);}
+  if(rw.cosmetic){if(!G.cosmeticsOwned)G.cosmeticsOwned={};G.cosmeticsOwned[rw.cosmetic]=true;parts.push('Cosmetic unlocked!');}
+  return parts;
+}
+function claimEventChest(at){
+  ensureEventState();
+  var chest=null,i;
+  for(i=0;i<ACTIVE_EVENT.chests.length;i++){if(ACTIVE_EVENT.chests[i].at===at)chest=ACTIVE_EVENT.chests[i];}
+  if(!chest)return;
+  if(G.event.earned<at)return;
+  if(G.event.chestsClaimed.indexOf(at)!==-1)return;
+  G.event.chestsClaimed.push(at);
+  var parts=grantEventReward(chest.reward);
+  saveGame();updateHUD();renderEvents();
+  showRewardPopup(parts,false,2000);
+}
+function eventQuestProgress(q){
+  var E=G.event;if(!E)return 0;
+  if(q.type==='snow')return Math.floor(E.cycleEarned||0);
+  var stat=EVENT_QUEST_STAT[q.type];if(!stat)return 0;
+  var cur=(G.stats&&G.stats[stat])||0,base=(E.questBase&&E.questBase[stat])||0;
+  return Math.max(0,cur-base);
+}
+function eventQuestDone(q){return eventQuestProgress(q)>=q.target;}
+function claimEventQuest(id){
+  ensureEventState();
+  var q=null;ACTIVE_EVENT.quests.forEach(function(x){if(x.id===id)q=x;});
+  if(!q)return;
+  if(G.event.questsClaimed[id])return;
+  if(!eventQuestDone(q))return;
+  G.event.questsClaimed[id]=true;
+  var parts=grantEventReward(q.reward);
+  saveGame();updateHUD();renderEvents();
+  showRewardPopup(parts,false,2000);
+}
+function eventQuestRewardText(rw){
+  if(rw.coins)return fmtShort(rw.coins)+' \ud83e\ude99';
+  if(rw.gems)return rw.gems+' \ud83d\udc8e';
+  if(rw.cores)return '\u00d7'+rw.cores+' \u2b21';
+  if(rw.shells){for(var r in rw.shells)return '\u00d7'+rw.shells[r]+' \ud83d\udc1a';}
+  return '';
+}
+function eventRewardTextFull(rw){
+  if(!rw)return '';
+  var out=[];
+  if(rw.coins)out.push(fmtShort(rw.coins)+' \ud83e\ude99');
+  if(rw.gems)out.push(rw.gems+' \ud83d\udc8e');
+  if(rw.shells){for(var r in rw.shells)out.push('\u00d7'+rw.shells[r]+' \ud83d\udc1a');}
+  if(rw.cores)out.push('\u00d7'+rw.cores+' \u2b21');
+  if(rw.title)out.push('Title');
+  if(rw.cosmetic)out.push('Frame');
+  return out.join(' + ');
+}
+function questGotoFor(type){return ({hatch:'hatch',adventure:'adventure',fusion:'pets'})[type]||null;}
+function renderEvents(){
+  var ev=ACTIVE_EVENT;
+  var h='';
+  h+='<div class="ev-intro">'+ev.intro+'</div>';
+  var artInner=ev.bannerImg?'<img src="'+ev.bannerImg+'" alt="" onerror="this.parentNode.textContent=\''+(ev.bannerEmoji||ev.emoji||'\ud83c\udf89')+'\'">':(ev.bannerEmoji||ev.emoji||'\ud83c\udf89');
+  h+='<div class="ev-feat">'+
+       '<div class="ev-feat-i" onclick="eventInfo()">i</div>'+
+       '<div class="ev-feat-l">'+
+         '<div class="ev-feat-name">'+ev.name+'</div>'+
+         '<div class="ev-feat-tag">'+ev.tagline+'</div>'+
+         '<div class="ev-timer">\u23f3 <span id="ev-timer-val">'+fmtEventTime(eventTimeLeftMs())+'</span></div>'+
+       '</div>'+
+       '<div class="ev-feat-art">'+artInner+'</div>'+
+     '</div>';
+  if(eventTab==='collection'){
+    h+='<div class="ev-collback" onclick="setEventTab(\'overview\')">\u2039 Back to Overview</div>';
+    h+=renderEventCollection();
+    document.getElementById('events-body').innerHTML=h;
+    return;
+  }
+  function tab(id,label){return '<div class="ev-tab'+(eventTab===id?' active':'')+'" onclick="setEventTab(\''+id+'\')">'+label+'</div>';}
+  h+='<div class="ev-tabs">'+tab('overview','Event Overview')+tab('shop','Event Shop')+tab('leaderboard','Leaderboard')+'</div>';
+  if(eventTab==='overview')h+=renderEventOverview();
+  else if(eventTab==='shop')h+=renderEventShop();
+  else h+='<div class="ev-soon"><div class="ev-soon-ic">\ud83c\udfc6</div><h3>Leaderboards coming soon</h3><p>Online leaderboards need an internet connection, which is not available yet. Compete with other players here in a future update.</p></div>';
+  document.getElementById('events-body').innerHTML=h;
+}
+function renderEventOverview(){
+  var ev=ACTIVE_EVENT,E=G.event;
+  var h='<div class="ev-wrap">';
+  h+='<div class="ev-currency">'+ev.currency.emoji+' <b>'+fmtShort(E.currency)+'</b> '+ev.currency.name+'</div>';
+  var pct=Math.min(100,(E.earned/ev.progressMax)*100);
+  h+='<div class="ev-card">';
+  h+='<div class="ev-card-h">'+ev.emoji+' Event Progress</div>';
+  h+='<div class="ev-prog-num">'+fmtShort(E.earned)+' <small>/ '+fmtShort(ev.progressMax)+'</small></div>';
+  h+='<div class="ev-bar"><div class="ev-bar-fill" style="width:'+pct+'%"></div></div>';
+  h+='<div class="ev-chests">';
+  ev.chests.forEach(function(c){
+    var reached=E.earned>=c.at,claimed=E.chestsClaimed.indexOf(c.at)!==-1;
+    var cls=claimed?'':(reached?'ready':'locked');
+    h+='<div class="ev-chest '+cls+'">';
+    h+='<div class="ev-chest-ic">'+(claimed?'\u2705':'\ud83c\udf81')+'</div>';
+    h+='<div class="ev-chest-v">'+fmtShort(c.at)+'</div>';
+    h+='<div class="ev-chest-rw">'+eventRewardTextFull(c.reward)+'</div>';
+    if(claimed)h+='<div class="ev-chest-done">Claimed</div>';
+    else if(reached)h+='<button class="ev-chest-claim" onclick="claimEventChest('+c.at+')">CLAIM</button>';
+    h+='</div>';
+  });
+  h+='</div></div>';
+  h+='<div class="ev-card"><div class="ev-card-h">\ud83d\udccb Daily Event Quests</div>';
+  ev.quests.forEach(function(q){
+    var prog=eventQuestProgress(q),done=prog>=q.target,claimed=!!E.questsClaimed[q.id];
+    var shown=Math.min(prog,q.target),qpct=Math.min(100,(prog/q.target)*100);
+    h+='<div class="ev-quest">'+
+         '<div class="ev-quest-ic">'+(q.icon||'\u2b50')+'</div>'+
+         '<div class="ev-quest-mid">'+
+           '<div class="ev-quest-name">'+q.name+'</div>'+
+           '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+qpct+'%"></div></div>'+
+           '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
+         '</div>'+
+         '<div class="ev-quest-rw">REWARD<b>'+eventQuestRewardText(q.reward)+'</b></div>';
+    if(claimed)h+='<div class="ev-qdone">\u2705</div>';
+    else if(done)h+='<button class="ev-claim" onclick="claimEventQuest(\''+q.id+'\')">CLAIM</button>';
+    else h+='<button class="ev-go" onclick="goEventQuest('+(questGotoFor(q.type)?"'"+questGotoFor(q.type)+"'":'null')+')">GO</button>';
+    h+='</div>';
+  });
+  h+='<div class="ev-newq">\ud83d\udd52 New quests in <span id="ev-newq-val">'+fmtEventTime(questCycleLeftMs())+'</span></div>';
+  h+='</div>';
+  var rc=({common:'#b0bec5',uncommon:'#7cd77c',rare:'#5aa9e6',epic:'#b07cff',legendary:'#ffb347',mythical:'#ff5dc8',artifact:'#ff6b6b',heavenly:'#ffe08a',eternal:'#7cf5e0',cosmic:'#c8a2ff'})[ev.pet.rarity]||'#fff';
+  var petArt=ev.pet.img?'<img src="'+ev.pet.img+'" alt="" onerror="this.parentNode.textContent=\''+(ev.pet.emoji||'\ud83d\udc3e')+'\'">':(ev.pet.emoji||'\ud83d\udc3e');
+  h+='<div class="ev-card ev-pet">';
+  h+='<div class="ev-card-h" style="justify-content:center">\u2b50 Exclusive Event Pet</div>';
+  h+='<div class="ev-pet-art">'+petArt+'</div>';
+  h+='<div class="ev-pet-name">'+ev.pet.name+'</div>';
+  h+='<div class="ev-pet-rar" style="color:'+rc+'">'+ev.pet.rarity.charAt(0).toUpperCase()+ev.pet.rarity.slice(1)+'</div>';
+  h+='<div class="ev-pet-abils">';
+  ev.pet.abilities.forEach(function(a){h+='<div class="ev-pet-ab"><div class="ev-pet-ab-n">'+a.name+'</div><div class="ev-pet-ab-v">'+a.val+'</div></div>';});
+  h+='</div></div>';
+  var owned=eventCollectionCount(),cpct=Math.min(100,(owned/ev.collection.total)*100);
+  h+='<div class="ev-card">';
+  h+='<div class="ev-card-h">'+ev.emoji+' Event Collection</div>';
+  h+='<div class="ev-prog-num">'+owned+' <small>/ '+ev.collection.total+'</small></div>';
+  h+='<div class="ev-coll-bar"><div class="ev-coll-fill" style="width:'+cpct+'%"></div></div>';
+  h+='<div style="text-align:center;font-size:0.62rem;color:rgba(255,255,255,0.6);margin-bottom:9px">Collect all '+ev.collection.total+' limited pets from the Event Egg!</div>';
+  h+='<button class="ev-coll-btn" onclick="setEventTab(\'collection\')">View Collection</button>';
+  h+='</div>';
+  h+='</div>';
+  return h;
+}
+function evShopKindTitle(k){return ({egg:'\u2b50 Featured',bundle:'\ud83c\udf81 Resources',boost:'\u26a1 Boosts',cosmetic:'\ud83c\udfa8 Cosmetics'})[k]||k;}
+function cosmeticOwned(it){
+  if(it.cosmeticType==='title')return tEarned(it.titleName);
+  return !!(G.cosmeticsOwned&&G.cosmeticsOwned[it.id]);
+}
+function fmtBoostLeft(ms){return Math.max(1,Math.ceil(ms/60000))+'m';}
+function renderEventShop(){
+  var ev=ACTIVE_EVENT,E=G.event,items=ev.shop||[];
+  var h='<div class="ev-wrap">';
+  h+='<div class="ev-currency">'+ev.currency.emoji+' <b>'+fmtShort(E.currency)+'</b> '+ev.currency.name+'</div>';
+  ['egg','bundle','boost','cosmetic'].forEach(function(kind){
+    var group=items.filter(function(it){return it.kind===kind;});
+    if(!group.length)return;
+    h+='<div class="evs-sec">'+evShopKindTitle(kind)+'</div>';
+    group.forEach(function(it){
+      var soon=it.status!=='live';
+      var owned=(it.kind==='cosmetic')&&cosmeticOwned(it);
+      var active=(it.kind==='boost')&&boostActive(it.boostType);
+      var afford=E.currency>=it.cost;
+      h+='<div class="evs-card'+(it.kind==='egg'?' evs-egg':'')+((soon||owned)?' soon':'')+'">';
+      h+='<div class="evs-ic">'+it.icon+'</div>';
+      h+='<div class="evs-mid"><div class="evs-name">'+it.name+(active?' <span class="evs-act">Active '+fmtBoostLeft(boostLeftMs(it.boostType))+'</span>':'')+'</div><div class="evs-desc">'+it.desc+'</div>';
+      h+='<div class="evs-cost">'+ev.currency.emoji+' '+fmtShort(it.cost)+'</div></div>';
+      if(soon)h+='<div class="evs-soon">Coming<br>soon</div>';
+      else if(owned)h+='<div class="evs-owned">Owned</div>';
+      else if(afford)h+='<button class="evs-buy" onclick="buyEventShopItem(\''+it.id+'\')">'+(active?'Extend':'Buy')+'</button>';
+      else h+='<button class="evs-buy dim" disabled>Buy</button>';
+      h+='</div>';
+    });
+  });
+  h+='<div class="evs-note">Purchases spend your '+ev.currency.name+' balance \u2014 your event meter and quests are not affected.</div>';
+  h+='</div>';
+  return h;
+}
+function buyEventShopItem(id){
+  ensureEventState();
+  var it=null;(ACTIVE_EVENT.shop||[]).forEach(function(x){if(x.id===id)it=x;});
+  if(!it||it.status!=='live')return;
+  if((G.event.currency||0)<it.cost)return;
+  if(it.kind==='cosmetic'&&cosmeticOwned(it))return;
+  G.event.currency-=it.cost;
+  var parts=[];
+  if(it.kind==='egg'){G.eggsOwned[EVENT_EGG_ID]=(G.eggsOwned[EVENT_EGG_ID]||0)+1;parts=[eventEggMeta().name+' added to your Hatchery \ud83e\udd5a'];}
+  else if(it.kind==='boost'){
+    if(!G.boosts)G.boosts={coin:0,luck:0};
+    var base=Math.max(Date.now(),G.boosts[it.boostType]||0);
+    G.boosts[it.boostType]=base+(it.durationS||1800)*1000;
+    parts.push(it.name+' active \u2014 x'+BOOST_MULT+' for '+Math.round((it.durationS||1800)/60)+'m');
+  }else if(it.kind==='cosmetic'){
+    if(it.cosmeticType==='title'){if(!G.titlesEarned)G.titlesEarned={};G.titlesEarned[it.titleName]=true;parts.push('Title unlocked: '+it.titleName);}
+    else{if(!G.cosmeticsOwned)G.cosmeticsOwned={};G.cosmeticsOwned[it.id]=true;parts.push('Unlocked: '+it.name);}
+  }else{
+    parts=grantEventReward(it.reward||{});
+  }
+  saveGame();updateHUD();renderEvents();
+  showRewardPopup(parts,false,2000);
+}
+function eventPets(){return (ACTIVE_EVENT&&ACTIVE_EVENT.pets)||[];}
+function eventCollectionCount(){var t=(ACTIVE_EVENT&&ACTIVE_EVENT.collection&&ACTIVE_EVENT.collection.total)||0;return Math.min(t,Object.keys((G.event&&G.event.petsOwned)||{}).length);}
+function rollEventPet(){
+  var pets=eventPets();if(!pets.length)return null;
+  var owned=(G.event&&G.event.petsOwned)||{};
+  var unowned=pets.filter(function(p){return !owned[p.id];});
+  var pity=(ACTIVE_EVENT.eggPityN||8);
+  var pool=(unowned.length>0&&(G.event.eggMisses||0)>=pity)?unowned:pets;
+  var tot=0;pool.forEach(function(p){tot+=(p.weight||1);});
+  var r=Math.random()*tot,acc=0,pick=pool[pool.length-1],i;
+  for(i=0;i<pool.length;i++){acc+=(pool[i].weight||1);if(r<=acc){pick=pool[i];break;}}
+  return pick;
+}
+function hatchEventEgg(){
+  ensureEventState();
+  var cfg=rollEventPet();if(!cfg)return ['No event pets configured.'];
+  var rc=RARITY_CONFIG[cfg.rarity]||RARITY_CONFIG.common;
+  var abilities=[],j;for(j=0;j<rc.slots;j++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});}
+  G.hatchedPets.push({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1});
+  if(typeof discoverPet==='function')discoverPet(cfg.name,cfg.rarity);
+  var isNew=!(G.event.petsOwned&&G.event.petsOwned[cfg.id]);
+  if(isNew){if(!G.event.petsOwned)G.event.petsOwned={};G.event.petsOwned[cfg.id]=true;G.event.eggMisses=0;}
+  else{G.event.eggMisses=(G.event.eggMisses||0)+1;}
+  if(G.stats){var own=G.hatchedPets.length;if(own>(G.stats.totalPetsCollected||0))G.stats.totalPetsCollected=own;}
+  var lab=(RARITY_CONFIG[cfg.rarity]||{}).label||cfg.rarity;
+  return [(isNew?'NEW! ':'')+lab+' '+cfg.name+(isNew?' \u2014 added to your collection!':' (duplicate)')];
+}
+function claimEventCollectionMilestone(at){
+  ensureEventState();
+  var ms=null;(((ACTIVE_EVENT.collection||{}).milestones)||[]).forEach(function(m){if(m.at===at)ms=m;});
+  if(!ms)return;
+  if(eventCollectionCount()<at)return;
+  if(G.event.collectionClaimed.indexOf(at)!==-1)return;
+  G.event.collectionClaimed.push(at);
+  var parts=grantEventReward(ms.reward||{});
+  saveGame();updateHUD();renderEvents();
+  showRewardPopup(parts,true);
+}
+function collMilestoneText(m){
+  var r=m.reward||{};
+  if(r.title)return 'Title + '+(r.gems?r.gems+' \ud83d\udc8e':'')+(r.cosmetic?' + Frame':'');
+  if(r.gems)return r.gems+' \ud83d\udc8e';
+  if(r.cores)return '\u00d7'+r.cores+' \u2b21';
+  if(r.shells){for(var k in r.shells)return '\u00d7'+r.shells[k]+' \ud83d\udc1a';}
+  if(r.coins)return fmtShort(r.coins)+' \ud83e\ude99';
+  return '\u2605';
+}
+function renderEventCollection(){
+  var ev=ACTIVE_EVENT,pets=eventPets(),owned=(G.event&&G.event.petsOwned)||{};
+  var count=eventCollectionCount(),total=ev.collection.total;
+  var h='<div class="ev-wrap">';
+  h+='<div class="ev-card">';
+  h+='<div class="ev-card-h">'+ev.emoji+' Collection '+count+' / '+total+'</div>';
+  h+='<div class="ev-coll-bar"><div class="ev-coll-fill" style="width:'+Math.min(100,(count/total)*100)+'%"></div></div>';
+  var ms=(ev.collection&&ev.collection.milestones)||[];
+  if(ms.length){
+    h+='<div class="ev-ms-row">';
+    ms.forEach(function(m){
+      var reached=count>=m.at,claimed=(G.event.collectionClaimed||[]).indexOf(m.at)!==-1;
+      var cls=claimed?'done':(reached?'ready':'locked');
+      h+='<div class="ev-ms '+cls+'">';
+      h+='<div class="ev-ms-at">'+m.at+'/'+total+'</div>';
+      h+='<div class="ev-ms-rw">'+collMilestoneText(m)+'</div>';
+      if(claimed)h+='<div class="ev-ms-tag done">Claimed</div>';
+      else if(reached)h+='<button class="ev-ms-claim" onclick="claimEventCollectionMilestone('+m.at+')">CLAIM</button>';
+      else h+='<div class="ev-ms-tag">Locked</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+  }
+  h+='</div>';
+  h+='<div class="ev-card"><div class="ev-card-h">'+ev.emoji+' Limited Pets</div><div class="ev-pet-grid">';
+  pets.forEach(function(pp){
+    var has=!!owned[pp.id];
+    var col=(RARITY_CONFIG[pp.rarity]||{}).color||'#fff';
+    var lab=(RARITY_CONFIG[pp.rarity]||{}).label||pp.rarity;
+    h+='<div class="ev-pcell'+(has?'':' locked')+'">';
+    h+='<div class="ev-pemoji">'+(has?pp.emoji:'\u2753')+'</div>';
+    h+='<div class="ev-pname" style="color:'+(has?col:'rgba(255,255,255,0.4)')+'">'+(has?pp.name:'???')+'</div>';
+    h+='<div class="ev-prar" style="color:'+(has?col:'rgba(255,255,255,0.3)')+'">'+lab+'</div>';
+    h+='</div>';
+  });
+  h+='</div></div>';
+  h+='<div class="evs-note">Get more pets from the Winter Event Egg in the Event Shop.</div>';
+  h+='</div>';
+  return h;
+}
+// DEV (tas bort innan release)
+function addTestEventPoints(){
+  ensureEventState();
+  addSnowflakes(1000);
+  if(document.getElementById('events-modal').classList.contains('open'))renderEvents();
+  saveGame();
+}
+function devResetEventDay(){
+  ensureEventState();
+  G.event.cycleStart=Date.now()-questCycleMs();
+  advanceQuestCycle();
+  if(document.getElementById('events-modal').classList.contains('open'))renderEvents();
+  saveGame();
 }
 
 // ============================================================
@@ -4693,7 +5318,7 @@ function hatchFromShop(id){
 // HATCHERY
 // ============================================================
 function getHatchDuration(eggId){
-  var base=EGG_HATCH_TIMES[eggId]||30;
+  var base=(eggId===EVENT_EGG_ID)?((typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.eggHatchSeconds)||90):(EGG_HATCH_TIMES[eggId]||30);
   var upgMult=G.hatchDiscount;
   var petMult=getHatchSpeedMult();
   return Math.floor(base*upgMult*petMult)*1000;
@@ -4800,8 +5425,10 @@ function buyHatchSlot(){
 function collectHatch(idx){
   var slot=G.hatchSlots[idx];if(!slot||!slot.done)return;
   var pet=generatePet(slot.eggId);
+  var isEventEgg=(slot.eggId===EVENT_EGG_ID);
   // Hatch stats
   G.stats.eggsHatched++;
+  if(!isEventEgg)eventOnHatch();
   G.stats.eggsHatchedByWorld[slot.eggId]=(G.stats.eggsHatchedByWorld[slot.eggId]||0)+1;
   var hatchDuration=Math.floor((Date.now()-slot.startTime)/1000);
   G.stats.totalHatchTimeWaited+=hatchDuration;
@@ -4827,6 +5454,7 @@ function collectHatch(idx){
   if(pet.rarity==='cosmic')G.stats.cosmicPetsCreated++;
 
   G.hatchedPets.push(pet);
+  if(isEventEgg&&pet.evid){ensureEventState();if(!G.event.petsOwned[pet.evid]){G.event.petsOwned[pet.evid]=true;G.event.eggMisses=0;}else{G.event.eggMisses=(G.event.eggMisses||0)+1;}}
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
   playSfx('hatch');buzz([12,40,18]);
@@ -4835,7 +5463,7 @@ function collectHatch(idx){
 }
 function showPetResult(pet){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||{name:pet.world,icon:'🥚'};
+  var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
   document.getElementById('pet-result-icon').textContent=pet.e;
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>';
@@ -4858,7 +5486,7 @@ function renderHatchery(){
       var elapsed=now-slot.startTime;var pct=Math.min(1,elapsed/slot.duration);
       if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
       var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
-      var egg=EGG_SHOP.find(function(e){return e.id===slot.eggId;});
+      var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
       html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(egg?egg.icon:'🥚')+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
       html+='<div class="hatch-progress-bar"><div class="hatch-progress-fill" style="width:'+(pct*100)+'%"></div></div>';
       html+='<button class="hatch-collect-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'🎉 Collect Pet!':'Hatching...')+'</button></div>';
@@ -4876,7 +5504,7 @@ function renderHatchery(){
       '<div class="hatch-unlock-sub">Hatch more eggs at the same time.</div></div>'+
       '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(hcost)+'</div></div>';
   }
-  var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;});
+  var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;})||(G.eggsOwned[EVENT_EGG_ID]||0)>0;
   html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
   html+=movedUpgCardHtml('hatch','buyHatchSpeed()');
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Eggs in Inventory</div>';
@@ -4890,6 +5518,8 @@ function renderHatchery(){
       var canHatch=activeCount<maxSlots;
       html+='<div class="hatch-egg-row"><div class="he-icon">'+egg.icon+'</div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
     });
+    var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
+    if(_ec>0){var _em=eventEggMeta();var _canH=activeCount<maxSlots;html+='<div class="hatch-egg-row"><div class="he-icon">'+_em.icon+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
     html+='</div>';
   }
   wrap.innerHTML=html;
@@ -5733,7 +6363,7 @@ function rewardShortText(id){
   if(r.perm)Object.keys(r.perm).forEach(function(st){p.push('+'+r.perm[st]+'% '+PERM_LABELS[st]);});
   return p.join(' · ');
 }
-function showRewardPopup(parts,sticky){
+function showRewardPopup(parts,sticky,autoMs){
   if(sticky){ // ta bort ev. tidigare sticky-rutor så de inte staplas
     var olds=document.querySelectorAll('.ach-popup.reward-sticky');
     for(var i=0;i<olds.length;i++){if(olds[i].parentNode)olds[i].parentNode.removeChild(olds[i]);}
@@ -5747,7 +6377,7 @@ function showRewardPopup(parts,sticky){
     pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
     pop.onclick=function(){if(pop.parentNode)pop.parentNode.removeChild(pop);};
   }else{
-    setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},3500);
+    setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},autoMs||3500);
   }
 }
 
@@ -5785,7 +6415,13 @@ var PETDEX_WORLDS=[
   {id:'mystic',   name:'Mystic',    icon:'✨'},
   {id:'celestial',name:'Celestial', icon:'🌙'},
   {id:'cosmic',   name:'Cosmic',    icon:'🌌'},
+  {id:'event',    name:'Winter',    icon:'❄️'},
 ];
+// KÄRN-världar = allt UTOM event. Event-Petdex är en bonus-sektion som INTE
+// räknas mot kärn-100%, World Completion-belöningar eller World Conqueror-badgen
+// (annars skulle den som missat eventet aldrig nå 100%). Event-belöningar ges via
+// Event Collection-milstolparna istället. Vid sommar-byte: ändra name/icon här.
+function corePetdexWorlds(){return (PETDEX_WORLDS||[]).filter(function(w){return w.id!=='event';});}
 
 // Bygg en platt lista av alla möjliga petdex-entries (species+rarity per värld)
 function buildPetdexEntries(){
@@ -5834,7 +6470,7 @@ function syncDiscoveredFromInventory(){
 function getCollectedPetCount(){return Math.max((G.stats&&G.stats.totalPetsCollected)||0,(G.hatchedPets||[]).length);}
 
 function getTotalPetdexCount(){
-  var entries=buildPetdexEntries();
+  var entries=buildPetdexEntries().filter(function(e){return e.world!=='event';});
   return {total:entries.length, found:entries.filter(function(e){return isPetDiscovered(e.name,e.rarity);}).length};
 }
 
@@ -5879,7 +6515,7 @@ function getWorldSpeciesCount(worldId){
 }
 function getTotalSpeciesCount(){
   var t=0,f=0;
-  PETDEX_WORLDS.forEach(function(w){var c=getWorldSpeciesCount(w.id);t+=c.total;f+=c.found;});
+  corePetdexWorlds().forEach(function(w){var c=getWorldSpeciesCount(w.id);t+=c.total;f+=c.found;});
   return {total:t,found:f};
 }
 function findSpeciesMeta(name,worldId){
@@ -5942,12 +6578,12 @@ function renderPetdexSpecies(){
 }
 // World Completion (steg 3) — belöningar är placeholders tills rewards-sessionen
 function countCompletedWorlds(){
-  return PETDEX_WORLDS.filter(function(w){var c=getWorldSpeciesCount(w.id);return c.total>0&&c.found>=c.total;}).length;
+  return corePetdexWorlds().filter(function(w){var c=getWorldSpeciesCount(w.id);return c.total>0&&c.found>=c.total;}).length;
 }
 function countClaimableWorldRewards(){
   if(!G.worldClaims)G.worldClaims={};
   var n=0;
-  PETDEX_WORLDS.forEach(function(w){
+  corePetdexWorlds().forEach(function(w){
     var c=getWorldSpeciesCount(w.id);var pct=c.total>0?Math.floor(c.found/c.total*100):0;
     if(pct>=75&&!G.worldClaims[w.id+'_75'])n++;
     if(pct>=100&&!G.worldClaims[w.id+'_100'])n++;
@@ -6018,7 +6654,7 @@ function renderWorldCompletion(){
   var wrap=document.getElementById('wc-list');if(!wrap)return;
   if(!G.worldClaims)G.worldClaims={};
   var h='';
-  PETDEX_WORLDS.forEach(function(w){
+  corePetdexWorlds().forEach(function(w){
     var c=getWorldSpeciesCount(w.id);
     var pct=c.total>0?Math.floor(c.found/c.total*100):0;
     var done=pct>=100;
@@ -6061,7 +6697,7 @@ function renderPetdex(){
   var doneWorlds=countCompletedWorlds();
   var claimable=countClaimableWorldRewards();
   html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">🎁</div>'+(claimable>0?'<div class="pdx-chest-badge">'+claimable+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
-  html+='<div class="pdx-wc-btn" onclick="openWorldCompletion()"><div class="pdx-wc-btn-top"><span>🏆 World Completion</span><span class="pdx-wc-btn-pct">'+pct+'%</span></div><div class="pdx-wc-btn-bar"><div class="pdx-wc-btn-fill" style="width:'+pct+'%"></div></div><div class="pdx-wc-btn-sub">'+doneWorlds+' / '+PETDEX_WORLDS.length+' worlds complete ›</div></div>';
+  html+='<div class="pdx-wc-btn" onclick="openWorldCompletion()"><div class="pdx-wc-btn-top"><span>🏆 World Completion</span><span class="pdx-wc-btn-pct">'+pct+'%</span></div><div class="pdx-wc-btn-bar"><div class="pdx-wc-btn-fill" style="width:'+pct+'%"></div></div><div class="pdx-wc-btn-sub">'+doneWorlds+' / '+corePetdexWorlds().length+' worlds complete ›</div></div>';
   // World tabs
   html+='<div class="pdx-section-label">Select Egg World</div><div class="pdx-world-tabs">';
   PETDEX_WORLDS.forEach(function(w){
@@ -6243,6 +6879,10 @@ if(savedData){
   G.adventureSlots=savedData.adventureSlots||1;
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
   G.redeemedCodes=Array.isArray(savedData.redeemedCodes)?savedData.redeemedCodes:[];
+  G.event=(savedData.event&&typeof savedData.event==='object')?savedData.event:null;
+  G.boosts=(savedData.boosts&&typeof savedData.boosts==='object')?savedData.boosts:{coin:0,luck:0};
+  if(typeof G.boosts.coin!=='number')G.boosts.coin=0;if(typeof G.boosts.luck!=='number')G.boosts.luck=0;
+  G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
@@ -6268,6 +6908,7 @@ switchTab('buildings');
 setWorld(G.currentWorld);
 applyPedestalVisibility();
 applySettings();
+ensureEventState();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 requestAnimationFrame(tick);
