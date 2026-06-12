@@ -548,6 +548,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pa-tier{font-weight:900;font-size:0.6rem;}
 .pa-val{color:rgba(255,255,255,0.4);font-size:0.55rem;}
 .equipped-badge{font-size:0.55rem;background:var(--gold);color:#0b1530;border-radius:4px;padding:1px 4px;font-weight:900;margin-top:3px;display:inline-block;position:relative;z-index:1;}
+/* PET LEVELING — bricka på kort + nivå/XP i detaljvyn */
+.pet-card-lvl{position:absolute;top:5px;right:6px;z-index:2;font-size:0.55rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:6px;padding:1px 5px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
+.pd-lvl{margin:8px auto 2px;max-width:220px;}
+.pd-lvl-tag{display:inline-block;font-size:0.7rem;font-weight:900;color:#cdb6ff;background:rgba(122,90,208,0.18);border:1px solid rgba(122,90,208,0.5);border-radius:8px;padding:2px 9px;margin-bottom:5px;font-family:'Baloo 2',sans-serif;}
+.pd-xp{height:7px;background:rgba(0,0,0,0.35);border-radius:5px;overflow:hidden;border:1px solid rgba(122,90,208,0.35);}
+.pd-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:5px;transition:width 0.3s ease;}
+.pd-xp-txt{display:block;font-size:0.6rem;color:rgba(255,255,255,0.5);margin-top:3px;}
 .pet-empty{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.3);}
 .pet-empty .pe-icon{font-size:2.5rem;margin-bottom:8px;}
 .pet-empty p{font-size:0.8rem;}
@@ -1942,13 +1949,37 @@ function eventEggMeta(){
   var se=null;((typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.shop)||[]).forEach(function(x){if(x.kind==='egg')se=x;});
   return {id:EVENT_EGG_ID, name:(se&&se.name)||'Event Egg', icon:(se&&se.icon)||'\ud83e\udd5a'};
 }
+// ============================================================
+// PET LEVELING (Lv 1–25) — nivå ÄR skild från rarity
+// Balansvärden är PLATSHÅLLARE (Balance Sheet ej spikad).
+// ============================================================
+var PET_MAX_LEVEL=25;
+var PET_XP_BASE=100;   // XP-bas för level-kurvan (platshållare)
+var PET_XP_EXP=1.6;    // kurvans branthet (platshållare)
+// XP som krävs för att stiga FRÅN denna level till nästa
+function petXpForLevel(level){if(level>=PET_MAX_LEVEL)return Infinity;return Math.round(PET_XP_BASE*Math.pow(level,PET_XP_EXP));}
+// Kumulativ total-XP som krävs för att HA uppnått en viss level (level 1 = 0 XP)
+function petXpToReach(level){var t=0;for(var l=1;l<level;l++)t+=petXpForLevel(l);return t;}
+// Härled level från en pets total-XP
+function petLevelFromXp(xp){xp=xp||0;var lvl=1;while(lvl<PET_MAX_LEVEL&&xp>=petXpToReach(lvl+1))lvl++;return lvl;}
+// Progress inom nuvarande level (för XP-baren)
+function petXpProgress(pet){
+  var xp=(pet&&pet.xp)||0;var lvl=petLevelFromXp(xp);
+  if(lvl>=PET_MAX_LEVEL)return {level:lvl,into:0,need:0,pct:100,max:true};
+  var floor=petXpToReach(lvl),ceil=petXpToReach(lvl+1);
+  var into=xp-floor,need=ceil-floor;
+  return {level:lvl,into:into,need:need,pct:need>0?Math.max(0,Math.min(100,into/need*100)):0,max:false};
+}
+// Uppdatera cachad pet.level från pet.xp; returnerar true om level steg
+function petSyncLevel(pet){if(!pet)return false;var was=pet.level||1;pet.level=petLevelFromXp(pet.xp||0);return pet.level>was;}
+
 function generateEventPet(){
   ensureEventState();
   var cfg=rollEventPet()||{};
   var rarity=cfg.rarity||'common';
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var abilities=[],i;for(i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
-  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1};
+  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0};
 }
 function generatePet(eggId){
   if(eggId===EVENT_EGG_ID)return generateEventPet();
@@ -1969,6 +2000,8 @@ function generatePet(eggId){
     world:eggId,
     abilities:abilities,
     equippedSlot:-1,
+    level:1,
+    xp:0,
   };
 }
 
@@ -2418,7 +2451,8 @@ function claimAdventure(index){
     var shR=SHELL_RARITIES.find(function(s){return s.id===sh.type;});
     parts.push('+'+sh.amt+' '+(shR?shellIcon(sh.type)+' '+shR.name:sh.type));
   });
-  if(pet)pet.advXp=(pet.advXp||0)+rw.xp;                 // pet-XP sparas (leveling byggs senare)
+  var advLvUp=false;
+  if(pet){var beforeLv=petLevelFromXp(pet.xp||0);pet.xp=(pet.xp||0)+rw.xp;pet.advXp=(pet.advXp||0)+rw.xp;petSyncLevel(pet);if(pet.level>beforeLv)advLvUp=true;}
   G.stats.totalAdventureXp=(G.stats.totalAdventureXp||0)+rw.xp;
   G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;addBattlePassXp(BP_XP.adventure);
   eventOnAdventure();
@@ -2433,6 +2467,7 @@ function claimAdventure(index){
   if(typeof softUpdateInventory==='function')softUpdateInventory();
   saveGame();renderAdventure();
   parts.push('+'+rw.xp+' Pet XP');
+  if(advLvUp)parts.push('⭐ '+(pet?pet.name:'Pet')+' reached Lv '+pet.level+'!');
   if(typeof showRewardPopup==='function')showRewardPopup(parts,true);
 }
 function openAdvPicker(advId){
@@ -2626,7 +2661,7 @@ function addTestPets(){
       for(var j=0;j<rc.slots;j++){
         abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});
       }
-      G.hatchedPets.push({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1});
+      G.hatchedPets.push({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1,level:1,xp:0});
     }
   });
   syncDiscoveredFromInventory();
@@ -2928,6 +2963,7 @@ function renderPets(){
       html+='<div class="pet-card'+(isEquipped?' equipped':'')+'" onclick="openPetDetail(\''+pet.uid+'\')" style="background:linear-gradient(135deg,'+shaderColor+',rgba(12,21,48,0.8));border-color:'+borderColor+';">';
       // Raritetsfärgad stripe längst upp
       html+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+rc.color+';border-radius:12px 12px 0 0;opacity:0.8;"></div>';
+      html+='<div class="pet-card-lvl">Lv '+petLevelFromXp(pet.xp||0)+'</div>';
       html+='<div class="pet-card-top">';
       html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+pet.e+'</div>';
       html+='<div class="pet-card-info"><div class="pet-card-name">'+pet.name+'</div>';
@@ -2959,6 +2995,8 @@ function openPetDetail(uid){
   html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#fff;">'+pet.name+'</div>';
   html+='<div style="color:'+rc.color+';font-size:0.85rem;margin:2px 0;">'+rc.icon+' '+rc.label+'</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">'+eggInfo.icon+' '+eggInfo.name+'</div>';
+  var lp=petXpProgress(pet);
+  html+='<div class="pd-lvl"><div class="pd-lvl-tag">Lv '+lp.level+(lp.max?' · MAX':'')+'</div><div class="pd-xp"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div><span class="pd-xp-txt">'+(lp.max?'Max level':fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP')+'</span></div>';
   if(isEquipped)html+='<div style="margin-top:4px;display:inline-block;background:var(--gold);color:#0b1530;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:900;">⚡ ACTIVE</div>';
   html+='</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Abilities</div>';
@@ -5105,7 +5143,7 @@ function hatchEventEgg(){
   var cfg=rollEventPet();if(!cfg)return ['No event pets configured.'];
   var rc=RARITY_CONFIG[cfg.rarity]||RARITY_CONFIG.common;
   var abilities=[],j;for(j=0;j<rc.slots;j++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});}
-  G.hatchedPets.push({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1});
+  G.hatchedPets.push({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0});
   if(typeof discoverPet==='function')discoverPet(cfg.name,cfg.rarity);
   var isNew=!(G.event.petsOwned&&G.event.petsOwned[cfg.id]);
   if(isNew){if(!G.event.petsOwned)G.event.petsOwned={};G.event.petsOwned[cfg.id]=true;G.event.eggMisses=0;}
@@ -6128,6 +6166,8 @@ function doFusion(){
     world:firstPet.world,
     abilities:abilities,
     equippedSlot:-1,
+    level:1,
+    xp:0,
   };
 
   // Remove consumed pets
@@ -6831,7 +6871,7 @@ function grantPetReward(rarity){
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var abilities=[];
   for(var i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
-  G.hatchedPets.push({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1});
+  G.hatchedPets.push({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1,level:1,xp:0});
   G.stats.totalPetsCollected=(G.stats.totalPetsCollected||0)+1;
   if(typeof syncDiscoveredFromInventory==='function')syncDiscoveredFromInventory();
 }
@@ -7356,7 +7396,13 @@ if(savedData){
   G.extractUnlocked=Math.max(1,Math.min(3,savedData.extractUnlocked||1));
   G.mutateUnlocked=Math.max(1,Math.min(3,savedData.mutateUnlocked||1));
   // Ensure UIDs are numbers for comparison
-  G.hatchedPets=G.hatchedPets.map(function(p){if(!p.uid)p.uid=Date.now()+Math.random();return p;});
+  G.hatchedPets=G.hatchedPets.map(function(p){
+    if(!p.uid)p.uid=Date.now()+Math.random();
+    // PET LEVELING-migration: gamla sparfiler saknar xp/level. Ärv redan intjänad advXp → xp.
+    if(typeof p.xp!=='number')p.xp=(typeof p.advXp==='number'?p.advXp:0);
+    p.level=petLevelFromXp(p.xp);
+    return p;
+  });
   if(savedData.stats){
     // Merga sparad stats med default (ifall nya fält lagts till)
     Object.keys(savedData.stats).forEach(function(k){G.stats[k]=savedData.stats[k];});
