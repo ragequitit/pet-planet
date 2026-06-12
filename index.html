@@ -2220,6 +2220,7 @@ var G={
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
+  playerXp:0,playerLevel:1,
   permBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   stardust:0,ascensions:0,
   ascensionUpgrades:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
@@ -2713,7 +2714,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -2731,7 +2732,7 @@ function resetGame(){
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
-  G.gems=0;
+  G.gems=0;G.playerXp=0;G.playerLevel=1;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.stardust=0;G.ascensions=0;
   G.ascensionUpgrades={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
@@ -4045,7 +4046,7 @@ function resetFromSettings(){
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
-    G.gems=0;
+    G.gems=0;G.playerXp=0;G.playerLevel=1;
     G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.stardust=0;G.ascensions=0;
     G.ascensionUpgrades={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
@@ -4290,8 +4291,9 @@ function renderProfile(){
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
   h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
-  h+='<div class="prof-level-row"><span class="prof-lvl">Lv 1</span><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:0%"></div></div></div>';
-  h+='<div class="prof-xp-soon">XP &amp; Levels — coming soon</div>';
+  var plp=playerXpProgress();
+  h+='<div class="prof-level-row"><span class="prof-lvl">Lv '+plp.level+'</span><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:'+plp.pct+'%"></div></div></div>';
+  h+='<div class="prof-xp-soon">'+fmtShort(plp.into)+' / '+fmtShort(plp.need)+' XP · Account level never resets</div>';
   h+='</div></div>';
   // QUICK ROW
   h+='<div class="prof-quick">';
@@ -4929,8 +4931,43 @@ function bpTierReward(tier,premium){
 }
 function bpTierOf(xp){return Math.max(0,Math.min(BP_TIERS,Math.floor((xp||0)/BP_XP_PER_TIER)));}
 function bpCurrentTier(){ensureBattlePass();return bpTierOf(G.battlePass.xp);}
+// ============================================================
+// PLAYER / ACCOUNT LEVEL — permanent, nollställs ALDRIG (ej vid Ascension/säsong), oändlig.
+// Matas av allt man gör. Balansvärden = PLATSHÅLLARE.
+// ============================================================
+var PLAYER_XP_BASE=10; // nivå L→L+1 kostar base*L XP (linjär kurva, sluten form)
+var PLAYER_XP={bpClaim:300,event:150,fusion:80,craft:30}; // extra källor (klick/hatch/äventyr/quests matas via addBattlePassXp-kroken)
+function playerXpToReach(level){return PLAYER_XP_BASE*(level-1)*level/2;} // kumulativ XP för att NÅ en nivå
+function playerLevelFromXp(xp){xp=Math.max(0,xp||0);return Math.floor((1+Math.sqrt(1+8*xp/PLAYER_XP_BASE))/2);}
+function playerXpProgress(){
+  var xp=G.playerXp||0;var lvl=playerLevelFromXp(xp);
+  var floor=playerXpToReach(lvl),ceil=playerXpToReach(lvl+1);
+  var into=xp-floor,need=ceil-floor;
+  return {level:lvl,into:into,need:need,pct:need>0?Math.max(0,Math.min(100,into/need*100)):0};
+}
+function addPlayerXp(amt){
+  if(!amt||amt<=0)return;
+  if(typeof G.playerXp!=='number')G.playerXp=0;
+  var before=playerLevelFromXp(G.playerXp);
+  G.playerXp+=amt;
+  var after=playerLevelFromXp(G.playerXp);
+  G.playerLevel=after;
+  if(after>before){
+    // Milstolpe-notis var 10:e nivå (undviker spam vid täta tidiga level-ups)
+    if(Math.floor(after/10)>Math.floor(before/10)&&typeof showRewardPopup==='function')showRewardPopup(['🎉 Account Level '+after+'!'],false,2600);
+    if(typeof refreshProfileLevel==='function')refreshProfileLevel();
+  }
+}
+function refreshProfileLevel(){
+  var lp=playerXpProgress();
+  var lv=document.querySelector('#profile-modal .prof-lvl');if(lv)lv.textContent='Lv '+lp.level;
+  var fill=document.querySelector('#profile-modal .prof-xp-fill');if(fill)fill.style.width=lp.pct+'%';
+  var sub=document.querySelector('#profile-modal .prof-xp-soon');if(sub)sub.textContent=fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP';
+}
 function addBattlePassXp(amt){
-  if(!amt||amt<=0)return;ensureBattlePass();
+  if(!amt||amt<=0)return;
+  addPlayerXp(amt); // spelar-/kontonivå: matas av klick/hatch/äventyr/quests, kapas ALDRIG
+  ensureBattlePass();
   var cap=BP_TIERS*BP_XP_PER_TIER;
   if(G.battlePass.xp>=cap)return;
   G.battlePass.xp=Math.min(cap,G.battlePass.xp+amt);
@@ -4946,6 +4983,7 @@ function bpClaimFree(tier){
   ensureBattlePass();
   if(tier<1||tier>BP_TIERS||bpCurrentTier()<tier||G.battlePass.claimedFree[tier])return;
   G.battlePass.claimedFree[tier]=true;
+  addPlayerXp(PLAYER_XP.bpClaim);
   var parts=grantEventReward(bpTierReward(tier,false));
   saveGame();updateHUD();renderBattlePass();showRewardPopup(parts,false,2000);
 }
@@ -4954,6 +4992,7 @@ function bpClaimPremium(tier){
   if(!G.battlePass.premium){bpBuyPremium();return;}
   if(tier<1||tier>BP_TIERS||bpCurrentTier()<tier||G.battlePass.claimedPrem[tier])return;
   G.battlePass.claimedPrem[tier]=true;
+  addPlayerXp(PLAYER_XP.bpClaim);
   var parts=grantEventReward(bpTierReward(tier,true));
   saveGame();updateHUD();renderBattlePass();showRewardPopup(parts,false,2000);
 }
@@ -5056,6 +5095,7 @@ function claimEventChest(at){
   if(G.event.earned<at)return;
   if(G.event.chestsClaimed.indexOf(at)!==-1)return;
   G.event.chestsClaimed.push(at);
+  addPlayerXp(PLAYER_XP.event);
   var parts=grantEventReward(chest.reward);
   saveGame();updateHUD();renderEvents();
   showRewardPopup(parts,false,2000);
@@ -5075,6 +5115,7 @@ function claimEventQuest(id){
   if(G.event.questsClaimed[id])return;
   if(!eventQuestDone(q))return;
   G.event.questsClaimed[id]=true;
+  addPlayerXp(PLAYER_XP.event);
   var parts=grantEventReward(q.reward);
   saveGame();updateHUD();renderEvents();
   showRewardPopup(parts,false,2000);
@@ -5278,6 +5319,7 @@ function claimEventCollectionMilestone(at){
   if(eventCollectionCount()<at)return;
   if(G.event.collectionClaimed.indexOf(at)!==-1)return;
   G.event.collectionClaimed.push(at);
+  addPlayerXp(PLAYER_XP.event);
   var parts=grantEventReward(ms.reward||{});
   saveGame();updateHUD();renderEvents();
   showRewardPopup(parts,true);
@@ -5981,6 +6023,7 @@ function buyEgg(id){
   G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
   G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
   G.stats.eggsCrafted=(G.stats.eggsCrafted||0)+1;
+  addPlayerXp(PLAYER_XP.craft);
   if(typeof updateHUD==='function')updateHUD();
   renderShop();
 }
@@ -6345,6 +6388,7 @@ function doFusion(){
 
   // Update stats
   G.stats.totalPetsFused=(G.stats.totalPetsFused||0)+1;
+  addPlayerXp(PLAYER_XP.fusion);
   G.stats.petsConsumedInFusion=(G.stats.petsConsumedInFusion||0)+5;
   if(perfect)G.stats.perfectFusions=(G.stats.perfectFusions||0)+1;
   if(nextRarity==='cosmic')G.stats.cosmicPetsCreated=(G.stats.cosmicPetsCreated||0)+1;
@@ -7622,6 +7666,8 @@ if(savedData){
   G.boosts=(savedData.boosts&&typeof savedData.boosts==='object')?savedData.boosts:{coin:0,luck:0};
   if(typeof G.boosts.coin!=='number')G.boosts.coin=0;if(typeof G.boosts.luck!=='number')G.boosts.luck=0;
   G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
+  G.playerXp=(typeof savedData.playerXp==='number')?savedData.playerXp:0; // permanent kontonivå (nollställs aldrig)
+  G.playerLevel=playerLevelFromXp(G.playerXp);
   if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
