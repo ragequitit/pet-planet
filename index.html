@@ -2525,8 +2525,9 @@ function renderAdventure(){
 // ============================================================
 var SAVE_KEY='petplanet_v2_save';
 var _applyingSave=false; // när true: lägg INTE skriv över sparningen (vi byter sparning + laddar om)
+var _gateBlock=false; // när true: inloggnings-gaten är uppe → spela/spara inte
 function saveGame(){
-  if(_applyingSave)return;
+  if(_applyingSave||_gateBlock)return;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
@@ -3832,7 +3833,7 @@ function doImportSave(){
   if(!parsed||typeof parsed!=='object'){showGenericModal('❌','Invalid Code','That doesn\'t look like a valid Pet Planet backup code. Make sure you copied the whole thing.');return;}
   showConfirm('Restore This Save?','This will REPLACE your current progress with the backup. Your current save will be lost. Continue?','Restore',function(){
     _applyingSave=true;
-    try{localStorage.setItem(SAVE_KEY,raw);}catch(e){}
+    try{var _imp=JSON.parse(raw);_imp.savedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(_imp));}catch(e){try{localStorage.setItem(SAVE_KEY,raw);}catch(e2){}}
     location.reload();
   });
 }
@@ -6928,132 +6929,185 @@ var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
 var sb=null;
 try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);}}catch(e){sb=null;}
-var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudLocked=false, cloudClaimed=false;
+var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
+var OWNER_KEY='pp_cloud_owner';
+
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
-function cloudStatus(t){var el=document.getElementById('cloud-auth-msg');if(el)el.textContent=t||'';}
 function cloudLocalObj(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
-function cloudProgressOf(o){
-  if(!o)return 0;var st=o.stats||{};
-  return (Number(st.eggsHatched)||0)+(Number(st.totalPetsCollected)||0)*2+(Number(st.uniquePetsDiscovered)||0)*2+(Number(o.ascensions)||0)*100000;
+function cloudGateMsg(t){var el=document.getElementById('cloud-gate-msg');if(el)el.textContent=t||'';}
+function cloudStatus(t){cloudGateMsg(t);var el2=document.getElementById('cloud-auth-msg');if(el2)el2.textContent=t||'';}
+function cloudGateInputs(){return [(document.getElementById('cloud-gate-email')||{}).value||'',(document.getElementById('cloud-gate-pwd')||{}).value||''];}
+
+function cloudGateCardOpen(inner){
+  var d=document.getElementById('cloud-gate');
+  if(!d){d=document.createElement('div');d.id='cloud-gate';
+    d.style.cssText='position:fixed;inset:0;z-index:99999;background:linear-gradient(180deg,#0b1530,#10254a);display:flex;align-items:center;justify-content:center;padding:22px;font-family:Nunito,sans-serif;';
+    if(document.body)document.body.appendChild(d);}
+  d.innerHTML='<div style="width:100%;max-width:340px;background:rgba(0,0,0,0.28);border:1px solid rgba(255,255,255,0.12);border-radius:18px;padding:22px;text-align:center;color:#fff;box-shadow:0 12px 40px rgba(0,0,0,0.4);">'+inner+'</div>';
+  _gateBlock=true;
 }
-function cloudShowLock(){
-  if(document.getElementById('cloud-lock'))return;
-  var d=document.createElement('div');d.id='cloud-lock';
-  d.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(8,12,22,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff;font-family:Nunito,sans-serif;';
-  d.innerHTML='<div style="font-size:3rem;margin-bottom:10px;">\ud83d\udd12</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.25rem;margin-bottom:8px;">Playing somewhere else</div><div style="font-size:0.95rem;max-width:300px;opacity:0.85;margin-bottom:18px;">Your account is now active in another window or device. Reload to continue here.</div><button onclick="location.reload()" style="padding:12px 22px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:\'Fredoka One\',cursive;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;">Reload</button>';
-  if(document.body)document.body.appendChild(d);
+function cloudShowGate(mode,msg){
+  var inp='width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.35);color:#fff;font-size:1rem;margin-bottom:8px;';
+  var btn='width:100%;box-sizing:border-box;padding:13px;border:none;border-radius:12px;font-family:\'Fredoka One\',cursive;font-size:1rem;cursor:pointer;';
+  if(mode==='loading'){
+    cloudGateCardOpen('<div style="font-size:2.4rem;margin-bottom:8px;">\ud83e\udd5a</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;margin-bottom:6px;">Pet Planet</div><div style="opacity:0.85;">'+(msg||'Loading your save\u2026')+'</div>');
+    return;
+  }
+  if(mode==='error'){
+    cloudGateCardOpen('<div style="font-size:2.4rem;margin-bottom:8px;">\u26a0\ufe0f</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.1rem;margin-bottom:8px;">Connection needed</div><div style="opacity:0.85;margin-bottom:16px;">'+(msg||'Can\'t reach the server. Check your connection and reload.')+'</div><button onclick="location.reload()" style="'+btn+'background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 3px 0 #8a6000;">Reload</button>');
+    return;
+  }
+  cloudGateCardOpen(
+    '<div style="font-size:2.4rem;margin-bottom:6px;">\ud83e\udd5a</div>'+
+    '<div style="font-family:\'Fredoka One\',cursive;font-size:1.3rem;margin-bottom:4px;">Pet Planet</div>'+
+    '<div style="opacity:0.8;font-size:0.9rem;margin-bottom:16px;">Sign in or create an account to play. Your progress saves to your account and syncs across your devices.</div>'+
+    '<input id="cloud-gate-email" style="'+inp+'" placeholder="Email" autocomplete="email">'+
+    '<input id="cloud-gate-pwd" type="password" style="'+inp+'" placeholder="Password (min 6 characters)" autocomplete="current-password">'+
+    '<button onclick="cloudDoLogIn()" style="'+btn+'background:linear-gradient(180deg,#7b5cff,#5a3ed6);color:#fff;box-shadow:0 3px 0 #3a268f;margin-bottom:8px;">Log In</button>'+
+    '<button onclick="cloudDoSignUp()" style="'+btn+'background:linear-gradient(180deg,#2bb0ff,#1f86d6);color:#fff;box-shadow:0 3px 0 #14598f;">Create Account</button>'+
+    '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
+  );
 }
-function cloudPushNow(cb){
-  if(!sb||!cloudUser||cloudLocked){if(cb)cb();return;}
-  var o=cloudLocalObj();if(!o){if(cb)cb();return;}
-  cloudBusy=true;
-  sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
-    cloudBusy=false;var status=res&&res.data;
-    if(status==='superseded'){cloudLocked=true;cloudShowLock();}
-    else if(status==='saved'||status==='created'){cloudDirty=false;}
-    if(cb)cb(status);
-  },function(){cloudBusy=false;if(cb)cb();});
-}
-function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudLocked)cloudPushNow();}
-function cloudWipe(){
-  if(!sb||!cloudUser)return;
-  try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
-}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;}
+
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
   sb.rpc('pp_claim_session',{p_session:cloudSession}).then(function(){if(cb)cb();},function(){if(cb)cb();});
 }
-function cloudPull(){
-  if(!sb||!cloudUser)return;
-  sb.from('saves').select('data,progress').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
-    var row=res&&res.data;
-    if(!row){cloudPushNow(function(){cloudStatus('Cloud backup created from this device.');});return;}
-    var localProg=cloudProgressOf(cloudLocalObj());var cloudProg=Number(row.progress)||0;
-    if(cloudProg>localProg){
-      showConfirm('Load Cloud Save?','Your cloud save has MORE progress than this device. Load it? Recommended \u2014 this keeps your furthest progress.','Load Cloud',function(){
-        _applyingSave=true;
-        try{localStorage.setItem(SAVE_KEY,JSON.stringify(row.data));}catch(e){}
-        location.reload();
-      });
-    }else{
-      cloudPushNow(function(st){cloudStatus(st==='kept_higher'?'Cloud already has your furthest progress.':'Cloud save is up to date.');});
-    }
-  },function(){cloudStatus('Could not reach the cloud. Try again.');});
-}
 function cloudActiveCheck(cb){
   if(!sb||!cloudUser){if(cb)cb(null);return;}
-  sb.from('saves').select('active_session,updated_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){cb(res&&res.data?{session:res.data.active_session,updatedAt:res.data.updated_at}:null);},function(){cb(null);});
+  sb.from('saves').select('active_session').eq('user_id',cloudUser.id).maybeSingle().then(function(res){cb(res&&res.data?res.data.active_session:null);},function(){cb(null);});
+}
+function cloudKicked(){
+  if(cloudKickedFlag)return;cloudKickedFlag=true;
+  try{sb.auth.signOut();}catch(e){}
+  cloudUser=null;
+  cloudShowGate('login','You logged in on another device. Log in here again to keep playing on this one.');
 }
 function cloudHeartbeat(){
-  if(!sb||!cloudUser||cloudLocked||!cloudClaimed)return;
-  cloudActiveCheck(function(info){if(info&&info.session&&info.session!==cloudSession){cloudLocked=true;cloudShowLock();}});
+  if(!sb||!cloudUser||cloudKickedFlag||!cloudClaimed||_gateBlock)return;
+  cloudActiveCheck(function(act){if(act&&act!==''&&act!==cloudSession)cloudKicked();});
 }
+
+function cloudApplyAndReload(saveStr){
+  _applyingSave=true;
+  try{localStorage.setItem(SAVE_KEY,saveStr);}catch(e){}
+  try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}
+  location.reload();
+}
+
 function cloudEnter(){
-  cloudActiveCheck(function(info){
-    var recentOther=false;
-    if(info&&info.session&&info.session!==cloudSession){var t=Date.parse(info.updatedAt||'');recentOther=!!t&&(Date.now()-t<30000);}
-    cloudClaimSession(function(){
-      cloudClaimed=true;
-      if(recentOther)cloudStatus('You are now playing on this device. Your other open window is now locked.');
-      cloudPull();
-    });
+  if(!sb||!cloudUser)return;
+  cloudShowGate('loading');
+  cloudClaimSession(function(){
+    cloudClaimed=true;
+    sb.from('saves').select('data,client_saved_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
+      var row=res&&res.data;
+      var localObj=cloudLocalObj();
+      var owner=localStorage.getItem(OWNER_KEY);
+      var ownerKnown=!!owner;
+      var ownerMine=(owner===cloudUser.id);
+      if(row){
+        var cloudAt=Number(row.client_saved_at)||0;
+        if(!ownerKnown&&localObj){
+          var lt=Number(localObj.total)||0, ct=Number(row.data&&row.data.total)||0;
+          if(lt>ct){try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
+          else{cloudApplyAndReload(JSON.stringify(row.data));}
+          return;
+        }
+        if(!ownerMine){cloudApplyAndReload(JSON.stringify(row.data));return;}
+        var localAt=Number(localObj&&localObj.savedAt)||0;
+        if(localAt>cloudAt){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
+        else if(localAt===cloudAt){cloudHideGate();}
+        else{cloudApplyAndReload(JSON.stringify(row.data));}
+      }else{
+        if(!ownerKnown&&localObj){try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
+        else if(ownerMine){cloudHideGate();}
+        else{_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
+      }
+    },function(){cloudShowGate('login','Could not reach the cloud. Tap Log In to try again.');});
   });
 }
-function cloudRefreshUI(){if(typeof renderSettings==='function')renderSettings();}
-function cloudInputs(){return [(document.getElementById('cloud-email')||{}).value||'',(document.getElementById('cloud-pwd')||{}).value||''];}
-function cloudDoSignUp(){
-  if(!sb){cloudStatus('Cloud not available right now.');return;}
-  var v=cloudInputs(),em=v[0].trim(),pw=v[1];
-  if(em.length<3||pw.length<6){cloudStatus('Enter an email and a password (min 6 characters).');return;}
-  cloudStatus('Creating account...');
-  sb.auth.signUp({email:em,password:pw}).then(function(res){
-    if(res.error){cloudStatus(res.error.message);return;}
-    if(res.data&&res.data.session){cloudUser=res.data.user;cloudStatus('');cloudEnter();cloudRefreshUI();}
-    else{cloudStatus('Account created! Check your email to confirm, then log in.');}
-  },function(){cloudStatus('Something went wrong. Try again.');});
+
+function cloudPushNow(cb){
+  if(!sb||!cloudUser||cloudKickedFlag){if(cb)cb();return;}
+  var o=cloudLocalObj();if(!o){if(cb)cb();return;}
+  cloudBusy=true;
+  sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
+    cloudBusy=false;var st=res&&res.data;
+    if(st==='superseded'){cloudKicked();}
+    else if(st==='saved'||st==='created'){cloudDirty=false;try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}}
+    if(cb)cb(st);
+  },function(){cloudBusy=false;if(cb)cb();});
 }
+function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudKickedFlag&&!_gateBlock)cloudPushNow();}
+function cloudWipe(){
+  if(!sb||!cloudUser)return;
+  try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
+  try{localStorage.removeItem(OWNER_KEY);}catch(e){}
+}
+
 function cloudDoLogIn(){
-  if(!sb){cloudStatus('Cloud not available right now.');return;}
-  var v=cloudInputs(),em=v[0].trim(),pw=v[1];
-  if(!em||!pw){cloudStatus('Enter your email and password.');return;}
-  cloudStatus('Logging in...');
+  if(!sb){cloudGateMsg('Server not available. Reload and try again.');return;}
+  var v=cloudGateInputs(),em=v[0].trim(),pw=v[1];
+  if(!em||!pw){cloudGateMsg('Enter your email and password.');return;}
+  cloudGateMsg('Logging in\u2026');cloudKickedFlag=false;
   sb.auth.signInWithPassword({email:em,password:pw}).then(function(res){
-    if(res.error){cloudStatus(res.error.message);return;}
-    cloudUser=res.data.user;cloudStatus('');cloudEnter();cloudRefreshUI();
-  },function(){cloudStatus('Something went wrong. Try again.');});
+    if(res.error){cloudGateMsg(res.error.message);return;}
+    cloudUser=res.data.user;cloudEnter();
+  },function(){cloudGateMsg('Something went wrong. Try again.');});
+}
+function cloudDoSignUp(){
+  if(!sb){cloudGateMsg('Server not available. Reload and try again.');return;}
+  var v=cloudGateInputs(),em=v[0].trim(),pw=v[1];
+  if(em.length<3||pw.length<6){cloudGateMsg('Enter an email and a password (min 6 characters).');return;}
+  cloudGateMsg('Creating account\u2026');cloudKickedFlag=false;
+  sb.auth.signUp({email:em,password:pw}).then(function(res){
+    if(res.error){cloudGateMsg(res.error.message);return;}
+    if(res.data&&res.data.session){cloudUser=res.data.user;cloudEnter();}
+    else{cloudGateMsg('Account created! Check your email to confirm, then Log In.');}
+  },function(){cloudGateMsg('Something went wrong. Try again.');});
 }
 function cloudDoLogOut(){
   if(!sb)return;
-  cloudPushNow(function(){sb.auth.signOut().then(function(){cloudUser=null;cloudClaimed=false;cloudLocked=false;cloudRefreshUI();});});
+  cloudPushNow(function(){
+    try{sb.auth.signOut();}catch(e){}
+    cloudUser=null;cloudClaimed=false;cloudKickedFlag=false;
+    cloudShowGate('login','Logged out. Your progress is saved.');
+    cloudRefreshUI();
+  });
 }
-function cloudSyncNow(){if(!sb||!cloudUser)return;cloudStatus('Syncing...');cloudPull();}
+function cloudRefreshUI(){if(typeof renderSettings==='function'){try{renderSettings();}catch(e){}}}
+
 function cloudAccountHtml(){
-  var inp='width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:#fff;font-size:0.9rem;';
   if(!cloudReady()){
-    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save</div><div class="set-row-desc">Unavailable right now (no connection).</div></div></div>';
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Server unavailable right now.</div></div></div>';
   }
   if(cloudUser){
-    var email=profEsc(cloudUser.email||'Signed in');
-    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save \u2014 On</div><div class="set-row-desc">Signed in as '+email+'. Backed up and synced. Only one window can play at a time.</div></div></div>'+
-      '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudSyncNow()">\ud83d\udd04 Sync Now</button><button class="set-btn" style="flex:1;background:rgba(120,30,40,0.65);" onclick="cloudDoLogOut()">Log Out</button></div>'+
-      '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
+    var email=(typeof profEsc==='function')?profEsc(cloudUser.email||'Signed in'):(cloudUser.email||'Signed in');
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>'+
+      '<button class="set-btn" style="width:100%;background:rgba(120,30,40,0.65);margin-top:8px;" onclick="cloudDoLogOut()">Log Out</button>';
   }
-  return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save</div><div class="set-row-desc">Sign in to back up your progress and sync across devices. Optional \u2014 the game works fine without it.</div></div></div>'+
-    '<input id="cloud-email" style="'+inp+'" placeholder="Email" autocomplete="email">'+
-    '<input id="cloud-pwd" type="password" style="'+inp+'margin-top:6px;" placeholder="Password (min 6 characters)" autocomplete="current-password">'+
-    '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudDoLogIn()">Log In</button><button class="set-btn blue" style="flex:1;" onclick="cloudDoSignUp()">Create Account</button></div>'+
-    '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
+  return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Not signed in.</div></div></div>';
 }
+
 if(sb){
+  _gateBlock=true; cloudShowGate('loading');
   try{
-    sb.auth.getSession().then(function(res){var sess=res&&res.data&&res.data.session;if(sess){cloudUser=sess.user;cloudEnter();cloudRefreshUI();}});
-    sb.auth.onAuthStateChange(function(_e,session){cloudUser=session?session.user:null;cloudRefreshUI();});
-  }catch(e){}
-  setInterval(cloudFlush,15000);
+    sb.auth.getSession().then(function(res){
+      var sess=res&&res.data&&res.data.session;
+      if(sess){cloudUser=sess.user;cloudEnter();}
+      else{cloudShowGate('login');}
+    },function(){cloudShowGate('login','Could not reach the server. Tap Log In to try again.');});
+    sb.auth.onAuthStateChange(function(_e,session){if(!session){cloudUser=null;if(!cloudKickedFlag&&!document.getElementById('cloud-gate'))cloudShowGate('login');}});
+  }catch(e){cloudShowGate('login','Something went wrong. Reload to try again.');}
+  setInterval(cloudFlush,8000);
   setInterval(cloudHeartbeat,8000);
   try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){cloudHeartbeat();}else{cloudFlush();}});}catch(e){}
+}else{
+  _gateBlock=true; cloudShowGate('error');
 }
 </script>
 </body>
