@@ -104,6 +104,29 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #trading-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
 #events-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #events-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 34px;}
+#battlepass-modal .prof-panel{background:linear-gradient(180deg,#241640,#0b1530);border:2px solid #7a4cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#battlepass-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 34px;}
+.bp-head{padding:14px 16px 4px;text-align:center;}
+.bp-season{font-family:'Fredoka One',cursive;color:#e8d8ff;font-size:1.1rem;}
+.bp-tiernow{color:#b9a8e0;font-size:0.85rem;margin-top:2px;}
+.bp-xpbar{height:14px;border-radius:8px;background:rgba(255,255,255,0.12);overflow:hidden;margin:8px 16px 2px;}
+.bp-xpfill{height:100%;background:linear-gradient(90deg,#b06cff,#f5c842);transition:width .3s;}
+.bp-xptext{color:#cbbbe8;font-size:0.72rem;margin:0 16px 8px;text-align:center;}
+.bp-buy{display:block;margin:4px auto 12px;padding:9px 16px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#2a1c00;font-family:'Fredoka One',cursive;cursor:pointer;box-shadow:0 3px 0 #8a6000;}
+.bp-prem-on{color:#f5c842;font-size:0.82rem;text-align:center;margin:0 0 10px;}
+.bp-row{display:flex;align-items:stretch;gap:6px;margin:0 10px 8px;}
+.bp-tier{flex:0 0 34px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;color:#e8d8ff;background:rgba(255,255,255,0.07);border-radius:10px;}
+.bp-cell{flex:1;background:rgba(255,255,255,0.06);border-radius:10px;padding:7px 8px;display:flex;flex-direction:column;gap:5px;border:1px solid rgba(255,255,255,0.08);}
+.bp-cell.prem{border-color:rgba(245,200,66,0.4);}
+.bp-cell-lbl{font-size:0.6rem;letter-spacing:0.5px;color:#9a8cc0;}
+.bp-cell.prem .bp-cell-lbl{color:#f5c842;}
+.bp-cell-rw{font-size:0.76rem;color:#fff;font-weight:600;line-height:1.2;}
+.bp-btn{margin-top:auto;padding:5px;border:none;border-radius:8px;font-family:'Fredoka One',cursive;font-size:0.7rem;cursor:pointer;text-align:center;}
+.bp-btn.claim{background:linear-gradient(180deg,#43d17a,#1f9b54);color:#06210f;box-shadow:0 2px 0 #126b38;}
+.bp-btn.locked{background:rgba(255,255,255,0.07);color:#7c7a90;cursor:default;}
+.bp-btn.done{background:rgba(67,209,122,0.15);color:#43d17a;cursor:default;}
+.bp-btn.need{background:linear-gradient(180deg,#5a6a8e,#36456a);color:#cfe6ff;box-shadow:0 2px 0 #1d2740;}
+.tb-rbtn.deal{animation:ubDealPulse 2.4s ease-in-out infinite;border-radius:10px;}
 .ev-intro{font-size:0.66rem;color:rgba(255,255,255,0.6);text-align:center;line-height:1.4;padding:10px 18px 2px;}
 .ev-feat{position:relative;margin:10px 12px 0;border-radius:16px;overflow:hidden;border:1.5px solid rgba(120,180,255,0.35);background:linear-gradient(135deg,#234b86,#16294f);min-height:108px;display:flex;align-items:center;}
 .ev-feat-art{position:absolute;right:0;top:0;bottom:0;width:46%;display:flex;align-items:center;justify-content:center;font-size:2.4rem;opacity:0.95;}
@@ -1183,7 +1206,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     </div>
     <div class="tb-right">
       <div class="tb-gems" onclick="showComingSoon('💎 Gems','The premium currency Gems. Here you will be able to see how to earn Gems (achievements, dailies, battle pass) and buy more. Coming in a later update.')"><span style="font-size:0.95rem">💎</span><span class="tg-val" id="tb-gems-val">0</span></div>
-      <div class="tb-rbtn" onclick="showComingSoon('🎟️ Battle Pass','The Battle Pass menu — claim rewards and buy the premium track. Coming in a later update.')">🎟️</div>
+      <div class="tb-rbtn" id="bp-btn" onclick="openBattlePass()">🎟️</div>
       <div class="tb-rbtn profile" onclick="showProfile()">👤</div>
       <div class="tb-rbtn" onclick="openMore()">⋯</div>
       <div class="tb-rbtn" onclick="showSettings()">⚙️</div>
@@ -1407,6 +1430,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeEvents()">✕</button>
     </div>
     <div class="prof-body" id="events-body"></div>
+  </div>
+</div>
+<div id="battlepass-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">🎟️ Battle Pass</div>
+      <button class="prof-x" onclick="closeBattlePass()">✕</button>
+    </div>
+    <div class="prof-body" id="battlepass-body"></div>
   </div>
 </div>
 <div id="favpicker-modal" class="modal-overlay">
@@ -2388,7 +2420,7 @@ function claimAdventure(index){
   });
   if(pet)pet.advXp=(pet.advXp||0)+rw.xp;                 // pet-XP sparas (leveling byggs senare)
   G.stats.totalAdventureXp=(G.stats.totalAdventureXp||0)+rw.xp;
-  G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;
+  G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;addBattlePassXp(BP_XP.adventure);
   eventOnAdventure();
   G.stats.adventureHoursLogged=(G.stats.adventureHoursLogged||0)+adv.dur/3600000;
   // Bonus-loot (chans-baserad)
@@ -2538,7 +2570,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -2569,6 +2601,8 @@ function resetGame(){
   G.redeemedCodes=[];
   G.event=null;
   G.quests=null;
+  G.weeklyQuests=null;
+  G.battlePass=null;
   G.boosts={coin:0,luck:0};
   G.cosmeticsOwned={};
   G.stats=freshStats();
@@ -2722,7 +2756,7 @@ function eggTap(clientX,clientY){
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
   clickWindowAccum++;
-  G.stats.totalClicks++;
+  G.stats.totalClicks++;addBattlePassXp(BP_XP.click);
   if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
   G.stats.totalCoinsEarned+=clickVal;
   if(Math.random()<getDropChance(0.15))dropShell();
@@ -3863,7 +3897,7 @@ function resetFromSettings(){
     G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
-    G.event=null;G.quests=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
+    G.event=null;G.quests=null;G.weeklyQuests=null;G.battlePass=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
     G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
@@ -4378,7 +4412,13 @@ function ensureEventState(){
 // G.quests, helt skild från event-questsen (G.event). Återanvänder event-
 // questsens CSS-klasser (ev-quest m.fl.) så utseendet matchar exakt.
 // ============================================================
-var DAILY_QUEST_STAT={tap:'totalClicks',hatch:'eggsHatched',adventure:'adventuresCompleted',fusion:'totalPetsFused'};
+var DAILY_QUEST_STAT={tap:'totalClicks',hatch:'eggsHatched',adventure:'adventuresCompleted',fusion:'totalPetsFused',mutate:'totalPetsMutated',extract:'abilitiesExtracted',send:'totalPetsSentOnAdventures',craft:'eggsCrafted'};
+// Aktuellt kumulativt värde för en quest-typ. 'shells' = summa av alla shell-rariteter (specialfall).
+function questCumValue(type){
+  var s=G.stats||{};
+  if(type==='shells'){var o=s.shellsCollectedByRarity||{},t=0,r;for(r in o)t+=o[r]||0;return t;}
+  var stat=DAILY_QUEST_STAT[type];if(!stat)return 0;return s[stat]||0;
+}
 var DAILY_QUEST_CYCLE_HOURS=24;
 // Pool av quest-mallar i tre svårighetsgrader. Varje dygn plockas EN ur varje
 // grad (med unika typer) → jämn kurva lätt/medel/tuff. target+reward är
@@ -4388,22 +4428,31 @@ var DAILY_QUEST_POOL={
     {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{coins:2000}},
     {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{coins:2500}},
     {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{coins:2500}},
-    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{coins:3000}}
+    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{coins:3000}},
+    {type:'shells',name:'Shell Picker',icon:'\ud83d\udc1a',target:15,reward:{coins:2500}},
+    {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{coins:3000}}
   ],
   med:[
     {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{coins:6000,shells:{common:5}}},
     {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{coins:7000,shells:{common:5}}},
     {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{coins:7000,shells:{uncommon:3}}},
-    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{coins:8000,shells:{uncommon:3}}}
+    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{coins:8000,shells:{uncommon:3}}},
+    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{coins:7000,shells:{uncommon:3}}},
+    {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{coins:7000,shells:{uncommon:3}}},
+    {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{coins:8000,shells:{common:5}}}
   ],
   hard:[
     {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{coins:15000,shells:{rare:2}}},
     {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{coins:18000,gems:5}},
     {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{coins:18000,gems:5}},
-    {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{coins:20000,gems:8}}
+    {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{coins:20000,gems:8}},
+    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{coins:16000,shells:{rare:2}}},
+    {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{coins:18000,gems:5}},
+    {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{coins:18000,gems:5}},
+    {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{coins:18000,gems:5}}
   ]
 };
-function dailyQuestSnapshot(){var s=G.stats||{};return {totalClicks:s.totalClicks||0,eggsHatched:s.eggsHatched||0,adventuresCompleted:s.adventuresCompleted||0,totalPetsFused:s.totalPetsFused||0};}
+function dailyQuestSnapshot(){var o={},t;for(t in DAILY_QUEST_STAT)o[t]=questCumValue(t);o.shells=questCumValue('shells');return o;}
 function dailyCycleMs(){return DAILY_QUEST_CYCLE_HOURS*3600000;}
 function dailyCycleLeftMs(){if(!G.quests)return 0;return Math.max(0,G.quests.cycleStart+dailyCycleMs()-Date.now());}
 // Plockar dagens 3 quests: en ur varje svårighetsgrad, med unika typer.
@@ -4422,89 +4471,217 @@ function advanceDailyQuestCycle(){
   var Q=G.quests;if(!Q)return false;
   var cyc=dailyCycleMs(),changed=false,guard=0;
   while(Date.now()>=Q.cycleStart+cyc&&guard<10000){
-    Q.cycleStart+=cyc;Q.base=dailyQuestSnapshot();Q.active=pickDailyQuests();Q.claimed={};changed=true;guard++;
+    Q.cycleStart+=cyc;Q.base=dailyQuestSnapshot();Q.active=pickDailyQuests();Q.claimed={};Q.rerollsUsed=0;changed=true;guard++;
   }
   return changed;
 }
 function ensureDailyQuests(){
   if(!G.quests||typeof G.quests!=='object'){
-    G.quests={cycleStart:Date.now(),active:pickDailyQuests(),base:dailyQuestSnapshot(),claimed:{}};
+    G.quests={cycleStart:Date.now(),active:pickDailyQuests(),base:dailyQuestSnapshot(),claimed:{},rerollsUsed:0};
   }
   var Q=G.quests;
   if(typeof Q.cycleStart!=='number')Q.cycleStart=Date.now();
   if(!Array.isArray(Q.active)||!Q.active.length)Q.active=pickDailyQuests();
-  if(!Q.base||typeof Q.base!=='object')Q.base=dailyQuestSnapshot();
+  if(!Q.base||typeof Q.base!=='object'||Q.base.tap==null)Q.base=dailyQuestSnapshot();
   if(!Q.claimed||typeof Q.claimed!=='object')Q.claimed={};
+  if(typeof Q.rerollsUsed!=='number')Q.rerollsUsed=0;
   advanceDailyQuestCycle();
 }
-function dailyQuestProgress(q){
-  var Q=G.quests;if(!Q)return 0;
-  var stat=DAILY_QUEST_STAT[q.type];if(!stat)return 0;
-  var cur=(G.stats&&G.stats[stat])||0,base=(Q.base&&Q.base[stat])||0;
+function dailyQuestProgress(q,Q){
+  Q=Q||G.quests;if(!Q)return 0;
+  var cur=questCumValue(q.type);
+  var base=(q.qbase!=null)?q.qbase:((Q.base&&Q.base[q.type]!=null)?Q.base[q.type]:0);
   return Math.max(0,cur-base);
 }
-function dailyQuestDone(q){return dailyQuestProgress(q)>=q.target;}
+function dailyQuestDone(q,Q){return dailyQuestProgress(q,Q)>=q.target;}
+// ============================================================
+// WEEKLY QUESTS (Quests steg 2) — 3 slumpade veckouppgifter som rullar var
+// 7:e dygn. Speglar daily-motorn men med större mål + bättre belöningar
+// (gems/cores). Egen state G.weeklyQuests; återanvänder dailyQuestSnapshot
+// + DAILY_QUEST_STAT + dailyQuestProgress/Done (state-arg) → noll duplicering
+// av progress-logiken. Pool i tre svårighetsgrader, en unik typ ur varje.
+// ============================================================
+var WEEKLY_QUEST_CYCLE_HOURS=168;
+var WEEKLY_QUEST_POOL={
+  easy:[
+    {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{coins:60000,shells:{uncommon:10}}},
+    {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{coins:70000,shells:{rare:5}}},
+    {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',target:10,reward:{coins:70000,gems:15}},
+    {type:'fusion',name:'Weekly Combiner',icon:'\u2697\ufe0f',target:20,reward:{coins:80000,gems:15}},
+    {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{coins:60000,shells:{rare:3}}},
+    {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{coins:70000,shells:{uncommon:8}}}
+  ],
+  med:[
+    {type:'tap',name:'Tap Champion',icon:'\ud83d\udc46',target:5000,reward:{coins:150000,gems:25}},
+    {type:'hatch',name:'Hatch Master',icon:'\ud83e\udd5a',target:120,reward:{coins:175000,gems:25}},
+    {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{coins:175000,shells:{epic:3}}},
+    {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{coins:200000,shells:{epic:3}}},
+    {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{coins:150000,gems:25}},
+    {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{coins:175000,gems:25}},
+    {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{coins:175000,gems:25}}
+  ],
+  hard:[
+    {type:'tap',name:'Tap Legend',icon:'\ud83d\udc46',target:12000,reward:{coins:400000,gems:40,cores:1}},
+    {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{coins:500000,gems:50,cores:1}},
+    {type:'adventure',name:'Grand Explorer',icon:'\ud83e\udded',target:60,reward:{coins:500000,gems:50}},
+    {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{coins:600000,gems:60,cores:1}},
+    {type:'mutate',name:'Master Mutator',icon:'\ud83e\uddec',target:5,reward:{coins:500000,gems:50,cores:1}},
+    {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{coins:500000,gems:50}},
+    {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{coins:500000,gems:50}},
+    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{coins:600000,gems:60,cores:1}}
+  ]
+};
+function weeklyCycleMs(){return WEEKLY_QUEST_CYCLE_HOURS*3600000;}
+function weeklyCycleLeftMs(){if(!G.weeklyQuests)return 0;return Math.max(0,G.weeklyQuests.cycleStart+weeklyCycleMs()-Date.now());}
+function pickWeeklyQuests(){
+  var grades=['easy','med','hard'],used={},out=[];
+  grades.forEach(function(g){
+    var pool=WEEKLY_QUEST_POOL[g].filter(function(q){return !used[q.type];});
+    if(!pool.length)pool=WEEKLY_QUEST_POOL[g];
+    var p=pool[Math.floor(Math.random()*pool.length)];
+    used[p.type]=true;
+    out.push({id:'w_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward});
+  });
+  return out;
+}
+function advanceWeeklyQuestCycle(){
+  var Q=G.weeklyQuests;if(!Q)return false;
+  var cyc=weeklyCycleMs(),changed=false,guard=0;
+  while(Date.now()>=Q.cycleStart+cyc&&guard<10000){
+    Q.cycleStart+=cyc;Q.base=dailyQuestSnapshot();Q.active=pickWeeklyQuests();Q.claimed={};changed=true;guard++;
+  }
+  return changed;
+}
+function ensureWeeklyQuests(){
+  if(!G.weeklyQuests||typeof G.weeklyQuests!=='object'){
+    G.weeklyQuests={cycleStart:Date.now(),active:pickWeeklyQuests(),base:dailyQuestSnapshot(),claimed:{}};
+  }
+  var Q=G.weeklyQuests;
+  if(typeof Q.cycleStart!=='number')Q.cycleStart=Date.now();
+  if(!Array.isArray(Q.active)||!Q.active.length)Q.active=pickWeeklyQuests();
+  if(!Q.base||typeof Q.base!=='object'||Q.base.tap==null)Q.base=dailyQuestSnapshot();
+  if(!Q.claimed||typeof Q.claimed!=='object')Q.claimed={};
+  advanceWeeklyQuestCycle();
+}
+function claimWeeklyQuest(id){
+  ensureWeeklyQuests();
+  var q=null;G.weeklyQuests.active.forEach(function(x){if(x.id===id)q=x;});
+  if(!q)return;
+  if(G.weeklyQuests.claimed[id])return;
+  if(!dailyQuestDone(q,G.weeklyQuests))return;
+  G.weeklyQuests.claimed[id]=true;addBattlePassXp(BP_XP.questWeekly);
+  var parts=grantEventReward(q.reward);
+  saveGame();updateHUD();renderQuests();
+  showRewardPopup(parts,false,2000);
+}
 function claimDailyQuest(id){
   ensureDailyQuests();
   var q=null;G.quests.active.forEach(function(x){if(x.id===id)q=x;});
   if(!q)return;
   if(G.quests.claimed[id])return;
   if(!dailyQuestDone(q))return;
-  G.quests.claimed[id]=true;
+  G.quests.claimed[id]=true;addBattlePassXp(BP_XP.questDaily);
   var parts=grantEventReward(q.reward);
   saveGame();updateHUD();renderQuests();
   showRewardPopup(parts,false,2000);
 }
+// ----- Reroll (Quests steg 2): byt ut EN dagsquest. 1 gratis/dag, sedan gems. (Tunbart.) -----
+var FREE_REROLLS_PER_DAY=1;
+var REROLL_GEM_COST=5;
+function dailyRerollsLeft(){ensureDailyQuests();return Math.max(0,FREE_REROLLS_PER_DAY-(G.quests.rerollsUsed||0));}
+function rerollDailyQuest(id){
+  ensureDailyQuests();
+  var Q=G.quests,idx=-1,i;
+  for(i=0;i<Q.active.length;i++)if(Q.active[i].id===id)idx=i;
+  if(idx<0)return;
+  var cur=Q.active[idx];
+  if(Q.claimed[id])return; // redan hämtad → ingen reroll
+  var free=dailyRerollsLeft()>0;
+  if(!free&&(G.gems||0)<REROLL_GEM_COST){
+    showGenericModal('\ud83d\udc8e','Need Gems','You are out of free rerolls today. Extra rerolls cost '+REROLL_GEM_COST+' Gems each.');
+    return;
+  }
+  // Hitta ersättare: samma svårighetsgrad, helst en typ som de ANDRA aktiva inte har och inte samma som nu.
+  var grade=cur.grade,otherTypes={};
+  Q.active.forEach(function(q,j){if(j!==idx)otherTypes[q.type]=true;});
+  var all=DAILY_QUEST_POOL[grade]||[];
+  var pool=all.filter(function(p){return !otherTypes[p.type]&&p.type!==cur.type;});
+  if(!pool.length)pool=all.filter(function(p){return !otherTypes[p.type];});
+  if(!pool.length)pool=all.filter(function(p){return p.type!==cur.type;});
+  if(!pool.length)pool=all;
+  if(!pool.length)return;
+  var p=pool[Math.floor(Math.random()*pool.length)];
+  if(free)Q.rerollsUsed=(Q.rerollsUsed||0)+1;else G.gems-=REROLL_GEM_COST;
+  Q.active[idx]={id:cur.id,grade:grade,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward,qbase:questCumValue(p.type)};
+  delete Q.claimed[cur.id];
+  saveGame();updateHUD();renderQuests();
+}
 // GO-knappen tar spelaren dit uppgiften görs.
 function questGo(type){
-  var dest=({hatch:'hatch',adventure:'adventure',fusion:'pets',tap:'buildings'})[type]||'buildings';
+  var dest=({hatch:'hatch',adventure:'adventure',fusion:'pets',mutate:'pets',extract:'pets',send:'adventure',craft:'shop',tap:'buildings',shells:'buildings'})[type]||'buildings';
   switchTab(dest);
 }
-function renderQuests(){
-  ensureDailyQuests();
-  var Q=G.quests,h='<div class="ev-wrap"><div class="ev-card">';
-  h+='<div class="ev-card-h">\ud83d\udccb Daily Quests</div>';
-  Q.active.forEach(function(q){
-    var prog=dailyQuestProgress(q),done=prog>=q.target,claimed=!!Q.claimed[q.id];
-    var shown=Math.min(prog,q.target),pct=Math.min(100,(prog/q.target)*100);
-    h+='<div class="ev-quest">'+
-         '<div class="ev-quest-ic">'+(q.icon||'\u2b50')+'</div>'+
-         '<div class="ev-quest-mid">'+
-           '<div class="ev-quest-name">'+q.name+'</div>'+
-           '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+pct+'%"></div></div>'+
-           '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
-         '</div>'+
-         '<div class="ev-quest-rw">REWARD<b>'+eventRewardTextFull(q.reward)+'</b></div>';
-    if(claimed)h+='<div class="ev-qdone">\u2705</div>';
-    else if(done)h+='<button class="ev-claim" onclick="claimDailyQuest(\''+q.id+'\')">CLAIM</button>';
-    else h+='<button class="ev-go" onclick="questGo(\''+q.type+'\')">GO</button>';
-    h+='</div>';
-  });
-  h+='<div class="ev-newq">\ud83d\udd52 New quests in <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></div>';
-  h+='</div></div>';
-  var tab=document.getElementById('tab-quests');if(tab)tab.innerHTML=h;
-  _qSig=Q.active.map(function(q){return q.id+':'+dailyQuestProgress(q)+':'+(Q.claimed[q.id]?1:0);}).join('|');
+// Gemensam quest-rad (används av både daily och weekly). claimFn = namn på claim-funktionen.
+// allowReroll = visa reroll-knapp (bara daily).
+function questRowHtml(q,Q,claimFn,allowReroll){
+  var prog=dailyQuestProgress(q,Q),done=prog>=q.target,claimed=!!Q.claimed[q.id];
+  var shown=Math.min(prog,q.target),pct=Math.min(100,(prog/q.target)*100);
+  var h='<div class="ev-quest">'+
+    '<div class="ev-quest-ic">'+(q.icon||'\u2b50')+'</div>'+
+    '<div class="ev-quest-mid">'+
+      '<div class="ev-quest-name">'+q.name+'</div>'+
+      '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
+    '</div>'+
+    '<div class="ev-quest-rw">REWARD<b>'+eventRewardTextFull(q.reward)+'</b></div>';
+  if(claimed)h+='<div class="ev-qdone">\u2705</div>';
+  else if(done)h+='<button class="ev-claim" onclick="'+claimFn+'(\''+q.id+'\')">CLAIM</button>';
+  else{
+    h+='<button class="ev-go" onclick="questGo(\''+q.type+'\')">GO</button>';
+    if(allowReroll)h+='<button class="ev-go" style="margin-left:4px;padding:7px 8px;background:linear-gradient(180deg,#5a6a8e,#36456a);box-shadow:0 2px 0 #1d2740" onclick="rerollDailyQuest(\''+q.id+'\')">\ud83d\udd04</button>';
+  }
+  h+='</div>';
+  return h;
 }
-// Live-uppdatering medan fliken är öppen: timern varje tick, korten bara vid förändring (ingen blink).
+function questSig(Q){return Q.active.map(function(q){return q.id+':'+dailyQuestProgress(q,Q)+':'+(Q.claimed[q.id]?1:0);}).join('|');}
+function renderQuests(){
+  ensureDailyQuests();ensureWeeklyQuests();
+  var D=G.quests,W=G.weeklyQuests,h='<div class="ev-wrap">';
+  h+='<div class="ev-card"><div class="ev-card-h">\ud83d\udccb Daily Quests</div>';
+  D.active.forEach(function(q){h+=questRowHtml(q,D,'claimDailyQuest',true);});
+  var rl=dailyRerollsLeft();
+  h+='<div class="ev-newq">\ud83d\udd04 '+(rl>0?(rl+' free reroll'+(rl>1?'s':'')+' today'):(REROLL_GEM_COST+'\ud83d\udc8e per reroll'))+'</div>';
+  h+='<div class="ev-newq">\ud83d\udd52 New quests in <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></div>';
+  h+='</div>';
+  h+='<div class="ev-card"><div class="ev-card-h">\ud83d\uddd3\ufe0f Weekly Quests</div>';
+  W.active.forEach(function(q){h+=questRowHtml(q,W,'claimWeeklyQuest',false);});
+  h+='<div class="ev-newq">\ud83d\udd52 New quests in <span id="qw-timer-val">'+fmtEventTime(weeklyCycleLeftMs())+'</span></div>';
+  h+='</div>';
+  h+='</div>';
+  var tab=document.getElementById('tab-quests');if(tab)tab.innerHTML=h;
+  _qSig=questSig(D)+'#'+questSig(W)+'#r'+(D.rerollsUsed||0);
+}
+// Live-uppdatering medan fliken är öppen: timrarna varje tick, korten bara vid förändring (ingen blink).
 var _qSig='';
 function softUpdateQuests(){
   var tab=document.getElementById('tab-quests');
-  if(!tab||tab.style.display!=='block'||!G.quests)return;
-  var Q=G.quests;
-  var tv=document.getElementById('q-timer-val');if(tv)tv.textContent=fmtEventTime(dailyCycleLeftMs());
-  var sig=Q.active.map(function(q){return q.id+':'+dailyQuestProgress(q)+':'+(Q.claimed[q.id]?1:0);}).join('|');
+  if(!tab||tab.style.display!=='block'||!G.quests||!G.weeklyQuests)return;
+  var dv=document.getElementById('q-timer-val');if(dv)dv.textContent=fmtEventTime(dailyCycleLeftMs());
+  var wv=document.getElementById('qw-timer-val');if(wv)wv.textContent=fmtEventTime(weeklyCycleLeftMs());
+  var sig=questSig(G.quests)+'#'+questSig(G.weeklyQuests)+'#r'+(G.quests.rerollsUsed||0);
   if(sig!==_qSig)renderQuests();
 }
-// Glow på Quests-knappen (.side-btn → .side-btn.deal): tänds när en quest är klar att hämta.
-function anyDailyQuestClaimable(){
-  if(!G.quests||!Array.isArray(G.quests.active))return false;
-  for(var i=0;i<G.quests.active.length;i++){
-    var q=G.quests.active[i];
-    if(G.quests.claimed&&G.quests.claimed[q.id])continue;
-    if(dailyQuestDone(q))return true;
+// Glow på Quests-knappen (.side-btn → .side-btn.deal): tänds när NÅGON quest (daily ELLER weekly) är klar.
+function questsClaimableIn(Q){
+  if(!Q||!Array.isArray(Q.active))return false;
+  for(var i=0;i<Q.active.length;i++){
+    var q=Q.active[i];
+    if(Q.claimed&&Q.claimed[q.id])continue;
+    if(dailyQuestDone(q,Q))return true;
   }
   return false;
 }
+function anyDailyQuestClaimable(){return questsClaimableIn(G.quests)||questsClaimableIn(G.weeklyQuests);}
 function updateQuestGlow(){
   var btn=document.getElementById('quests-btn');if(!btn)return;
   btn.classList.toggle('deal',anyDailyQuestClaimable());
@@ -4533,6 +4710,145 @@ function addSnowflakes(n){
 }
 function eventOnHatch(){if(ACTIVE_EVENT)addSnowflakes(ACTIVE_EVENT.snowPerHatch||0);}
 function eventOnAdventure(){if(ACTIVE_EVENT)addSnowflakes(ACTIVE_EVENT.snowPerAdventure||0);}
+// ============================================================
+// BATTLE PASS (steg 1 — kärnan). Säsong med tiers + XP-bana matad av spelandet.
+// Free + Premium track (Premium = MER, aldrig STARKARE — Pay-to-Have). Belöningar
+// = platshållar-gems/shells/coins (cosmetics + säsongs-reset kommer senare).
+// Egen state G.battlePass {season, xp, premium, claimedFree, claimedPrem}.
+// ============================================================
+var BP_TIERS=30, BP_XP_PER_TIER=1000, BP_PREMIUM_GEM_COST=100; // platshållare (balanseras senare)
+var BP_XP={click:1,hatch:50,adventure:100,questDaily:200,questWeekly:500}; // XP per handling (platshållare)
+var BP_SEASON_DAYS=30; // platshållare (designen överväger 30/60/90)
+function bpSeasonMs(){return BP_SEASON_DAYS*86400000;}
+function bpSeasonLeftMs(){if(!G.battlePass)return 0;return Math.max(0,G.battlePass.seasonStart+bpSeasonMs()-Date.now());}
+function bpFmtLeft(ms){
+  var s=Math.floor(ms/1000),d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60);
+  if(d>0)return d+'d '+h+'h';if(h>0)return h+'h '+m+'m';if(m>0)return m+'m';return '<1m';
+}
+// Vid säsongsslut: samla in oclaimade NÅDDA belöningar automatiskt (FOMO-fritt), sedan nollställ.
+function bpAutoGrantUnclaimed(){
+  var B=G.battlePass,ct=bpTierOf(B.xp),got=false,t;
+  for(t=1;t<=ct;t++){
+    if(!B.claimedFree[t]){grantEventReward(bpTierReward(t,false));got=true;}
+    if(B.premium&&!B.claimedPrem[t]){grantEventReward(bpTierReward(t,true));got=true;}
+  }
+  return got;
+}
+function advanceBattlePassSeason(){
+  var B=G.battlePass;if(!B)return false;
+  var per=bpSeasonMs(),changed=false,guard=0;
+  while(Date.now()>=B.seasonStart+per&&guard<1000){
+    bpAutoGrantUnclaimed();
+    B.seasonStart+=per;B.season+=1;B.xp=0;B.claimedFree={};B.claimedPrem={};B.premium=false;
+    B.seasonNotice=B.season-1;changed=true;guard++;
+  }
+  return changed;
+}
+function ensureBattlePass(){
+  if(!G.battlePass||typeof G.battlePass!=='object')G.battlePass={season:1,xp:0,premium:false,claimedFree:{},claimedPrem:{},seasonStart:Date.now()};
+  var B=G.battlePass;
+  if(typeof B.xp!=='number')B.xp=0;
+  if(typeof B.season!=='number')B.season=1;
+  if(typeof B.seasonStart!=='number')B.seasonStart=Date.now();
+  B.premium=!!B.premium;
+  if(!B.claimedFree||typeof B.claimedFree!=='object')B.claimedFree={};
+  if(!B.claimedPrem||typeof B.claimedPrem!=='object')B.claimedPrem={};
+  advanceBattlePassSeason();
+}
+// Belöning per tier. Premium ger MER av samma kategorier (aldrig starkare/exklusiv power).
+function bpTierReward(tier,premium){
+  var r={};
+  if(premium){
+    r.coins=6000*tier;
+    if(tier%2===0)r.gems=8;
+    if(tier%5===0)r.shells={uncommon:6};
+    if(tier%10===0)r.gems=(r.gems||0)+20;
+  }else{
+    r.coins=2000*tier;
+    if(tier%5===0)r.shells={common:5};
+    if(tier%10===0)r.gems=10;
+  }
+  return r;
+}
+function bpTierOf(xp){return Math.max(0,Math.min(BP_TIERS,Math.floor((xp||0)/BP_XP_PER_TIER)));}
+function bpCurrentTier(){ensureBattlePass();return bpTierOf(G.battlePass.xp);}
+function addBattlePassXp(amt){
+  if(!amt||amt<=0)return;ensureBattlePass();
+  var cap=BP_TIERS*BP_XP_PER_TIER;
+  if(G.battlePass.xp>=cap)return;
+  G.battlePass.xp=Math.min(cap,G.battlePass.xp+amt);
+}
+function bpBuyPremium(){
+  ensureBattlePass();
+  if(G.battlePass.premium)return;
+  if((G.gems||0)<BP_PREMIUM_GEM_COST){showGenericModal('\ud83d\udc8e','Need Gems','The Premium Pass costs '+BP_PREMIUM_GEM_COST+' Gems.');return;}
+  G.gems-=BP_PREMIUM_GEM_COST;G.battlePass.premium=true;
+  saveGame();updateHUD();renderBattlePass();
+}
+function bpClaimFree(tier){
+  ensureBattlePass();
+  if(tier<1||tier>BP_TIERS||bpCurrentTier()<tier||G.battlePass.claimedFree[tier])return;
+  G.battlePass.claimedFree[tier]=true;
+  var parts=grantEventReward(bpTierReward(tier,false));
+  saveGame();updateHUD();renderBattlePass();showRewardPopup(parts,false,2000);
+}
+function bpClaimPremium(tier){
+  ensureBattlePass();
+  if(!G.battlePass.premium){bpBuyPremium();return;}
+  if(tier<1||tier>BP_TIERS||bpCurrentTier()<tier||G.battlePass.claimedPrem[tier])return;
+  G.battlePass.claimedPrem[tier]=true;
+  var parts=grantEventReward(bpTierReward(tier,true));
+  saveGame();updateHUD();renderBattlePass();showRewardPopup(parts,false,2000);
+}
+function bpCellHtml(tier,premium,reached){
+  var B=G.battlePass,rw=bpTierReward(tier,premium),claimed=premium?B.claimedPrem[tier]:B.claimedFree[tier];
+  var h='<div class="bp-cell'+(premium?' prem':'')+'"><div class="bp-cell-lbl">'+(premium?'PREMIUM':'FREE')+'</div>';
+  h+='<div class="bp-cell-rw">'+eventRewardTextFull(rw)+'</div>';
+  if(claimed)h+='<div class="bp-btn done">\u2713 Claimed</div>';
+  else if(!reached)h+='<div class="bp-btn locked">\ud83d\udd12</div>';
+  else if(premium&&!B.premium)h+='<button class="bp-btn need" onclick="bpBuyPremium()">Premium</button>';
+  else h+='<button class="bp-btn claim" onclick="'+(premium?'bpClaimPremium':'bpClaimFree')+'('+tier+')">CLAIM</button>';
+  return h+'</div>';
+}
+var _bpSig='';
+function renderBattlePass(){
+  ensureBattlePass();
+  var B=G.battlePass,ct=bpCurrentTier();
+  var inTier=B.xp-ct*BP_XP_PER_TIER,pct=ct>=BP_TIERS?100:Math.min(100,inTier/BP_XP_PER_TIER*100);
+  var h='<div class="bp-head"><div class="bp-season">\ud83c\udf9f\ufe0f Season '+B.season+'</div><div class="bp-tiernow">Tier '+ct+' / '+BP_TIERS+' \u00b7 \ud83d\udd52 Ends in <span id="bp-season-timer">'+bpFmtLeft(bpSeasonLeftMs())+'</span></div></div>';
+  h+='<div class="bp-xpbar"><div class="bp-xpfill" style="width:'+pct+'%"></div></div>';
+  h+='<div class="bp-xptext">'+(ct>=BP_TIERS?'MAX TIER REACHED':(fmtShort(Math.max(0,inTier))+' / '+fmtShort(BP_XP_PER_TIER)+' XP to next tier'))+'</div>';
+  if(B.premium)h+='<div class="bp-prem-on">\u2b50 Premium Pass active</div>';
+  else h+='<button class="bp-buy" onclick="bpBuyPremium()">Unlock Premium \u2014 '+BP_PREMIUM_GEM_COST+' \ud83d\udc8e</button>';
+  for(var t=1;t<=BP_TIERS;t++){
+    var reached=ct>=t;
+    h+='<div class="bp-row"><div class="bp-tier">'+t+'</div>'+bpCellHtml(t,false,reached)+bpCellHtml(t,true,reached)+'</div>';
+  }
+  var el=document.getElementById('battlepass-body');if(el)el.innerHTML=h;
+  _bpSig=B.season+'#'+B.xp+'#'+B.premium+'#'+Object.keys(B.claimedFree).length+'#'+Object.keys(B.claimedPrem).length;
+}
+function openBattlePass(){
+  ensureBattlePass();
+  if(G.battlePass.seasonNotice){var s=G.battlePass.seasonNotice;delete G.battlePass.seasonNotice;showGenericModal('\ud83c\udf9f\ufe0f','Season '+s+' Ended','A new Battle Pass season has begun! Rewards you unlocked but did not claim were collected automatically, and your progress has reset for the new season.');}
+  renderBattlePass();document.getElementById('battlepass-modal').classList.add('open');
+}
+function closeBattlePass(){var m=document.getElementById('battlepass-modal');if(m)m.classList.remove('open');saveGame();}
+function softUpdateBp(){
+  var m=document.getElementById('battlepass-modal');
+  if(!m||!m.classList.contains('open')||!G.battlePass)return;
+  var tv=document.getElementById('bp-season-timer');if(tv)tv.textContent=bpFmtLeft(bpSeasonLeftMs());
+  var B=G.battlePass,sig=B.season+'#'+B.xp+'#'+B.premium+'#'+Object.keys(B.claimedFree).length+'#'+Object.keys(B.claimedPrem).length;
+  if(sig!==_bpSig)renderBattlePass();
+}
+function anyBpClaimable(){
+  ensureBattlePass();var B=G.battlePass,ct=bpCurrentTier(),t;
+  for(t=1;t<=ct;t++){
+    if(!B.claimedFree[t])return true;
+    if(B.premium&&!B.claimedPrem[t])return true;
+  }
+  return false;
+}
+function updateBpGlow(){var btn=document.getElementById('bp-btn');if(!btn)return;btn.classList.toggle('deal',anyBpClaimable());}
 function openEvents(){
   if(!ACTIVE_EVENT){showComingSoon('\ud83c\udf89 Events','No event is active right now. Check back soon!');return;}
   ensureEventState();
@@ -5472,6 +5788,7 @@ function buyEgg(id){
   G.shells[egg.shellType]-=sc;G.coins-=cc;
   G.stats.totalShellsSpent=(G.stats.totalShellsSpent||0)+sc;
   G.eggsOwned[egg.id]=(G.eggsOwned[egg.id]||0)+1;
+  G.stats.eggsCrafted=(G.stats.eggsCrafted||0)+1;
   if(typeof updateHUD==='function')updateHUD();
   renderShop();
 }
@@ -5608,7 +5925,7 @@ function collectHatch(idx){
   var pet=generatePet(slot.eggId);
   var isEventEgg=(slot.eggId===EVENT_EGG_ID);
   // Hatch stats
-  G.stats.eggsHatched++;
+  G.stats.eggsHatched++;addBattlePassXp(BP_XP.hatch);
   if(!isEventEgg)eventOnHatch();
   G.stats.eggsHatchedByWorld[slot.eggId]=(G.stats.eggsHatchedByWorld[slot.eggId]||0)+1;
   var hatchDuration=Math.floor((Date.now()-slot.startTime)/1000);
@@ -6972,7 +7289,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();updateQuestGlow();softUpdateQuests();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
@@ -7062,6 +7379,8 @@ if(savedData){
   G.redeemedCodes=Array.isArray(savedData.redeemedCodes)?savedData.redeemedCodes:[];
   G.event=(savedData.event&&typeof savedData.event==='object')?savedData.event:null;
   G.quests=(savedData.quests&&typeof savedData.quests==='object')?savedData.quests:null;
+  G.weeklyQuests=(savedData.weeklyQuests&&typeof savedData.weeklyQuests==='object')?savedData.weeklyQuests:null;
+  G.battlePass=(savedData.battlePass&&typeof savedData.battlePass==='object')?savedData.battlePass:null;
   G.boosts=(savedData.boosts&&typeof savedData.boosts==='object')?savedData.boosts:{coin:0,luck:0};
   if(typeof G.boosts.coin!=='number')G.boosts.coin=0;if(typeof G.boosts.luck!=='number')G.boosts.luck=0;
   G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
