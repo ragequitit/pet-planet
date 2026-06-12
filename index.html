@@ -6187,6 +6187,10 @@ function doFusion(){
     var abilityId=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
     abilities.push({id:abilityId,tier:rc.tiers[i]});
   }
+  // Snitt-level av de fem ingående pets ärvs av resultatet (avrundat)
+  var fusedLevel=1,_lvSum=0,_lvCnt=0;
+  filled.forEach(function(u){var fp=G.hatchedPets.find(function(x){return x.uid===u;});if(fp){_lvSum+=petLevelFromXp(fp.xp||0);_lvCnt++;}});
+  if(_lvCnt>0)fusedLevel=Math.max(1,Math.min(PET_MAX_LEVEL,Math.round(_lvSum/_lvCnt)));
   var newPet={
     uid:Date.now()+Math.random(),
     name:resultSpecies.name,
@@ -6195,8 +6199,8 @@ function doFusion(){
     world:firstPet.world,
     abilities:abilities,
     equippedSlot:-1,
-    level:1,
-    xp:0,
+    level:fusedLevel,
+    xp:petXpToReach(fusedLevel),
   };
 
   // Remove consumed pets
@@ -6238,7 +6242,7 @@ function showFusionResult(pet,perfect){
   document.getElementById('pet-result-icon').textContent=pet.e;
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>'+(perfect?' <span style="color:var(--gold);font-size:0.7rem">⭐ Perfect Fusion!</span>':'');
-  document.getElementById('pet-result-world').textContent='✨ Fusion Result';
+  document.getElementById('pet-result-world').textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
