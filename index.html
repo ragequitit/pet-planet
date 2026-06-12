@@ -1462,6 +1462,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
 // DATA: EGG WORLDS
@@ -2533,6 +2534,7 @@ function saveGame(){
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
   }));}catch(e){}
+  if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function resetGame(){
@@ -3784,8 +3786,7 @@ function renderSettings(){
     var pname=(G.profile&&G.profile.name)?profEsc(G.profile.name):'Player';
     c+='<div class="set-sec"><div class="set-sec-title">🛡️ Account</div>';
     c+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Playing as</div><div class="set-row-desc">Change your name in the Profile (👤) screen.</div></div><span class="set-pick" style="opacity:1">'+pname+'</span></div>';
-    c+=soonRow('Link Account','Sign in to save your progress to the cloud.');
-    c+=soonRow('Cloud Save','Sync your save across devices.');
+    c+=cloudAccountHtml();
     c+='</div>';
   }
 
@@ -6913,6 +6914,96 @@ refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 requestAnimationFrame(tick);
 if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
+
+// ============================================================
+// CLOUD SAVE (Supabase) — valfritt lager ovanpå localStorage.
+// Allt bakom if(sb)-vakter: utan nät funkar spelet precis som vanligt.
+// ============================================================
+var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
+var sb=null;
+try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);}}catch(e){sb=null;}
+var cloudUser=null, cloudDirty=false, cloudBusy=false;
+function cloudReady(){return !!sb;}
+function cloudMarkDirty(){cloudDirty=true;}
+function cloudStatus(t){var el=document.getElementById('cloud-auth-msg');if(el)el.textContent=t||'';}
+function cloudLocalObj(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function cloudLocalAt(){var o=cloudLocalObj();return (o&&o.savedAt)||0;}
+function cloudPushNow(cb){
+  if(!sb||!cloudUser){if(cb)cb();return;}
+  var o=cloudLocalObj();if(!o){if(cb)cb();return;}
+  cloudBusy=true;
+  sb.from('saves').upsert({user_id:cloudUser.id,data:o,client_saved_at:(o.savedAt||Date.now()),version:1},{onConflict:'user_id'}).then(function(){cloudBusy=false;cloudDirty=false;if(cb)cb();},function(){cloudBusy=false;if(cb)cb();});
+}
+function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy)cloudPushNow();}
+function cloudPull(){
+  if(!sb||!cloudUser)return;
+  sb.from('saves').select('data,client_saved_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
+    var row=res&&res.data;var localAt=cloudLocalAt();
+    if(!row){cloudPushNow(function(){cloudStatus('Cloud backup created from this device.');});return;}
+    var cloudAt=row.client_saved_at||0;
+    if(cloudAt>localAt+2000){
+      showConfirm('Load Cloud Save?','Your cloud save is newer than this device. Load it? This REPLACES the progress on this device.','Load Cloud',function(){
+        try{localStorage.setItem(SAVE_KEY,JSON.stringify(row.data));}catch(e){}
+        location.reload();
+      });
+    }else{cloudPushNow(function(){cloudStatus('Cloud save is up to date.');});}
+  },function(){cloudStatus('Could not reach the cloud. Try again.');});
+}
+function cloudRefreshUI(){if(typeof renderSettings==='function')renderSettings();}
+function cloudInputs(){return [(document.getElementById('cloud-email')||{}).value||'',(document.getElementById('cloud-pwd')||{}).value||''];}
+function cloudDoSignUp(){
+  if(!sb){cloudStatus('Cloud not available right now.');return;}
+  var v=cloudInputs(),em=v[0].trim(),pw=v[1];
+  if(em.length<3||pw.length<6){cloudStatus('Enter an email and a password (min 6 characters).');return;}
+  cloudStatus('Creating account...');
+  sb.auth.signUp({email:em,password:pw}).then(function(res){
+    if(res.error){cloudStatus(res.error.message);return;}
+    if(res.data&&res.data.session){cloudUser=res.data.user;cloudStatus('');cloudPull();cloudRefreshUI();}
+    else{cloudStatus('Account created! Check your email to confirm, then log in.');}
+  },function(){cloudStatus('Something went wrong. Try again.');});
+}
+function cloudDoLogIn(){
+  if(!sb){cloudStatus('Cloud not available right now.');return;}
+  var v=cloudInputs(),em=v[0].trim(),pw=v[1];
+  if(!em||!pw){cloudStatus('Enter your email and password.');return;}
+  cloudStatus('Logging in...');
+  sb.auth.signInWithPassword({email:em,password:pw}).then(function(res){
+    if(res.error){cloudStatus(res.error.message);return;}
+    cloudUser=res.data.user;cloudStatus('');cloudPull();cloudRefreshUI();
+  },function(){cloudStatus('Something went wrong. Try again.');});
+}
+function cloudDoLogOut(){
+  if(!sb)return;
+  cloudPushNow(function(){sb.auth.signOut().then(function(){cloudUser=null;cloudRefreshUI();});});
+}
+function cloudSyncNow(){if(!sb||!cloudUser)return;cloudStatus('Syncing...');cloudPull();}
+function cloudAccountHtml(){
+  var inp='width:100%;box-sizing:border-box;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.3);color:#fff;font-size:0.9rem;';
+  if(!cloudReady()){
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save</div><div class="set-row-desc">Unavailable right now (no connection).</div></div></div>';
+  }
+  if(cloudUser){
+    var email=profEsc(cloudUser.email||'Signed in');
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save \u2014 On</div><div class="set-row-desc">Signed in as '+email+'. Your progress is backed up and synced across devices.</div></div></div>'+
+      '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudSyncNow()">\ud83d\udd04 Sync Now</button><button class="set-btn" style="flex:1;background:rgba(120,30,40,0.65);" onclick="cloudDoLogOut()">Log Out</button></div>'+
+      '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
+  }
+  return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save</div><div class="set-row-desc">Sign in to back up your progress and sync across devices. Optional \u2014 the game works fine without it.</div></div></div>'+
+    '<input id="cloud-email" style="'+inp+'" placeholder="Email" autocomplete="email">'+
+    '<input id="cloud-pwd" type="password" style="'+inp+'margin-top:6px;" placeholder="Password (min 6 characters)" autocomplete="current-password">'+
+    '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudDoLogIn()">Log In</button><button class="set-btn blue" style="flex:1;" onclick="cloudDoSignUp()">Create Account</button></div>'+
+    '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
+}
+// Init: återställ session, reagera på login-ändringar, periodisk synk.
+if(sb){
+  try{
+    sb.auth.getSession().then(function(res){var sess=res&&res.data&&res.data.session;if(sess){cloudUser=sess.user;cloudPull();cloudRefreshUI();}});
+    sb.auth.onAuthStateChange(function(_e,session){cloudUser=session?session.user:null;cloudRefreshUI();});
+  }catch(e){}
+  setInterval(cloudFlush,15000);
+  try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')cloudFlush();});}catch(e){}
+}
 </script>
 </body>
 </html>
