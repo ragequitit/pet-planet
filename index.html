@@ -2539,6 +2539,7 @@ function saveGame(){
 function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function resetGame(){
   if(!confirm('Reset all progress?'))return;
+  if(typeof cloudWipe==='function')cloudWipe();
   G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
   G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
   G.equippedPets=[null,null,null,null,null];
@@ -3835,6 +3836,7 @@ function doImportSave(){
 // Reset via den snygga bekräftelse-rutan (ersätter den gamla webbläsar-confirm i Dev/Test)
 function resetFromSettings(){
   showConfirm('Reset Everything?','This permanently wipes ALL your coins, pets, shells, achievements and progress. There is no undo. Are you absolutely sure?','Reset Everything',function(){
+    if(typeof cloudWipe==='function')cloudWipe();
     G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
     G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
     G.equippedPets=[null,null,null,null,null];
@@ -6923,33 +6925,60 @@ var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
 var sb=null;
 try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);}}catch(e){sb=null;}
-var cloudUser=null, cloudDirty=false, cloudBusy=false;
+var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudLocked=false;
+var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
 function cloudStatus(t){var el=document.getElementById('cloud-auth-msg');if(el)el.textContent=t||'';}
 function cloudLocalObj(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
-function cloudLocalAt(){var o=cloudLocalObj();return (o&&o.savedAt)||0;}
+function cloudProgressOf(o){
+  if(!o)return 0;var st=o.stats||{};
+  return (Number(st.eggsHatched)||0)+(Number(st.totalPetsCollected)||0)*2+(Number(st.uniquePetsDiscovered)||0)*2+(Number(o.ascensions)||0)*100000;
+}
+function cloudShowLock(){
+  if(document.getElementById('cloud-lock'))return;
+  var d=document.createElement('div');d.id='cloud-lock';
+  d.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(8,12,22,0.93);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:#fff;font-family:Nunito,sans-serif;';
+  d.innerHTML='<div style="font-size:3rem;margin-bottom:10px;">\ud83d\udd12</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.25rem;margin-bottom:8px;">Playing somewhere else</div><div style="font-size:0.95rem;max-width:300px;opacity:0.85;margin-bottom:18px;">Your account is now active in another window or device. Reload to continue here.</div><button onclick="location.reload()" style="padding:12px 22px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:\'Fredoka One\',cursive;font-size:1rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;">Reload</button>';
+  if(document.body)document.body.appendChild(d);
+}
 function cloudPushNow(cb){
-  if(!sb||!cloudUser){if(cb)cb();return;}
+  if(!sb||!cloudUser||cloudLocked){if(cb)cb();return;}
   var o=cloudLocalObj();if(!o){if(cb)cb();return;}
   cloudBusy=true;
-  sb.from('saves').upsert({user_id:cloudUser.id,data:o,client_saved_at:(o.savedAt||Date.now()),version:1},{onConflict:'user_id'}).then(function(){cloudBusy=false;cloudDirty=false;if(cb)cb();},function(){cloudBusy=false;if(cb)cb();});
+  sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
+    cloudBusy=false;var status=res&&res.data;
+    if(status==='superseded'){cloudLocked=true;cloudShowLock();}
+    else if(status==='saved'||status==='created'){cloudDirty=false;}
+    if(cb)cb(status);
+  },function(){cloudBusy=false;if(cb)cb();});
 }
-function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy)cloudPushNow();}
+function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudLocked)cloudPushNow();}
+function cloudWipe(){
+  if(!sb||!cloudUser)return;
+  try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
+}
+function cloudClaimSession(cb){
+  if(!sb||!cloudUser){if(cb)cb();return;}
+  sb.rpc('pp_claim_session',{p_session:cloudSession}).then(function(){if(cb)cb();},function(){if(cb)cb();});
+}
 function cloudPull(){
   if(!sb||!cloudUser)return;
-  sb.from('saves').select('data,client_saved_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
-    var row=res&&res.data;var localAt=cloudLocalAt();
+  sb.from('saves').select('data,progress').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
+    var row=res&&res.data;
     if(!row){cloudPushNow(function(){cloudStatus('Cloud backup created from this device.');});return;}
-    var cloudAt=row.client_saved_at||0;
-    if(cloudAt>localAt+2000){
-      showConfirm('Load Cloud Save?','Your cloud save is newer than this device. Load it? This REPLACES the progress on this device.','Load Cloud',function(){
+    var localProg=cloudProgressOf(cloudLocalObj());var cloudProg=Number(row.progress)||0;
+    if(cloudProg>localProg){
+      showConfirm('Load Cloud Save?','Your cloud save has MORE progress than this device. Load it? Recommended \u2014 this keeps your furthest progress.','Load Cloud',function(){
         try{localStorage.setItem(SAVE_KEY,JSON.stringify(row.data));}catch(e){}
         location.reload();
       });
-    }else{cloudPushNow(function(){cloudStatus('Cloud save is up to date.');});}
+    }else{
+      cloudPushNow(function(st){cloudStatus(st==='kept_higher'?'Cloud already has your furthest progress.':'Cloud save is up to date.');});
+    }
   },function(){cloudStatus('Could not reach the cloud. Try again.');});
 }
+function cloudEnter(){cloudClaimSession(function(){cloudPull();});}
 function cloudRefreshUI(){if(typeof renderSettings==='function')renderSettings();}
 function cloudInputs(){return [(document.getElementById('cloud-email')||{}).value||'',(document.getElementById('cloud-pwd')||{}).value||''];}
 function cloudDoSignUp(){
@@ -6959,7 +6988,7 @@ function cloudDoSignUp(){
   cloudStatus('Creating account...');
   sb.auth.signUp({email:em,password:pw}).then(function(res){
     if(res.error){cloudStatus(res.error.message);return;}
-    if(res.data&&res.data.session){cloudUser=res.data.user;cloudStatus('');cloudPull();cloudRefreshUI();}
+    if(res.data&&res.data.session){cloudUser=res.data.user;cloudStatus('');cloudEnter();cloudRefreshUI();}
     else{cloudStatus('Account created! Check your email to confirm, then log in.');}
   },function(){cloudStatus('Something went wrong. Try again.');});
 }
@@ -6970,7 +6999,7 @@ function cloudDoLogIn(){
   cloudStatus('Logging in...');
   sb.auth.signInWithPassword({email:em,password:pw}).then(function(res){
     if(res.error){cloudStatus(res.error.message);return;}
-    cloudUser=res.data.user;cloudStatus('');cloudPull();cloudRefreshUI();
+    cloudUser=res.data.user;cloudStatus('');cloudEnter();cloudRefreshUI();
   },function(){cloudStatus('Something went wrong. Try again.');});
 }
 function cloudDoLogOut(){
@@ -6985,7 +7014,7 @@ function cloudAccountHtml(){
   }
   if(cloudUser){
     var email=profEsc(cloudUser.email||'Signed in');
-    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save \u2014 On</div><div class="set-row-desc">Signed in as '+email+'. Your progress is backed up and synced across devices.</div></div></div>'+
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Cloud Save \u2014 On</div><div class="set-row-desc">Signed in as '+email+'. Backed up and synced. Only one window can play at a time.</div></div></div>'+
       '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudSyncNow()">\ud83d\udd04 Sync Now</button><button class="set-btn" style="flex:1;background:rgba(120,30,40,0.65);" onclick="cloudDoLogOut()">Log Out</button></div>'+
       '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
   }
@@ -6995,10 +7024,9 @@ function cloudAccountHtml(){
     '<div style="display:flex;gap:8px;margin-top:8px;"><button class="set-btn purple" style="flex:1;" onclick="cloudDoLogIn()">Log In</button><button class="set-btn blue" style="flex:1;" onclick="cloudDoSignUp()">Create Account</button></div>'+
     '<div id="cloud-auth-msg" class="set-row-desc" style="padding-top:8px;min-height:1em;"></div>';
 }
-// Init: återställ session, reagera på login-ändringar, periodisk synk.
 if(sb){
   try{
-    sb.auth.getSession().then(function(res){var sess=res&&res.data&&res.data.session;if(sess){cloudUser=sess.user;cloudPull();cloudRefreshUI();}});
+    sb.auth.getSession().then(function(res){var sess=res&&res.data&&res.data.session;if(sess){cloudUser=sess.user;cloudEnter();cloudRefreshUI();}});
     sb.auth.onAuthStateChange(function(_e,session){cloudUser=session?session.user:null;cloudRefreshUI();});
   }catch(e){}
   setInterval(cloudFlush,15000);
