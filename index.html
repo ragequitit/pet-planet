@@ -1511,6 +1511,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <select id="favpick-sort" class="favpick-sel" onchange="favPickSort=this.value;renderFavPickerList()">
           <option value="rarity">Sort: Rarity</option>
           <option value="name">Sort: Name A–Z</option>
+          <option value="level_desc">Sort: Level High→Low</option>
+          <option value="level_asc">Sort: Level Low→High</option>
           <option value="new">Sort: Newest</option>
           <option value="old">Sort: Oldest</option>
         </select>
@@ -2572,17 +2574,18 @@ function openAdvPicker(advId){
   }
   var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&G.equippedPets.indexOf(p.uid)<0;});
   var req=advReqLevel(adv);
-  // Behöriga (når kravet) först, sedan efter raritet
+  // Behöriga (når kravet) först, sedan enligt vald sortering
   avail.sort(function(a,b){
     var am=petLevelFromXp(a.xp||0)>=req?0:1, bm=petLevelFromXp(b.xp||0)>=req?0:1;
     if(am!==bm)return am-bm;
-    return RARITY_PROGRESSION.indexOf(b.rarity)-RARITY_PROGRESSION.indexOf(a.rarity);
+    return petSortCompare(a,b,advPickSort);
   });
   var html='<div class="adv-pick-title">Send a pet on<br><b>'+adv.icon+' '+adv.name+'</b></div>';
   html+='<div class="adv-req-note">🔒 Requires a pet of <b>Lv '+req+'</b> or higher</div>';
   if(avail.length===0){
     html+='<div class="adv-pick-empty">No available pets right now. Hatch some, or wait for pets to return from adventures.</div>';
   } else {
+    html+=petSortBarHtml(advPickSort,'setAdvPickSort');
     html+='<div class="adv-pick-list">';
     avail.forEach(function(p){
       var rc=RARITY_CONFIG[p.rarity]||{color:'#aaa',label:''};
@@ -2605,6 +2608,7 @@ function openAdvPicker(advId){
   document.getElementById('adv-modal').classList.add('open');
 }
 function closeAdvModal(){var m=document.getElementById('adv-modal');if(m)m.classList.remove('open');}
+function setAdvPickSort(v){advPickSort=v;if(pendingAdvId)openAdvPicker(pendingAdvId);}
 function renderAdventure(){
   var wrap=document.getElementById('adv-wrap');if(!wrap)return;
   var now=Date.now();
@@ -2966,7 +2970,7 @@ function renderSlotRow(){
 var activeSlot=-1;
 function openPetSlotModal(idx){
   activeSlot=idx;
-  var list=document.getElementById('pet-modal-list');list.innerHTML='';
+  var list=document.getElementById('pet-modal-list');list.innerHTML=petSortBarHtml(slotPickSort,'setSlotPickSort');
   // Remove option
   var uneq=document.createElement('div');uneq.className='pet-option';
   uneq.innerHTML='<div class="pet-option-icon">❌</div><div class="pet-option-info"><div class="pet-option-name">Remove Pet</div></div>';
@@ -2980,6 +2984,7 @@ function openPetSlotModal(idx){
   list.appendChild(uneq);
   // List all pets som INTE redan sitter i en slot (utrustade pets = onödig utfyllnad här)
   var slotSelectable=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
+  slotSelectable.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
   slotSelectable.forEach(function(pet){
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
     var d=document.createElement('div');d.className='pet-option';
@@ -3005,6 +3010,7 @@ function openPetSlotModal(idx){
   document.getElementById('pet-modal').classList.add('open');
 }
 function closePetModal(){document.getElementById('pet-modal').classList.remove('open');activeSlot=-1;}
+function setSlotPickSort(v){slotPickSort=v;if(activeSlot>=0)openPetSlotModal(activeSlot);}
 document.getElementById('pet-modal-close').onclick=closePetModal;
 document.getElementById('pet-modal').onclick=function(e){if(e.target===this)closePetModal();};
 
@@ -3012,6 +3018,23 @@ document.getElementById('pet-modal').onclick=function(e){if(e.target===this)clos
 // PET INVENTORY TAB
 // ============================================================
 var petSortMode='newest';
+var slotPickSort='rarity_desc', advPickSort='rarity_desc';
+var PET_SORT_OPTS=[['newest','🕐 Newest'],['oldest','🕰️ Oldest'],['rarity_desc','⭐ Rarity: High → Low'],['rarity_asc','⭐ Rarity: Low → High'],['level_desc','📈 Level: High → Low'],['level_asc','📉 Level: Low → High'],['name','🔤 Name (A–Z)']];
+function petSortCompare(a,b,mode){
+  var ro=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  if(mode==='oldest')return (a.uid||0)-(b.uid||0);
+  if(mode==='rarity_desc')return ro.indexOf(b.rarity)-ro.indexOf(a.rarity);
+  if(mode==='rarity_asc')return ro.indexOf(a.rarity)-ro.indexOf(b.rarity);
+  if(mode==='level_desc')return petLevelFromXp(b.xp||0)-petLevelFromXp(a.xp||0);
+  if(mode==='level_asc')return petLevelFromXp(a.xp||0)-petLevelFromXp(b.xp||0);
+  if(mode==='name')return String(a.name).localeCompare(String(b.name));
+  return (b.uid||0)-(a.uid||0); // newest (default)
+}
+function petSortBarHtml(cur,onchangeFn){
+  var h='<div class="pet-sort-bar"><span class="pet-sort-lbl">Sort</span><select class="pet-sort-select" onchange="'+onchangeFn+'(this.value)">';
+  PET_SORT_OPTS.forEach(function(s){h+='<option value="'+s[0]+'"'+(cur===s[0]?' selected':'')+'>'+s[1]+'</option>';});
+  h+='</select></div>';return h;
+}
 function renderPets(){
   var wrap=document.getElementById('pets-wrap');if(!wrap)return;
   var total=G.hatchedPets.length;
@@ -3034,19 +3057,12 @@ function renderPets(){
     html+='</div>';
   }
 
-  // Sort dropdown (sparar plats jämfört med knappraden)
-  var sorts=[['newest','🕐 Newest first'],['oldest','🕰️ Oldest first'],['rarity_desc','⭐ Rarity: High → Low'],['rarity_asc','⭐ Rarity: Low → High'],['name','🔤 Name (A–Z)']];
-  html+='<div class="pet-sort-bar"><span class="pet-sort-lbl">Sort</span><select class="pet-sort-select" onchange="setPetSort(this.value)">';
-  sorts.forEach(function(s){html+='<option value="'+s[0]+'"'+(petSortMode===s[0]?' selected':'')+'>'+s[1]+'</option>';});
-  html+='</select></div>';
+  // Sort dropdown (delad hjälpare — inkl. level)
+  html+=petSortBarHtml(petSortMode,'setPetSort');
 
   // Sort pets
   var sorted=G.hatchedPets.slice();
-  if(petSortMode==='newest')sorted.reverse();
-  else if(petSortMode==='oldest'){/* redan rätt ordning */}
-  else if(petSortMode==='rarity_desc')sorted.sort(function(a,b){return rarityOrder.indexOf(b.rarity)-rarityOrder.indexOf(a.rarity);});
-  else if(petSortMode==='rarity_asc')sorted.sort(function(a,b){return rarityOrder.indexOf(a.rarity)-rarityOrder.indexOf(b.rarity);});
-  else if(petSortMode==='name')sorted.sort(function(a,b){return a.name.localeCompare(b.name);});
+  sorted.sort(function(a,b){return petSortCompare(a,b,petSortMode);});
 
   if(sorted.length===0){
     html+='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
@@ -4433,6 +4449,8 @@ function renderFavPickerList(){
   if(favPickSort==='name')pets.sort(function(a,b){return String(a.name).localeCompare(String(b.name));});
   else if(favPickSort==='new')pets.sort(function(a,b){return (b.uid||0)-(a.uid||0);});
   else if(favPickSort==='old')pets.sort(function(a,b){return (a.uid||0)-(b.uid||0);});
+  else if(favPickSort==='level_desc')pets.sort(function(a,b){return petLevelFromXp(b.xp||0)-petLevelFromXp(a.xp||0);});
+  else if(favPickSort==='level_asc')pets.sort(function(a,b){return petLevelFromXp(a.xp||0)-petLevelFromXp(b.xp||0);});
   else pets.sort(function(a,b){var d=FAV_RARITY_ORDER.indexOf(b.rarity)-FAV_RARITY_ORDER.indexOf(a.rarity);return d!==0?d:String(a.name).localeCompare(String(b.name));});
   var curNone=!(G.profile&&G.profile.favoritePet);
   var h='<div class="favpick-none'+(curNone?' sel':'')+'" onclick="clearFavoritePet();closeFavPicker()">🚫 No favorite (default avatar)</div>';
