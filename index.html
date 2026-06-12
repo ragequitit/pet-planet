@@ -1973,6 +1973,35 @@ function petXpProgress(pet){
 // Uppdatera cachad pet.level från pet.xp; returnerar true om level steg
 function petSyncLevel(pet){if(!pet)return false;var was=pet.level||1;pet.level=petLevelFromXp(pet.xp||0);return pet.level>was;}
 
+// Aktiva pets (i slottarna) tjänar XP långsamt över tid medan de jobbar.
+var PET_ACTIVE_XP_PER_MIN=5; // XP/min per utrustad pet (PLATSHÅLLARE)
+function tickActivePetXp(dt){
+  if(!G.equippedPets||!G.equippedPets.length)return;
+  var rate=PET_ACTIVE_XP_PER_MIN/60; // XP/sek
+  var leveled=null;
+  G.equippedPets.forEach(function(uid){
+    if(uid==null)return;
+    var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+    if(!pet)return;
+    if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return; // redan max
+    pet._xpAcc=(pet._xpAcc||0)+rate*dt; // ackumulera bråkdels-XP
+    if(pet._xpAcc>=1){
+      var add=Math.floor(pet._xpAcc);pet._xpAcc-=add;
+      var beforeLv=petLevelFromXp(pet.xp||0);
+      pet.xp=(pet.xp||0)+add;
+      petSyncLevel(pet);
+      G.stats.totalActivePetXp=(G.stats.totalActivePetXp||0)+add;
+      if(pet.level>beforeLv){if(!leveled)leveled=[];leveled.push(pet);}
+    }
+  });
+  if(leveled){
+    var msg=leveled.map(function(p){return '⭐ '+p.name+' reached Lv '+p.level+'!';});
+    if(typeof showRewardPopup==='function')showRewardPopup(msg,false,3000);
+    var pt=document.getElementById('tab-pets');
+    if(pt&&pt.style.display==='block'&&typeof renderPets==='function')renderPets();
+  }
+}
+
 function generateEventPet(){
   ensureEventState();
   var cfg=rollEventPet()||{};
@@ -2113,7 +2142,7 @@ function freshStats(){
     // FUSION
     totalFusions:0,highestFusionRarity:null,perfectFusions:0,petsConsumedInFusion:0,cosmicPetsCreated:0,
     // ADVENTURES
-    adventuresCompleted:0,adventureHoursLogged:0,adventurePetsFound:0,discoveryItemsFound:0,specialAdventures:0,totalAdventureXp:0,
+    adventuresCompleted:0,adventureHoursLogged:0,adventurePetsFound:0,discoveryItemsFound:0,specialAdventures:0,totalAdventureXp:0,totalActivePetXp:0,
     // ACHIEVEMENTS
     achievementsCompleted:0,secretAchievementsFound:0,
     // ASCENSION
@@ -7295,6 +7324,7 @@ function tick(now){
   var currentEps=eps();
   G.coins+=currentEps*dt;G.total+=currentEps*dt;
   G.stats.totalCoinsEarned+=currentEps*dt;
+  tickActivePetXp(dt); // aktiva pets tjänar XP medan de jobbar
   if(currentEps>G.stats.highestEpsReached)G.stats.highestEpsReached=currentEps;
   G.stats.totalTimePlayed+=dt;
   var sessionLen=(Date.now()-G.stats.currentSessionStart)/1000;
