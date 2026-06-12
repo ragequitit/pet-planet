@@ -961,6 +961,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .adv-pick-list{display:flex;flex-direction:column;gap:7px;max-height:50vh;overflow-y:auto;}
 .adv-pick-pet{display:flex;align-items:center;gap:10px;background:rgba(27,45,78,0.6);border:1.5px solid rgba(58,92,184,0.4);border-radius:12px;padding:8px 10px;cursor:pointer;}
 .adv-pick-pet:active{transform:translateY(1px);}
+.adv-pick-pet.locked{opacity:0.5;cursor:not-allowed;border-style:dashed;}
+.adv-pick-pet.locked:active{transform:none;}
+.app-lvl{flex-shrink:0;font-size:0.6rem;font-weight:900;color:#cdb6ff;background:rgba(122,90,208,0.22);border:1px solid rgba(122,90,208,0.5);border-radius:6px;padding:1px 6px;font-family:'Baloo 2',sans-serif;}
+.app-lock{flex-shrink:0;font-family:'Fredoka One',cursive;font-size:0.62rem;color:#ff9a8a;text-align:right;line-height:1.2;}
+.adv-req-note{font-size:0.66rem;color:#cdb6ff;text-align:center;margin:-4px 0 10px;}
+.adv-dreq{display:inline-block;font-size:0.66rem;font-weight:900;color:#e7dcff;background:rgba(122,90,208,0.35);border:1px solid rgba(178,136,255,0.6);border-radius:8px;padding:2px 9px;margin:2px 0 8px;}
 .app-emoji{font-size:1.7rem;flex-shrink:0;}
 .app-info{flex:1;min-width:0;text-align:left;}
 .app-name{font-family:'Fredoka One',cursive;font-size:0.86rem;}
@@ -1632,27 +1638,27 @@ var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Egg Coins för att 
 // >>> TUNING (känns äventyr för givmilt/för spammigt?): sänk coinRate/coinFloor. Vill du längre/kortare uppdrag: ändra dur (minuter).
 // shellLoot = blandad belöning; varje rad delas ut (min–max), tyngdpunkt enligt uppdragets nivå.
 var ADVENTURES=[
-  {id:'forest', name:'Forest Expedition', icon:'🌲', affinity:'forest', chance:'High', col:'#3f7d3a', dur:10*60*1000, coinRate:0.2, coinFloor:150, xp:20,
+  {id:'forest', name:'Forest Expedition', icon:'🌲', affinity:'forest', chance:'High', col:'#3f7d3a', dur:10*60*1000, coinRate:0.2, coinFloor:150, xp:20, reqLevel:1,
     desc:'A peaceful tramp through the forest. Great for gathering resources and discovering surprises!',
     shellLoot:[{type:'common',min:3,max:7},{type:'uncommon',min:2,max:6}],
     bonusLoot:[{type:'gems',min:1,max:2,chance:0.08},{type:'egg',id:'forest',chance:0.04},{type:'egg',id:'mountain',chance:0.02}]},
-  {id:'ocean', name:'Ocean Expedition', icon:'🌊', affinity:'ocean', chance:'Medium', col:'#2a6ea8', dur:30*60*1000, coinRate:0.2, coinFloor:400, xp:40,
+  {id:'ocean', name:'Ocean Expedition', icon:'🌊', affinity:'ocean', chance:'Medium', col:'#2a6ea8', dur:30*60*1000, coinRate:0.2, coinFloor:400, xp:40, reqLevel:3,
     desc:'Dive the open seas for richer hauls and the odd deep-water treasure.',
     shellLoot:[{type:'common',min:2,max:5},{type:'uncommon',min:5,max:12},{type:'rare',min:0,max:2}],
     bonusLoot:[{type:'gems',min:1,max:3,chance:0.10},{type:'egg',id:'ocean',chance:0.05},{type:'egg',id:'desert',chance:0.03}]},
-  {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:120*60*1000, coinRate:0.2, coinFloor:1000, xp:70,
+  {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:120*60*1000, coinRate:0.2, coinFloor:1000, xp:70, reqLevel:6,
     desc:'Cross the dunes under a blazing sun. Long, hot, and surprisingly rewarding.',
     shellLoot:[{type:'uncommon',min:6,max:14},{type:'rare',min:1,max:4}],
     bonusLoot:[{type:'gems',min:2,max:4,chance:0.12},{type:'egg',id:'desert',chance:0.05},{type:'egg',id:'ocean',chance:0.04},{type:'egg',id:'jungle',chance:0.03}]},
-  {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:360*60*1000, coinRate:0.2, coinFloor:2500, xp:110,
+  {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:360*60*1000, coinRate:0.2, coinFloor:2500, xp:110, reqLevel:10,
     desc:'Brave the frozen north. Few make it far, but the spoils are worth the chill.',
     shellLoot:[{type:'uncommon',min:5,max:12},{type:'rare',min:4,max:10},{type:'epic',min:0,max:2}],
     bonusLoot:[{type:'gems',min:2,max:6,chance:0.14},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'volcano',chance:0.02}]},
-  {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:720*60*1000, coinRate:0.2, coinFloor:6000, xp:180,
+  {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:720*60*1000, coinRate:0.2, coinFloor:6000, xp:180, reqLevel:15,
     desc:'Descend into molten depths. Dangerous, but the rarest shards smoulder here.',
     shellLoot:[{type:'rare',min:8,max:18},{type:'epic',min:1,max:4}],
     bonusLoot:[{type:'gems',min:3,max:7,chance:0.16},{type:'egg',id:'volcano',chance:0.04},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'mystic',chance:0.02}]},
-  {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:1440*60*1000, coinRate:0.2, coinFloor:15000, xp:350,
+  {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:1440*60*1000, coinRate:0.2, coinFloor:15000, xp:350, reqLevel:20,
     desc:'A long, rewarding dig through forgotten ruins. The ultimate prize hunt.',
     shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
     bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002}]}
@@ -1975,6 +1981,8 @@ function petSyncLevel(pet){if(!pet)return false;var was=pet.level||1;pet.level=p
 
 // Aktiva pets (i slottarna) tjänar XP långsamt över tid medan de jobbar.
 var PET_ACTIVE_XP_PER_MIN=5; // XP/min per utrustad pet (PLATSHÅLLARE)
+// Pet-nivå höjer CHANSEN på sällsynt bonus-loot (gems/rara ägg) i äventyr. Loot-tabellen är ändå taket.
+var PET_LEVEL_LOOT_BONUS=0.015; // +1,5% rare-chans per nivå över Lv 1 (PLATSHÅLLARE) → Lv 25 ≈ +36%
 function tickActivePetXp(dt){
   if(!G.equippedPets||!G.equippedPets.length)return;
   var rate=PET_ACTIVE_XP_PER_MIN/60; // XP/sek
@@ -2432,7 +2440,9 @@ function rollAdvReward(adv,pet){
     if(amt>0)shells.push({type:L.type,amt:amt});
   });
   // BONUS-LOOT: separata chans-rolls per rad (låg chans; Luck + affinity höjer chansen) — "oooh vad fick jag!"
-  var luckMult=(1+(s.luck/50))*aBonus; // T5 Luck (15) → +30% chans, affinity → +50%
+  var lvl=pet?petLevelFromXp(pet.xp||0):1;
+  var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS; // högre nivå → bättre chans på sällsynt loot
+  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult; // T5 Luck (15) → +30% chans, affinity → +50%, nivå → upp till +36%
   var bonus=[];
   (adv.bonusLoot||[]).forEach(function(B){
     if(Math.random()<B.chance*luckMult){
@@ -2449,11 +2459,16 @@ function buyAdventureSlot(){
   if(typeof updateHUD==='function')updateHUD();
   saveGame();renderAdventure();
 }
+function advReqLevel(adv){return (adv&&adv.reqLevel)||1;}
+// Solo idag (1 pet). Summerar nivåerna för en lista uids — framtidssäkert för lag-äventyr.
+function advCombinedLevel(petUids){var sum=0;petUids.forEach(function(u){var p=G.hatchedPets.find(function(x){return String(x.uid)===String(u);});if(p)sum+=petLevelFromXp(p.xp||0);});return sum;}
+function advMeetsLevel(adv,petUids){return advCombinedLevel(petUids)>=advReqLevel(adv);}
 function startAdventure(advId,petUid){
   var adv=ADVENTURES.find(function(a){return a.id===advId;});if(!adv)return;
   if(isAdvActive(advId))return;                         // samma uppdragstyp redan igång → blockera
   if(G.adventures.length>=G.adventureSlots)return;     // ingen ledig slot
   if(isPetBusy(petUid))return;                          // redan ute
+  if(!advMeetsLevel(adv,[petUid]))return;               // nivåspärr: pet:en når inte uppdragets krav
   var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});if(!pet)return;
   var eqi=G.equippedPets.indexOf(petUid);               // är pet utrustad → ta av den
   if(eqi>=0){G.equippedPets[eqi]=null;pet.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}
@@ -2508,23 +2523,33 @@ function openAdvPicker(advId){
     document.getElementById('adv-modal').classList.add('open');return;
   }
   var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid);});
-  avail.sort(function(a,b){return RARITY_PROGRESSION.indexOf(b.rarity)-RARITY_PROGRESSION.indexOf(a.rarity);});
+  var req=advReqLevel(adv);
+  // Behöriga (når kravet) först, sedan efter raritet
+  avail.sort(function(a,b){
+    var am=petLevelFromXp(a.xp||0)>=req?0:1, bm=petLevelFromXp(b.xp||0)>=req?0:1;
+    if(am!==bm)return am-bm;
+    return RARITY_PROGRESSION.indexOf(b.rarity)-RARITY_PROGRESSION.indexOf(a.rarity);
+  });
   var html='<div class="adv-pick-title">Send a pet on<br><b>'+adv.icon+' '+adv.name+'</b></div>';
+  html+='<div class="adv-req-note">🔒 Requires a pet of <b>Lv '+req+'</b> or higher</div>';
   if(avail.length===0){
     html+='<div class="adv-pick-empty">No available pets right now. Hatch some, or wait for pets to return from adventures.</div>';
   } else {
     html+='<div class="adv-pick-list">';
     avail.forEach(function(p){
       var rc=RARITY_CONFIG[p.rarity]||{color:'#aaa',label:''};
+      var lv=petLevelFromXp(p.xp||0);
+      var ok=lv>=req;
       var s=petAdvSum(p);var tags=[];
       if(s.coinGain)tags.push('🪙+'+s.coinGain+'%');
       if(s.shellGain)tags.push('🐚+'+s.shellGain+'%');
       if(s.luck)tags.push('🍀+'+s.luck+'%');
       if(s.idleGain)tags.push('⚡+'+s.idleGain+'%');
-      html+='<div class="adv-pick-pet" onclick="startAdventure(\''+advId+'\','+p.uid+')">';
+      html+='<div class="adv-pick-pet'+(ok?'':' locked')+'"'+(ok?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+p.e+'</div>';
       html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div></div>';
-      html+='<div class="app-go">Send →</div></div>';
+      html+='<div class="app-lvl">Lv '+lv+'</div>';
+      html+=(ok?'<div class="app-go">Send →</div>':'<div class="app-lock">Needs<br>Lv '+req+'</div>')+'</div>';
     });
     html+='</div>';
   }
@@ -2589,6 +2614,8 @@ function renderAdventure(){
   html+='<div class="adv-dscrim">';
   html+='<div class="adv-dhead"><span class="adv-dic">'+sel.icon+'</span><span class="adv-dname">'+sel.name+'</span><span class="adv-dtime">⏱️ '+formatTime(Math.floor(sel.dur/1000))+'</span></div>';
   html+='<div class="adv-ddesc">'+sel.desc+'</div>';
+  html+='<div class="adv-dreq">🔒 Requires Lv '+advReqLevel(sel)+'+</div>';
+  html+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin:-4px 0 8px;">Higher-level pets find rare loot more often.</div>';
   html+='<div class="adv-dsec">Possible Rewards</div>';
   html+='<div class="adv-rewards">';
   html+=advRewItem('🪙','Egg Coins','~'+fmtShort(coinsNow),true);
