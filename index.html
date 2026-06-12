@@ -1000,6 +1000,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes ubDealPulse{0%,100%{box-shadow:0 0 5px 1px rgba(245,200,66,0.4);}50%{box-shadow:0 0 11px 2px rgba(245,200,66,0.85);}}
 .ub-tab.deal{border-color:var(--gold);color:var(--gold);animation:ubDealPulse 2.4s ease-in-out infinite;}
 .reduce-motion .ub-tab.deal{animation:none;box-shadow:0 0 9px 2px rgba(245,200,66,0.7);}
+/* Samma köp-glow på Events-knappen: tänds när en quest är klar att hämta (.deal sätts av updateEventGlow) */
+.side-btn.deal{border-color:var(--gold);color:var(--gold);animation:ubDealPulse 2.4s ease-in-out infinite;}
+.reduce-motion .side-btn.deal{animation:none;box-shadow:0 0 9px 2px rgba(245,200,66,0.7);}
 #ub-buildings.active{background:linear-gradient(180deg,#6791e8,#284ba6);color:#fff;border-color:#84a8ef;}
 /* Ihopfällbart bygg-blad (nav rebuild — hemskärmens två lägen) */
 #home-sheet{display:none;}
@@ -2535,7 +2538,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -2565,6 +2568,7 @@ function resetGame(){
   G.adventures=[];
   G.redeemedCodes=[];
   G.event=null;
+  G.quests=null;
   G.boosts={coin:0,luck:0};
   G.cosmeticsOwned={};
   G.stats=freshStats();
@@ -3008,6 +3012,7 @@ function switchTab(name){
   if(name==='petdex')renderPetdex();
   if(name==='more')renderAchievements();
   if(name==='adventure')renderAdventure();
+  if(name==='quests')renderQuests();
   // Slide-up-animation (nav rebuild — steg 3): spelas bara när man LANDAR på
   // hemskärmen från en annan flik, och bara i utfällt läge.
   if(isHome&&!wasHome&&!homeCollapsed)playHomeEntrance();
@@ -3858,7 +3863,7 @@ function resetFromSettings(){
     G.ascensionBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
-    G.event=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
+    G.event=null;G.quests=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
     G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
@@ -4365,6 +4370,144 @@ function ensureEventState(){
   if(typeof E.eggMisses!=='number')E.eggMisses=0;
   if(!Array.isArray(E.collectionClaimed))E.collectionClaimed=[];
   advanceQuestCycle();
+}
+// ============================================================
+// DAILY QUESTS (Quests steg 1) — 3 slumpade dagsuppgifter som rullar var
+// 24:e timme. Bygger på samma stat-baslinje-mönster som event-questsen:
+// progress = nuvarande stat − baslinje tagen vid cykelns start. Egen state
+// G.quests, helt skild från event-questsen (G.event). Återanvänder event-
+// questsens CSS-klasser (ev-quest m.fl.) så utseendet matchar exakt.
+// ============================================================
+var DAILY_QUEST_STAT={tap:'totalClicks',hatch:'eggsHatched',adventure:'adventuresCompleted',fusion:'totalPetsFused'};
+var DAILY_QUEST_CYCLE_HOURS=24;
+// Pool av quest-mallar i tre svårighetsgrader. Varje dygn plockas EN ur varje
+// grad (med unika typer) → jämn kurva lätt/medel/tuff. target+reward är
+// PLATSHÅLLARE (balanseras senare, precis som resten av spelet).
+var DAILY_QUEST_POOL={
+  easy:[
+    {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{coins:2000}},
+    {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{coins:2500}},
+    {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{coins:2500}},
+    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{coins:3000}}
+  ],
+  med:[
+    {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{coins:6000,shells:{common:5}}},
+    {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{coins:7000,shells:{common:5}}},
+    {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{coins:7000,shells:{uncommon:3}}},
+    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{coins:8000,shells:{uncommon:3}}}
+  ],
+  hard:[
+    {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{coins:15000,shells:{rare:2}}},
+    {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{coins:18000,gems:5}},
+    {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{coins:18000,gems:5}},
+    {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{coins:20000,gems:8}}
+  ]
+};
+function dailyQuestSnapshot(){var s=G.stats||{};return {totalClicks:s.totalClicks||0,eggsHatched:s.eggsHatched||0,adventuresCompleted:s.adventuresCompleted||0,totalPetsFused:s.totalPetsFused||0};}
+function dailyCycleMs(){return DAILY_QUEST_CYCLE_HOURS*3600000;}
+function dailyCycleLeftMs(){if(!G.quests)return 0;return Math.max(0,G.quests.cycleStart+dailyCycleMs()-Date.now());}
+// Plockar dagens 3 quests: en ur varje svårighetsgrad, med unika typer.
+function pickDailyQuests(){
+  var grades=['easy','med','hard'],used={},out=[];
+  grades.forEach(function(g){
+    var pool=DAILY_QUEST_POOL[g].filter(function(q){return !used[q.type];});
+    if(!pool.length)pool=DAILY_QUEST_POOL[g];
+    var p=pool[Math.floor(Math.random()*pool.length)];
+    used[p.type]=true;
+    out.push({id:'d_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward});
+  });
+  return out;
+}
+function advanceDailyQuestCycle(){
+  var Q=G.quests;if(!Q)return false;
+  var cyc=dailyCycleMs(),changed=false,guard=0;
+  while(Date.now()>=Q.cycleStart+cyc&&guard<10000){
+    Q.cycleStart+=cyc;Q.base=dailyQuestSnapshot();Q.active=pickDailyQuests();Q.claimed={};changed=true;guard++;
+  }
+  return changed;
+}
+function ensureDailyQuests(){
+  if(!G.quests||typeof G.quests!=='object'){
+    G.quests={cycleStart:Date.now(),active:pickDailyQuests(),base:dailyQuestSnapshot(),claimed:{}};
+  }
+  var Q=G.quests;
+  if(typeof Q.cycleStart!=='number')Q.cycleStart=Date.now();
+  if(!Array.isArray(Q.active)||!Q.active.length)Q.active=pickDailyQuests();
+  if(!Q.base||typeof Q.base!=='object')Q.base=dailyQuestSnapshot();
+  if(!Q.claimed||typeof Q.claimed!=='object')Q.claimed={};
+  advanceDailyQuestCycle();
+}
+function dailyQuestProgress(q){
+  var Q=G.quests;if(!Q)return 0;
+  var stat=DAILY_QUEST_STAT[q.type];if(!stat)return 0;
+  var cur=(G.stats&&G.stats[stat])||0,base=(Q.base&&Q.base[stat])||0;
+  return Math.max(0,cur-base);
+}
+function dailyQuestDone(q){return dailyQuestProgress(q)>=q.target;}
+function claimDailyQuest(id){
+  ensureDailyQuests();
+  var q=null;G.quests.active.forEach(function(x){if(x.id===id)q=x;});
+  if(!q)return;
+  if(G.quests.claimed[id])return;
+  if(!dailyQuestDone(q))return;
+  G.quests.claimed[id]=true;
+  var parts=grantEventReward(q.reward);
+  saveGame();updateHUD();renderQuests();
+  showRewardPopup(parts,false,2000);
+}
+// GO-knappen tar spelaren dit uppgiften görs.
+function questGo(type){
+  var dest=({hatch:'hatch',adventure:'adventure',fusion:'pets',tap:'buildings'})[type]||'buildings';
+  switchTab(dest);
+}
+function renderQuests(){
+  ensureDailyQuests();
+  var Q=G.quests,h='<div class="ev-wrap"><div class="ev-card">';
+  h+='<div class="ev-card-h">\ud83d\udccb Daily Quests</div>';
+  Q.active.forEach(function(q){
+    var prog=dailyQuestProgress(q),done=prog>=q.target,claimed=!!Q.claimed[q.id];
+    var shown=Math.min(prog,q.target),pct=Math.min(100,(prog/q.target)*100);
+    h+='<div class="ev-quest">'+
+         '<div class="ev-quest-ic">'+(q.icon||'\u2b50')+'</div>'+
+         '<div class="ev-quest-mid">'+
+           '<div class="ev-quest-name">'+q.name+'</div>'+
+           '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+pct+'%"></div></div>'+
+           '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
+         '</div>'+
+         '<div class="ev-quest-rw">REWARD<b>'+eventRewardTextFull(q.reward)+'</b></div>';
+    if(claimed)h+='<div class="ev-qdone">\u2705</div>';
+    else if(done)h+='<button class="ev-claim" onclick="claimDailyQuest(\''+q.id+'\')">CLAIM</button>';
+    else h+='<button class="ev-go" onclick="questGo(\''+q.type+'\')">GO</button>';
+    h+='</div>';
+  });
+  h+='<div class="ev-newq">\ud83d\udd52 New quests in <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></div>';
+  h+='</div></div>';
+  var tab=document.getElementById('tab-quests');if(tab)tab.innerHTML=h;
+  _qSig=Q.active.map(function(q){return q.id+':'+dailyQuestProgress(q)+':'+(Q.claimed[q.id]?1:0);}).join('|');
+}
+// Live-uppdatering medan fliken är öppen: timern varje tick, korten bara vid förändring (ingen blink).
+var _qSig='';
+function softUpdateQuests(){
+  var tab=document.getElementById('tab-quests');
+  if(!tab||tab.style.display!=='block'||!G.quests)return;
+  var Q=G.quests;
+  var tv=document.getElementById('q-timer-val');if(tv)tv.textContent=fmtEventTime(dailyCycleLeftMs());
+  var sig=Q.active.map(function(q){return q.id+':'+dailyQuestProgress(q)+':'+(Q.claimed[q.id]?1:0);}).join('|');
+  if(sig!==_qSig)renderQuests();
+}
+// Glow på Quests-knappen (.side-btn → .side-btn.deal): tänds när en quest är klar att hämta.
+function anyDailyQuestClaimable(){
+  if(!G.quests||!Array.isArray(G.quests.active))return false;
+  for(var i=0;i<G.quests.active.length;i++){
+    var q=G.quests.active[i];
+    if(G.quests.claimed&&G.quests.claimed[q.id])continue;
+    if(dailyQuestDone(q))return true;
+  }
+  return false;
+}
+function updateQuestGlow(){
+  var btn=document.getElementById('quests-btn');if(!btn)return;
+  btn.classList.toggle('deal',anyDailyQuestClaimable());
 }
 function eventTimeLeftMs(){
   if(!ACTIVE_EVENT||!G.event)return 0;
@@ -5007,6 +5150,37 @@ function anyUpgradeAffordable(){
 function updateUpgradeGlow(){
   var btn=document.getElementById('ub-upgrades');if(!btn)return;
   btn.classList.toggle('deal',anyUpgradeAffordable());
+}
+// ----- Glow på Events-knappen: tänds när NÅGOT i Events är redo att hämtas -----
+// Täcker tre källor: klara quests, nådda milstolpe-kistor och nådda collection-milstolpar.
+function anyEventClaimable(){
+  if(!EVENT_ACTIVE||!G.event||typeof ACTIVE_EVENT==='undefined'||!ACTIVE_EVENT)return false;
+  // 1) Quests: klar men inte hämtad
+  var qs=ACTIVE_EVENT.quests||[];
+  for(var i=0;i<qs.length;i++){
+    var q=qs[i];
+    if(G.event.questsClaimed&&G.event.questsClaimed[q.id])continue;
+    if(eventQuestDone(q))return true;
+  }
+  // 2) Milstolpe-kistor: tröskel nådd men inte hämtad
+  var chests=ACTIVE_EVENT.chests||[],cc=G.event.chestsClaimed||[];
+  for(var c=0;c<chests.length;c++){
+    if((G.event.earned||0)>=chests[c].at&&cc.indexOf(chests[c].at)===-1)return true;
+  }
+  // 3) Collection-milstolpar: antal nått men inte hämtat
+  var ms=(ACTIVE_EVENT.collection&&ACTIVE_EVENT.collection.milestones)||[];
+  if(ms.length){
+    var cnt=(typeof eventCollectionCount==='function')?eventCollectionCount():0;
+    var col=G.event.collectionClaimed||[];
+    for(var m2=0;m2<ms.length;m2++){
+      if(cnt>=ms[m2].at&&col.indexOf(ms[m2].at)===-1)return true;
+    }
+  }
+  return false;
+}
+function updateEventGlow(){
+  var btn=document.getElementById('events-btn');if(!btn)return;
+  btn.classList.toggle('deal',anyEventClaimable());
 }
 // ----- Tile-tap (delegering på #ulist, överlever omritning) + stäng vid tap utanför. -----
 (function(){
@@ -6798,7 +6972,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();updateQuestGlow();softUpdateQuests();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
@@ -6887,6 +7061,7 @@ if(savedData){
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
   G.redeemedCodes=Array.isArray(savedData.redeemedCodes)?savedData.redeemedCodes:[];
   G.event=(savedData.event&&typeof savedData.event==='object')?savedData.event:null;
+  G.quests=(savedData.quests&&typeof savedData.quests==='object')?savedData.quests:null;
   G.boosts=(savedData.boosts&&typeof savedData.boosts==='object')?savedData.boosts:{coin:0,luck:0};
   if(typeof G.boosts.coin!=='number')G.boosts.coin=0;if(typeof G.boosts.luck!=='number')G.boosts.luck=0;
   G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
