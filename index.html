@@ -1623,8 +1623,9 @@ var DOUBLING_MAX=5;
 // Stardust man FÅR vid ascension = floor( (coins denna runda / ASC_STARDUST_DIV) ^ ASC_STARDUST_EXP ).
 // Med DIV=1e6, EXP=0.5: 1M coins → 1 ✨, 4M → 2, 9M → 3, 100M → 10, 10B → 100 (lugn sqrt-kurva).
 // >>> TUNING: "för lätt att ascenda / för mkt Stardust?" → höj ASC_STARDUST_DIV. "vill ha brantare kurva?" → höj ASC_STARDUST_EXP.
-var ASC_STARDUST_DIV=1e6;   // hur många coins som krävs för 1:a Stardust (= även kravet för första ascension)
+var ASC_STARDUST_DIV=1e21;  // coins som krävs för 1:a Stardust = kravet för FÖRSTA ascension (≈ alla byggnader köpta + en bra bit på väg). PLATSHÅLLARE — vrid upp/ner efter känsla.
 var ASC_STARDUST_EXP=0.5;   // kurvans form (0.5 = sqrt, lugn). Högre = du får mer Stardust late-game.
+var ASC_DIV_GROWTH=3;       // ribban stiger × denna faktor PER genomförd ascension. Krav för ascension N = DIV × GROWTH^(N-1). Högre = ascensions blir alltmer sällsynta. PLATSHÅLLARE.
 // Ascension-shoppen. perLevel = +% per nivå, max = antal nivåer, baseCost/costMult = Stardust-pris (pris nivå L→L+1 = ceil(baseCost*costMult^L)).
 // >>> TUNING: dyrare köp → höj baseCost eller costMult. Svagare/starkare bonus → ändra perLevel.
 var ASC_SHOP=[
@@ -1710,7 +1711,7 @@ var ADVENTURES=[
     shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
     bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002}]}
 ];
-var PET_POS=[{left:0,top:4},{left:52,top:22},{left:118,top:16},{left:184,top:22},{left:236,top:4}];
+var PET_POS=[{left:0,top:0},{left:52,top:15},{left:118,top:22},{left:184,top:15},{left:236,top:0}]; // U/båge: kanterna högst, mitten lägst (följer äggets rundade undersida). top = nedåt.
 
 // ============================================================
 // DATA: SHELL RARITIES
@@ -2547,7 +2548,7 @@ function claimAdventure(index){
   var advLvUp=false;
   if(pet){var beforeLv=petLevelFromXp(pet.xp||0);pet.xp=(pet.xp||0)+rw.xp;pet.advXp=(pet.advXp||0)+rw.xp;petSyncLevel(pet);if(pet.level>beforeLv)advLvUp=true;}
   G.stats.totalAdventureXp=(G.stats.totalAdventureXp||0)+rw.xp;
-  G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;addBattlePassXp(BP_XP.adventure);
+  G.stats.adventuresCompleted=(G.stats.adventuresCompleted||0)+1;addBattlePassXp(BP_XP.adventure);addPlayerXp(PLAYER_XP.adventure);
   eventOnAdventure();
   G.stats.adventureHoursLogged=(G.stats.adventureHoursLogged||0)+adv.dur/3600000;
   // Bonus-loot (chans-baserad)
@@ -2898,7 +2899,7 @@ function eggTap(clientX,clientY){
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
   clickWindowAccum++;
-  G.stats.totalClicks++;addBattlePassXp(BP_XP.click);
+  G.stats.totalClicks++;addBattlePassXp(BP_XP.click);addPlayerXp(PLAYER_XP.click);
   if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
   G.stats.totalCoinsEarned+=clickVal;
   if(Math.random()<getDropChance(0.15))dropShell();
@@ -3634,15 +3635,17 @@ document.getElementById('more-drawer').onclick=function(e){if(e.target===this)cl
 // ASCENSION (v1) — Stardust ✨ + Ascension Shop
 // ============================================================
 // Hur mycket Stardust en ascension SKULLE ge just nu (baserat på coins denna runda = G.total).
+// Aktuellt coin-krav per Stardust-poäng denna runda — stiger för varje genomförd ascension.
+function ascEffectiveDiv(){return ASC_STARDUST_DIV*Math.pow(ASC_DIV_GROWTH,G.ascensions||0);}
 function calcPendingStardust(){
   if(!G.total||G.total<=0)return 0;
-  return Math.floor(Math.pow(G.total/ASC_STARDUST_DIV,ASC_STARDUST_EXP));
+  return Math.floor(Math.pow(G.total/ascEffectiveDiv(),ASC_STARDUST_EXP));
 }
 function canAscend(){return calcPendingStardust()>=1;}
 // Coins kvar till NÄSTA Stardust-poäng (för "Need X more"-texten).
 function coinsToNextStardust(){
   var next=calcPendingStardust()+1;
-  var need=Math.pow(next,1/ASC_STARDUST_EXP)*ASC_STARDUST_DIV;
+  var need=Math.pow(next,1/ASC_STARDUST_EXP)*ascEffectiveDiv();
   return Math.max(0,need-(G.total||0));
 }
 // Pris för att köpa nästa nivå av en shop-rad (L = nuvarande nivå).
@@ -4726,7 +4729,7 @@ function claimWeeklyQuest(id){
   if(!q)return;
   if(G.weeklyQuests.claimed[id])return;
   if(!dailyQuestDone(q,G.weeklyQuests))return;
-  G.weeklyQuests.claimed[id]=true;addBattlePassXp(BP_XP.questWeekly);
+  G.weeklyQuests.claimed[id]=true;addBattlePassXp(BP_XP.questWeekly);addPlayerXp(PLAYER_XP.questWeekly);
   var parts=grantEventReward(q.reward);
   saveGame();updateHUD();renderQuests();
   showRewardPopup(parts,false,2000);
@@ -4737,7 +4740,7 @@ function claimDailyQuest(id){
   if(!q)return;
   if(G.quests.claimed[id])return;
   if(!dailyQuestDone(q))return;
-  G.quests.claimed[id]=true;addBattlePassXp(BP_XP.questDaily);
+  G.quests.claimed[id]=true;addBattlePassXp(BP_XP.questDaily);addPlayerXp(PLAYER_XP.questDaily);
   var parts=grantEventReward(q.reward);
   saveGame();updateHUD();renderQuests();
   showRewardPopup(parts,false,2000);
@@ -4934,7 +4937,7 @@ function bpCurrentTier(){ensureBattlePass();return bpTierOf(G.battlePass.xp);}
 // Matas av allt man gör. Balansvärden = PLATSHÅLLARE.
 // ============================================================
 var PLAYER_XP_BASE=10; // nivå L→L+1 kostar base*L XP (linjär kurva, sluten form)
-var PLAYER_XP={bpClaim:300,event:150,fusion:80,craft:30}; // extra källor (klick/hatch/äventyr/quests matas via addBattlePassXp-kroken)
+var PLAYER_XP={click:1,hatch:3,adventure:100,questDaily:200,questWeekly:500,bpClaim:300,event:150,fusion:4,craft:2}; // KONTO-XP per källa (frikopplad från BP_XP). hatch/craft/fusion = liten droppe så de inte kan farmas av rika veteraner; quests/BP/events = de capade, rättvisa drivkrafterna.
 function playerXpToReach(level){return PLAYER_XP_BASE*(level-1)*level/2;} // kumulativ XP för att NÅ en nivå
 function playerLevelFromXp(xp){xp=Math.max(0,xp||0);return Math.floor((1+Math.sqrt(1+8*xp/PLAYER_XP_BASE))/2);}
 function playerXpProgress(){
@@ -4964,7 +4967,6 @@ function refreshProfileLevel(){
 }
 function addBattlePassXp(amt){
   if(!amt||amt<=0)return;
-  addPlayerXp(amt); // spelar-/kontonivå: matas av klick/hatch/äventyr/quests, kapas ALDRIG
   ensureBattlePass();
   var cap=BP_TIERS*BP_XP_PER_TIER;
   if(G.battlePass.xp>=cap)return;
@@ -6159,7 +6161,7 @@ function collectHatch(idx){
   var pet=generatePet(slot.eggId);
   var isEventEgg=(slot.eggId===EVENT_EGG_ID);
   // Hatch stats
-  G.stats.eggsHatched++;addBattlePassXp(BP_XP.hatch);
+  G.stats.eggsHatched++;addBattlePassXp(BP_XP.hatch);addPlayerXp(PLAYER_XP.hatch);
   if(!isEventEgg)eventOnHatch();
   G.stats.eggsHatchedByWorld[slot.eggId]=(G.stats.eggsHatchedByWorld[slot.eggId]||0)+1;
   var hatchDuration=Math.floor((Date.now()-slot.startTime)/1000);
