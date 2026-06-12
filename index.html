@@ -326,7 +326,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .bld-info-btn{flex-shrink:0;width:30px;height:30px;border-radius:9px;border:1px solid rgba(140,170,225,0.35);background:rgba(27,45,78,0.6);color:rgba(255,255,255,0.7);font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin-right:2px;}
 .bld-info-btn:active{transform:translateY(1px);}
 .bn{font-family:'Fredoka One',cursive;font-size:0.9rem;color:#fff;line-height:1.2;}
-.bp{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.bp{font-size:0.68rem;color:rgba(255,255,255,0.7);margin-top:1px;}
 .bld-buy{flex-shrink:0;width:88px;height:44px;border-radius:12px;border:2px solid rgba(255,255,255,0.25);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 10px;box-shadow:0 3px 0 rgba(0,0,0,0.4);transition:transform 0.08s;}
 .bld-buy:active{transform:translateY(2px);}
 .bld-buy.affordable{background:linear-gradient(180deg,#b388ff,#7c4dff);}
@@ -1634,6 +1634,7 @@ function buyClickUpgrade(id){
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Egg Coins för att låsa upp slot 2,3,4,5
+var GEM_SPEEDUP_MIN_PER_GEM=4; // varje gem kortar äventyret med 4 min (= 15 gems/timme). Partiellt tillåtet.
 // coinRate = andel av EPS pet:en jobbar i (0.2 = LÅGT med flit, så äventyr ger en liten coin-bonus, inte en faucet som slår idle/klick). coinFloor = golv för tidig game (EPS≈0).
 // >>> TUNING (känns äventyr för givmilt/för spammigt?): sänk coinRate/coinFloor. Vill du längre/kortare uppdrag: ändra dur (minuter).
 // shellLoot = blandad belöning; varje rad delas ut (min–max), tyngdpunkt enligt uppdragets nivå.
@@ -2404,12 +2405,15 @@ function openAdvPickerSmart(){
   if(isAdvActive(id)){var f=ADVENTURES.find(function(a){return !isAdvActive(a.id);});if(f){selectAdv(f.id);id=f.id;}}
   openAdvPicker(id);
 }
-function speedUpCost(a){var remain=Math.max(0,a.endAt-Date.now());return Math.max(2,Math.ceil(remain/3600000*15));}
+function speedUpCost(a){var remain=Math.max(0,a.endAt-Date.now());return Math.max(1,Math.ceil(remain/60000/GEM_SPEEDUP_MIN_PER_GEM));}
 function speedUpAdventure(index){
   var a=G.adventures[index];if(!a||Date.now()>=a.endAt)return;
-  var cost=speedUpCost(a);
-  if((G.gems||0)<cost)return;
-  G.gems-=cost;a.endAt=Date.now(); // klar direkt → blir claimbar
+  var have=G.gems||0;if(have<=0)return;                 // inga gems → gör inget
+  var fullCost=speedUpCost(a);
+  var spend=Math.min(have,fullCost);                    // spendera bara det som behövs/finns
+  G.gems-=spend;
+  if(spend>=fullCost){a.endAt=Date.now();}              // räcker hela vägen → klar direkt
+  else{a.endAt-=spend*GEM_SPEEDUP_MIN_PER_GEM*60000;}   // partiellt → korta tiden proportionellt
   if(typeof updateHUD==='function')updateHUD();
   saveGame();renderAdventure();
 }
@@ -2522,7 +2526,7 @@ function openAdvPicker(advId){
     document.getElementById('adv-modal-body').innerHTML='<div class="adv-pick-title">'+adv.icon+' '+adv.name+'</div><div class="adv-pick-empty">⏳ This adventure is already in progress. It\'ll be available again when your pet returns — pick a different adventure from the map.</div>';
     document.getElementById('adv-modal').classList.add('open');return;
   }
-  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid);});
+  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&G.equippedPets.indexOf(p.uid)<0;});
   var req=advReqLevel(adv);
   // Behöriga (når kravet) först, sedan efter raritet
   avail.sort(function(a,b){
@@ -2594,7 +2598,7 @@ function renderAdventure(){
       html+='<div class="as-top"><span class="as-name">'+(adv?adv.name.replace(' Expedition',''):a.advId)+'</span><span class="as-pet">'+(pet?pet.e:'❔')+'</span></div>';
       html+='<div class="as-bar"><div class="as-fill" id="asfill'+i+'" style="width:'+pct+'%"></div></div>';
       if(ready){html+='<button class="as-claim" onclick="event.stopPropagation();claimAdventure('+i+')">CLAIM ✓</button>';}
-      else{html+='<div class="as-time" id="astime'+i+'">'+formatTime(remain)+'</div><button class="as-speed" onclick="event.stopPropagation();speedUpAdventure('+i+')">SPEED UP 💎'+speedUpCost(a)+'</button>';}
+      else{var suCost=speedUpCost(a),suHave=G.gems||0,suLabel,suDim='';if(suHave>=suCost){suLabel='SPEED UP 💎'+suCost;}else if(suHave>0){suLabel='−'+(suHave*GEM_SPEEDUP_MIN_PER_GEM)+'m 💎'+suHave;}else{suLabel='SPEED UP 💎'+suCost;suDim=' style="opacity:0.5"';}html+='<div class="as-time" id="astime'+i+'">'+formatTime(remain)+'</div><button class="as-speed"'+suDim+' onclick="event.stopPropagation();speedUpAdventure('+i+')">'+suLabel+'</button>';}
       html+='</div>';
     } else if(i<G.adventureSlots){
       html+='<div class="adv-slot empty" onclick="openAdvPickerSmart()"><div class="as-plus">+</div><div class="as-emptyt">Tap to send a pet</div></div>';
@@ -2930,19 +2934,14 @@ function openPetSlotModal(idx){
     G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();
   };
   list.appendChild(uneq);
-  // List all pets
-  G.hatchedPets.forEach(function(pet){
+  // List all pets som INTE redan sitter i en slot (utrustade pets = onödig utfyllnad här)
+  var slotSelectable=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
+  slotSelectable.forEach(function(pet){
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
-    var equippedInThisSlot=G.equippedPets[activeSlot]===pet.uid;
     var d=document.createElement('div');d.className='pet-option';
-    if(equippedInThisSlot)d.style.borderColor='var(--gold)';
     var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+' T'+a.tier:'';}).join(' ');
-    d.innerHTML='<div class="pet-option-icon">'+pet.e+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+(isEquipped&&!equippedInThisSlot?' <span style="font-size:0.6rem;color:#f5c842">[Equipped]</span>':'')+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
+    d.innerHTML='<div class="pet-option-icon">'+pet.e+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
     d.onclick=function(){
-      // unequip from old slot if already equipped somewhere
-      var oldSlotIdx=G.equippedPets.indexOf(pet.uid);
-      if(oldSlotIdx>=0&&oldSlotIdx!==activeSlot){G.equippedPets[oldSlotIdx]=null;}
       // unequip whatever was in this slot
       if(G.equippedPets[activeSlot]){
         var oldP=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
@@ -2956,6 +2955,8 @@ function openPetSlotModal(idx){
   });
   if(G.hatchedPets.length===0){
     var empty=document.createElement('div');empty.style.cssText='text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;';empty.textContent='No pets yet — hatch some eggs!';list.appendChild(empty);
+  } else if(slotSelectable.length===0){
+    var allEq=document.createElement('div');allEq.style.cssText='text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;';allEq.textContent='All your pets are already in slots.';list.appendChild(allEq);
   }
   document.getElementById('pet-modal').classList.add('open');
 }
@@ -5319,6 +5320,15 @@ function refreshBldTip(){
   var t=document.getElementById('bldTip');if(!t){_bldTipIdx=null;return;}
   t.innerHTML=bldTipHtml(_bldTipIdx);positionBldTip();
 }
+function buildingBpText(i){
+  var each=BUILDINGS[i].p*buildingMult(i);
+  var owned=G.owned[i]||0;
+  if(owned<=0)return fmt(each)+'/s each';
+  var totalThis=each*owned;
+  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*(G.owned[k]||0)*buildingMult(k);
+  var share=rawTotal>0?(totalThis/rawTotal*100):0;
+  return fmt(each)+'/s each · '+fmt(totalThis)+'/s · '+share.toFixed(1)+'% of total';
+}
 function renderBuildings(){
   var bl=document.getElementById('blist');bl.innerHTML='';
   var unlocked=numUnlocked();var show=Math.min(unlocked+2,20);
@@ -5327,8 +5337,7 @@ function renderBuildings(){
     var c=bcost(i);var canAfford=G.coins>=c;
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
-      var prod=G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s':'';
-      d.innerHTML='<div class="bld-img" data-info-icon="'+i+'">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+prod+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
+      d.innerHTML='<div class="bld-img">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+buildingBpText(i)+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -5344,13 +5353,11 @@ function updateBuildingClasses(){
     var c=bcost(i);var canAfford=G.coins>=c;
     d.className='bld '+(canAfford?'buyable':'poor');
     var bp=document.getElementById('bp'+i),bo=document.getElementById('bo'+i),bc=document.getElementById('bc'+i);
-    if(bp)bp.textContent=fmt(BUILDINGS[i].p*buildingMult(i))+'/s each'+(G.owned[i]>0?' · '+fmt(BUILDINGS[i].p*G.owned[i]*buildingMult(i))+'/s total':'');
+    if(bp)bp.textContent=buildingBpText(i);
     if(bo)bo.textContent=G.owned[i];if(bc)bc.textContent=fmtShort(c);
   }
 }
 document.getElementById('blist').addEventListener('click',function(e){
-  // byggnads-ikon = info-popup (ska INTE köpa byggnaden)
-  var inf=e.target;while(inf&&inf!==this){if(inf.dataset&&inf.dataset.infoIcon!==undefined){showBuildingInfo(parseInt(inf.dataset.infoIcon),inf);return;}inf=inf.parentNode;}
   var d=e.target;while(d&&d!==this){if(d.dataset&&d.dataset.idx!==undefined)break;d=d.parentNode;}
   if(!d||d.dataset.idx===undefined)return;
   var i=parseInt(d.dataset.idx);if(isNaN(i)||i>=numUnlocked())return;
