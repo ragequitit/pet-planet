@@ -1049,6 +1049,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .more-item:active{transform:scale(0.96);}
 .more-item .mi-icon{font-size:1.5rem;}
 .more-item .mi-label{font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.7);text-align:center;}
+.lb-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:-2px 0 10px;}
+.lb-body{max-height:60vh;overflow-y:auto;display:flex;flex-direction:column;gap:5px;}
+.lb-msg{padding:24px 12px;text-align:center;color:rgba(255,255,255,0.5);font-size:0.8rem;line-height:1.4;}
+.lb-row{display:flex;align-items:center;gap:10px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.5);border-radius:10px;padding:9px 11px;}
+.lb-row.me{border-color:var(--gold);background:rgba(245,200,66,0.12);}
+.lb-rank{min-width:32px;font-weight:800;font-size:0.9rem;color:rgba(255,255,255,0.7);text-align:center;}
+.lb-name{flex:1;font-weight:700;color:#fff;font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-you{font-size:0.52rem;background:var(--gold);color:#1a1a1a;padding:1px 5px;border-radius:6px;font-weight:800;vertical-align:middle;margin-left:5px;}
+.lb-val{font-weight:800;color:var(--gold);font-size:0.85rem;white-space:nowrap;}
 .more-note{font-size:0.62rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:10px;line-height:1.4;}
 
 /* Home Upgrades/Buildings toggle (nav rebuild — step 2) */
@@ -1416,6 +1425,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="more-grid" id="more-grid"></div>
     <div class="more-note">Petdex and Achievements live here. Inventory is also a 🎒 button on the home screen — this entry is a backup route.</div>
     <div id="more-dev"></div>
+  </div>
+</div>
+<div id="leaderboard-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLeaderboard()">✕</button>
+    <div class="modal-title">🥇 Leaderboard</div>
+    <div class="lb-sub">Top players by Account Level — just for fun.</div>
+    <div id="lb-body" class="lb-body"><div class="lb-msg">Loading…</div></div>
   </div>
 </div>
 <div id="adv-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -3611,6 +3628,7 @@ function coresInvHtml(){
 // i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
 var MORE_ITEMS=[
   {label:'Ascension',icon:'🔼',action:'ascension'},
+  {label:'Leaderboard',icon:'🥇',action:'leaderboard'},
   {label:'Petdex',icon:'📖',tab:'petdex'},
   {label:'Achievements',icon:'🏆',tab:'more'},
   {label:'Inventory',icon:'🎒',tab:'inventory'},
@@ -3621,7 +3639,7 @@ function openMore(){
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
     d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else{switchTab(it.tab);}};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='leaderboard'){openLeaderboard();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -3630,6 +3648,47 @@ function openMore(){
 }
 function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
 document.getElementById('more-drawer').onclick=function(e){if(e.target===this)closeMore();};
+
+// ============================================================
+// LEADERBOARD (More-fliken) — läser pp_leaderboard-RPC i Supabase.
+// Visar bara namn + värde; markerar din egen rad. Lättsam "for fun"-board.
+// Fler metriker: anropa loadLeaderboard('ascensions'|'eggs_hatched'|'pets') (redan stödda i RPC:n).
+// ============================================================
+function lbEscape(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function lbValueText(metric,val){
+  if(metric==='account_level')return 'Lv '+fmtShort(val);
+  return fmtShort(val);
+}
+function openLeaderboard(){
+  var m=document.getElementById('leaderboard-modal');if(!m)return;
+  m.classList.add('open');
+  loadLeaderboard('account_level');
+}
+function closeLeaderboard(){var m=document.getElementById('leaderboard-modal');if(m)m.classList.remove('open');}
+function loadLeaderboard(metric){
+  var body=document.getElementById('lb-body');if(!body)return;
+  body.innerHTML='<div class="lb-msg">Loading…</div>';
+  if(typeof sb==='undefined'||!sb||!cloudUser){
+    body.innerHTML='<div class="lb-msg">Leaderboards need you online and signed in.<br>Try again once you\'re connected.</div>';
+    return;
+  }
+  sb.rpc('pp_leaderboard',{p_metric:metric,p_limit:50}).then(function(res){
+    if(!res||res.error||!res.data){body.innerHTML='<div class="lb-msg">Couldn\'t load the leaderboard right now.</div>';return;}
+    var rows=res.data;
+    if(!rows.length){body.innerHTML='<div class="lb-msg">No entries yet — be the first!</div>';return;}
+    var h='';
+    rows.forEach(function(r){
+      var medal=r.rank===1?'🥇':r.rank===2?'🥈':r.rank===3?'🥉':('#'+r.rank);
+      h+='<div class="lb-row'+(r.is_me?' me':'')+'">'+
+         '<div class="lb-rank">'+medal+'</div>'+
+         '<div class="lb-name">'+lbEscape(r.name)+(r.is_me?' <span class="lb-you">YOU</span>':'')+'</div>'+
+         '<div class="lb-val">'+lbValueText(metric,Number(r.value))+'</div>'+
+         '</div>';
+    });
+    body.innerHTML=h;
+  },function(){body.innerHTML='<div class="lb-msg">Couldn\'t load the leaderboard right now.</div>';});
+}
+document.getElementById('leaderboard-modal').onclick=function(e){if(e.target===this)closeLeaderboard();};
 
 // ============================================================
 // ASCENSION (v1) — Stardust ✨ + Ascension Shop
@@ -4106,6 +4165,24 @@ function closeProfile(){document.getElementById('profile-modal').classList.remov
 function profileSub(s){profileSubTab=s;renderProfile();}
 function profActiveSince(){var d=new Date(G.stats.firstPlayDate||Date.now());return d.getDate()+'/'+(d.getMonth()+1)+'/'+(d.getFullYear()+'').slice(-2);}
 function profPlaytime(){var s=G.stats.totalTimePlayed||0;if(s<3600)return Math.max(0,Math.floor(s/60))+'m';if(s<86400)return (s/3600).toFixed(1)+'h';return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';}
+// Klient-sidig namnkoll — SPEGLAR serverns pp_norm + blocked_words (håll dem i synk!).
+// Normalisering: gemener -> folda å/ä/ö -> leet/symboler -> strip a-z -> slå ihop dubbletter.
+// l_variant byter 1/! mot 'l' istället för 'i' (fångar både 1diot och s1yna).
+function ppNorm(s,lVariant){
+  s=String(s==null?'':s).toLowerCase();
+  var from='013457@$!åäö',to=lVariant?'oleastaslaao':'oieastasiaao',out='',i,idx;
+  for(i=0;i<s.length;i++){idx=from.indexOf(s.charAt(i));out+=(idx>=0?to.charAt(idx):s.charAt(i));}
+  return out.replace(/[^a-z]/g,'').replace(/(.)\1+/g,'$1');
+}
+// exact = maskar bara helt namn (korta/kollisionsbenägna ord). sub = delsträng (längre, säkra ord).
+var BLOCK_EXACT=['fan','cp','sex','kuk','bög','röv','slut','rape','pedo','kike','spic','coon','kkk','hora','skit','piss','porr'];
+var BLOCK_SUB=['helvete','satan','idiot','mongo','fitta','kuksug','lesbo','rövhål','arsle','slyna','slampa','knull','porn','pedofil','nazi','hitler','terrorist','döda','mörda','jävla','dumfan','horunge','skithuv','pissung','fuck','shit','bitch','asshole','cunt','bastard','motherfucker','nigger','nigga','faggot','retard','whore','rapist','pedophile','chink','tranny'];
+function nameIsBlocked(name){
+  var n1=ppNorm(name,false),n2=ppNorm(name,true),i,w;
+  for(i=0;i<BLOCK_EXACT.length;i++){w=ppNorm(BLOCK_EXACT[i],false);if(n1===w||n2===w)return true;}
+  for(i=0;i<BLOCK_SUB.length;i++){w=ppNorm(BLOCK_SUB[i],false);if(n1.indexOf(w)>=0||n2.indexOf(w)>=0)return true;}
+  return false;
+}
 function startRenameProfile(){
   var row=document.getElementById('prof-name-row');if(!row)return;
   var cur=(G.profile&&G.profile.name)||'Player';
@@ -4115,6 +4192,11 @@ function startRenameProfile(){
 function saveProfileName(){
   var inp=document.getElementById('prof-name-input');if(!inp)return;
   var v=(inp.value||'').trim().slice(0,16);if(!v)v='Player';
+  if(nameIsBlocked(v)){
+    showGenericModal('🚫','Name not allowed','That name contains language that isn\'t allowed on the public leaderboard. Please pick another one.');
+    inp.focus();inp.select();
+    return; // spara INTE — input ligger kvar så de kan rätta
+  }
   if(!G.profile)G.profile={};G.profile.name=v;saveGame();renderProfile();
 }
 function profOvCard(icon,lbl,val){return '<div class="prof-ov-card"><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div></div>';}
