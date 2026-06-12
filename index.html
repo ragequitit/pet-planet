@@ -2524,7 +2524,9 @@ function renderAdventure(){
 // SAVE / LOAD
 // ============================================================
 var SAVE_KEY='petplanet_v2_save';
+var _applyingSave=false; // när true: lägg INTE skriv över sparningen (vi byter sparning + laddar om)
 function saveGame(){
+  if(_applyingSave)return;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
@@ -3829,6 +3831,7 @@ function doImportSave(){
   try{parsed=JSON.parse(raw);}catch(e){parsed=null;}
   if(!parsed||typeof parsed!=='object'){showGenericModal('❌','Invalid Code','That doesn\'t look like a valid Pet Planet backup code. Make sure you copied the whole thing.');return;}
   showConfirm('Restore This Save?','This will REPLACE your current progress with the backup. Your current save will be lost. Continue?','Restore',function(){
+    _applyingSave=true;
     try{localStorage.setItem(SAVE_KEY,raw);}catch(e){}
     location.reload();
   });
@@ -6970,6 +6973,7 @@ function cloudPull(){
     var localProg=cloudProgressOf(cloudLocalObj());var cloudProg=Number(row.progress)||0;
     if(cloudProg>localProg){
       showConfirm('Load Cloud Save?','Your cloud save has MORE progress than this device. Load it? Recommended \u2014 this keeps your furthest progress.','Load Cloud',function(){
+        _applyingSave=true;
         try{localStorage.setItem(SAVE_KEY,JSON.stringify(row.data));}catch(e){}
         location.reload();
       });
