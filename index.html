@@ -372,6 +372,32 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
 /* ===== SHELL CODEX (Egg Shells-fliken) ===== */
+/* Quick-fuse-väljare (Egg Crafting → Fuse Shells-fliken) */
+.qf-intro{font-size:0.7rem;color:rgba(255,255,255,0.55);line-height:1.4;margin:4px 2px 10px;}
+.qf-list{display:flex;flex-direction:column;gap:7px;}
+.qf-row{display:flex;align-items:center;gap:8px;background:rgba(27,45,78,0.5);border:1px solid rgba(58,92,184,0.4);border-radius:12px;padding:8px 10px;}
+.qf-row.dim{opacity:0.6;}
+.qf-from{display:flex;align-items:center;gap:7px;flex:1;min-width:0;}
+.qf-ic{font-size:1.5rem;line-height:1;}
+.qf-from-txt{min-width:0;}
+.qf-name{font-family:'Fredoka One',cursive;font-size:0.78rem;}
+.qf-have{font-size:0.6rem;color:rgba(255,255,255,0.5);}
+.qf-arrow{color:rgba(255,255,255,0.4);font-weight:900;flex-shrink:0;}
+.qf-to{flex-shrink:0;}
+.qf-btns{display:flex;gap:5px;flex-shrink:0;}
+.qf-btn{background:linear-gradient(180deg,#b388ff,#7c4dff);border:none;border-radius:9px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.66rem;padding:6px 9px;cursor:pointer;box-shadow:0 2px 0 #4a2d8a;}
+.qf-btn:active{transform:translateY(1px);box-shadow:0 1px 0 #4a2d8a;}
+.qf-btn.max{background:linear-gradient(180deg,#ffd76a,#f5b942);color:#3a2600;box-shadow:0 2px 0 #b5851f;}
+.qf-btn.no{background:#2a3c5a;color:rgba(255,255,255,0.4);box-shadow:none;cursor:default;}
+.qf-empty{font-size:0.75rem;color:rgba(255,255,255,0.4);text-align:center;padding:24px 10px;}
+/* Shell-info-popup (klick på shell i Inventory) */
+.sinfo-stats{display:flex;gap:8px;}
+.sinfo-stat{flex:1;background:rgba(0,0,0,0.25);border-radius:10px;padding:8px 4px;text-align:center;}
+.sinfo-v{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;}
+.sinfo-l{font-size:0.55rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
+.sinfo-eggs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;}
+.sinfo-egg{display:flex;align-items:center;gap:5px;background:rgba(27,45,78,0.6);border:1px solid rgba(58,92,184,0.4);border-radius:10px;padding:4px 9px;font-size:0.7rem;color:rgba(255,255,255,0.8);}
+.sinfo-egg-img{width:22px;height:22px;object-fit:contain;}
 .shell-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.13em;display:inline-block;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.4));}
 .codex-intro{font-size:0.76rem;color:rgba(255,255,255,0.6);line-height:1.5;text-align:center;padding:4px 8px 12px;}
 .codex-stats{display:flex;gap:8px;margin-bottom:12px;}
@@ -1126,6 +1152,18 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .bdg-card.locked .bdg-name{color:rgba(255,255,255,0.55);}
 .bdg-desc{font-size:0.52rem;color:rgba(255,255,255,0.5);line-height:1.3;}
 .mvupg{display:flex;align-items:center;gap:10px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;margin-bottom:8px;}
+/* Egg Crafting: header-rad med liten upgrade-ruta i hörnet */
+.ec-headrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.ec-upgbox{display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:12px;padding:5px 9px;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.15);flex-shrink:0;}
+.ec-upgbox.afford{border-color:#ffce4a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2);cursor:pointer;}
+.ec-upgbox.afford:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.15);}
+.ec-upgbox.maxed{opacity:0.65;}
+.ec-upgbox-ic{font-size:1.15rem;line-height:1;}
+.ec-upgbox-txt{display:flex;flex-direction:column;line-height:1.15;}
+.ec-upgbox-name{font-size:0.52rem;font-weight:800;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:0.3px;}
+.ec-upgbox-cost{font-size:0.7rem;font-weight:900;color:#ffe08a;display:flex;align-items:center;gap:3px;}
+.ec-upgbox-cost.bad{color:#ef5350;}
+.ec-upgbox-cost .coin-ic{width:0.8em;height:0.8em;}
 .mvupg.afford{border-color:#7c4dff;cursor:pointer;box-shadow:0 0 10px rgba(124,77,255,0.25);}
 .mvupg.maxed{border-color:var(--gold);}
 .mvupg.poor{opacity:0.7;}
@@ -1293,7 +1331,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
     <button class="nav-btn" id="nb-hatch" onclick="navTab('hatch')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-hatchery.png" alt="" onerror="this.parentNode.textContent='🐣'"></span><span>Hatchery</span></button>
     <button class="nav-btn" id="nb-home" onclick="goHome()"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-home.png" alt="" onerror="this.parentNode.textContent='🥚'"></span><span>Home</span></button>
-    <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Shop</span></button>
+    <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Egg Craft</span></button>
     <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventure</span></button>
   </div>
   <div id="dev-fab" onclick="openDevMenu()" title="Dev Menu">DEV</div>
@@ -1344,6 +1382,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
     <button class="modal-close" onclick="document.getElementById('egg-info-modal').classList.remove('open')" style="float:right">✕</button>
     <div id="egg-info-content"></div>
+  </div>
+</div>
+<div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
+    <button class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="float:right">✕</button>
+    <div id="shell-info-content"></div>
   </div>
 </div>
 <div id="pet-detail-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -5623,6 +5667,15 @@ function buyUpgradeById(id){
   return true;
 }
 // HTML för ett flyttat upgrade-kort (används i Shop + Hatchery).
+function craftUpgBoxHtml(){
+  var u=UPGRADES.find(function(uu){return uu.id==='craft';});if(!u)return '';
+  var l=G.ulvl['craft']||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
+  return '<div class="ec-upgbox'+(maxed?' maxed':afford?' afford':'')+'"'+((!maxed&&afford)?' onclick="buyEggCrafting()"':'')+'>'+
+    '<div class="ec-upgbox-ic">'+u.e+'</div>'+
+    '<div class="ec-upgbox-txt"><div class="ec-upgbox-name">Upgrade · Lv '+l+(maxed?' MAX':'/'+u.max)+'</div>'+
+    '<div class="ec-upgbox-cost'+(maxed||afford?'':' bad')+'">'+(maxed?'Maxed out':COIN_IMG+' '+fmtShort(c))+'</div>'+
+    '</div></div>';
+}
 function movedUpgCardHtml(id,onclick){
   var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return '';
   var l=G.ulvl[u.id]||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
@@ -5698,7 +5751,7 @@ function renderInventory(){
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
-  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" style="border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
+  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
@@ -5772,6 +5825,37 @@ function shopLockReason(egg){
   return '🔒 Locked';
 }
 function shellCraftedBy(id){return EGG_SHOP.filter(function(e){return e.shellType===id;});}
+function showShellInfo(id){
+  var r=SHELL_RARITIES.find(function(x){return x.id===id;});if(!r)return;
+  var s=G.stats||{};
+  var owned=(G.shells&&G.shells[id])||0;
+  var life=(s.shellsCollectedByRarity&&s.shellsCollectedByRarity[id])||0;
+  var w=getRarityWeights();var tot=w.reduce(function(a,b){return a+b;},0)||1;
+  var idx=SHELL_RARITIES.findIndex(function(x){return x.id===id;});
+  var pct=idx>=0?w[idx]/tot*100:0;
+  var crafts=shellCraftedBy(id);
+  var html='<div style="text-align:center;margin-bottom:10px;">';
+  html+='<div style="font-size:2.6rem;margin-bottom:4px;filter:drop-shadow(0 0 6px '+r.color+');">'+shellIcon(id)+'</div>';
+  html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.1rem;color:'+r.color+';">'+r.name+'</div>';
+  html+='</div>';
+  html+='<div class="sinfo-stats">';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(owned)+'</div><div class="sinfo-l">Owned</div></div>';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(life)+'</div><div class="sinfo-l">Lifetime</div></div>';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+shellPctFmt(pct)+'%</div><div class="sinfo-l">Drop chance</div></div>';
+  html+='</div>';
+  html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">Drop 15%/click · 5%/s idle · higher with 🍀 Luck</div>';
+  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Crafts these eggs</div>';
+  if(crafts.length===0){html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;padding:4px 0;">— not used to craft any egg —</div>';}
+  else{
+    html+='<div class="sinfo-eggs">';
+    crafts.forEach(function(egg){
+      html+='<div class="sinfo-egg"><img class="sinfo-egg-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"><span>'+egg.name.replace(' Egg','')+'</span></div>';
+    });
+    html+='</div>';
+  }
+  document.getElementById('shell-info-content').innerHTML=html;
+  document.getElementById('shell-info-modal').classList.add('open');
+}
 function shellPctFmt(p){if(p>=1)return p.toFixed(1);if(p>=0.1)return p.toFixed(2);if(p>=0.001)return p.toFixed(3);return p.toFixed(4);}
 function shellCodexHtml(){
   var w=getRarityWeights();var tot=w.reduce(function(a,b){return a+b;},0)||1;
@@ -5807,30 +5891,19 @@ function shellCodexHtml(){
 function renderShop(){
   var wrap=document.getElementById('shop-wrap');if(!wrap)return;
   var html='';
-  html+='<div class="shop-header">Shop</div>';
+  html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
   html+='<div class="shop-tabs">';
   html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">EGG SHELLS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
-    html+=shellCodexHtml();
+    html+=shellQuickFuseHtml();
     wrap.innerHTML=html;return;
   }
 
-  // Världsväljare (scrollar till ägget i listan)
-  html+='<div class="shop-world-label">Egg Crafting Upgrade</div>';
-  html+=movedUpgCardHtml('craft','buyEggCrafting()');
-  html+='<div class="shop-world-label">Select Egg World</div>';
-  html+='<div class="shop-worlds">';
-  EGG_SHOP.forEach(function(egg){
-    html+='<div class="shop-world-chip" data-world="'+egg.id+'" data-jump-world="'+egg.id+'">';
-    var glow=WORLD_GLOW[egg.id]||'#6a8fd8';
-    html+='<div class="swc-icon"><img class="swc-img" src="'+eggShopIconUrl(egg.id)+'" alt="" style="filter:drop-shadow(0 0 4px '+glow+') drop-shadow(0 0 8px '+glow+'99);" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
-    html+='<div class="swc-name">'+egg.name.replace(' Egg','')+'</div>';
-    html+='</div>';
-  });
-  html+='</div>';
+  // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
+  // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
 
   // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
   var occupied=G.hatchSlots.length;
@@ -5945,17 +6018,18 @@ function showEggInfo(eggId){
   var shellOk2=have2>=cost;
   reqs.push({icon:shellIcon(egg.shellType),label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
-  reqs.push({icon:'🪙',label:'Egg Coins (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
-  if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:'🪙',label:'Earn '+egg.coinReq+' Egg Coins',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
+  reqs.push({icon:COIN_IMG,label:'Egg Coins (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
+  if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:COIN_IMG,label:'Earn '+egg.coinReq+' Egg Coins',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
   if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':'🔒 Required',met:bOk});}
   if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':'🔒 Required',met:hOk});}
   if(reqs.length>0){
     html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Requirements</div>';
     reqs.forEach(function(r){
+      var rcol=r.met?'#4caf50':'#ef5350';
       html+='<div class="egg-info-rarity-row">';
       html+='<span style="font-size:0.9rem;width:18px;text-align:center;">'+r.icon+'</span>';
-      html+='<span style="font-size:0.7rem;color:rgba(255,255,255,0.6);flex:1;">'+r.label+'</span>';
-      html+='<span style="font-size:0.7rem;font-weight:800;color:'+(r.met?'#4caf50':'rgba(255,255,255,0.3)')+'">'+r.val+'</span>';
+      html+='<span style="font-size:0.7rem;color:'+rcol+';flex:1;">'+r.label+'</span>';
+      html+='<span style="font-size:0.7rem;font-weight:800;color:'+rcol+'">'+r.val+'</span>';
       html+='</div>';
     });
   }
@@ -6335,6 +6409,38 @@ function convertShells(fromRarity,batches){
   var favMax=0;ORDER.forEach(function(rid){if((G.stats.shellsCollectedByRarity[rid]||0)>favMax){favMax=G.stats.shellsCollectedByRarity[rid];G.stats.favoriteShell=rid;}});
   saveGame();
   renderFusion();
+}
+// Snabb-fusion i Egg Crafting: använder convertShells men uppdaterar shoppen efteråt.
+function quickFuseShells(fromRarity,batches){
+  convertShells(fromRarity,batches);
+  if(typeof updateHUD==='function')updateHUD();
+  if(typeof renderShop==='function')renderShop();
+}
+function shellQuickFuseHtml(){
+  var h='<div class="qf-intro">⚗️ Quick-fuse shells — 5 lower = 1 higher. Combine spares into rarer shells to craft better eggs.</div>';
+  h+='<div class="qf-list">';
+  var any=false;
+  SHELL_RARITIES.forEach(function(r){
+    var next=getNextRarity(r.id);if(!next)return;          // toppraritet kan inte fuseras upp
+    var have=G.shells[r.id]||0;if(have<=0)return;          // visa bara shells man faktiskt har
+    any=true;
+    var maxB=Math.floor(have/5);var canFuse=maxB>0;var nm=shellMeta(next);
+    h+='<div class="qf-row'+(canFuse?'':' dim')+'">';
+    h+='<div class="qf-from"><span class="qf-ic" style="filter:drop-shadow(0 0 3px '+r.color+')">'+shellIcon(r.id)+'</span><div class="qf-from-txt"><div class="qf-name" style="color:'+r.color+'">'+r.name.replace(' Shell','')+'</div><div class="qf-have">Have '+fmtShort(have)+'</div></div></div>';
+    h+='<div class="qf-arrow">→</div>';
+    h+='<div class="qf-to"><span class="qf-ic" style="filter:drop-shadow(0 0 3px '+nm.color+')">'+shellIcon(next)+'</span></div>';
+    h+='<div class="qf-btns">';
+    if(canFuse){
+      h+='<button class="qf-btn" onclick="quickFuseShells(\''+r.id+'\',1)">Fuse 5</button>';
+      if(maxB>1)h+='<button class="qf-btn max" onclick="quickFuseShells(\''+r.id+'\','+maxB+')">Max '+maxB+'</button>';
+    } else {
+      h+='<button class="qf-btn no" disabled>Need 5</button>';
+    }
+    h+='</div></div>';
+  });
+  if(!any)h+='<div class="qf-empty">No shells yet — they drop while you click and idle. Come back when you have some to fuse!</div>';
+  h+='</div>';
+  return h;
 }
 function renderShellFusion(){
   var src=shellFuseSource;
