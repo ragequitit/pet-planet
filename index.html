@@ -2273,15 +2273,15 @@ var ACTIVE_EVENT={
   snowPerAdventure:120,
   questCycleHours:24,
   chests:[
-    {at:1000, reward:{coins:50000}},
+    {at:1000, reward:{shells:{uncommon:10}}},
     {at:2500, reward:{gems:50}},
     {at:4000, reward:{shells:{rare:10}}},
-    {at:5000, reward:{gems:150, coins:250000}}
+    {at:5000, reward:{gems:150}}
   ],
   quests:[
-    {id:'q_hatch', type:'hatch',     icon:'\ud83e\udd5a', name:'Hatch 15 Eggs',            target:15,   reward:{coins:50000}},
+    {id:'q_hatch', type:'hatch',     icon:'\ud83e\udd5a', name:'Hatch 15 Eggs',            target:15,   reward:{shells:{rare:5}}},
     {id:'q_snow',  type:'snow',      icon:'\u2744\ufe0f', name:'Collect 1,000 Snowflakes', target:1000, reward:{gems:25}},
-    {id:'q_adv',   type:'adventure', icon:'\ud83d\uddfa\ufe0f', name:'Complete 5 Adventures',    target:5,    reward:{coins:120000}},
+    {id:'q_adv',   type:'adventure', icon:'\ud83d\uddfa\ufe0f', name:'Complete 5 Adventures',    target:5,    reward:{gems:20}},
     {id:'q_tap',   type:'tap',       icon:'\ud83d\udc46', name:'Tap the Egg 300 times',    target:300,  reward:{shells:{rare:5}}},
     {id:'q_fuse',  type:'fusion',    icon:'\u2697\ufe0f', name:'Fuse 2 Pets',              target:2,    reward:{gems:40}}
   ],
@@ -2312,8 +2312,6 @@ var ACTIVE_EVENT={
   // kind: egg(centerpiece, last tills petsen finns) | bundle(resurser, live) | boost(soon) | cosmetic(soon).
   shop:[
     {id:'egg_winter', kind:'egg',    status:'live', icon:'\ud83e\udd5a', name:'Winter Event Egg', desc:'A real egg \u2014 hatch it in your Hatchery for a limited Winter pet.', cost:250},
-    {id:'coins_s',  kind:'bundle',   status:'live', icon:'\ud83e\ude99', name:'Coin Cache',      desc:'A quick boost of Egg Coins.',   cost:60,  reward:{coins:150000}},
-    {id:'coins_l',  kind:'bundle',   status:'live', icon:'\ud83e\ude99', name:'Coin Vault',      desc:'A big pile of Egg Coins.',      cost:200, reward:{coins:750000}},
     {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Rare Shell Pack', desc:'10 Rare shells for crafting.',  cost:120, reward:{shells:{rare:10}}},
     {id:'core_1',   kind:'bundle',   status:'live', icon:'\u2b21',       name:'Mutation Core',   desc:'A random Uncommon ability core.', cost:180, reward:{cores:1, coreTier:2}},
     {id:'gems_s',   kind:'bundle',   status:'live', icon:'\ud83d\udc8e', name:'Gem Pouch',       desc:'A small pouch of Gems.',        cost:300, reward:{gems:25}},
@@ -4584,31 +4582,31 @@ var DAILY_QUEST_CYCLE_HOURS=24;
 // PLATSHÅLLARE (balanseras senare, precis som resten av spelet).
 var DAILY_QUEST_POOL={
   easy:[
-    {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{coins:2000}},
-    {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{coins:2500}},
-    {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{coins:2500}},
-    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{coins:3000}},
-    {type:'shells',name:'Shell Picker',icon:'\ud83d\udc1a',target:15,reward:{coins:2500}},
-    {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{coins:3000}}
+    {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{shells:{common:5}}},
+    {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{shells:{common:6}}},
+    {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{shells:{uncommon:3}}},
+    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{shells:{uncommon:4}}},
+    {type:'shells',name:'Shell Picker',icon:'\ud83d\udc1a',target:15,reward:{gems:2}},
+    {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{shells:{uncommon:4}}}
   ],
   med:[
-    {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{coins:6000,shells:{common:5}}},
-    {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{coins:7000,shells:{common:5}}},
-    {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{coins:7000,shells:{uncommon:3}}},
-    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{coins:8000,shells:{uncommon:3}}},
-    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{coins:7000,shells:{uncommon:3}}},
-    {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{coins:7000,shells:{uncommon:3}}},
-    {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{coins:8000,shells:{common:5}}}
+    {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{shells:{common:8}}},
+    {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{shells:{common:8}}},
+    {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{shells:{uncommon:5}}},
+    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{shells:{uncommon:5}}},
+    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{shells:{uncommon:5}}},
+    {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{shells:{uncommon:5}}},
+    {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{shells:{common:8}}}
   ],
   hard:[
-    {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{coins:15000,shells:{rare:2}}},
-    {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{coins:18000,gems:5}},
-    {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{coins:18000,gems:5}},
-    {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{coins:20000,gems:8}},
-    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{coins:16000,shells:{rare:2}}},
-    {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{coins:18000,gems:5}},
-    {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{coins:18000,gems:5}},
-    {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{coins:18000,gems:5}}
+    {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{shells:{rare:3}}},
+    {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{gems:6}},
+    {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{gems:6}},
+    {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
+    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{rare:3}}},
+    {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
+    {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{gems:6}},
+    {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
   ]
 };
 function dailyQuestSnapshot(){var o={},t;for(t in DAILY_QUEST_STAT)o[t]=questCumValue(t);o.shells=questCumValue('shells');return o;}
@@ -4663,31 +4661,31 @@ function dailyQuestDone(q,Q){return dailyQuestProgress(q,Q)>=q.target;}
 var WEEKLY_QUEST_CYCLE_HOURS=168;
 var WEEKLY_QUEST_POOL={
   easy:[
-    {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{coins:60000,shells:{uncommon:10}}},
-    {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{coins:70000,shells:{rare:5}}},
-    {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',target:10,reward:{coins:70000,gems:15}},
-    {type:'fusion',name:'Weekly Combiner',icon:'\u2697\ufe0f',target:20,reward:{coins:80000,gems:15}},
-    {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{coins:60000,shells:{rare:3}}},
-    {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{coins:70000,shells:{uncommon:8}}}
+    {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{shells:{uncommon:12}}},
+    {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{shells:{rare:6}}},
+    {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',target:10,reward:{gems:15}},
+    {type:'fusion',name:'Weekly Combiner',icon:'\u2697\ufe0f',target:20,reward:{gems:15}},
+    {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{shells:{rare:4}}},
+    {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{shells:{uncommon:10}}}
   ],
   med:[
-    {type:'tap',name:'Tap Champion',icon:'\ud83d\udc46',target:5000,reward:{coins:150000,gems:25}},
-    {type:'hatch',name:'Hatch Master',icon:'\ud83e\udd5a',target:120,reward:{coins:175000,gems:25}},
-    {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{coins:175000,shells:{epic:3}}},
-    {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{coins:200000,shells:{epic:3}}},
-    {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{coins:150000,gems:25}},
-    {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{coins:175000,gems:25}},
-    {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{coins:175000,gems:25}}
+    {type:'tap',name:'Tap Champion',icon:'\ud83d\udc46',target:5000,reward:{gems:25}},
+    {type:'hatch',name:'Hatch Master',icon:'\ud83e\udd5a',target:120,reward:{gems:25}},
+    {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{shells:{epic:3}}},
+    {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{shells:{epic:3}}},
+    {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{gems:25}},
+    {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{gems:25}},
+    {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{gems:25}}
   ],
   hard:[
-    {type:'tap',name:'Tap Legend',icon:'\ud83d\udc46',target:12000,reward:{coins:400000,gems:40,cores:1}},
-    {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{coins:500000,gems:50,cores:1}},
-    {type:'adventure',name:'Grand Explorer',icon:'\ud83e\udded',target:60,reward:{coins:500000,gems:50}},
-    {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{coins:600000,gems:60,cores:1}},
-    {type:'mutate',name:'Master Mutator',icon:'\ud83e\uddec',target:5,reward:{coins:500000,gems:50,cores:1}},
-    {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{coins:500000,gems:50}},
-    {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{coins:500000,gems:50}},
-    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{coins:600000,gems:60,cores:1}}
+    {type:'tap',name:'Tap Legend',icon:'\ud83d\udc46',target:12000,reward:{gems:40,cores:1}},
+    {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{gems:50,cores:1}},
+    {type:'adventure',name:'Grand Explorer',icon:'\ud83e\udded',target:60,reward:{gems:50}},
+    {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{gems:60,cores:1}},
+    {type:'mutate',name:'Master Mutator',icon:'\ud83e\uddec',target:5,reward:{gems:50,cores:1}},
+    {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{gems:50}},
+    {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{gems:50}},
+    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,cores:1}}
   ]
 };
 function weeklyCycleMs(){return WEEKLY_QUEST_CYCLE_HOURS*3600000;}
@@ -4918,13 +4916,13 @@ function ensureBattlePass(){
 function bpTierReward(tier,premium){
   var r={};
   if(premium){
-    r.coins=6000*tier;
+    r.shells={uncommon:4};               // varje premium-tier
     if(tier%2===0)r.gems=8;
-    if(tier%5===0)r.shells={uncommon:6};
+    if(tier%5===0)r.shells={rare:3};
     if(tier%10===0)r.gems=(r.gems||0)+20;
   }else{
-    r.coins=2000*tier;
-    if(tier%5===0)r.shells={common:5};
+    r.shells={common:4};                 // varje free-tier
+    if(tier%5===0)r.shells={uncommon:4};
     if(tier%10===0)r.gems=10;
   }
   return r;
@@ -5861,7 +5859,7 @@ function shopJumpTo(id){
   if(el)el.scrollIntoView({behavior:'smooth',block:'center'});
   document.querySelectorAll('.shop-world-chip').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-world')===id);});
 }
-var SHOP_EGG_ICON_FILE={arctic:'artic',volcano:'vulcano'};
+var SHOP_EGG_ICON_FILE={}; // shop-ikon = assets/ui/shop/<id>-egg.png. Lägg bara till en post här om en fil heter något ANNAT än sitt ägg-id.
 // Glow-färg per äggvärld (matchar äggets visuella tema) — används som sken runt ägget i världs-knapparna
 var WORLD_GLOW={starter:'#6ab0e8',forest:'#56c25a',mountain:'#c2a06e',desert:'#edb04a',ocean:'#3fb6e6',jungle:'#7ccb3e',arctic:'#8fe0ee',volcano:'#f0503a',mystic:'#a865ec',celestial:'#c0a8f4',cosmic:'#e040fb'};
 var EGG_DESC={
