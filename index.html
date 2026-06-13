@@ -1248,6 +1248,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .utile{position:relative;width:52px;height:52px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);cursor:pointer;}
 .utile:active{transform:translateY(1px);}
 .utile-ic{font-size:1.5rem;line-height:1;}
+.utile-ic .bld-pic{width:34px;height:34px;}
 .utile.afford{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,0.45),0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);}
 .utile.poor{opacity:0.7;}
 .utile.locked{opacity:0.4;filter:grayscale(0.55);}
@@ -1438,8 +1439,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   </div>
 </div>
 <div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
-  <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
-    <button class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="float:right">✕</button>
+  <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;position:relative;">
+    <button id="shell-info-close" class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="position:absolute;top:6px;right:10px;font-size:1.5rem;padding:6px 10px;line-height:1;z-index:2;">✕</button>
     <div id="shell-info-content"></div>
   </div>
 </div>
@@ -1662,6 +1663,11 @@ function buildingIconImg(b){
   if(!b||!b.img)return (b&&b.e)||'🏠';
   return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/buildings/'+b.img+'.png" alt="" onerror="this.parentNode.textContent=\''+b.e+'\'">';
 }
+// Klick-upgrades använder en gemensam click power-ikon (ligger i buildings-mappen); emoji-fallback per linje.
+function clickUpgIconImg(u){
+  var e=(u&&u.line==='finger')?'👆':'🖱️';
+  return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/buildings/clickpower.png" alt="" onerror="this.parentNode.textContent=\''+e+'\'">';
+}
 var UPGRADES=[
   {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
   {id:'hatch',e:'⏩',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
@@ -1715,8 +1721,8 @@ var CLICK_UPGRADES=[
   {id:'eps3',line:'eps',name:'Power Tapping',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:10000,cost:1e7},
   {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
   {id:'tf1',line:'finger',name:'Helping Paws',desc:'+0.1 per other building, per tap.',fingerBase:0.1,unlockBuildings:25,cost:100000},
-  {id:'tf2',line:'finger',name:'Pack Instinct',desc:'Helping Paws bonus ×5.',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
-  {id:'tf3',line:'finger',name:'Stampede',desc:'Helping Paws bonus ×10.',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
+  {id:'tf2',line:'finger',name:'Pack Instinct',desc:'+0.5 per other building, per tap (Helping Paws ×5).',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
+  {id:'tf3',line:'finger',name:'Stampede',desc:'+5 per other building, per tap (Pack Instinct ×10).',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
 ];
 function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
@@ -2069,7 +2075,14 @@ function rollSpecies(eggId,rarity){
 var EVENT_EGG_ID='event_egg';
 function eventEggMeta(){
   var se=null;((typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.shop)||[]).forEach(function(x){if(x.kind==='egg')se=x;});
-  return {id:EVENT_EGG_ID, name:(se&&se.name)||'Event Egg', icon:(se&&se.icon)||'\ud83e\udd5a'};
+  var slug=se?String(se.id).replace(/^egg_/,''):'';
+  return {id:EVENT_EGG_ID, name:(se&&se.name)||'Event Egg', icon:(se&&se.icon)||'\ud83e\udd5a',
+    iconUrl: slug?(ASSET_BASE+'/assets/ui/shop/'+slug+'-egg.png'):null};
+}
+// Event-äggets ikon som <img> (winter-egg.png m.fl.) med emoji-fallback; px = storlek per plats.
+function eventEggIconHtml(px){
+  var m=eventEggMeta();if(!m.iconUrl)return m.icon;
+  return '<img src="'+m.iconUrl+'" alt="" style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+m.icon+'\'))">';
 }
 // ============================================================
 // PET LEVELING (Lv 1–25) — nivå ÄR skild från rarity
@@ -3361,6 +3374,7 @@ function quickEquipPet(uid){
 }
 document.getElementById('pet-detail-close').onclick=function(){document.getElementById('pet-detail-modal').classList.remove('open');};
 document.getElementById('pet-detail-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+document.getElementById('shell-info-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
 
 // ============================================================
 // MODALS: OFFLINE, PET RESULT
@@ -4306,7 +4320,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.2<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.3<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5610,7 +5624,7 @@ function renderEventShop(){
       var active=(it.kind==='boost')&&boostActive(it.boostType);
       var afford=E.currency>=it.cost;
       h+='<div class="evs-card'+(it.kind==='egg'?' evs-egg':'')+((soon||owned)?' soon':'')+'">';
-      h+='<div class="evs-ic">'+it.icon+'</div>';
+      h+='<div class="evs-ic">'+(it.kind==='egg'?eventEggIconHtml(30):it.icon)+'</div>';
       h+='<div class="evs-mid"><div class="evs-name">'+it.name+(active?' <span class="evs-act">Active '+fmtBoostLeft(boostLeftMs(it.boostType))+'</span>':'')+'</div><div class="evs-desc">'+it.desc+'</div>';
       h+='<div class="evs-cost">'+ev.currency.emoji+' '+fmtShort(it.cost)+'</div></div>';
       if(soon)h+='<div class="evs-soon">Coming<br>soon</div>';
@@ -5843,7 +5857,7 @@ function buildDblView(i){
   var thr=DOUBLING_THRESHOLDS[d];
   var unlocked=(G.owned[i]||0)>=thr;
   var cost=doublingCost(i,d);
-  return {key:'dbl:'+i,type:'dbl',i:i,icon:BUILDINGS[i].e,badge:ROMAN[d]||'',
+  return {key:'dbl:'+i,type:'dbl',i:i,icon:buildingIconImg(BUILDINGS[i]),badge:ROMAN[d]||'',
     name:BUILDINGS[i].n+' Boost '+(ROMAN[d]||''),
     desc:'Doubles '+BUILDINGS[i].n+' production (×2).',
     cost:cost,reqText:'Own '+thr+' '+BUILDINGS[i].n+' to unlock',
@@ -5852,7 +5866,7 @@ function buildDblView(i){
 function buildClkView(u){
   var owned=clickUpgOwned(u.id);
   var unlocked=isClickUpgradeUnlocked(u);
-  return {key:'clk:'+u.id,type:'clk',id:u.id,icon:(u.line==='finger'?'👆':'🖱️'),badge:'',
+  return {key:'clk:'+u.id,type:'clk',id:u.id,icon:clickUpgIconImg(u),badge:'',
     name:u.name,desc:u.desc,cost:u.cost,reqText:clickUpgradeReqText(u),
     state: owned?'owned':(unlocked?(G.coins>=u.cost?'afford':'poor'):'locked')};
 }
@@ -5924,7 +5938,7 @@ function clickUpgradeCardHtml(u,unlockedFlag){
   var afford=unlockedFlag&&G.coins>=u.cost;
   var cls='dbl'+(unlockedFlag?(afford?' afford':' poor'):' locked');
   var click=unlockedFlag?(' onclick="buyClickUpgrade(\''+u.id+'\')"'):'';
-  var icon=u.line==='finger'?'👆':'🖱️';
+  var icon=clickUpgIconImg(u);
   var sub=unlockedFlag?u.desc:clickUpgradeReqText(u);
   var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(u.cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
   return '<div class="'+cls+'" data-clkupg="'+u.id+'"'+click+'>'+
@@ -6583,7 +6597,7 @@ function renderHatchery(){
       if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
       var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
       var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
-      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(egg?egg.icon:'🥚')+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
+      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(slot.eggId===EVENT_EGG_ID?eventEggIconHtml(38):(egg?egg.icon:'🥚'))+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
       html+='<div class="hatch-progress-bar"><div class="hatch-progress-fill" style="width:'+(pct*100)+'%"></div></div>';
       html+='<button class="hatch-collect-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'🎉 Collect Pet!':'Hatching...')+'</button></div>';
     } else {
@@ -6615,7 +6629,7 @@ function renderHatchery(){
       html+='<div class="hatch-egg-row"><div class="he-icon">'+egg.icon+'</div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
     });
     var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
-    if(_ec>0){var _em=eventEggMeta();var _canH=activeCount<maxSlots;html+='<div class="hatch-egg-row"><div class="he-icon">'+_em.icon+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
+    if(_ec>0){var _em=eventEggMeta();var _canH=activeCount<maxSlots;html+='<div class="hatch-egg-row"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
     html+='</div>';
   }
   wrap.innerHTML=html;
