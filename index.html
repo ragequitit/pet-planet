@@ -1334,8 +1334,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <div class="side-btn" id="skins-btn" onclick="openSkinPicker('egg')"><span class="sb-icon">🎨</span><span class="sb-label">Skins</span></div>
       </div>
       <div class="side-btns" id="right-btns">
-        <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
-        <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon">📊</span><span class="sb-label">Stats</span></div>
+        <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
+        <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/ability-stats.png" alt="" onerror="this.parentNode.textContent='📊'"></span><span class="sb-label">Stats</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/event.png" alt="" onerror="this.parentNode.textContent='🎉'"></span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -1548,7 +1548,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="ascension-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
-      <div class="prof-topbar-title">🔼 Ascension</div>
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/ascension.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🔼'))"> Ascension</div>
       <button class="prof-x" onclick="closeAscension()">✕</button>
     </div>
     <div class="prof-body" id="ascension-body"></div>
@@ -1557,7 +1557,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="trading-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
-      <div class="prof-topbar-title">🔄 Trading</div>
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/trading.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🔄'))"> Trading</div>
       <button class="prof-x" onclick="closeTrading()">✕</button>
     </div>
     <div class="prof-body" id="trading-body"></div>
@@ -1566,7 +1566,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="events-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
-      <div class="prof-topbar-title">🎉 Events</div>
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/event.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🎉'))"> Events</div>
       <button class="prof-x" onclick="closeEvents()">✕</button>
     </div>
     <div class="prof-body" id="events-body"></div>
@@ -1575,7 +1575,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="battlepass-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
-      <div class="prof-topbar-title">🎟️ Battle Pass</div>
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/Battle-pass.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🎟️'))"> Battle Pass</div>
       <button class="prof-x" onclick="closeBattlePass()">✕</button>
     </div>
     <div class="prof-body" id="battlepass-body"></div>
@@ -1685,7 +1685,7 @@ function uiIco(name,emoji,px){
 // Klick-upgrades använder en gemensam click power-ikon (ligger i buildings-mappen); emoji-fallback per linje.
 function clickUpgIconImg(u){
   var e=(u&&u.line==='finger')?'👆':'🖱️';
-  return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/buildings/clickpower.png" alt="" onerror="this.parentNode.textContent=\''+e+'\'">';
+  return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/random/clicking-power.png" alt="" onerror="this.parentNode.textContent=\''+e+'\'">';
 }
 var UPGRADES=[
   {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
@@ -2671,7 +2671,7 @@ function claimAdventure(index){
   if(typeof updateHUD==='function')updateHUD();
   if(typeof softUpdateInventory==='function')softUpdateInventory();
   saveGame();renderAdventure();
-  parts.push('+'+rw.xp+' Pet XP');
+  parts.push(uiIco('pet-xp','⭐',14)+' +'+rw.xp+' Pet XP');
   if(advLvUp)parts.push('⭐ '+(pet?pet.name:'Pet')+' reached Lv '+pet.level+'!');
   if(typeof showRewardPopup==='function')showRewardPopup(parts,true);
 }
@@ -2790,13 +2790,13 @@ function renderAdventure(){
   html+=advRewItem('🪙','Sparks','~'+fmtShort(coinsNow),true);
   var shTypes=sel.shellLoot.map(function(L){var r=SHELL_RARITIES.find(function(s){return s.id===L.type;});return shellIcon(L.type);}).join('');
   html+=advRewItem(shTypes||'🐚','Embers','',true);
-  html+=advRewItem('⭐','Pet XP','+'+sel.xp,true);
+  html+=advRewItem(uiIco('pet-xp','⭐',22),'Pet XP','+'+sel.xp,true);
   (sel.bonusLoot||[]).forEach(function(B){
     if(B.type==='gems'){html+=advRewItem('💎','Gems',Math.round(B.chance*100)+'%',true);}
     else if(B.type==='egg'){var e=EGG_SHOP.find(function(x){return x.id===B.id;});var eico='<img src="'+eggShopIconUrl(B.id)+'" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';html+=advRewItem(eico,(e?e.name.replace(' Egg',''):B.id),Math.round(B.chance*100)+'%',true);}
   });
   html+=advRewItem('🧬','Cores','soon',false);
-  html+=advRewItem('🗺️','Discoveries','soon',false);
+  html+=advRewItem(uiIco('discoveries','🗺️',22),'Discoveries','soon',false);
   html+=advRewItem('🐣','Adv. Pets','soon',false);
   html+='</div>';
   if(sel.affinity&&PET_POOL[sel.affinity]){
@@ -3187,7 +3187,7 @@ function openPetSlotModal(idx){
         '<div class="slot-current-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
       '</div>'+
       '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div>'+
-      '<div class="slot-current-xptxt">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>'+
+      '<div class="slot-current-xptxt">'+uiIco('pet-xp','⭐',12)+' '+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>'+
       (cab?('<div class="slot-current-ab">'+cab+'</div>'):'')+
       '<button class="slot-remove-btn" id="slot-remove-btn">❌ Remove Pet</button>';
     list.appendChild(cur);
@@ -3349,7 +3349,7 @@ function openPetDetail(uid){
   html+='<div style="color:'+rc.color+';font-size:0.85rem;margin:2px 0;">'+rc.icon+' '+rc.label+'</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">'+eggInfo.icon+' '+eggInfo.name+'</div>';
   var lp=petXpProgress(pet);
-  html+='<div class="pd-lvl"><div class="pd-lvl-tag">Lv '+lp.level+(lp.max?' · MAX':'')+'</div><div class="pd-xp"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div><span class="pd-xp-txt">'+(lp.max?'Max level':fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP')+'</span></div>';
+  html+='<div class="pd-lvl"><div class="pd-lvl-tag">Lv '+lp.level+(lp.max?' · MAX':'')+'</div><div class="pd-xp"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div><span class="pd-xp-txt">'+uiIco('pet-xp','⭐',12)+' '+(lp.max?'Max level':fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP')+'</span></div>';
   if(isEquipped)html+='<div style="margin-top:4px;display:inline-block;background:var(--gold);color:#0b1530;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:900;">⚡ ACTIVE</div>';
   html+='</div>';
   html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);text-align:center;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Abilities</div>';
@@ -4716,11 +4716,11 @@ function renderProfile(){
     h+='<div class="prof-section-title">Lifetime Overview</div>';
     h+='<div class="prof-ov-grid">';
     h+=profOvCard('🥚','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0));
-    h+=profOvCard('🐾','Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
+    h+=profOvCard(uiIco('pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
     h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0));
-    h+=profOvCard('👆','Total Clicks',fmtShort(G.stats.totalClicks||0));
+    h+=profOvCard(uiIco('total-clicks','👆',26),'Total Clicks',fmtShort(G.stats.totalClicks||0));
     h+=profOvCard('⚗️','Fusions',fmtShort(G.stats.totalFusions||0));
-    h+=profOvCard('⏱️','Playtime',profPlaytime());
+    h+=profOvCard(uiIco('playtime','⏱️',26),'Playtime',profPlaytime());
     h+='</div>';
     h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Account Completion</span><span class="prof-compl-pct">'+completion+'%</span></div>';
     h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+completion+'%"></div></div></div>';
@@ -7870,7 +7870,7 @@ function renderPetdex(){
   var html='';
   // Progress header
   html+='<div class="pdx-prog-card"><div class="pdx-prog-main">';
-  html+='<div class="pdx-prog-top"><span class="pdx-prog-title">Petdex Progress</span><span class="pdx-prog-pct">'+pct+'%</span></div>';
+  html+='<div class="pdx-prog-top"><span class="pdx-prog-title">'+uiIco('petdex','📖',16)+' Petdex Progress</span><span class="pdx-prog-pct">'+pct+'%</span></div>';
   html+='<div class="pdx-progress-bar"><div class="pdx-progress-fill" style="width:'+pct+'%"></div></div>';
   html+='<div class="pdx-prog-count">'+overall.found+' / '+overall.total+' Species Found</div>';
   var doneWorlds=countCompletedWorlds();
