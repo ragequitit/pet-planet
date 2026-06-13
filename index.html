@@ -574,6 +574,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-card-world{font-size:0.55rem;color:rgba(255,255,255,0.35);margin-top:1px;}
 .pc-xp{height:5px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;margin-top:8px;border:1px solid rgba(122,90,208,0.3);}
 .pc-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:4px;transition:width 0.4s ease;}
+.skin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.skin-cell{background:#122446;border:2px solid #1f3d78;border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer;}
+.skin-cell.sel{border-color:var(--gold);box-shadow:0 0 8px rgba(245,200,66,0.4);}
+.skin-cell.locked{opacity:0.5;cursor:default;}
+.skin-prev{width:100%;height:54px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:7px;background:#0b1530;overflow:hidden;}
+.skin-name{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;}
+.skin-tag{font-size:0.58rem;color:rgba(255,255,255,0.5);margin-top:3px;}
+.skin-tag.on{color:#ffe08a;}
+.skin-tag.lock{color:rgba(255,255,255,0.45);}
 .pet-abilities{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1;}
 .pet-ability-row{display:flex;align-items:center;gap:4px;font-size:0.58rem;}
 .pa-icon{font-size:0.7rem;width:16px;text-align:center;}
@@ -1473,6 +1482,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <button class="redeem-go" onclick="doRedeem()">Redeem</button>
   </div>
 </div>
+<div id="skin-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeSkinPicker()">
+  <div class="modal-box centered" style="max-width:340px;">
+    <button class="modal-close" onclick="closeSkinPicker()" style="float:right">✕</button>
+    <div class="modal-title" id="skin-modal-title" style="margin-bottom:12px;">Egg Skin</div>
+    <div id="skin-modal-grid"></div>
+  </div>
+</div>
 <div id="profile-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -2259,7 +2275,7 @@ var G={
   titlesEarned:{},
   adventureSlots:1,
   adventures:[],
-  profile:{name:'Player',favoritePet:null,equippedTitle:null},
+  profile:{name:'Player',favoritePet:null,equippedTitle:null,eggSkin:'classic',background:'classic'},
   settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true},
   event:null,
   boosts:{coin:0,luck:0},
@@ -2773,6 +2789,7 @@ function resetGame(){
   G.battlePass=null;
   G.boosts={coin:0,luck:0};
   G.cosmeticsOwned={};
+  if(G.profile){G.profile.eggSkin='classic';G.profile.background='classic';}
   G.stats=freshStats();
   G._discoveredPets={};
   G.settings=Object.assign({},DEFAULT_SETTINGS);
@@ -2828,6 +2845,85 @@ function openDevMenu(){renderDevMenu();document.getElementById('dev-modal').clas
 function closeDevMenu(){var m=document.getElementById('dev-modal');if(m)m.classList.remove('open');}
 
 // ============================================================
+// EGG- & BACKGROUND-SKINS (kosmetik)
+// img:null => använd världens standardbild. filter => CSS-filter på standardägget
+// (platshållare tills riktig PNG finns; byt 'filter' mot 'img' när konsten är klar).
+// bg => CSS-gradient för bakgrunds-skin. free:true => ägs från start.
+// Annars låses upp via achievements/Battle Pass/events (cosmeticsOwned[id] eller ownFlag).
+// ============================================================
+var EGG_SKINS=[
+  {id:'classic', name:'Classic',     icon:'🥚', img:null, filter:null, free:true, how:'Default egg'},
+  {id:'golden',  name:'Golden Egg',  icon:'🟡', img:null, filter:'sepia(1) saturate(4) hue-rotate(2deg) brightness(1.12)', free:true, how:'Free starter'},
+  {id:'emerald', name:'Emerald Egg', icon:'🟢', img:null, filter:'hue-rotate(95deg) saturate(1.6)', free:true, how:'Free starter'},
+  {id:'rose',    name:'Rose Egg',    icon:'🌸', img:null, filter:'hue-rotate(300deg) saturate(1.7)', how:'Reward'},
+  {id:'shadow',  name:'Shadow Egg',  icon:'⚫', img:null, filter:'grayscale(1) brightness(0.6) contrast(1.25)', how:'Reward'},
+  {id:'snow',    name:'Snow Egg',    icon:'❄️', img:null, filter:'hue-rotate(165deg) saturate(0.6) brightness(1.3)', ownFlag:'skin_egg', how:'Winter event'}
+];
+var BG_SKINS=[
+  {id:'classic',  name:'Classic',   icon:'🌅', bg:null, free:true, how:'Default background'},
+  {id:'midnight', name:'Midnight',  icon:'🌌', bg:'radial-gradient(circle at 50% 18%,#1c2c58,#0a0f24 72%)', free:true, how:'Free starter'},
+  {id:'sunset',   name:'Sunset',    icon:'🌇', bg:'linear-gradient(180deg,#3a2a6b,#7b3f6e 52%,#c96f4a)', free:true, how:'Free starter'},
+  {id:'aurora',   name:'Aurora',    icon:'🌠', bg:'linear-gradient(180deg,#07182e,#0e3a4a 42%,#1f7a5a 82%)', how:'Reward'},
+  {id:'rosefield',name:'Rose Field',icon:'🌷', bg:'linear-gradient(180deg,#2a1230,#6e2f57 60%,#b65a7a)', how:'Reward'}
+];
+function equippedEggSkin(){return (G.profile&&G.profile.eggSkin)||'classic';}
+function equippedBg(){return (G.profile&&G.profile.background)||'classic';}
+function skinOwned(kind,id){
+  var list=(kind==='egg')?EGG_SKINS:BG_SKINS;
+  var s=list.find(function(x){return x.id===id;});
+  if(!s)return false;
+  if(s.free||id==='classic')return true;
+  if(s.ownFlag&&G.cosmeticsOwned&&G.cosmeticsOwned[s.ownFlag])return true;
+  return !!(G.cosmeticsOwned&&G.cosmeticsOwned[(kind==='egg'?'eggskin_':'bgskin_')+id]);
+}
+function applyEggSkin(){
+  var img=document.getElementById('egg-img');if(!img)return;
+  var s=EGG_SKINS.find(function(x){return x.id===equippedEggSkin();})||EGG_SKINS[0];
+  if(s.img){img.onerror=function(){img.onerror=null;};img.src=s.img;img.style.filter='';}
+  else{img.style.filter=s.filter||'';} // classic + filter-skins: behåll världens ägg-src, lägg på ev. filter
+}
+function applyBgSkin(){
+  var bg=document.getElementById('scene-bg');var wrap=document.getElementById('scene-wrap');if(!bg||!wrap)return;
+  var s=BG_SKINS.find(function(x){return x.id===equippedBg();})||BG_SKINS[0];
+  if(s.img){bg.style.display='';wrap.style.background='';bg.onerror=function(){bg.onerror=null;};bg.src=s.img;}
+  else if(s.bg){bg.style.display='none';wrap.style.background=s.bg;}
+  else{bg.style.display='';wrap.style.background='';} // classic: visa världens bakgrundsbild
+}
+function applySkins(){applyEggSkin();applyBgSkin();}
+
+// ===== SKIN-VÄLJARE (delad modal — används av Customize-fliken och knappen vid ägget) =====
+var skinPickKind='egg';
+function openSkinPicker(kind){skinPickKind=kind;renderSkinPicker();var m=document.getElementById('skin-modal');if(m)m.classList.add('open');}
+function closeSkinPicker(){var m=document.getElementById('skin-modal');if(m)m.classList.remove('open');}
+function renderSkinPicker(){
+  var isEgg=(skinPickKind==='egg');
+  var list=isEgg?EGG_SKINS:BG_SKINS;
+  var cur=isEgg?equippedEggSkin():equippedBg();
+  var t=document.getElementById('skin-modal-title');if(t)t.textContent=isEgg?'Egg Skin':'Background';
+  var h='<div class="skin-grid">';
+  list.forEach(function(s){
+    var owned=skinOwned(skinPickKind,s.id);
+    var sel=(s.id===cur);
+    var prev=isEgg
+      ? '<div class="skin-prev"><span style="font-size:2rem;'+(s.filter?('filter:'+s.filter+';'):'')+'">'+(s.icon||'🥚')+'</span></div>'
+      : '<div class="skin-prev" style="background:'+(s.bg||'#1a2a4e')+';"></div>';
+    h+='<div class="skin-cell'+(sel?' sel':'')+(owned?'':' locked')+'"'+(owned?(' onclick="selectSkin(\''+s.id+'\')"'):'')+'>';
+    h+=prev+'<div class="skin-name">'+s.name+'</div>';
+    h+=owned?(sel?'<div class="skin-tag on">✓ Equipped</div>':'<div class="skin-tag">Tap to use</div>'):('<div class="skin-tag lock">🔒 '+(s.how||'Locked')+'</div>');
+    h+='</div>';
+  });
+  h+='</div>';
+  var g=document.getElementById('skin-modal-grid');if(g)g.innerHTML=h;
+}
+function selectSkin(id){
+  if(!G.profile)G.profile={};
+  if(skinPickKind==='egg')G.profile.eggSkin=id; else G.profile.background=id;
+  applySkins();saveGame();renderSkinPicker();
+  var pm=document.getElementById('profile-modal');
+  if(pm&&pm.classList.contains('open')&&typeof renderProfile==='function')renderProfile();
+}
+
+// ============================================================
 // SCENE
 // ============================================================
 function setWorld(idx){
@@ -2842,6 +2938,7 @@ function setWorld(idx){
   setImg('pedestal-img',w.pedestal,fb.pedestal);
   G.currentWorld=idx;
   initParticles();
+  applySkins();
 }
 // TEST-knapp: bläddra genom alla världar för att granska konst. TAS BORT INNAN RELEASE.
 function cycleWorld(){
@@ -4100,7 +4197,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v5.9<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.0<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -4158,6 +4255,7 @@ function resetFromSettings(){
     G.achievements={unlocked:{},claimed:{}};
     G.worldClaims={};G.titlesEarned={};G.adventureSlots=1;G.adventures=[];
     G.event=null;G.quests=null;G.weeklyQuests=null;G.battlePass=null;G.boosts={coin:0,luck:0};G.cosmeticsOwned={};
+    if(G.profile){G.profile.eggSkin='classic';G.profile.background='classic';}
     G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
@@ -4651,7 +4749,11 @@ function renderProfileCustomize(){
       if(fp)h+='<div style="text-align:center;margin-bottom:12px"><button class="prof-cz-btn" style="background:linear-gradient(180deg,#37507f,#243a63);box-shadow:0 2px 0 #16263f" onclick="clearFavoritePet()">Clear favorite</button></div>';
     }
   }
-  var locked=[['🖼️','Profile Frame','Decorative border around your avatar'],['🌅','Background','Profile backdrop'],['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
+  var es=EGG_SKINS.find(function(x){return x.id===equippedEggSkin();})||EGG_SKINS[0];
+  var bs=BG_SKINS.find(function(x){return x.id===equippedBg();})||BG_SKINS[0];
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(es.icon||'🥚')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Egg Skin</div><div class="prof-cz-sub">'+es.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'egg\')">Change</button></div>';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(bs.icon||'🌅')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Background</div><div class="prof-cz-sub">'+bs.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'bg\')">Change</button></div>';
+  var locked=[['🖼️','Profile Frame','Decorative border around your avatar'],['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
   locked.forEach(function(l){
     h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">🔒</div></div>';
   });
