@@ -62,15 +62,34 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .reduce-motion #egg-img{animation:none!important;}
 .reduce-motion .spark{display:none!important;}
 .reduce-motion .click-pop{animation-duration:0.4s!important;}
-/* Bakgrunds-liv (Sky Life): driftande moln + enstaka fågel bakom ägget. Platshållar-former tills riktiga PNG:er finns — byt då bara form/innehåll, inte logiken. */
-#sky-life{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1;}
+/* Bakgrunds-liv (Sky Life): moln (CSS-loop) + spawnade fåglar & markdjur (slumpat, sällan).
+   Allt är platshållar-former (inline SVG / mjuka puffar) tills riktiga PNG:er finns — byt då bara art/innehåll, inte logiken. */
+#sky-life{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:2;}
 .no-skylife #sky-life,.reduce-motion #sky-life{display:none!important;}
-.sky-cloud{position:absolute;left:110%;width:var(--cw,120px);height:var(--ch,42px);background:radial-gradient(ellipse at 50% 60%,rgba(255,255,255,0.7),rgba(255,255,255,0) 72%);border-radius:50%;filter:blur(3px);opacity:0;animation:skyDrift var(--cd,55s) linear infinite;animation-delay:var(--cdl,0s);}
-@keyframes skyDrift{0%{left:110%;opacity:0;}12%{opacity:var(--cop,0.55);}88%{opacity:var(--cop,0.55);}100%{left:-45%;opacity:0;}}
-.sky-bird{position:absolute;left:-12%;top:20%;width:26px;height:14px;opacity:0;animation:birdFly var(--bd,26s) linear infinite;animation-delay:var(--bdl,0s);}
-.sky-bird svg{width:100%;height:100%;display:block;animation:birdFlap 0.5s ease-in-out infinite;}
-@keyframes birdFly{0%{left:-12%;top:var(--bt0,22%);opacity:0;}3%{opacity:0.8;}11%{top:var(--bt1,15%);}20%{left:110%;top:var(--bt0,22%);opacity:0.8;}22%{opacity:0;}100%{left:110%;opacity:0;}}
-@keyframes birdFlap{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.5);}}
+/* MOLN (kontinuerlig drift) */
+.sky-cloud{position:absolute;left:110%;width:var(--cw,140px);height:var(--ch,48px);background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,0.95),rgba(255,255,255,0.55) 45%,rgba(255,255,255,0) 76%);border-radius:50%;filter:blur(2px);opacity:0;animation:skyDrift var(--cd,60s) linear infinite;animation-delay:var(--cdl,0s);}
+@keyframes skyDrift{0%{left:110%;opacity:0;}10%{opacity:var(--cop,0.7);}90%{opacity:var(--cop,0.7);}100%{left:-50%;opacity:0;}}
+/* FÅGLAR (spawnas som engångs-element; djup + riktning via custom props) */
+.sky-bird{position:absolute;opacity:0;will-change:left,top,transform;}
+.sky-bird .art{display:block;width:var(--bw,26px);transform:scaleX(var(--dir,1)) scale(var(--depth,1));transform-origin:center;}
+.sky-bird svg{display:block;width:100%;height:auto;animation:birdFlap var(--flap,0.45s) ease-in-out infinite;}
+@keyframes birdFlap{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.45);}}
+@keyframes birdFly{0%{left:var(--x0);top:var(--t0);opacity:0;}8%{opacity:var(--op,0.85);}88%{opacity:var(--op,0.85);}100%{left:var(--x1);top:var(--t1);opacity:0;}}
+/* när en fågel flyger bort i djupet krymper den (3D) */
+.sky-bird.depthshift .art{animation:birdDepth var(--fd,9s) linear forwards;}
+@keyframes birdDepth{0%{transform:scaleX(var(--dir,1)) scale(var(--depth,1));}100%{transform:scaleX(var(--dir,1)) scale(var(--depth2,1));}}
+/* MARKDJUR (spawnas som engångs-element; sitter på "marken" bakom pedestalen) */
+.sky-critter{position:absolute;opacity:0;bottom:var(--gy,30px);will-change:left,transform;}
+.sky-critter .art{display:block;transform:scaleX(var(--dir,1)) scale(var(--depth,1));transform-origin:center bottom;}
+.sky-critter svg{display:block;}
+.sky-critter.hare{animation:hareGo var(--cdur,7s) linear forwards;}
+.sky-critter.deer{animation:deerInOut var(--cdur,12s) ease-in-out forwards;}
+.sky-critter.fox{animation:foxSneak var(--cdur,16s) linear forwards;}
+.sky-critter.deer .art,.sky-critter.fox .art{animation:walkBob 0.5s ease-in-out infinite;}
+@keyframes walkBob{0%,100%{transform:scaleX(var(--dir,1)) scale(var(--depth,1)) translateY(0);}50%{transform:scaleX(var(--dir,1)) scale(var(--depth,1)) translateY(-2px);}}
+@keyframes hareGo{0%{left:var(--h0);transform:translateY(0);opacity:0;}3%{opacity:1;}7%{left:var(--h0);transform:translateY(calc(var(--hop,16px) * -1));}12%{left:var(--h1);transform:translateY(0);}26%{left:var(--h1);transform:translateY(0);}30%{left:var(--h1);transform:translateY(calc(var(--hop,16px) * -1));}35%{left:var(--h2);transform:translateY(0);}49%{left:var(--h2);transform:translateY(0);}53%{left:var(--h2);transform:translateY(calc(var(--hop,16px) * -1));}58%{left:var(--h3);transform:translateY(0);}72%{left:var(--h3);transform:translateY(0);}76%{left:var(--h3);transform:translateY(calc(var(--hop,16px) * -1));}81%{left:var(--h4);transform:translateY(0);}95%{left:var(--h4);transform:translateY(0);opacity:1;}100%{left:var(--h4);transform:translateY(0);opacity:0;}}
+@keyframes deerInOut{0%{left:var(--d0);opacity:0;}7%{opacity:1;}40%{left:var(--d1);}60%{left:var(--d1);}93%{left:var(--d0);opacity:1;}100%{left:var(--d0);opacity:0;}}
+@keyframes foxSneak{0%{left:var(--f0);opacity:0;}9%{opacity:1;}91%{opacity:1;}100%{left:var(--f1);opacity:0;}}
 /* Settings-sidan */
 .set-sec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:6px 14px;margin-bottom:14px;}
 .set-sec-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#f5c842;padding:10px 0 4px;letter-spacing:0.3px;}
@@ -3149,6 +3168,8 @@ function openPetSlotModal(idx){
       G.equippedPets[activeSlot]=pet.uid;
       pet.equippedSlot=activeSlot;
       renderSlotRow();closePetModal();updateHUD();renderPets();
+      // Liten reaktion: ett markdjur skuttar förbi när du sätter ut en pet (utöver de slumpvisa)
+      if(typeof spawnCritter==='function'&&skyLifeActive())setTimeout(spawnCritter,400);
     };
     list.appendChild(d);
   });
@@ -4039,28 +4060,102 @@ function runConfirm(){var cb=_confirmCb;closeConfirm();if(typeof cb==='function'
 // ============================================================
 // SETTINGS (inställningar)
 // ============================================================
-// Bygger himmels-lagret (Sky Life): platshållar-moln + fågel. KROK: per-värld-variation kan
-// läggas till senare (egna moln/fåglar per värld, samma mönster som EGG_WORLDS) utan att röra CSS:en.
-function buildSkyLife(){
-  var sky=document.getElementById('sky-life');if(!sky)return;
+// ============================================================
+// BAKGRUNDS-LIV (Sky Life): moln driver (CSS-loop) + fåglar/markdjur SPAWNAS slumpat och sällan.
+// Allt är platshållar-konst (inline SVG / mjuka puffar) — byt art/innehåll mot PNG:er senare utan
+// att röra logiken. KROK: per-värld-variation kan läggas till genom att välja art/färg per G.currentWorld.
+// ============================================================
+var _cloudsBuilt=false,_skyRunning=false,_skyTimers=[];
+function _rnd(a,b){return a+Math.random()*(b-a);}
+function _pick(a){return a[Math.floor(Math.random()*a.length)];}
+function skyLifeActive(){return !!(G.settings&&G.settings.skyLife)&&!(G.settings&&G.settings.reduceMotion);}
+
+// Fågel-arter (olika form, storlek, flax-takt, färgval) — platshållar-silhuetter
+var SKY_BIRDS=[
+  {bw:30,flap:'0.42s',svg:'<svg viewBox="0 0 40 18"><path d="M2,12 Q10,3 20,11 Q30,3 38,12" fill="none" stroke="COL" stroke-width="2.6" stroke-linecap="round"/></svg>',cols:['#3c4a66','#4b5a7c','#566688']},
+  {bw:24,flap:'0.33s',svg:'<svg viewBox="0 0 40 18"><path d="M3,11 Q12,6 20,10 Q28,6 37,11" fill="none" stroke="COL" stroke-width="2.3" stroke-linecap="round"/></svg>',cols:['#2f3a54','#45506e','#5a6a4a']},
+  {bw:20,flap:'0.5s', svg:'<svg viewBox="0 0 40 18"><path d="M5,10 Q13,3 20,9 Q27,3 35,10" fill="none" stroke="COL" stroke-width="2.8" stroke-linecap="round"/></svg>',cols:['#8a5a30','#a06a36','#b5763a','#9c6b8a']}
+];
+// Markdjur (egen rörelse + färger) — platshållar-silhuetter
+var SKY_CRITTERS={
+  hare:{w:32,gy:[24,40],dur:[6,8.5],hop:[12,18],cols:['#8a6d4b','#7a5d3e','#9a7a52'],
+    svg:'<svg viewBox="0 0 34 30"><g fill="COL"><ellipse cx="13" cy="22" rx="11" ry="6.5"/><circle cx="24" cy="16" r="5.5"/><ellipse cx="22" cy="6" rx="2" ry="7"/><ellipse cx="26.5" cy="7" rx="2" ry="6.5"/><circle cx="3" cy="22" r="3"/></g></svg>'},
+  deer:{w:46,gy:[26,42],dur:[10,15],cols:['#9c7a4e','#a98654','#8f6e44'],
+    svg:'<svg viewBox="0 0 48 44"><g fill="COL"><ellipse cx="18" cy="22" rx="13" ry="7"/><rect x="29" y="8" width="5" height="15" rx="2.5"/><circle cx="33.5" cy="8" r="4.5"/><path d="M30 5 L28 -1 M33.5 4 L33.5 -2 M37 5 L39 -1" stroke="COL" stroke-width="1.8" fill="none" stroke-linecap="round"/><rect x="9" y="27" width="2.6" height="14" rx="1.3"/><rect x="15" y="27" width="2.6" height="14" rx="1.3"/><rect x="21" y="27" width="2.6" height="14" rx="1.3"/><rect x="26" y="27" width="2.6" height="14" rx="1.3"/></g></svg>'},
+  fox:{w:48,gy:[22,34],dur:[13,19],cols:['#c8682e','#d4742f','#b85e28'],
+    svg:'<svg viewBox="0 0 50 28"><g fill="COL"><ellipse cx="23" cy="16" rx="14" ry="6"/><circle cx="38" cy="13" r="4.5"/><path d="M35 10 L34 3.5 L38 8 Z"/><path d="M40 10 L41 3.5 L43.5 8.5 Z"/><path d="M9 15 Q-2 11 2.5 21 Q7 18.5 13 18 Z"/><rect x="15" y="20" width="2.4" height="7.5" rx="1.2"/><rect x="21" y="20" width="2.4" height="7.5" rx="1.2"/><rect x="28" y="20" width="2.4" height="7.5" rx="1.2"/></g></svg>'}
+};
+function buildClouds(){
+  if(_cloudsBuilt)return;var sky=document.getElementById('sky-life');if(!sky)return;
   var clouds=[
-    {top:'9%', cw:'150px',ch:'50px',cd:'62s',cdl:'0s',  cop:0.55},
-    {top:'24%',cw:'110px',ch:'38px',cd:'48s',cdl:'-18s',cop:0.42},
-    {top:'4%', cw:'185px',ch:'58px',cd:'80s',cdl:'-44s',cop:0.5}
+    {top:'8%', cw:'150px',ch:'50px',cd:'70s',cdl:'-30s',cop:0.75},
+    {top:'20%',cw:'115px',ch:'40px',cd:'56s',cdl:'-48s',cop:0.6},
+    {top:'4%', cw:'190px',ch:'60px',cd:'88s',cdl:'-12s',cop:0.7}
   ];
-  var birdSvg='<svg viewBox="0 0 40 18"><path d="M2,12 Q10,2 20,11 Q30,2 38,12" fill="none" stroke="#2a3550" stroke-width="2.5" stroke-linecap="round"/></svg>';
-  var birds=[
-    {bt0:'22%',bt1:'15%',bd:'27s',bdl:'-6s'},
-    {bt0:'14%',bt1:'9%', bd:'34s',bdl:'-21s'}
-  ];
-  var html='';
-  clouds.forEach(function(c){
-    html+='<div class="sky-cloud" style="top:'+c.top+';--cw:'+c.cw+';--ch:'+c.ch+';--cd:'+c.cd+';--cdl:'+c.cdl+';--cop:'+c.cop+';"></div>';
-  });
-  birds.forEach(function(b){
-    html+='<div class="sky-bird" style="--bt0:'+b.bt0+';--bt1:'+b.bt1+';--bd:'+b.bd+';--bdl:'+b.bdl+';">'+birdSvg+'</div>';
-  });
-  sky.innerHTML=html;
+  var h='';clouds.forEach(function(c){h+='<div class="sky-cloud" style="top:'+c.top+';--cw:'+c.cw+';--ch:'+c.ch+';--cd:'+c.cd+';--cdl:'+c.cdl+';--cop:'+c.cop+';"></div>';});
+  sky.insertAdjacentHTML('afterbegin',h);_cloudsBuilt=true;
+}
+function spawnBird(){
+  var sky=document.getElementById('sky-life');if(!sky)return;
+  var sp=_pick(SKY_BIRDS),col=_pick(sp.cols);
+  var dirRight=Math.random()<0.5;          // flygriktning (höger eller vänster)
+  var depth=_rnd(0.55,1.0);                 // mindre = längre bort
+  var top0=_rnd(8,34);                      // höjd i himlen (%)
+  var dur=_rnd(8,15);                        // sekunder (långsammare än förut)
+  var el=document.createElement('div');el.className='sky-bird';
+  var x0,x1,t1,depth2=depth,shift=false;
+  if(Math.random()<0.35){                    // flyger bort uppåt och krymper (3D)
+    shift=true;depth2=Math.max(0.32,depth*_rnd(0.45,0.65));
+    x0=(dirRight?_rnd(-10,5):_rnd(95,110)).toFixed(0)+'%';
+    x1=(dirRight?_rnd(55,75):_rnd(25,45)).toFixed(0)+'%';
+    t1=(top0-_rnd(8,16)).toFixed(0)+'%';
+  }else{                                      // korsar himlen (ibland lätt diagonalt)
+    x0=dirRight?'-12%':'112%';x1=dirRight?'112%':'-12%';
+    t1=(top0+_rnd(-6,6)).toFixed(0)+'%';
+  }
+  el.style.cssText='--bw:'+sp.bw+'px;--depth:'+depth.toFixed(2)+';--depth2:'+depth2.toFixed(2)+';--dir:'+(dirRight?1:-1)+';--op:'+_rnd(0.6,0.9).toFixed(2)+';--flap:'+sp.flap+';--fd:'+dur.toFixed(1)+'s;--x0:'+x0+';--x1:'+x1+';--t0:'+top0.toFixed(0)+'%;--t1:'+t1+';left:'+x0+';top:'+top0.toFixed(0)+'%;animation:birdFly '+dur.toFixed(1)+'s linear forwards;';
+  if(shift)el.classList.add('depthshift');
+  el.innerHTML='<div class="art">'+sp.svg.split('COL').join(col)+'</div>';
+  sky.appendChild(el);
+  setTimeout(function(){el.remove();},dur*1000+250);
+}
+function spawnCritter(forceName){
+  var sky=document.getElementById('sky-life');if(!sky)return;
+  var name=forceName||_pick(['hare','deer','fox']);
+  var c=SKY_CRITTERS[name];if(!c)return;
+  var col=_pick(c.cols),dirRight=Math.random()<0.5;
+  var depth=_rnd(0.7,1.0),gy=_rnd(c.gy[0],c.gy[1]),dur=_rnd(c.dur[0],c.dur[1]);
+  var el=document.createElement('div');el.className='sky-critter '+name;
+  var css='--dir:'+(dirRight?1:-1)+';--depth:'+depth.toFixed(2)+';--gy:'+gy.toFixed(0)+'px;--cdur:'+dur.toFixed(1)+'s;';
+  if(name==='hare'){
+    var hop=_rnd(c.hop[0],c.hop[1]);
+    var start=dirRight?-12:112,end=dirRight?112:-12,st=[];
+    for(var i=0;i<5;i++)st.push((start+(end-start)*(i/4)).toFixed(0)+'%');
+    css+='--hop:'+hop.toFixed(0)+'px;--h0:'+st[0]+';--h1:'+st[1]+';--h2:'+st[2]+';--h3:'+st[3]+';--h4:'+st[4]+';left:'+st[0]+';';
+  }else if(name==='deer'){
+    var d0=dirRight?-15:115,d1=dirRight?_rnd(28,42):_rnd(58,72);
+    css+='--d0:'+d0+'%;--d1:'+d1.toFixed(0)+'%;left:'+d0+'%;';
+  }else{
+    var f0=dirRight?-14:114,f1=dirRight?114:-14;
+    css+='--f0:'+f0+'%;--f1:'+f1+'%;left:'+f0+'%;';
+  }
+  el.style.cssText=css;
+  el.innerHTML='<div class="art" style="width:'+c.w+'px">'+c.svg.split('COL').join(col)+'</div>';
+  sky.appendChild(el);
+  setTimeout(function(){el.remove();},dur*1000+400);
+}
+function _scheduleBird(){if(!_skyRunning)return;_skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnBird();_scheduleBird();},_rnd(11000,29000)));}
+function _scheduleCritter(){if(!_skyRunning)return;_skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnCritter();_scheduleCritter();},_rnd(22000,55000)));}
+function updateSkyLife(){
+  buildClouds();
+  if(skyLifeActive()){
+    if(!_skyRunning){_skyRunning=true;_scheduleBird();_scheduleCritter();
+      _skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnBird();},2500));}
+  }else{
+    _skyRunning=false;_skyTimers.forEach(clearTimeout);_skyTimers=[];
+    var sky=document.getElementById('sky-life');
+    if(sky){var n=sky.querySelectorAll('.sky-bird,.sky-critter');for(var i=0;i<n.length;i++)n[i].remove();}
+  }
 }
 // Tillämpar alla inställningar på spelet (kallas vid start, vid ändring och vid reset)
 function applySettings(){
@@ -4069,6 +4164,7 @@ function applySettings(){
   app.classList.toggle('no-particles',!G.settings.particles);
   app.classList.toggle('no-skylife',!G.settings.skyLife);
   app.classList.toggle('reduce-motion',!!G.settings.reduceMotion);
+  updateSkyLife();
 }
 
 // Litet klick-ljud genererat i webbläsaren (WebAudio) — inga ljudfiler behövs.
@@ -7981,7 +8077,6 @@ switchTab('buildings');
 setWorld(G.currentWorld);
 applyPedestalVisibility();
 applySettings();
-buildSkyLife();
 ensureEventState();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
