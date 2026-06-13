@@ -2746,7 +2746,6 @@ function renderAdventure(){
     var abusy=isAdvActive(adv.id);
     var nm=adv.name.replace(' Expedition','').replace('Ancient ','');
     html+='<div class="adv-mbtn'+(asel?' sel':'')+(adv.special?' special':'')+(abusy?' busy':'')+'" style="background-color:'+adv.col+';background-image:url('+advAsset(adv.id,'btn')+')" onclick="selectAdv(\''+adv.id+'\')">';
-    html+='<div class="amb-ic">'+adv.icon+'</div>';
     html+='<div class="amb-name">'+nm+'</div>';
     if(abusy)html+='<div class="amb-busy">⏳ In Progress</div>';
     else html+='<div class="amb-meta"><span class="amb-time">'+formatTime(Math.floor(adv.dur/1000))+'</span><span class="amb-chance c-reqlv">Req Lv '+advReqLevel(adv)+'</span></div>';
@@ -6921,7 +6920,7 @@ function quickFuseShells(fromRarity,batches){
   if(typeof renderShop==='function')renderShop();
 }
 function shellQuickFuseHtml(){
-  var h='<div class="qf-intro">⚗️ Quick-fuse shells — 5 lower = 1 higher. Combine spares into rarer shells to craft better eggs.</div>';
+  var h='<div class="qf-intro">⚗️ Quick-fuse Embers — 5 lower = 1 higher. Combine spares into rarer Embers to craft better eggs.</div>';
   h+='<div class="qf-list">';
   var any=false;
   SHELL_RARITIES.forEach(function(r){
@@ -6942,7 +6941,7 @@ function shellQuickFuseHtml(){
     }
     h+='</div></div>';
   });
-  if(!any)h+='<div class="qf-empty">No shells yet — they drop while you click and idle. Come back when you have some to fuse!</div>';
+  if(!any)h+='<div class="qf-empty">No Embers yet — they drop while you click and idle. Come back when you have some to fuse!</div>';
   h+='</div>';
   return h;
 }
@@ -6954,14 +6953,14 @@ function renderShellFusion(){
   var sm=src?shellMeta(src):null;
   var nm=next?shellMeta(next):null;
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
-  var h='<div class="shf-intro">Pick a source shell, choose how many higher shells to make. 5 lower = 1 higher.</div>';
+  var h='<div class="shf-intro">Pick a source Ember, choose how many higher Embers to make. 5 lower = 1 higher.</div>';
   // INPUT → OUTPUT
   h+='<div class="shf-io">';
   h+='<div class="shf-box pick" onclick="openShellSrcPicker()">';
   if(src){
     h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+shellIcon(src)+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
   } else {
-    h+='<div class="shf-box-ic">🐚</div><div class="shf-box-empty">Tap to choose a shell</div>';
+    h+='<div class="shf-box-ic">🐚</div><div class="shf-box-empty">Tap to choose an Ember</div>';
   }
   h+='</div>';
   h+='<div class="shf-io-arrow">→</div>';
@@ -6988,7 +6987,7 @@ function renderShellFusion(){
   if(ready){
     h+='<button class="shf-fuse ready" onclick="tryFuseShells()">🐚 Fuse Embers ('+fmtShort(qty*5)+' → '+fmtShort(qty)+')</button>';
   } else {
-    var msg=!src?'Choose a source shell':(maxOut<1?('Need 5 '+(sm?sm.label:'')+' shells'):'Select an amount');
+    var msg=!src?'Choose a source Ember':(maxOut<1?('Need 5 '+(sm?sm.label:'')+' Embers'):'Select an amount');
     h+='<button class="shf-fuse disabled">'+msg+'</button>';
   }
   return h;
@@ -7560,7 +7559,7 @@ function applyPermReward(stat,pct){
 function grantReward(id){
   var r=ACH_REWARDS[id];if(!r)return [];
   var parts=[];
-  if(r.shells)Object.keys(r.shells).forEach(function(rar){grantShellsReward(rar,r.shells[rar]);parts.push(r.shells[rar]+' '+rwCap(rar)+' shells');});
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){grantShellsReward(rar,r.shells[rar]);parts.push(r.shells[rar]+' '+rwCap(rar)+' Embers');});
   if(r.eggs)Object.keys(r.eggs).forEach(function(eid){G.eggsOwned[eid]=(G.eggsOwned[eid]||0)+r.eggs[eid];var em=EGG_SHOP.find(function(e){return e.id===eid;});parts.push(r.eggs[eid]+'× '+(em?em.name:eid));});
   if(r.gems){G.gems=(G.gems||0)+r.gems;parts.push(r.gems+' '+GEM_IMG+' Gems');}
   if(r.pet){grantPetReward(r.pet);parts.push('1 '+rwCap(r.pet)+' pet 🐾');}
@@ -7571,7 +7570,7 @@ function grantReward(id){
 function rewardShortText(id){
   var r=ACH_REWARDS[id];if(!r)return '';
   var p=[];
-  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' shells');});
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' Embers');});
   if(r.eggs)Object.keys(r.eggs).forEach(function(eid){var em=EGG_SHOP.find(function(e){return e.id===eid;});p.push(r.eggs[eid]+'× '+(em?em.name:eid));});
   if(r.gems)p.push(r.gems+' '+GEM_IMG);
   if(r.pet)p.push(rwCap(r.pet)+' pet 🐾');
