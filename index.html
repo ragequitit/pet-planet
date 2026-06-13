@@ -1079,6 +1079,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .tb-coin-img{width:26px;height:26px;object-fit:contain;display:block;}
 .coin-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.15em;display:inline-block;}
 .gem-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.15em;display:inline-block;}
+.lock-ic{width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;display:inline-block;}
 .tb-coins{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;line-height:1;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.6);}
 .tb-eps-row{display:flex;align-items:center;gap:5px;}
 .tb-eps{font-size:0.6rem;font-weight:800;color:#9be15d;white-space:nowrap;letter-spacing:0.3px;}
@@ -1314,7 +1315,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div id="topbar">
     <div class="tb-left">
       <div class="tb-coins-row"><span class="tb-coin-icon"><img class="tb-coin-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/egg-coin.png" alt="" onerror="this.parentNode.textContent='🥚'"></span><span class="tb-coins" id="tb-coins">0</span></div>
-      <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">EPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
+      <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">SPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
     </div>
     <div class="tb-right">
       <div class="tb-gems" onclick="showComingSoon('💎 Gems','The premium currency Gems. Here you will be able to see how to earn Gems (achievements, dailies, battle pass) and buy more. Coming in a later update.')"><span style="font-size:0.95rem"><img class="gem-ic" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode('💎'))"></span><span class="tg-val" id="tb-gems-val">0</span></div>
@@ -1654,6 +1655,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 var ASSET_BASE='https://raw.githubusercontent.com/ragequitit/pet-planet/main';
 var COIN_IMG='<img class="coin-ic" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="🥚">';
 var GEM_IMG='<img class="gem-ic" src="'+ASSET_BASE+'/assets/ui/random/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode(\'💎\'))">';
+var LOCK_IMG='<img class="lock-ic" src="'+ASSET_BASE+'/assets/ui/random/locked.png" alt="🔒" onerror="this.replaceWith(document.createTextNode(\'🔒\'))">';
 function worldAssets(id){return {id:id,bg:ASSET_BASE+'/assets/eggworlds/'+id+'-bg.png',egg:ASSET_BASE+'/assets/eggs/'+id+'-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/'+id+'-pedestal.png'};}
 var EGG_WORLDS=[
   {id:'starter',bg:ASSET_BASE+'/assets/eggworlds/scene-background.png',egg:ASSET_BASE+'/assets/eggs/starter-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/pedestal.png'},
@@ -1737,10 +1739,10 @@ var ASC_SHOP=[
 // Finger-linjen ger klick +flat per ägd icke-Egg-Tapper-byggnad (Egg Tapper, index 0, = "klick-byggnaden").
 // req = kräver att en tidigare upgrade är köpt först. >>> TUNING: se Session Notes sektion 4.
 var CLICK_UPGRADES=[
-  {id:'eps1',line:'eps',name:'Reinforced Tapper',desc:'Clicking gains +1% of your EPS.',epsAdd:0.01,unlockClicks:100,cost:1000},
-  {id:'eps2',line:'eps',name:'Precision Tapping',desc:'Clicking gains +1% of your EPS.',epsAdd:0.01,unlockClicks:1000,cost:100000},
-  {id:'eps3',line:'eps',name:'Power Tapping',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:10000,cost:1e7},
-  {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your EPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
+  {id:'eps1',line:'eps',name:'Reinforced Tapper',desc:'Clicking gains +1% of your SPS.',epsAdd:0.01,unlockClicks:100,cost:1000},
+  {id:'eps2',line:'eps',name:'Precision Tapping',desc:'Clicking gains +1% of your SPS.',epsAdd:0.01,unlockClicks:1000,cost:100000},
+  {id:'eps3',line:'eps',name:'Power Tapping',desc:'Clicking gains +2% of your SPS.',epsAdd:0.02,unlockClicks:10000,cost:1e7},
+  {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your SPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
   {id:'tf1',line:'finger',name:'Helping Paws',desc:'+0.1 per other building, per tap.',fingerBase:0.1,unlockBuildings:25,cost:100000},
   {id:'tf2',line:'finger',name:'Pack Instinct',desc:'+0.5 per other building, per tap (Helping Paws ×5).',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
   {id:'tf3',line:'finger',name:'Stampede',desc:'+5 per other building, per tap (Pack Instinct ×10).',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
@@ -2694,7 +2696,7 @@ function openAdvPicker(advId){
     return petSortCompare(a,b,advPickSort);
   });
   var html='<div class="adv-pick-title">Send a pet on<br><b>'+adv.icon+' '+adv.name+'</b></div>';
-  html+='<div class="adv-req-note">🔒 Requires a pet of <b>Lv '+req+'</b> or higher</div>';
+  html+='<div class="adv-req-note">'+LOCK_IMG+' Requires a pet of <b>Lv '+req+'</b> or higher</div>';
   if(avail.length===0){
     html+='<div class="adv-pick-empty">No available pets right now. Hatch some, or wait for pets to return from adventures.</div>';
   } else {
@@ -2770,7 +2772,7 @@ function renderAdventure(){
       html+='<div class="adv-slot empty" onclick="openAdvPickerSmart()"><div class="as-plus">+</div><div class="as-emptyt">Tap to send a pet</div></div>';
     } else {
       var isNext=(i===G.adventureSlots);var ucost=ADVENTURE_SLOT_COSTS[i-1];
-      html+='<div class="adv-slot locked"><div class="as-lock">🔒</div>';
+      html+='<div class="adv-slot locked"><div class="as-lock">'+LOCK_IMG+'</div>';
       if(isNext){var ok=G.coins>=ucost;html+='<div class="as-lockt">Unlock Slot '+(i+1)+'</div><button class="as-unlock'+(ok?'':' no')+'"'+(ok?' onclick="buyAdventureSlot()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(ucost)+'</button>';}
       else{html+='<div class="as-lockt">Slot '+(i+1)+'</div><div class="as-locksub">Unlock earlier slots first</div>';}
       html+='</div>';
@@ -2784,7 +2786,7 @@ function renderAdventure(){
   html+='<div class="adv-dscrim">';
   html+='<div class="adv-dhead"><span class="adv-dic">'+sel.icon+'</span><span class="adv-dname">'+sel.name+'</span><span class="adv-dtime">⏱️ '+formatTime(Math.floor(sel.dur/1000))+'</span></div>';
   html+='<div class="adv-ddesc">'+sel.desc+'</div>';
-  html+='<div class="adv-dreq">🔒 Requires Lv '+advReqLevel(sel)+'+</div>';
+  html+='<div class="adv-dreq">'+LOCK_IMG+' Requires Lv '+advReqLevel(sel)+'+</div>';
   html+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin:-4px 0 8px;">Luck, pet level &amp; matching-world pets boost these — pick a pet to see its exact odds.</div>';
   html+='<div class="adv-dsec">Possible Rewards</div>';
   html+='<div class="adv-rewards">';
@@ -2988,7 +2990,7 @@ function renderSkinPicker(){
       : '<div class="skin-prev" style="background:'+(s.bg||'#1a2a4e')+';"></div>';
     h+='<div class="skin-cell'+(sel?' sel':'')+(owned?'':' locked')+'"'+(owned?(' onclick="selectSkin(\''+s.id+'\')"'):'')+'>';
     h+=prev+'<div class="skin-name">'+s.name+'</div>';
-    h+=owned?(sel?'<div class="skin-tag on">✓ Equipped</div>':'<div class="skin-tag">Tap to use</div>'):('<div class="skin-tag lock">🔒 '+(s.how||'Locked')+'</div>');
+    h+=owned?(sel?'<div class="skin-tag on">✓ Equipped</div>':'<div class="skin-tag">Tap to use</div>'):('<div class="skin-tag lock">'+LOCK_IMG+' '+(s.how||'Locked')+'</div>');
     h+='</div>';
   });
   h+='</div>';
@@ -3160,7 +3162,7 @@ function renderSlotRow(){
       d.classList.add('unlockable');
       inner.innerHTML='<span style="font-size:0.9rem">🔓</span>';
       d.onclick=function(ev){ev.stopPropagation();tryUnlockPetSlot();};
-    } else {inner.innerHTML='🔒';}
+    } else {inner.innerHTML=''+LOCK_IMG+'';}
     d.appendChild(inner);row.appendChild(d);
   }
 }
@@ -3630,7 +3632,7 @@ function extractChamberHtml(i){
   var label='Chamber '+(i+1)+' · '+CHAMBER_SPEED_LABEL[i]+' (~'+fmtDur(EXTRACT_CHAMBER_DUR[i])+')';
   if(!unlocked){
     var cost=EXTRACT_CHAMBER_UNLOCK[i-1];var afford=G.coins>=cost;
-    return '<div class="chamber locked"><div class="ch-lockico">🔒</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to extract more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockExtractChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
+    return '<div class="chamber locked"><div class="ch-lockico">'+LOCK_IMG+'</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to extract more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockExtractChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
   }
   if(!c){
     return '<div class="chamber empty" onclick="openExtractSetup('+i+')"><div class="ch-platform"><div class="ch-plus">＋</div></div><div class="ch-emptytxt"><div class="ch-name">'+label+'</div><div class="ch-sub">Tap to load a pet</div></div></div>';
@@ -3736,7 +3738,7 @@ function mutateChamberHtml(i){
   var label='Chamber '+(i+1)+' · '+CHAMBER_SPEED_LABEL[i]+' (~'+fmtDur(MUTATE_CHAMBER_DUR[i])+')';
   if(!unlocked){
     var cost=MUTATE_CHAMBER_UNLOCK[i-1];var afford=G.coins>=cost;
-    return '<div class="chamber locked"><div class="ch-lockico">🔒</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to mutate more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockMutateChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
+    return '<div class="chamber locked"><div class="ch-lockico">'+LOCK_IMG+'</div><div class="ch-lockinfo"><div class="ch-name">'+label+'</div><div class="ch-sub">Unlock to mutate more pets at once.</div></div><button class="ch-unlock'+(afford?'':' no')+'"'+(afford?' onclick="unlockMutateChamber()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button></div>';
   }
   if(!c){
     if(G.mutationCores.length===0){
@@ -4054,7 +4056,7 @@ function renderTrading(){
        '<span class="trade-swap">⇄</span>'+
        side('theirs','Their Offer')+
      '</div>';
-  h+='<div class="trade-locknote">🔒 Requires an online connection</div>';
+  h+='<div class="trade-locknote">'+LOCK_IMG+' Requires an online connection</div>';
   h+='<button class="trade-propose" disabled>Propose Trade</button>';
   h+='<div class="trade-how">'+
        '<div class="trade-how-title">How trading will work</div>'+
@@ -4120,8 +4122,8 @@ function showGenericModal(icon,title,body){
   document.getElementById('generic-modal').classList.add('open');
 }
 function showEpsInfo(){
-  showGenericModal('🥚','Eggs Per Second',
-    'EPS is how many Sparks you earn passively every second. It comes from your Buildings and grows as you buy more or higher levels. Active pets with Spark Gain or Idle Gain increase it further. Tapping the egg gives Sparks directly on top of your EPS.');
+  showGenericModal('🥚','Sparks Per Second',
+    'SPS is how many Sparks you earn passively every second. It comes from your Buildings and grows as you buy more or higher levels. Active pets with Spark Gain or Idle Gain increase it further. Tapping the egg gives Sparks directly on top of your SPS.');
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 
@@ -4290,7 +4292,7 @@ function numFormatRow(){
   var opts=[['short','Short','1.5K'],['full','Full','1,500'],['sci','Sci','1.5e3']];
   var seg='';
   opts.forEach(function(o){seg+='<button class="nf-seg'+(cur===o[0]?' on':'')+'" onclick="setNumFormat(\''+o[0]+'\')">'+o[1]+'<span class="nf-ex">'+o[2]+'</span></button>';});
-  return '<div class="set-row" style="border-bottom:none;padding-bottom:4px"><div class="set-row-info"><div class="set-row-label">Number Format</div><div class="set-row-desc">How big numbers are shown across the game. The top coin/EPS meter always stays compact so it fits.</div></div></div><div class="nf-segwrap">'+seg+'</div>';
+  return '<div class="set-row" style="border-bottom:none;padding-bottom:4px"><div class="set-row-info"><div class="set-row-label">Number Format</div><div class="set-row-desc">How big numbers are shown across the game. The top coin/SPS meter always stays compact so it fits.</div></div></div><div class="nf-segwrap">'+seg+'</div>';
 }
 function setNumFormat(v){
   if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
@@ -4628,7 +4630,7 @@ function renderProfileTitles(){
       var cls='ttl-card'+(ok?'':' locked')+(isCur?' equipped':'');
       var nm=t.name.replace(/'/g,"\\'");
       h+='<div class="'+cls+'"'+(ok?' onclick="equipTitle(\''+nm+'\')"':'')+'>';
-      h+='<div class="ttl-name">'+(ok?'':'🔒 ')+profEsc(t.name)+'</div>';
+      h+='<div class="ttl-name">'+(ok?'':''+LOCK_IMG+' ')+profEsc(t.name)+'</div>';
       h+='<div class="ttl-desc">'+profEsc(t.desc)+'</div>';
       if(isCur)h+='<div class="ttl-tag">✓ Equipped</div>';
       else if(ok)h+='<div class="ttl-tag tap">Tap to equip</div>';
@@ -4663,7 +4665,7 @@ var BADGE_DEFS=[
   // Economy
   {name:'Millionaire',icon:'💰',cat:'Economy',desc:'Earn 1,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1e6;}},
   {name:'Billionaire',icon:'🏦',cat:'Economy',desc:'Earn 1,000,000,000 coins in total.',check:function(){return (G.stats.totalCoinsEarned||0)>=1e9;}},
-  {name:'Power Plant',icon:'⚡',cat:'Economy',desc:'Reach 1,000 EPS.',check:function(){return (G.stats.highestEpsReached||0)>=1000;}},
+  {name:'Power Plant',icon:'⚡',cat:'Economy',desc:'Reach 1,000 SPS.',check:function(){return (G.stats.highestEpsReached||0)>=1000;}},
   // Crafting
   {name:'Alchemist',icon:'⚗️',cat:'Crafting',desc:'Perform 25 fusions.',check:function(){return (G.stats.totalFusions||0)>=25;}},
   {name:'Geneticist',icon:'🧬',cat:'Crafting',desc:'Mutate 25 pets.',check:function(){return (G.stats.totalPetsMutated||0)>=25;}},
@@ -4693,7 +4695,7 @@ function renderProfileBadges(){
     list.forEach(function(b){
       var ok=badgeIsEarned(b);
       h+='<div class="bdg-card'+(ok?'':' locked')+'">';
-      h+='<div class="bdg-icon">'+(ok?b.icon:'🔒')+'</div>';
+      h+='<div class="bdg-icon">'+(ok?b.icon:''+LOCK_IMG+'')+'</div>';
       h+='<div class="bdg-name">'+profEsc(b.name)+'</div>';
       h+='<div class="bdg-desc">'+profEsc(b.desc)+'</div>';
       h+='</div>';
@@ -4785,7 +4787,7 @@ function renderProfileStats(){
     ['Sparks Spent',fmtShort(s.totalCoinsSpent||0)],
     ['Buildings Bought',fmtShort(s.totalBuildingsPurchased||0)],
     ['Upgrades Bought',fmtShort(s.totalUpgradesPurchased||0)],
-    ['Highest EPS',fmtShort(s.highestEpsReached||0)],
+    ['Highest SPS',fmtShort(s.highestEpsReached||0)],
     ['Biggest Click',fmtShort(s.biggestSingleClick||0)],
     ['Total Clicks',fmtShort(s.totalClicks||0)],
     ['Offline Collects',fmtShort(s.offlineRewardsClaimed||0)]
@@ -4933,7 +4935,7 @@ function renderProfileCustomize(){
   h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(bs.icon||'🌅')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Background</div><div class="prof-cz-sub">'+bs.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'bg\')">Change</button></div>';
   var locked=[['🖼️','Profile Frame','Decorative border around your avatar'],['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
   locked.forEach(function(l){
-    h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">🔒</div></div>';
+    h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">'+LOCK_IMG+'</div></div>';
   });
   h+='<div class="prof-soon-body" style="text-align:center;margin-top:6px">Locked options unlock as cosmetics, titles and prestige are added.</div>';
   return h;
@@ -5841,7 +5843,7 @@ function bldTipHtml(i){
   var share=rawTotal>0?(totalThis/rawTotal*100):0;
   return '<div class="btip-row">Production each: <b>'+fmt(each)+'/s</b></div>'+
     '<div class="btip-row">Total from this building: <b>'+fmt(totalThis)+'/s</b></div>'+
-    '<div class="btip-row">Share of your EPS: <b>'+share.toFixed(1)+'%</b></div>';
+    '<div class="btip-row">Share of your SPS: <b>'+share.toFixed(1)+'%</b></div>';
 }
 function positionBldTip(anchor){
   var t=document.getElementById('bldTip');if(!t||_bldTipIdx===null)return;
@@ -5883,9 +5885,9 @@ function renderBuildings(){
       d.className='bld '+(canAfford?'buyable':'poor');
       d.innerHTML='<div class="bld-img">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+buildingBpText(i)+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
     } else if(i===unlocked){
-      d.className='bld semi';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
+      d.className='bld semi';d.innerHTML='<div class="bld-img">'+LOCK_IMG+'</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
-      d.className='bld ghost';d.innerHTML='<div class="bld-img">🔒</div><div class="bld-info"><div class="bn">???</div><div class="bp">???</div></div>';
+      d.className='bld ghost';d.innerHTML='<div class="bld-img">'+LOCK_IMG+'</div><div class="bld-info"><div class="bn">???</div><div class="bp">???</div></div>';
     }
     bl.appendChild(d);
   }
@@ -5956,7 +5958,7 @@ function renderUpgrades(){
 }
 function upgTileHtml(v){
   var badge=v.badge?'<span class="utile-badge">'+v.badge+'</span>':'';
-  var ov=v.state==='locked'?'<span class="utile-lock">🔒</span>':(v.state==='owned'?'<span class="utile-check">✓</span>':'');
+  var ov=v.state==='locked'?'<span class="utile-lock">'+LOCK_IMG+'</span>':(v.state==='owned'?'<span class="utile-check">✓</span>':'');
   return '<div class="utile '+v.state+'" data-ukey="'+v.key+'"><span class="utile-ic">'+v.icon+'</span>'+badge+ov+'</div>';
 }
 function doublingCost(i,level){return Math.ceil(BUILDINGS[i].b*Math.pow(DOUBLING_PRICE_MULT,level+1));}
@@ -5968,7 +5970,7 @@ function doublingCardHtml(c,unlockedFlag){
   var cls='dbl'+(unlockedFlag?(afford?' afford':' poor'):' locked');
   var click=unlockedFlag?(' onclick="buyBuildingDoubling('+c.i+')"'):'';
   var sub=unlockedFlag?('Doubles '+b.n+' production (×2)'):('Own '+c.thr+' '+b.n+' to unlock');
-  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
+  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(cost)+'</span>'):'<span class="dbl-lock">'+LOCK_IMG+'</span>';
   return '<div class="'+cls+'" data-dbl="'+c.i+'"'+click+'>'+
     '<div class="dbl-icon"><span class="dbl-bld">'+buildingIconImg(b)+'</span><span class="dbl-x2">×2</span></div>'+
     '<div class="dbl-info"><div class="dbl-name">'+b.n+' Boost '+roman+'</div><div class="dbl-sub">'+sub+'</div></div>'+
@@ -6004,7 +6006,7 @@ function clickUpgradeCardHtml(u,unlockedFlag){
   var click=unlockedFlag?(' onclick="buyClickUpgrade(\''+u.id+'\')"'):'';
   var icon=clickUpgIconImg(u);
   var sub=unlockedFlag?u.desc:clickUpgradeReqText(u);
-  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(u.cost)+'</span>'):'<span class="dbl-lock">🔒</span>';
+  var right=unlockedFlag?('<span class="dbl-cost'+(afford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(u.cost)+'</span>'):'<span class="dbl-lock">'+LOCK_IMG+'</span>';
   return '<div class="'+cls+'" data-clkupg="'+u.id+'"'+click+'>'+
     '<div class="dbl-icon">'+icon+'</div>'+
     '<div class="dbl-info"><div class="dbl-name">'+u.name+'</div><div class="dbl-sub">'+sub+'</div></div>'+
@@ -6049,7 +6051,7 @@ function ensureTipEl(){
 function tipInnerHtml(v){
   var foot;
   if(v.state==='owned')foot='<div class="utip-owned">✓ Owned</div>';
-  else if(v.state==='locked')foot='<div class="utip-req">🔒 '+v.reqText+'</div>';
+  else if(v.state==='locked')foot='<div class="utip-req">'+LOCK_IMG+' '+v.reqText+'</div>';
   else{var afford=v.state==='afford';foot='<button class="utip-buy'+(afford?'':' dis')+'"'+(afford?' onclick="buyFromTip()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(v.cost)+'</button>';}
   return '<div class="utip-head"><span class="utip-ic">'+v.icon+'</span><span class="utip-name">'+v.name+'</span></div>'+
     '<div class="utip-desc">'+v.desc+'</div>'+foot;
@@ -6319,10 +6321,10 @@ var EGG_DESC={
 };
 function eggShopIconUrl(id){var f=SHOP_EGG_ICON_FILE[id]||id;return ASSET_BASE+'/assets/ui/shop/'+f+'-egg.png';}
 function shopLockReason(egg){
-  if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)return '🔒 Earn '+fmtShort(egg.coinReq)+' Sparks ('+fmtShort(G.stats.totalCoinsEarned)+' / '+fmtShort(egg.coinReq)+')';
-  if(egg.buildReq&&!hasBuildingUnlocked(egg.buildReq))return '🔒 Build a '+egg.buildReq+' first';
-  if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return '🔒 Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
-  return '🔒 Locked';
+  if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)return ''+LOCK_IMG+' Earn '+fmtShort(egg.coinReq)+' Sparks ('+fmtShort(G.stats.totalCoinsEarned)+' / '+fmtShort(egg.coinReq)+')';
+  if(egg.buildReq&&!hasBuildingUnlocked(egg.buildReq))return ''+LOCK_IMG+' Build a '+egg.buildReq+' first';
+  if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return ''+LOCK_IMG+' Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
+  return ''+LOCK_IMG+' Locked';
 }
 function shellCraftedBy(id){return EGG_SHOP.filter(function(e){return e.shellType===id;});}
 function showShellInfo(id){
@@ -6394,7 +6396,7 @@ function renderShop(){
   html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
   html+='<div class="shop-tabs">';
   html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE EMBERS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
@@ -6436,7 +6438,7 @@ function renderShop(){
     // Knappar (Craft över Hatch)
     html+='<div class="sec-btns">';
     if(!unlocked){
-      html+='<button class="sec-btn locked" disabled style="font-size:1.08rem;">🔒</button>';
+      html+='<button class="sec-btn locked" disabled style="font-size:1.08rem;">'+LOCK_IMG+'</button>';
     } else {
       html+='<button class="sec-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
       var canHatchCard=owned>0||afford; // hatcha från lager om man äger, annars crafta+hatcha
@@ -6521,8 +6523,8 @@ function showEggInfo(eggId){
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
   reqs.push({icon:COIN_IMG,label:'Sparks (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:COIN_IMG,label:'Earn '+egg.coinReq+' Sparks',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
-  if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':'🔒 Required',met:bOk});}
-  if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':'🔒 Required',met:hOk});}
+  if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':''+LOCK_IMG+' Required',met:bOk});}
+  if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':''+LOCK_IMG+' Required',met:hOk});}
   if(reqs.length>0){
     html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Requirements</div>';
     reqs.forEach(function(r){
@@ -6960,7 +6962,7 @@ function renderShellFusion(){
   if(src){
     h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+shellIcon(src)+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
   } else {
-    h+='<div class="shf-box-ic">🐚</div><div class="shf-box-empty">Tap to choose an Ember</div>';
+    h+='<div class="shf-box-ic"><img src="'+shellImgUrl('common')+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))"></div><div class="shf-box-empty">Tap to choose an Ember</div>';
   }
   h+='</div>';
   h+='<div class="shf-io-arrow">→</div>';
@@ -7230,10 +7232,10 @@ var ACHIEVEMENTS=[
   {id:'economic_powerhouse',cat:'Progression',icon:'🏗️',name:'Economic Powerhouse',desc:'Own 1,000 Buildings total',check:function(){return G.owned.reduce(function(a,b){return a+b;},0)>=1000;},progress:function(){var t=G.owned.reduce(function(a,b){return a+b;},0);return {cur:Math.min(t,1000),max:1000};}},
 
   // EPS MILESTONES
-  {id:'first_production',cat:'Progression',icon:'⚡',name:'First Production',desc:'Reach 1 EPS',check:function(){return G.stats.highestEpsReached>=1;},progress:function(){return {cur:G.stats.highestEpsReached>=1?1:0,max:1};}},
-  {id:'productive',cat:'Progression',icon:'⚡',name:'Productive',desc:'Reach 100 EPS',check:function(){return G.stats.highestEpsReached>=100;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,100),max:100};}},
-  {id:'industrial',cat:'Progression',icon:'⚡',name:'Industrial',desc:'Reach 1,000 EPS',check:function(){return G.stats.highestEpsReached>=1000;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1000),max:1000};}},
-  {id:'mass_producer',cat:'Progression',icon:'⚡',name:'Mass Producer',desc:'Reach 1 Million EPS',check:function(){return G.stats.highestEpsReached>=1e6;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1e6),max:1e6};}},
+  {id:'first_production',cat:'Progression',icon:'⚡',name:'First Production',desc:'Reach 1 SPS',check:function(){return G.stats.highestEpsReached>=1;},progress:function(){return {cur:G.stats.highestEpsReached>=1?1:0,max:1};}},
+  {id:'productive',cat:'Progression',icon:'⚡',name:'Productive',desc:'Reach 100 SPS',check:function(){return G.stats.highestEpsReached>=100;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,100),max:100};}},
+  {id:'industrial',cat:'Progression',icon:'⚡',name:'Industrial',desc:'Reach 1,000 SPS',check:function(){return G.stats.highestEpsReached>=1000;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1000),max:1000};}},
+  {id:'mass_producer',cat:'Progression',icon:'⚡',name:'Mass Producer',desc:'Reach 1 Million SPS',check:function(){return G.stats.highestEpsReached>=1e6;},progress:function(){return {cur:Math.min(G.stats.highestEpsReached,1e6),max:1e6};}},
 
   // COIN MILESTONES
   {id:'millionaire',cat:'Progression',icon:'🪙',name:'Millionaire',desc:'Earn 1 Million Sparks total',check:function(){return G.stats.totalCoinsEarned>=1e6;},progress:function(){return {cur:Math.min(G.stats.totalCoinsEarned,1e6),max:1e6};}},
@@ -7325,7 +7327,7 @@ var ACH_GROUPS=[
   {label:'🌍 Egg Worlds',ids:['welcome_home','into_the_woods','mountain_explorer','desert_wanderer','ocean_traveler','cosmic_explorer']},
   {label:'🐚 Embers',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','lucky_drop','epic_fortune','legendary_treasure','mythical_discovery','artifact_find','heavenly_luck','eternal_shell','cosmic_miracle']},
   {label:'🏗️ Buildings',ids:['entrepreneur','small_operation','growing_business','economic_powerhouse']},
-  {label:'⚡ Production (EPS)',ids:['first_production','productive','industrial','mass_producer']},
+  {label:'⚡ Production (SPS)',ids:['first_production','productive','industrial','mass_producer']},
   {label:'🪙 Sparks',ids:['millionaire','billionaire','trillionaire']},
   {label:'👆 Clicking',ids:['first_tap','busy_finger','click_apprentice','click_expert','click_master','click_monster']},
   {label:'🔧 Upgrades',ids:['first_upgrade','fully_optimized']},
@@ -7744,7 +7746,7 @@ function openPetdexSpecies(name,worldId){
 }
 function pdexRarityChip(r,found){
   var rc=RARITY_CONFIG[r]||{};
-  return '<div class="pdsp-rchip"><div class="pdsp-rchip-ic" style="border-color:'+(found?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';color:'+(rc.color||'#aaa')+'">'+(rc.icon||'')+'<span class="pdsp-rchip-badge" style="background:'+(found?'#4caf50':'#444')+'">'+(found?'✓':'🔒')+'</span></div><div class="pdsp-rchip-lbl">'+(rc.label||r)+'</div></div>';
+  return '<div class="pdsp-rchip"><div class="pdsp-rchip-ic" style="border-color:'+(found?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';color:'+(rc.color||'#aaa')+'">'+(rc.icon||'')+'<span class="pdsp-rchip-badge" style="background:'+(found?'#4caf50':'#444')+'">'+(found?'✓':''+LOCK_IMG+'')+'</span></div><div class="pdsp-rchip-lbl">'+(rc.label||r)+'</div></div>';
 }
 function renderPetdexSpecies(){
   var body=document.getElementById('pdsp-body');if(!body)return;
@@ -7775,7 +7777,7 @@ function renderPetdexSpecies(){
   h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Evolution Line</div><div class="pdsp-evo">';
   ob.forEach(function(r){
     var disc=isPetDiscovered(meta.name,r);var rc=RARITY_CONFIG[r]||{};
-    h+='<div class="pdsp-evo-cell"><div class="pdsp-evo-art" style="border-color:'+(disc?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';'+(disc?'':'filter:brightness(0) opacity(0.5);')+'">'+meta.e+'<span class="pdsp-evo-badge" style="background:'+(disc?'#4caf50':'#444')+'">'+(disc?'✓':'🔒')+'</span></div>';
+    h+='<div class="pdsp-evo-cell"><div class="pdsp-evo-art" style="border-color:'+(disc?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';'+(disc?'':'filter:brightness(0) opacity(0.5);')+'">'+meta.e+'<span class="pdsp-evo-badge" style="background:'+(disc?'#4caf50':'#444')+'">'+(disc?'✓':''+LOCK_IMG+'')+'</span></div>';
     h+='<div class="pdsp-evo-lbl" style="color:'+(disc?(rc.color||'#aaa'):'rgba(255,255,255,0.4)')+'">'+(rc.label||r)+'</div></div>';
   });
   h+='</div></div>';
@@ -7861,7 +7863,7 @@ function wcMilestoneCell(worldId,milestone,pct){
     var extra=milestone===100?' +🏷️':'';
     return '<button onclick="event.stopPropagation();claimWorldReward(\''+worldId+'\','+milestone+')" style="display:block;width:100%;margin:2px 0;padding:4px 2px;border:none;border-radius:7px;background:linear-gradient(180deg,#4caf50,#2e7d32);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.5rem;cursor:pointer;box-shadow:0 2px 0 #1b5e20;">'+milestone+'% · '+gems+GEM_IMG+extra+'</button>';
   }
-  return '<div style="font-size:0.46rem;color:rgba(255,255,255,0.3);padding:3px 0;">🔒 '+milestone+'% · '+gems+GEM_IMG+(milestone===100?'+🏷️':'')+'</div>';
+  return '<div style="font-size:0.46rem;color:rgba(255,255,255,0.3);padding:3px 0;">'+LOCK_IMG+' '+milestone+'% · '+gems+GEM_IMG+(milestone===100?'+🏷️':'')+'</div>';
 }
 function openWorldCompletion(){renderWorldCompletion();document.getElementById('world-completion-modal').classList.add('open');}
 function renderWorldCompletion(){
@@ -7890,7 +7892,7 @@ function renderWorldCompletion(){
   } else if(grandDone){
     h+='<button onclick="event.stopPropagation();claimGrandPetdex()" style="width:100%;padding:10px;border:none;border-radius:11px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:\'Fredoka One\',cursive;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;">Claim 100'+GEM_IMG+' + Title + Frame</button>';
   } else {
-    h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);">🔒 Reward: 100'+GEM_IMG+' + “Living Petdex” title + profile frame</div>';
+    h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);">'+LOCK_IMG+' Reward: 100'+GEM_IMG+' + “Living Petdex” title + profile frame</div>';
   }
   h+='</div>';
   h+='<div class="wc-note">Titles &amp; profile frame are saved and shown once the cosmetics system is built.</div>';
@@ -7945,7 +7947,7 @@ function setPetdexWorld(worldId){
 function updateHUD(){
   var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmtCompact(G.coins);
   var tbg=document.getElementById('tb-gems-val');if(tbg)tbg.textContent=fmtCompact(G.gems||0);
-  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='EPS: '+fmtCompact(epsDispVal);
+  var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='SPS: '+fmtCompact(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
   var cpsLegacy=document.getElementById('cps-display');if(cpsLegacy)cpsLegacy.textContent='eggs per second: '+fmt(epsDispVal);
   // (Den gamla mörkblå pet-bonus-raden är borttagen — alla bonusar visas nu i stats-panelen via 📊-knappen.)
