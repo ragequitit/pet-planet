@@ -78,18 +78,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* när en fågel flyger bort i djupet krymper den (3D) */
 .sky-bird.depthshift .art{animation:birdDepth var(--fd,9s) linear forwards;}
 @keyframes birdDepth{0%{transform:scaleX(var(--dir,1)) scale(var(--depth,1));}100%{transform:scaleX(var(--dir,1)) scale(var(--depth2,1));}}
-/* MARKDJUR (spawnas som engångs-element; sitter på "marken" bakom pedestalen) */
-.sky-critter{position:absolute;opacity:0;bottom:var(--gy,30px);will-change:left,transform;}
-.sky-critter .art{display:block;transform:scaleX(var(--dir,1)) scale(var(--depth,1));transform-origin:center bottom;}
-.sky-critter svg{display:block;}
-.sky-critter.hare{animation:hareGo var(--cdur,7s) linear forwards;}
-.sky-critter.deer{animation:deerInOut var(--cdur,12s) ease-in-out forwards;}
-.sky-critter.fox{animation:foxSneak var(--cdur,16s) linear forwards;}
-.sky-critter.deer .art,.sky-critter.fox .art{animation:walkBob 0.5s ease-in-out infinite;}
-@keyframes walkBob{0%,100%{transform:scaleX(var(--dir,1)) scale(var(--depth,1)) translateY(0);}50%{transform:scaleX(var(--dir,1)) scale(var(--depth,1)) translateY(-2px);}}
-@keyframes hareGo{0%{left:var(--h0);transform:translateY(0);opacity:0;}3%{opacity:1;}7%{left:var(--h0);transform:translateY(calc(var(--hop,16px) * -1));}12%{left:var(--h1);transform:translateY(0);}26%{left:var(--h1);transform:translateY(0);}30%{left:var(--h1);transform:translateY(calc(var(--hop,16px) * -1));}35%{left:var(--h2);transform:translateY(0);}49%{left:var(--h2);transform:translateY(0);}53%{left:var(--h2);transform:translateY(calc(var(--hop,16px) * -1));}58%{left:var(--h3);transform:translateY(0);}72%{left:var(--h3);transform:translateY(0);}76%{left:var(--h3);transform:translateY(calc(var(--hop,16px) * -1));}81%{left:var(--h4);transform:translateY(0);}95%{left:var(--h4);transform:translateY(0);opacity:1;}100%{left:var(--h4);transform:translateY(0);opacity:0;}}
-@keyframes deerInOut{0%{left:var(--d0);opacity:0;}7%{opacity:1;}40%{left:var(--d1);}60%{left:var(--d1);}93%{left:var(--d0);opacity:1;}100%{left:var(--d0);opacity:0;}}
-@keyframes foxSneak{0%{left:var(--f0);opacity:0;}9%{opacity:1;}91%{opacity:1;}100%{left:var(--f1);opacity:0;}}
 /* Settings-sidan */
 .set-sec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:6px 14px;margin-bottom:14px;}
 .set-sec-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#f5c842;padding:10px 0 4px;letter-spacing:0.3px;}
@@ -1047,6 +1035,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .app-name{font-family:'Fredoka One',cursive;font-size:0.86rem;}
 .app-rar{font-size:0.66rem;color:rgba(255,255,255,0.55);}
 .app-go{flex-shrink:0;font-family:'Fredoka One',cursive;font-size:0.74rem;color:var(--gold);}
+.app-odds{margin-top:4px;display:flex;flex-wrap:wrap;gap:3px 6px;font-size:0.6rem;color:rgba(255,255,255,0.8);}
+.app-odds-lbl{opacity:0.55;font-weight:700;letter-spacing:0.3px;}
+.app-odd{display:inline-flex;align-items:center;gap:2px;white-space:nowrap;background:rgba(0,0,0,0.22);border-radius:5px;padding:1px 5px;}
+.app-odd-egg{width:13px;height:13px;object-fit:contain;}
+.app-odd.aff{color:#7CFC9A;background:rgba(124,252,154,0.14);}
+.app-aff-tag{color:#7CFC9A;font-weight:800;font-size:0.58rem;}
 .ach-filter-row{display:flex;gap:6px;margin-bottom:10px;padding:2px 2px 6px;}
 .ach-filter-btn{flex:1;padding:8px 5px;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:12px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.72);cursor:pointer;text-align:center;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.2),inset 0 -4px 7px rgba(0,0,0,0.35);transition:transform 0.1s;}
 .ach-filter-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2px solid #ffce4a;color:#ffe08a;box-shadow:0 0 7px rgba(245,200,66,0.5),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.26);}
@@ -2544,6 +2538,19 @@ function petAdvSum(pet){
   if(pet&&pet.abilities)pet.abilities.forEach(function(ab){if(s[ab.id]!=null)s[ab.id]+=TIER_VALUES[ab.tier];});
   return s;
 }
+// Effektiv bonus-loot-chans för en SPECIFIK pet på ett SPECIFIKT äventyr — speglar formeln i
+// rollAdvReward exakt (luck + affinity för rätt värld + pet-nivå), så det väljaren visar = det som rullas.
+function advEffChances(adv,pet){
+  var s=petAdvSum(pet);
+  var lvl=pet?petLevelFromXp(pet.xp||0):1;
+  var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS;
+  var aff=!!(pet&&adv.affinity&&pet.world===adv.affinity);
+  var aBonus=aff?1.5:1;
+  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult;
+  return {aff:aff,items:(adv.bonusLoot||[]).map(function(B){
+    return {type:B.type,id:B.id,pct:Math.min(1,B.chance*luckMult)};
+  })};
+}
 function rollAdvReward(adv,pet){
   var s=petAdvSum(pet);
   var roll=Math.random();
@@ -2668,9 +2675,17 @@ function openAdvPicker(advId){
       if(s.shellGain)tags.push('🐚+'+s.shellGain+'%');
       if(s.luck)tags.push('🍀+'+s.luck+'%');
       if(s.idleGain)tags.push('⚡+'+s.idleGain+'%');
+      var ec=advEffChances(adv,p);
+      var oddsHtml=ec.items.map(function(o){
+        if(o.type==='gems')return '<span class="app-odd'+(ec.aff?' aff':'')+'">💎 '+Math.round(o.pct*100)+'%</span>';
+        var e=EGG_SHOP.find(function(x){return x.id===o.id;});
+        var ico='<img class="app-odd-egg" src="'+eggShopIconUrl(o.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';
+        return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+ico+(e?e.name.replace(' Egg',''):o.id)+' '+Math.round(o.pct*100)+'%</span>';
+      }).join('');
+      var oddsLine='<div class="app-odds"><span class="app-odds-lbl">BONUS</span>'+oddsHtml+(ec.aff?' <span class="app-aff-tag">🎯 Affinity!</span>':'')+'</div>';
       html+='<div class="adv-pick-pet'+(ok?'':' locked')+'"'+(ok?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+p.e+'</div>';
-      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div></div>';
+      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'</div>';
       html+='<div class="app-lvl">Lv '+lv+'</div>';
       html+=(ok?'<div class="app-go">Send →</div>':'<div class="app-lock">Needs<br>Lv '+req+'</div>')+'</div>';
     });
@@ -2737,7 +2752,7 @@ function renderAdventure(){
   html+='<div class="adv-dhead"><span class="adv-dic">'+sel.icon+'</span><span class="adv-dname">'+sel.name+'</span><span class="adv-dtime">⏱️ '+formatTime(Math.floor(sel.dur/1000))+'</span></div>';
   html+='<div class="adv-ddesc">'+sel.desc+'</div>';
   html+='<div class="adv-dreq">🔒 Requires Lv '+advReqLevel(sel)+'+</div>';
-  html+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin:-4px 0 8px;">Higher-level pets find rare loot more often.</div>';
+  html+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin:-4px 0 8px;">Luck, pet level &amp; matching-world pets boost these — pick a pet to see its exact odds.</div>';
   html+='<div class="adv-dsec">Possible Rewards</div>';
   html+='<div class="adv-rewards">';
   html+=advRewItem('🪙','Sparks','~'+fmtShort(coinsNow),true);
@@ -2746,7 +2761,7 @@ function renderAdventure(){
   html+=advRewItem('⭐','Pet XP','+'+sel.xp,true);
   (sel.bonusLoot||[]).forEach(function(B){
     if(B.type==='gems'){html+=advRewItem('💎','Gems',Math.round(B.chance*100)+'%',true);}
-    else if(B.type==='egg'){var e=EGG_SHOP.find(function(x){return x.id===B.id;});html+=advRewItem(e?e.icon:'🥚',(e?e.name.replace(' Egg',''):B.id),Math.round(B.chance*100)+'%',true);}
+    else if(B.type==='egg'){var e=EGG_SHOP.find(function(x){return x.id===B.id;});var eico='<img src="'+eggShopIconUrl(B.id)+'" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';html+=advRewItem(eico,(e?e.name.replace(' Egg',''):B.id),Math.round(B.chance*100)+'%',true);}
   });
   html+=advRewItem('🧬','Cores','soon',false);
   html+=advRewItem('🗺️','Discoveries','soon',false);
@@ -3168,8 +3183,6 @@ function openPetSlotModal(idx){
       G.equippedPets[activeSlot]=pet.uid;
       pet.equippedSlot=activeSlot;
       renderSlotRow();closePetModal();updateHUD();renderPets();
-      // Liten reaktion: ett markdjur skuttar förbi när du sätter ut en pet (utöver de slumpvisa)
-      if(typeof spawnCritter==='function'&&skyLifeActive())setTimeout(spawnCritter,400);
     };
     list.appendChild(d);
   });
@@ -4076,15 +4089,6 @@ var SKY_BIRDS=[
   {bw:24,flap:'0.33s',svg:'<svg viewBox="0 0 40 18"><path d="M3,11 Q12,6 20,10 Q28,6 37,11" fill="none" stroke="COL" stroke-width="2.3" stroke-linecap="round"/></svg>',cols:['#2f3a54','#45506e','#5a6a4a']},
   {bw:20,flap:'0.5s', svg:'<svg viewBox="0 0 40 18"><path d="M5,10 Q13,3 20,9 Q27,3 35,10" fill="none" stroke="COL" stroke-width="2.8" stroke-linecap="round"/></svg>',cols:['#8a5a30','#a06a36','#b5763a','#9c6b8a']}
 ];
-// Markdjur (egen rörelse + färger) — platshållar-silhuetter
-var SKY_CRITTERS={
-  hare:{w:32,gy:[24,40],dur:[6,8.5],hop:[12,18],cols:['#8a6d4b','#7a5d3e','#9a7a52'],
-    svg:'<svg viewBox="0 0 34 30"><g fill="COL"><ellipse cx="13" cy="22" rx="11" ry="6.5"/><circle cx="24" cy="16" r="5.5"/><ellipse cx="22" cy="6" rx="2" ry="7"/><ellipse cx="26.5" cy="7" rx="2" ry="6.5"/><circle cx="3" cy="22" r="3"/></g></svg>'},
-  deer:{w:46,gy:[26,42],dur:[10,15],cols:['#9c7a4e','#a98654','#8f6e44'],
-    svg:'<svg viewBox="0 0 48 44"><g fill="COL"><ellipse cx="18" cy="22" rx="13" ry="7"/><rect x="29" y="8" width="5" height="15" rx="2.5"/><circle cx="33.5" cy="8" r="4.5"/><path d="M30 5 L28 -1 M33.5 4 L33.5 -2 M37 5 L39 -1" stroke="COL" stroke-width="1.8" fill="none" stroke-linecap="round"/><rect x="9" y="27" width="2.6" height="14" rx="1.3"/><rect x="15" y="27" width="2.6" height="14" rx="1.3"/><rect x="21" y="27" width="2.6" height="14" rx="1.3"/><rect x="26" y="27" width="2.6" height="14" rx="1.3"/></g></svg>'},
-  fox:{w:48,gy:[22,34],dur:[13,19],cols:['#c8682e','#d4742f','#b85e28'],
-    svg:'<svg viewBox="0 0 50 28"><g fill="COL"><ellipse cx="23" cy="16" rx="14" ry="6"/><circle cx="38" cy="13" r="4.5"/><path d="M35 10 L34 3.5 L38 8 Z"/><path d="M40 10 L41 3.5 L43.5 8.5 Z"/><path d="M9 15 Q-2 11 2.5 21 Q7 18.5 13 18 Z"/><rect x="15" y="20" width="2.4" height="7.5" rx="1.2"/><rect x="21" y="20" width="2.4" height="7.5" rx="1.2"/><rect x="28" y="20" width="2.4" height="7.5" rx="1.2"/></g></svg>'}
-};
 function buildClouds(){
   if(_cloudsBuilt)return;var sky=document.getElementById('sky-life');if(!sky)return;
   var clouds=[
@@ -4119,42 +4123,16 @@ function spawnBird(){
   sky.appendChild(el);
   setTimeout(function(){el.remove();},dur*1000+250);
 }
-function spawnCritter(forceName){
-  var sky=document.getElementById('sky-life');if(!sky)return;
-  var name=forceName||_pick(['hare','deer','fox']);
-  var c=SKY_CRITTERS[name];if(!c)return;
-  var col=_pick(c.cols),dirRight=Math.random()<0.5;
-  var depth=_rnd(0.7,1.0),gy=_rnd(c.gy[0],c.gy[1]),dur=_rnd(c.dur[0],c.dur[1]);
-  var el=document.createElement('div');el.className='sky-critter '+name;
-  var css='--dir:'+(dirRight?1:-1)+';--depth:'+depth.toFixed(2)+';--gy:'+gy.toFixed(0)+'px;--cdur:'+dur.toFixed(1)+'s;';
-  if(name==='hare'){
-    var hop=_rnd(c.hop[0],c.hop[1]);
-    var start=dirRight?-12:112,end=dirRight?112:-12,st=[];
-    for(var i=0;i<5;i++)st.push((start+(end-start)*(i/4)).toFixed(0)+'%');
-    css+='--hop:'+hop.toFixed(0)+'px;--h0:'+st[0]+';--h1:'+st[1]+';--h2:'+st[2]+';--h3:'+st[3]+';--h4:'+st[4]+';left:'+st[0]+';';
-  }else if(name==='deer'){
-    var d0=dirRight?-15:115,d1=dirRight?_rnd(28,42):_rnd(58,72);
-    css+='--d0:'+d0+'%;--d1:'+d1.toFixed(0)+'%;left:'+d0+'%;';
-  }else{
-    var f0=dirRight?-14:114,f1=dirRight?114:-14;
-    css+='--f0:'+f0+'%;--f1:'+f1+'%;left:'+f0+'%;';
-  }
-  el.style.cssText=css;
-  el.innerHTML='<div class="art" style="width:'+c.w+'px">'+c.svg.split('COL').join(col)+'</div>';
-  sky.appendChild(el);
-  setTimeout(function(){el.remove();},dur*1000+400);
-}
 function _scheduleBird(){if(!_skyRunning)return;_skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnBird();_scheduleBird();},_rnd(11000,29000)));}
-function _scheduleCritter(){if(!_skyRunning)return;_skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnCritter();_scheduleCritter();},_rnd(22000,55000)));}
 function updateSkyLife(){
   buildClouds();
   if(skyLifeActive()){
-    if(!_skyRunning){_skyRunning=true;_scheduleBird();_scheduleCritter();
+    if(!_skyRunning){_skyRunning=true;_scheduleBird();
       _skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnBird();},2500));}
   }else{
     _skyRunning=false;_skyTimers.forEach(clearTimeout);_skyTimers=[];
     var sky=document.getElementById('sky-life');
-    if(sky){var n=sky.querySelectorAll('.sky-bird,.sky-critter');for(var i=0;i<n.length;i++)n[i].remove();}
+    if(sky){var n=sky.querySelectorAll('.sky-bird');for(var i=0;i<n.length;i++)n[i].remove();}
   }
 }
 // Tillämpar alla inställningar på spelet (kallas vid start, vid ändring och vid reset)
