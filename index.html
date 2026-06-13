@@ -1093,6 +1093,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .tb-gems .tg-val{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#7fd4ff;}
 
 /* More drawer (temporary home for relocated views) */
+.more-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.more-head-title{font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;display:flex;align-items:center;gap:8px;}
+.more-head-title img{width:24px;height:24px;object-fit:contain;}
+.more-head .prof-x{padding:0;}
 .more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
 .more-item{background:rgba(27,45,78,0.5);border:2px solid rgba(58,92,184,0.6);border-radius:12px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
 .more-item:active{transform:scale(0.96);}
@@ -1152,7 +1156,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-header{background:linear-gradient(160deg,#1d3164,#13224a);border:1px solid rgba(58,92,184,0.7);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:center;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);}
 .prof-avatar-wrap{position:relative;flex-shrink:0;}
 .prof-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(160deg,#2a3f7a,#15264e);border:3px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:2rem;box-shadow:0 0 12px rgba(245,200,66,0.3);}
-.prof-shield{position:absolute;bottom:-4px;right:-4px;width:24px;height:24px;border-radius:7px;background:linear-gradient(180deg,#5a3aa8,#3f2880);border:1px solid #7a5ad0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;}
 .prof-id{flex:1;min-width:0;}
 .prof-name-row{display:flex;align-items:center;gap:7px;}
 .prof-name{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -1411,8 +1414,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="stats-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStatsPanel()">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeStatsPanel()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div class="modal-title">📊 Your Stats</div>
+    <div class="more-head">
+      <div class="more-head-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/ability-stats.png" alt="" onerror="this.replaceWith(document.createTextNode('📊'))"> Your Stats</div>
+      <button class="prof-x" onclick="closeStatsPanel()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
     <div id="stats-modal-body"></div>
   </div>
 </div>
@@ -1475,8 +1480,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 
 <div id="more-drawer" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div class="modal-title">More</div>
+    <div class="more-head">
+      <div class="more-head-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/more.png" alt="" onerror="this.replaceWith(document.createTextNode('⋯'))"> More</div>
+      <button class="prof-x" onclick="closeMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
     <div class="more-grid" id="more-grid"></div>
     <div class="more-note">Petdex and Achievements live here. Inventory is also a 🎒 button on the home screen — this entry is a backup route.</div>
     <div id="more-dev"></div>
@@ -1485,7 +1492,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="leaderboard-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box">
     <button class="modal-close" onclick="closeLeaderboard()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div class="modal-title">🥇 Leaderboard</div>
+    <div class="modal-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/leaderboard.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🥇'))"> Leaderboard</div>
     <div id="lb-tabs" class="lb-tabs">
       <div class="lb-tab" id="lbt-account_level" onclick="loadLeaderboard('account_level')">Level</div>
       <div class="lb-tab" id="lbt-ascensions" onclick="loadLeaderboard('ascensions')">Ascend</div>
@@ -1514,7 +1521,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="redeem-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
     <button class="modal-close" onclick="closeRedeem()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div style="font-size:2.3rem;margin-bottom:4px;">🎁</div>
+    <div style="font-size:2.3rem;margin-bottom:4px;"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/reward.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode('🎁'))"></div>
     <div class="modal-title" style="margin-bottom:6px;">Redeem Code</div>
     <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.45;margin-bottom:14px;">Enter a code to claim free rewards.</div>
     <input id="redeem-input" class="redeem-input" type="text" placeholder="Enter code" autocomplete="off" autocapitalize="characters" spellcheck="false" onkeydown="if(event.key==='Enter')doRedeem()">
@@ -1656,6 +1663,7 @@ var ASSET_BASE='https://raw.githubusercontent.com/ragequitit/pet-planet/main';
 var COIN_IMG='<img class="coin-ic" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="🥚">';
 var GEM_IMG='<img class="gem-ic" src="'+ASSET_BASE+'/assets/ui/random/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode(\'💎\'))">';
 var LOCK_IMG='<img class="lock-ic" src="'+ASSET_BASE+'/assets/ui/random/locked.png" alt="🔒" onerror="this.replaceWith(document.createTextNode(\'🔒\'))">';
+var REWARD_IMG='<img src="'+ASSET_BASE+'/assets/ui/random/reward.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🎁\'))">';
 function worldAssets(id){return {id:id,bg:ASSET_BASE+'/assets/eggworlds/'+id+'-bg.png',egg:ASSET_BASE+'/assets/eggs/'+id+'-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/'+id+'-pedestal.png'};}
 var EGG_WORLDS=[
   {id:'starter',bg:ASSET_BASE+'/assets/eggworlds/scene-background.png',egg:ASSET_BASE+'/assets/eggs/starter-egg.png',pedestal:ASSET_BASE+'/assets/eggworlds/pedestal.png'},
@@ -2669,7 +2677,7 @@ function claimAdventure(index){
   // Bonus-loot (chans-baserad)
   (rw.bonus||[]).forEach(function(b){
     if(b.type==='gems'){G.gems=(G.gems||0)+b.amt;parts.push(GEM_IMG+' +'+b.amt+' Gems');}
-    else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🎁 '+(em?em.icon+' '+em.name:b.id)+'!');}
+    else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
   if(typeof updateHUD==='function')updateHUD();
@@ -3875,7 +3883,7 @@ function coresInvHtml(){
 // i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
 var MORE_ITEMS=[
   {label:'Ascension',icon:uiIco('ascension','🔼',30),action:'ascension'},
-  {label:'Leaderboard',icon:'🥇',action:'leaderboard'},
+  {label:'Leaderboard',icon:uiIco('leaderboard','🥇',30),action:'leaderboard'},
   {label:'Petdex',icon:uiIco('petdex','📖',30),tab:'petdex'},
   {label:'Achievements',icon:uiIco('achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('inventory','🎒',30),tab:'inventory'},
@@ -4372,7 +4380,7 @@ function renderSettings(){
 
   // Knappar längst ner (alltid synliga oavsett kategori)
   var actions='<div class="set-actions">'+
-    '<button class="set-action-btn blue" onclick="openRedeem()">🎁 Redeem Code</button>'+
+    '<button class="set-action-btn blue" onclick="openRedeem()">'+REWARD_IMG+' Redeem Code</button>'+
     '<button class="set-action-btn purple" onclick="showComingSoon(\'❓ Help & Support\',\'A help & support page is coming soon.\')">❓ Help &amp; Support</button>'+
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
@@ -4717,7 +4725,7 @@ function renderProfile(){
   var h='';
   // HEADER
   h+='<div class="prof-header">';
-  h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div><div class="prof-shield">🐾</div></div>';
+  h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div></div>';
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
   h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
@@ -4742,7 +4750,7 @@ function renderProfile(){
   if(profileSubTab==='overview'){
     h+='<div class="prof-section-title">Lifetime Overview</div>';
     h+='<div class="prof-ov-grid">';
-    h+=profOvCard('🥚','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0));
+    h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0));
     h+=profOvCard(uiIco('pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
     h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0));
     h+=profOvCard(uiIco('total-clicks','👆',26),'Total Clicks',fmtShort(G.stats.totalClicks||0));
@@ -5219,7 +5227,7 @@ function questGo(type){
 // Quest-ikon per typ (annars quest-objektets emoji). tap=total-clicks, shells=common Ember, craft=starter Ember, send=nav-adventures.
 function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
-  if(t==='tap')    return uiIco('total-clicks','👆',26);
+  if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/random/finger-tap.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
   if(t==='shells') return '<img src="'+shellImgUrl('common')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">';
   if(t==='craft')  return '<img src="'+shellImgUrl('starter')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🛠️\'))">';
   if(t==='send')   return '<img src="'+ASSET_BASE+'/assets/ui/nav-adventures.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🚀\'))">';
@@ -5605,7 +5613,7 @@ function renderEvents(){
   h+='<div class="ev-tabs">'+tab('overview','Event Overview')+tab('shop','Event Shop')+tab('leaderboard','Leaderboard')+'</div>';
   if(eventTab==='overview')h+=renderEventOverview();
   else if(eventTab==='shop')h+=renderEventShop();
-  else h+='<div class="ev-soon"><div class="ev-soon-ic">\ud83c\udfc6</div><h3>Leaderboards coming soon</h3><p>Online leaderboards need an internet connection, which is not available yet. Compete with other players here in a future update.</p></div>';
+  else h+='<div class="ev-soon"><div class="ev-soon-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/leaderboard.png" alt="" style="width:1em;height:1em;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'\\ud83c\\udfc6\'))"></div><h3>Leaderboards coming soon</h3><p>Online leaderboards need an internet connection, which is not available yet. Compete with other players here in a future update.</p></div>';
   document.getElementById('events-body').innerHTML=h;
 }
 function renderEventOverview(){
@@ -5622,7 +5630,7 @@ function renderEventOverview(){
     var reached=E.earned>=c.at,claimed=E.chestsClaimed.indexOf(c.at)!==-1;
     var cls=claimed?'':(reached?'ready':'locked');
     h+='<div class="ev-chest '+cls+'">';
-    h+='<div class="ev-chest-ic">'+(claimed?'\u2705':'\ud83c\udf81')+'</div>';
+    h+='<div class="ev-chest-ic">'+(claimed?'\u2705':REWARD_IMG)+'</div>';
     h+='<div class="ev-chest-v">'+fmtShort(c.at)+'</div>';
     h+='<div class="ev-chest-rw">'+eventRewardTextFull(c.reward)+'</div>';
     if(claimed)h+='<div class="ev-chest-done">Claimed</div>';
@@ -5635,7 +5643,7 @@ function renderEventOverview(){
     var prog=eventQuestProgress(q),done=prog>=q.target,claimed=!!E.questsClaimed[q.id];
     var shown=Math.min(prog,q.target),qpct=Math.min(100,(prog/q.target)*100);
     h+='<div class="ev-quest">'+
-         '<div class="ev-quest-ic">'+(q.icon||'\u2b50')+'</div>'+
+         '<div class="ev-quest-ic">'+questIcon(q)+'</div>'+
          '<div class="ev-quest-mid">'+
            '<div class="ev-quest-name">'+q.name+'</div>'+
            '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+qpct+'%"></div></div>'+
@@ -7350,7 +7358,7 @@ function achCardHtml(a){
     html+='<div class="ach-prog-bar"><div class="ach-prog-fill" style="width:'+pct2+'%"></div></div>';
     html+='<div class="ach-prog-label">'+fmtShort(prog.cur)+' / '+fmtShort(prog.max)+'</div>';
     var rwt=rewardShortText(a.id);
-    if(rwt)html+='<div class="ach-desc" style="color:var(--gold);opacity:0.9;margin-top:3px;">🎁 '+rwt+'</div>';
+    if(rwt)html+='<div class="ach-desc" style="color:var(--gold);opacity:0.9;margin-top:3px;">'+REWARD_IMG+' '+rwt+'</div>';
   }
   html+='</div>';
   html+='<div class="ach-right">';
@@ -7411,7 +7419,7 @@ function renderAchievements(){
     filtered.forEach(function(a){if(G.achievements.claimed&&G.achievements.claimed[a.id])claimedSet[a.id]=a;});
     var firstHead=true;
     if(unclaimed.length){
-      html+='<div class="ach-group-head ready first">🎁 Ready to Claim ('+unclaimed.length+')</div>';
+      html+='<div class="ach-group-head ready first">'+REWARD_IMG+' Ready to Claim ('+unclaimed.length+')</div>';
       firstHead=false;
       unclaimed.forEach(function(a){html+=achCardHtml(a);});
     }
@@ -7587,7 +7595,7 @@ function showRewardPopup(parts,sticky,autoMs){
   var pop=document.createElement('div');pop.className='ach-popup'+(sticky?' reward-sticky':'');
   var x=sticky?'<div class="ach-popup-x" style="position:absolute;top:6px;right:9px;font-size:0.8rem;color:rgba(255,255,255,0.6);">✕</div>':'';
   var tap=sticky?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:5px;">Tap to dismiss</div>':'';
-  pop.innerHTML=x+'<div class="ach-popup-icon">🎁</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
+  pop.innerHTML=x+'<div class="ach-popup-icon">'+REWARD_IMG+'</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
   document.body.appendChild(pop);
   if(sticky){
     pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
@@ -7912,7 +7920,7 @@ function renderPetdex(){
   html+='<div class="pdx-prog-count">'+overall.found+' / '+overall.total+' Species Found</div>';
   var doneWorlds=countCompletedWorlds();
   var claimable=countClaimableWorldRewards();
-  html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">🎁</div>'+(claimable>0?'<div class="pdx-chest-badge">'+claimable+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
+  html+='</div><div class="pdx-chest active" onclick="openWorldCompletion()"><div class="pdx-chest-ic">'+REWARD_IMG+'</div>'+(claimable>0?'<div class="pdx-chest-badge">'+claimable+'</div>':'')+'<div class="pdx-chest-lbl">World rewards</div></div></div>';
   html+='<div class="pdx-wc-btn" onclick="openWorldCompletion()"><div class="pdx-wc-btn-top"><span>🏆 World Completion</span><span class="pdx-wc-btn-pct">'+pct+'%</span></div><div class="pdx-wc-btn-bar"><div class="pdx-wc-btn-fill" style="width:'+pct+'%"></div></div><div class="pdx-wc-btn-sub">'+doneWorlds+' / '+corePetdexWorlds().length+' worlds complete ›</div></div>';
   // World tabs
   html+='<div class="pdx-section-label">Select Egg World</div><div class="pdx-world-tabs">';
@@ -8173,7 +8181,7 @@ function cloudShowGate(mode,msg){
   var inp='width:100%;box-sizing:border-box;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.35);color:#fff;font-size:1rem;margin-bottom:8px;';
   var btn='width:100%;box-sizing:border-box;padding:13px;border:none;border-radius:12px;font-family:\'Fredoka One\',cursive;font-size:1rem;cursor:pointer;';
   if(mode==='loading'){
-    cloudGateCardOpen('<div style="font-size:2.4rem;margin-bottom:8px;">\ud83e\udd5a</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;margin-bottom:6px;">Pet Planet</div><div style="opacity:0.85;">'+(msg||'Loading your save\u2026')+'</div>');
+    cloudGateCardOpen('<div style="font-size:2.4rem;margin-bottom:8px;"><img src="'+ASSET_BASE+'/assets/ui/random/pet-planet-logo.png" alt="Pet Planet" style="height:2.4rem;width:auto;max-width:90%;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'\\ud83e\\udd5a\'))"></div><div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;margin-bottom:6px;">Pet Planet</div><div style="opacity:0.85;">'+(msg||'Loading your save\u2026')+'</div>');
     return;
   }
   if(mode==='error'){
@@ -8181,7 +8189,7 @@ function cloudShowGate(mode,msg){
     return;
   }
   cloudGateCardOpen(
-    '<div style="font-size:2.4rem;margin-bottom:6px;">\ud83e\udd5a</div>'+
+    '<div style="font-size:2.4rem;margin-bottom:6px;"><img src="'+ASSET_BASE+'/assets/ui/random/pet-planet-logo.png" alt="Pet Planet" style="height:2.4rem;width:auto;max-width:90%;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'\\ud83e\\udd5a\'))"></div>'+
     '<div style="font-family:\'Fredoka One\',cursive;font-size:1.3rem;margin-bottom:4px;">Pet Planet</div>'+
     '<div style="opacity:0.8;font-size:0.9rem;margin-bottom:16px;">Sign in or create an account to play. Your progress saves to your account and syncs across your devices.</div>'+
     '<input id="cloud-gate-email" style="'+inp+'" placeholder="Email" autocomplete="email">'+
