@@ -3338,6 +3338,29 @@ function softUpdatePetXp(){
 }
 
 // Pet Detail Modal
+// Var kom peten ifrån? Ger {icon, text} för pet-detaljkortet.
+// Ägg känns igen på pet.world, event på pet.evid, fusion/trade/adventure på pet.src.
+function petSourceInfo(pet){
+  if(pet){
+    if(pet.src==='fusion') return {icon:'⚗️',text:'Created by Fusion'};
+    if(pet.src==='trade')  return {icon:uiIco('trading','🔄',16),text:'Received via Trading'};
+    if(typeof pet.src==='string'&&pet.src.indexOf('adventure:')===0){
+      var aid=pet.src.slice(10),adv=(typeof ADVENTURES!=='undefined')?ADVENTURES.find(function(a){return a.id===aid;}):null;
+      return {icon:uiIco('discoveries','🗺️',16),text:'Found on '+(adv?adv.name:'an Adventure')};
+    }
+    if(pet.evid){
+      var ev=(typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?ACTIVE_EVENT:null;
+      var evn=(ev&&ev.name)?ev.name:'a special event';
+      return {icon:(ev&&ev.emoji)||'❄️',text:'From the '+evn+' event'};
+    }
+  }
+  var egg=EGG_SHOP.find(function(e){return e.id===(pet&&pet.world);});
+  if(egg){
+    var ei='<img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:16px;height:16px;object-fit:contain;vertical-align:-0.18em;" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))">';
+    return {icon:ei,text:'Hatched from a '+egg.name};
+  }
+  return {icon:'🥚',text:'Hatched from an egg'};
+}
 function openPetDetail(uid){
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
@@ -3347,7 +3370,8 @@ function openPetDetail(uid){
   html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+pet.e+'</div>';
   html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#fff;">'+pet.name+'</div>';
   html+='<div style="color:'+rc.color+';font-size:0.85rem;margin:2px 0;">'+rc.icon+' '+rc.label+'</div>';
-  html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);">'+eggInfo.icon+' '+eggInfo.name+'</div>';
+  var si=petSourceInfo(pet);
+  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.55);margin:3px 0 2px;"><span style="opacity:0.65;">Obtained:</span> '+si.icon+' '+si.text+'</div>';
   var lp=petXpProgress(pet);
   html+='<div class="pd-lvl"><div class="pd-lvl-tag">Lv '+lp.level+(lp.max?' · MAX':'')+'</div><div class="pd-xp"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div><span class="pd-xp-txt">'+uiIco('pet-xp','⭐',12)+' '+(lp.max?'Max level':fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP')+'</span></div>';
   if(isEquipped)html+='<div style="margin-top:4px;display:inline-block;background:var(--gold);color:#0b1530;border-radius:6px;padding:2px 8px;font-size:0.65rem;font-weight:900;">⚡ ACTIVE</div>';
@@ -6772,6 +6796,7 @@ function doFusion(){
     e:resultSpecies.e,
     rarity:nextRarity,
     world:firstPet.world,
+    src:'fusion',
     abilities:abilities,
     equippedSlot:-1,
     level:fusedLevel,
