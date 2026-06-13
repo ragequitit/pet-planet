@@ -1404,21 +1404,21 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <!-- MODALS -->
 <div id="dev-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeDevMenu()">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeDevMenu()" style="float:right">✕</button>
+    <button class="modal-close" onclick="closeDevMenu()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">🛠️ Dev Menu</div>
     <div id="dev-modal-body"></div>
   </div>
 </div>
 <div id="stats-modal" class="modal-overlay" style="align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeStatsPanel()">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeStatsPanel()" style="float:right">✕</button>
+    <button class="modal-close" onclick="closeStatsPanel()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">📊 Your Stats</div>
     <div id="stats-modal-body"></div>
   </div>
 </div>
 <div id="pet-modal" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" id="pet-modal-close">✕</button>
+    <button class="modal-close" id="pet-modal-close"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">Choose Active Pet</div>
     <div id="pet-modal-list"></div>
   </div>
@@ -1444,19 +1444,19 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="egg-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
-    <button class="modal-close" onclick="document.getElementById('egg-info-modal').classList.remove('open')" style="float:right">✕</button>
+    <button class="modal-close" onclick="document.getElementById('egg-info-modal').classList.remove('open')" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="egg-info-content"></div>
   </div>
 </div>
 <div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;position:relative;">
-    <button id="shell-info-close" class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="position:absolute;top:6px;right:10px;font-size:1.5rem;padding:6px 10px;line-height:1;z-index:2;">✕</button>
+    <button id="shell-info-close" class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="position:absolute;top:6px;right:10px;font-size:1.5rem;padding:6px 10px;line-height:1;z-index:2;"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="shell-info-content"></div>
   </div>
 </div>
 <div id="pet-detail-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
-    <button class="modal-close" id="pet-detail-close" style="float:right">✕</button>
+    <button class="modal-close" id="pet-detail-close" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="pet-detail-content"></div>
   </div>
 </div>
@@ -1475,7 +1475,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 
 <div id="more-drawer" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeMore()">✕</button>
+    <button class="modal-close" onclick="closeMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">More</div>
     <div class="more-grid" id="more-grid"></div>
     <div class="more-note">Petdex and Achievements live here. Inventory is also a 🎒 button on the home screen — this entry is a backup route.</div>
@@ -1484,7 +1484,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="leaderboard-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeLeaderboard()">✕</button>
+    <button class="modal-close" onclick="closeLeaderboard()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">🥇 Leaderboard</div>
     <div id="lb-tabs" class="lb-tabs">
       <div class="lb-tab" id="lbt-account_level" onclick="loadLeaderboard('account_level')">Level</div>
@@ -1498,13 +1498,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="adv-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeAdvModal()" style="float:right">✕</button>
+    <button class="modal-close" onclick="closeAdvModal()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="adv-modal-body"></div>
   </div>
 </div>
 <div id="generic-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
-    <button class="modal-close" onclick="document.getElementById('generic-modal').classList.remove('open')" style="float:right">✕</button>
+    <button class="modal-close" onclick="document.getElementById('generic-modal').classList.remove('open')" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="generic-modal-icon" style="font-size:2.5rem;margin-bottom:6px;"></div>
     <div class="modal-title" id="generic-modal-title" style="margin-bottom:8px;"></div>
     <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;white-space:pre-line;"></div>
@@ -1513,7 +1513,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="redeem-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
-    <button class="modal-close" onclick="closeRedeem()" style="float:right">✕</button>
+    <button class="modal-close" onclick="closeRedeem()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div style="font-size:2.3rem;margin-bottom:4px;">🎁</div>
     <div class="modal-title" style="margin-bottom:6px;">Redeem Code</div>
     <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.45;margin-bottom:14px;">Enter a code to claim free rewards.</div>
@@ -1524,7 +1524,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="skin-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeSkinPicker()">
   <div class="modal-box centered" style="max-width:340px;">
-    <button class="modal-close" onclick="closeSkinPicker()" style="float:right">✕</button>
+    <button class="modal-close" onclick="closeSkinPicker()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title" id="skin-modal-title" style="margin-bottom:12px;">Egg Skin</div>
     <div id="skin-modal-grid"></div>
   </div>
@@ -1533,7 +1533,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title">👤 Profile</div>
-      <button class="prof-x" onclick="document.getElementById('profile-modal').classList.remove('open')">✕</button>
+      <button class="prof-x" onclick="document.getElementById('profile-modal').classList.remove('open')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="prof-body"></div>
   </div>
@@ -1542,7 +1542,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title">⚙️ Settings</div>
-      <button class="prof-x" onclick="closeSettings()">✕</button>
+      <button class="prof-x" onclick="closeSettings()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="settings-body"></div>
   </div>
@@ -1551,7 +1551,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/ascension.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🔼'))"> Ascension</div>
-      <button class="prof-x" onclick="closeAscension()">✕</button>
+      <button class="prof-x" onclick="closeAscension()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="ascension-body"></div>
   </div>
@@ -1560,7 +1560,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/trading.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🔄'))"> Trading</div>
-      <button class="prof-x" onclick="closeTrading()">✕</button>
+      <button class="prof-x" onclick="closeTrading()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="trading-body"></div>
   </div>
@@ -1569,7 +1569,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/event.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🎉'))"> Events</div>
-      <button class="prof-x" onclick="closeEvents()">✕</button>
+      <button class="prof-x" onclick="closeEvents()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="events-body"></div>
   </div>
@@ -1578,7 +1578,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/Battle-pass.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🎟️'))"> Battle Pass</div>
-      <button class="prof-x" onclick="closeBattlePass()">✕</button>
+      <button class="prof-x" onclick="closeBattlePass()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="battlepass-body"></div>
   </div>
@@ -1587,7 +1587,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div class="prof-panel">
     <div class="prof-topbar">
       <div class="prof-topbar-title">⭐ Choose Favorite Pet</div>
-      <button class="prof-x" onclick="closeFavPicker()">✕</button>
+      <button class="prof-x" onclick="closeFavPicker()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="favpick-controls">
       <input id="favpick-search" class="favpick-search" placeholder="Search by name…" oninput="favPickSearch=this.value;renderFavPickerList()">
@@ -1618,7 +1618,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 </div>
 <div id="shell-src-modal" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('shell-src-modal').classList.remove('open')">✕</button>
+    <button class="modal-close" onclick="document.getElementById('shell-src-modal').classList.remove('open')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">Choose Source Ember</div>
     <div id="shell-src-list"></div>
   </div>
@@ -1628,14 +1628,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="pdsp-topbar">
       <button class="pdsp-back" onclick="document.getElementById('petdex-species-modal').classList.remove('open')">←</button>
       <div class="pdsp-title" id="pdsp-title">Species</div>
-      <button class="pdsp-x" onclick="document.getElementById('petdex-species-modal').classList.remove('open')">✕</button>
+      <button class="pdsp-x" onclick="document.getElementById('petdex-species-modal').classList.remove('open')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="pdsp-body" id="pdsp-body"></div>
   </div>
 </div>
 <div id="world-completion-modal" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" onclick="document.getElementById('world-completion-modal').classList.remove('open')">✕</button>
+    <button class="modal-close" onclick="document.getElementById('world-completion-modal').classList.remove('open')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div class="modal-title">🏆 World Completion</div>
     <div id="wc-list"></div>
   </div>
@@ -3588,7 +3588,7 @@ function renderPetPicker(){
   var pets=pickerEligiblePets();
   var order=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   var present=order.filter(function(r){return pets.some(function(p){return p.rarity===r;});});
-  var h='<div class="pp-head"><div class="pp-title">🐾 Select a Pet</div><button class="pp-x" onclick="closePetPicker()">✕</button></div>';
+  var h='<div class="pp-head"><div class="pp-title">🐾 Select a Pet</div><button class="pp-x" onclick="closePetPicker()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode(String.fromCharCode(10005)))"></button></div>';
   h+='<div class="pp-filters"><button class="pp-fchip'+(pickerRarity==='all'?' active':'')+'" onclick="setPickerRarity(\'all\')">All</button>';
   present.forEach(function(r){var rc=RARITY_CONFIG[r];h+='<button class="pp-fchip'+(pickerRarity===r?' active':'')+'" style="--rc:'+rc.color+'" onclick="setPickerRarity(\''+r+'\')">'+rc.icon+'</button>';});
   h+='</div>';
@@ -4377,7 +4377,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.3<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.4<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
