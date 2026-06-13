@@ -62,6 +62,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .reduce-motion #egg-img{animation:none!important;}
 .reduce-motion .spark{display:none!important;}
 .reduce-motion .click-pop{animation-duration:0.4s!important;}
+/* Bakgrunds-liv (Sky Life): driftande moln + enstaka fågel bakom ägget. Platshållar-former tills riktiga PNG:er finns — byt då bara form/innehåll, inte logiken. */
+#sky-life{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:1;}
+.no-skylife #sky-life,.reduce-motion #sky-life{display:none!important;}
+.sky-cloud{position:absolute;left:110%;width:var(--cw,120px);height:var(--ch,42px);background:radial-gradient(ellipse at 50% 60%,rgba(255,255,255,0.7),rgba(255,255,255,0) 72%);border-radius:50%;filter:blur(3px);opacity:0;animation:skyDrift var(--cd,55s) linear infinite;animation-delay:var(--cdl,0s);}
+@keyframes skyDrift{0%{left:110%;opacity:0;}12%{opacity:var(--cop,0.55);}88%{opacity:var(--cop,0.55);}100%{left:-45%;opacity:0;}}
+.sky-bird{position:absolute;left:-12%;top:20%;width:26px;height:14px;opacity:0;animation:birdFly var(--bd,26s) linear infinite;animation-delay:var(--bdl,0s);}
+.sky-bird svg{width:100%;height:100%;display:block;animation:birdFlap 0.5s ease-in-out infinite;}
+@keyframes birdFly{0%{left:-12%;top:var(--bt0,22%);opacity:0;}3%{opacity:0.8;}11%{top:var(--bt1,15%);}20%{left:110%;top:var(--bt0,22%);opacity:0.8;}22%{opacity:0;}100%{left:110%;opacity:0;}}
+@keyframes birdFlap{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.5);}}
 /* Settings-sidan */
 .set-sec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:6px 14px;margin-bottom:14px;}
 .set-sec-title{font-family:'Fredoka One',cursive;font-size:0.95rem;color:#f5c842;padding:10px 0 4px;letter-spacing:0.3px;}
@@ -1296,6 +1305,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   <div id="main">
     <div id="scene-wrap">
       <img id="scene-bg" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/scene-background.png" alt="">
+      <div id="sky-life" aria-hidden="true"></div>
       <div id="scene-fade"></div>
       <div class="side-btns" id="left-btns">
         <div class="side-btn" id="quests-btn" onclick="switchTab('quests')"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
@@ -2276,14 +2286,14 @@ var G={
   adventureSlots:1,
   adventures:[],
   profile:{name:'Player',favoritePet:null,equippedTitle:null,eggSkin:'classic',background:'classic'},
-  settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true},
+  settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,skyLife:true},
   event:null,
   boosts:{coin:0,luck:0},
   cosmeticsOwned:{},
   stats:freshStats(),
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
-var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short'};
+var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short',skyLife:true};
 
 // === REDEEM CODES (lokala, inbakade i spelet) ===
 // Koder lösas in EN gång per spelare (sparas i G.redeemedCodes). Nyckeln matchas
@@ -4029,11 +4039,35 @@ function runConfirm(){var cb=_confirmCb;closeConfirm();if(typeof cb==='function'
 // ============================================================
 // SETTINGS (inställningar)
 // ============================================================
+// Bygger himmels-lagret (Sky Life): platshållar-moln + fågel. KROK: per-värld-variation kan
+// läggas till senare (egna moln/fåglar per värld, samma mönster som EGG_WORLDS) utan att röra CSS:en.
+function buildSkyLife(){
+  var sky=document.getElementById('sky-life');if(!sky)return;
+  var clouds=[
+    {top:'9%', cw:'150px',ch:'50px',cd:'62s',cdl:'0s',  cop:0.55},
+    {top:'24%',cw:'110px',ch:'38px',cd:'48s',cdl:'-18s',cop:0.42},
+    {top:'4%', cw:'185px',ch:'58px',cd:'80s',cdl:'-44s',cop:0.5}
+  ];
+  var birdSvg='<svg viewBox="0 0 40 18"><path d="M2,12 Q10,2 20,11 Q30,2 38,12" fill="none" stroke="#2a3550" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  var birds=[
+    {bt0:'22%',bt1:'15%',bd:'27s',bdl:'-6s'},
+    {bt0:'14%',bt1:'9%', bd:'34s',bdl:'-21s'}
+  ];
+  var html='';
+  clouds.forEach(function(c){
+    html+='<div class="sky-cloud" style="top:'+c.top+';--cw:'+c.cw+';--ch:'+c.ch+';--cd:'+c.cd+';--cdl:'+c.cdl+';--cop:'+c.cop+';"></div>';
+  });
+  birds.forEach(function(b){
+    html+='<div class="sky-bird" style="--bt0:'+b.bt0+';--bt1:'+b.bt1+';--bd:'+b.bd+';--bdl:'+b.bdl+';">'+birdSvg+'</div>';
+  });
+  sky.innerHTML=html;
+}
 // Tillämpar alla inställningar på spelet (kallas vid start, vid ändring och vid reset)
 function applySettings(){
   if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
   var app=document.getElementById('app')||document.body;
   app.classList.toggle('no-particles',!G.settings.particles);
+  app.classList.toggle('no-skylife',!G.settings.skyLife);
   app.classList.toggle('reduce-motion',!!G.settings.reduceMotion);
 }
 
@@ -4162,6 +4196,7 @@ function renderSettings(){
   } else if(settingsTab==='graphics'){
     c+='<div class="set-sec"><div class="set-sec-title">🖼️ Graphics</div>';
     c+=setToggleRow('particles','Particle Effects','Floating sparkles on the home screen.');
+    c+=setToggleRow('skyLife','Sky Life','Drifting clouds and the odd bird in the background.');
     c+=setToggleRow('damageNumbers','Gain Numbers','Show the +coins numbers that pop up when you tap.');
     c+=setToggleRow('reduceMotion','Reduced Motion','Calms the egg bounce and animations.');
     c+=soonRow('Screen Shake','Shake the screen on big events.');
@@ -7946,6 +7981,7 @@ switchTab('buildings');
 setWorld(G.currentWorld);
 applyPedestalVisibility();
 applySettings();
+buildSkyLife();
 ensureEventState();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
