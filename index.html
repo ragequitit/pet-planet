@@ -1364,7 +1364,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <div id="sheet-body">
         <div id="home-toggle">
           <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span>📈</span> Upgrades</button>
-          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span>🏠</span> Buildings</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/buildings.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
         </div>
         <div id="tab-buildings" class="tab-content active">
           <div id="blist"></div>
@@ -2252,14 +2252,14 @@ var STAT_PANEL_GROUPS=[
 function renderStatsPanel(){
   var bd=getBonusBreakdown();
   var asc=G.ascensions||0;
-  var html='<div class="stats-asc">🔼 Ascensions: <b>'+asc+'</b> &nbsp;·&nbsp; ✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
+  var html='<div class="stats-asc"><img src="'+ASSET_BASE+'/assets/ui/random/ascension.png" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:-0.2em;" onerror="this.replaceWith(document.createTextNode(\'🔼\'))"> Ascensions: <b>'+asc+'</b> &nbsp;·&nbsp; ✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
   STAT_PANEL_GROUPS.forEach(function(g){
     html+='<div class="stats-cat"><span class="stats-cat-ico"><img src="'+ASSET_BASE+'/assets/ui/stats-panel/stats-panel-'+g.cat.toLowerCase()+'.png" alt="" onerror="this.parentNode.textContent=\''+g.ico+'\'"></span>'+g.cat+'</div>';
     g.items.forEach(function(it){
       var d=bd[it.id]||{pets:0,ach:0,asc:0,total:0};
       var s=it.invert?'-':'+';
       html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+it.name+'</span><span class="stats-total">'+s+d.total+'%</span></div>';
-      html+='<div class="stats-src"><span>🐾 Pets '+s+d.pets+'%</span><span>🏆 Achievements '+s+d.ach+'%</span><span>🔼 Ascension '+s+d.asc+'%</span></div></div>';
+      html+='<div class="stats-src"><span><img src="'+ASSET_BASE+'/assets/ui/random/pets.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🐾\'))"> Pets '+s+d.pets+'%</span><span><img src="'+ASSET_BASE+'/assets/ui/random/achievements.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🏆\'))"> Achievements '+s+d.ach+'%</span><span><img src="'+ASSET_BASE+'/assets/ui/random/ascension.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🔼\'))"> Ascension '+s+d.asc+'%</span></div></div>';
     });
   });
   html+='<div class="stats-foot">More abilities (Adventure, XP, Utility, Rare and more) appear here automatically as they are built into the game.</div>';
@@ -5228,6 +5228,7 @@ function questGo(type){
 function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
   if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/random/finger-tap.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
+  if(t==='hatch')  return '<img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">';
   if(t==='shells') return '<img src="'+shellImgUrl('common')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">';
   if(t==='craft')  return '<img src="'+shellImgUrl('starter')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🛠️\'))">';
   if(t==='send')   return '<img src="'+ASSET_BASE+'/assets/ui/nav-adventures.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🚀\'))">';
