@@ -536,6 +536,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-option-name{font-family:'Fredoka One',cursive;font-size:0.85rem;}
 .pet-option-rarity{font-size:0.65rem;margin-top:1px;}
 .pet-option-abilities{font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:2px;}
+.slot-current{background:linear-gradient(135deg,#16305c,#0e1d3c);border:2px solid var(--gold);border-radius:12px;padding:11px;margin-bottom:10px;box-shadow:0 0 10px rgba(245,200,66,0.22);}
+.slot-current-head{display:flex;align-items:center;gap:10px;}
+.slot-current-head .pet-option-info{flex:1;}
+.slot-current-lv{font-family:'Fredoka One',cursive;font-size:0.7rem;color:#ffe08a;background:#0b1530;border:1.5px solid #2a3c6c;border-radius:8px;padding:3px 8px;white-space:nowrap;}
+.slot-current-xptxt{font-size:0.6rem;color:rgba(255,255,255,0.5);margin-top:3px;text-align:right;}
+.slot-current-ab{font-size:0.6rem;color:rgba(255,255,255,0.55);margin-top:7px;line-height:1.45;}
+.slot-remove-btn{width:100%;margin-top:11px;padding:9px;border:none;border-radius:10px;background:linear-gradient(180deg,#c0392b,#922b21);color:#fff;font-family:'Fredoka One',cursive;font-size:0.8rem;cursor:pointer;box-shadow:0 3px 0 #5e1a14;}
+.slot-remove-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #5e1a14;}
+.slot-swap-head{font-size:0.62rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin:2px 0 9px;text-align:center;}
 .ob-icon{font-size:2.5rem;margin-bottom:8px;}
 .ob-time{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:16px;}
 #offline-rewards{background:#122446;border-radius:12px;padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;}
@@ -563,6 +572,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-card-name{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pet-card-rarity{font-size:0.6rem;font-weight:800;margin-top:1px;}
 .pet-card-world{font-size:0.55rem;color:rgba(255,255,255,0.35);margin-top:1px;}
+.pc-xp{height:5px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;margin-top:8px;border:1px solid rgba(122,90,208,0.3);}
+.pc-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:4px;transition:width 0.4s ease;}
 .pet-abilities{display:flex;flex-direction:column;gap:2px;position:relative;z-index:1;}
 .pet-ability-row{display:flex;align-items:center;gap:4px;font-size:0.58rem;}
 .pa-icon{font-size:0.7rem;width:16px;text-align:center;}
@@ -937,6 +948,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .c-low{background:#b5562a;color:#fff;}
 .c-verylow{background:#9b2f3a;color:#fff;}
 .c-special{background:linear-gradient(180deg,#a368e8,#6a3fb0);color:#fff;}
+.c-reqlv{background:#2a3c6c;color:#ffe08a;}
 .adv-slotcount{float:right;color:var(--gold);font-size:0.78rem;}
 .adv-slots{display:flex;gap:9px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;}
 .adv-slot{flex:0 0 128px;border-radius:14px;min-height:120px;padding:9px;display:flex;flex-direction:column;border:1.5px solid #0f1a33;background-size:cover;background-position:center;box-shadow:0 3px 0 #0b1326,inset 0 0 22px rgba(0,0,0,0.4);}
@@ -2262,12 +2274,10 @@ var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles
 // versalokänsligt (input görs till versaler + trimmas). Belöning kan ha valfri
 // kombination av: coins (tal), gems (tal), shells ({rarity:antal}). label = visas
 // i bekräftelsen. Lägg bara till en ny rad här för att skapa en ny kod.
-var REDEEM_CODES={
-  'WELCOME':  {coins:25000, gems:50, label:'Welcome to Pet Planet!'},
-  'LAUNCH':   {coins:100000, label:'Launch celebration'},
-  'SHELLSTART':{shells:{common:50,uncommon:25,rare:10}, label:'Starter shell pack'},
-  'GEMS100':  {gems:100, label:'Gem bonus'},
-};
+// Redeem codes now live on the server (Supabase table redeem_codes, checked by the
+// pp_redeem function). They are intentionally NOT stored here anymore, so the code
+// list can't be read out of this file. Kept as an empty object for safety.
+var REDEEM_CODES={};
 
 // === EVENT SYSTEM (data-styrt — ETT recept = ETT event) ===
 // Byt hela ACTIVE_EVENT for nasta event (eller satt ACTIVE_EVENT=null for att stanga av
@@ -2634,20 +2644,18 @@ function renderAdventure(){
   var html='';
   // ZON 1: kart-ruta (custom-bild täcker HELA denna yta) med rubrik + 6 uppdragsknappar ovanpå
   html+='<div class="adv-map" style="background-image:url('+advAsset('map','bg')+')">';
-  html+='<div class="adv-title">🗺️ PET ADVENTURES</div>';
+  html+='<div class="adv-title">PET ADVENTURES</div>';
   html+='<div class="adv-sub">Send your pets on adventures to earn amazing rewards!</div>';
   html+='<div class="adv-mapgrid">';
   ADVENTURES.forEach(function(adv){
     var asel=advSelected===adv.id;
     var abusy=isAdvActive(adv.id);
     var nm=adv.name.replace(' Expedition','').replace('Ancient ','');
-    var clab=adv.special?'Special':adv.chance;
-    var cc=clab.replace(/ /g,'').toLowerCase();
     html+='<div class="adv-mbtn'+(asel?' sel':'')+(adv.special?' special':'')+(abusy?' busy':'')+'" style="background-color:'+adv.col+';background-image:url('+advAsset(adv.id,'btn')+')" onclick="selectAdv(\''+adv.id+'\')">';
     html+='<div class="amb-ic">'+adv.icon+'</div>';
     html+='<div class="amb-name">'+nm+'</div>';
     if(abusy)html+='<div class="amb-busy">⏳ In Progress</div>';
-    else html+='<div class="amb-meta"><span class="amb-time">'+formatTime(Math.floor(adv.dur/1000))+'</span><span class="amb-chance c-'+cc+'">'+clab+'</span></div>';
+    else html+='<div class="amb-meta"><span class="amb-time">'+formatTime(Math.floor(adv.dur/1000))+'</span><span class="amb-chance c-reqlv">Req Lv '+advReqLevel(adv)+'</span></div>';
     html+='</div>';
   });
   html+='</div></div>';
@@ -2987,18 +2995,36 @@ function renderSlotRow(){
 var activeSlot=-1;
 function openPetSlotModal(idx){
   activeSlot=idx;
+  var curUid=G.equippedPets[idx];
+  var curPet=curUid?G.hatchedPets.find(function(p){return String(p.uid)===String(curUid);}):null;
   var list=document.getElementById('pet-modal-list');list.innerHTML=petSortBarHtml(slotPickSort,'setSlotPickSort');
-  // Remove option
-  var uneq=document.createElement('div');uneq.className='pet-option';
-  uneq.innerHTML='<div class="pet-option-icon">❌</div><div class="pet-option-info"><div class="pet-option-name">Remove Pet</div></div>';
-  uneq.onclick=function(){
-    if(G.equippedPets[activeSlot]){
-      var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
-      if(oldPet)oldPet.equippedSlot=-1;
-    }
-    G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();
-  };
-  list.appendChild(uneq);
+  // Currently equipped pet: show its info (level, XP, abilities) + a Remove button.
+  if(curPet){
+    var crc=RARITY_CONFIG[curPet.rarity]||RARITY_CONFIG.common;
+    var lp=petXpProgress(curPet);
+    var cab=curPet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?(m.icon+' '+m.name+' T'+a.tier):'';}).filter(Boolean).join(' · ');
+    var cur=document.createElement('div');cur.className='slot-current';
+    cur.innerHTML=
+      '<div class="slot-current-head">'+
+        '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+curPet.e+'</div>'+
+        '<div class="pet-option-info"><div class="pet-option-name">'+curPet.name+'</div>'+
+          '<div class="pet-option-rarity" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div></div>'+
+        '<div class="slot-current-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
+      '</div>'+
+      '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div>'+
+      '<div class="slot-current-xptxt">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>'+
+      (cab?('<div class="slot-current-ab">'+cab+'</div>'):'')+
+      '<button class="slot-remove-btn" id="slot-remove-btn">❌ Remove Pet</button>';
+    list.appendChild(cur);
+    document.getElementById('slot-remove-btn').onclick=function(){
+      if(G.equippedPets[activeSlot]){
+        var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
+        if(oldPet)oldPet.equippedSlot=-1;
+      }
+      G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();
+    };
+    var hd=document.createElement('div');hd.className='slot-swap-head';hd.textContent='Swap to another pet';list.appendChild(hd);
+  }
   // List all pets som INTE redan sitter i en slot (utrustade pets = onödig utfyllnad här)
   var slotSelectable=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
   slotSelectable.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
@@ -3097,7 +3123,8 @@ function renderPets(){
       html+='<div class="pet-card'+(isEquipped?' equipped':'')+'" onclick="openPetDetail(\''+pet.uid+'\')" style="background:linear-gradient(135deg,'+shaderColor+',rgba(12,21,48,0.8));border-color:'+borderColor+';">';
       // Raritetsfärgad stripe längst upp
       html+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+rc.color+';border-radius:12px 12px 0 0;opacity:0.8;"></div>';
-      html+='<div class="pet-card-lvl">Lv '+petLevelFromXp(pet.xp||0)+'</div>';
+      var lp=petXpProgress(pet);
+      html+='<div class="pet-card-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
       html+='<div class="pet-card-top">';
       html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+pet.e+'</div>';
       html+='<div class="pet-card-info"><div class="pet-card-name">'+pet.name+'</div>';
@@ -3110,13 +3137,30 @@ function renderPets(){
         var m=ABILITY_META[ab.id];if(!m)return;
         html+='<div class="pet-ability-row"><span class="pa-icon">'+abilityIconImg(ab.id)+'</span><span class="pa-name">'+m.name+'</span><span class="pa-tier" style="color:'+m.color+'">T'+ab.tier+'</span><span class="pa-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
       });
-      html+='</div></div>';
+      html+='</div>';
+      html+='<div class="pc-xp"><div class="pc-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div></div>';
+      html+='</div>';
     });
     html+='</div>';
   }
   wrap.innerHTML=html;
 }
 function setPetSort(mode){petSortMode=mode;renderPets();}
+// Live-uppdatera XP-mätaren + level-etiketten på pet-korten för pets som sitter aktivt
+// (uppdaterar bara på plats, bygger inte om korten → inget flimmer).
+function softUpdatePetXp(){
+  if(!G.equippedPets)return;
+  G.equippedPets.forEach(function(uid){
+    if(uid==null)return;
+    var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+    if(!pet)return;
+    var lp=petXpProgress(pet);
+    var f=document.getElementById('pcxpf-'+pet.uid);
+    if(f)f.style.width=lp.pct+'%';
+    var lv=document.getElementById('pclv-'+pet.uid);
+    if(lv)lv.textContent='Lv '+lp.level+(lp.max?' · MAX':'');
+  });
+}
 
 // Pet Detail Modal
 function openPetDetail(uid){
@@ -4145,16 +4189,41 @@ function doRedeem(){
   var inp=document.getElementById('redeem-input');if(!inp)return;
   var code=(inp.value||'').trim().toUpperCase();
   if(!code){redeemMsg('Please enter a code.',false);return;}
-  var rw=REDEEM_CODES[code];
-  if(!rw){redeemMsg('Invalid code. Double-check the spelling.',false);return;}
-  if(!Array.isArray(G.redeemedCodes))G.redeemedCodes=[];
-  if(G.redeemedCodes.indexOf(code)>=0){redeemMsg("You've already used this code.",false);return;}
-  var parts=applyRedeemReward(rw);
-  if(parts.length===0){redeemMsg('This code has no rewards.',false);return;}
-  G.redeemedCodes.push(code);
-  updateHUD();saveGame();
-  redeemMsg('✓ Redeemed: '+parts.join(' · '),true);
-  inp.value='';
+  // Codes now live on the server (table redeem_codes + function pp_redeem) so they
+  // can't be read out of this file. The client only ever sends one guess.
+  if(typeof sb==='undefined'||!sb||!cloudUser){
+    redeemMsg('Redeeming codes requires you to be online and signed in.',false);return;
+  }
+  var btn=document.querySelector('#redeem-modal .redeem-go');
+  if(btn)btn.disabled=true;
+  redeemMsg('Checking…',true);
+  sb.rpc('pp_redeem',{p_code:code}).then(function(res){
+    if(btn)btn.disabled=false;
+    if(!res||res.error||!res.data){redeemMsg("Couldn't reach the server. Try again in a moment.",false);return;}
+    var d=res.data, st=d.status;
+    if(st==='ok'){
+      var parts=applyRedeemReward(d.reward||{});
+      if(!Array.isArray(G.redeemedCodes))G.redeemedCodes=[];
+      if(G.redeemedCodes.indexOf(code)<0)G.redeemedCodes.push(code);
+      updateHUD();saveGame();
+      if(typeof cloudPushNow==='function')cloudPushNow();
+      redeemMsg(parts.length?('✓ Redeemed: '+parts.join(' · ')):'✓ Code redeemed!',true);
+      inp.value='';
+    } else if(st==='already'){
+      redeemMsg("You've already used this code.",false);
+    } else if(st==='expired'){
+      redeemMsg('This code has expired.',false);
+    } else if(st==='used_up'){
+      redeemMsg('This code has reached its limit.',false);
+    } else if(st==='no_auth'){
+      redeemMsg('Please sign in to redeem codes.',false);
+    } else {
+      redeemMsg('Invalid code. Double-check the spelling.',false);
+    }
+  },function(){
+    if(btn)btn.disabled=false;
+    redeemMsg("Couldn't reach the server. Try again in a moment.",false);
+  });
 }
 
 // ===== PROFILE HUB =====
@@ -7647,7 +7716,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
