@@ -2971,11 +2971,29 @@ function renderAdventure(){
 // SAVE / LOAD
 // ============================================================
 var SAVE_KEY='petplanet_v2_save';
+// ============================================================
+// PER-FLIK MINNE (multibox / Steg B) — "Smart"-läge:
+//   PRIMÄR flik   = använder localStorage → stannar inloggad mellan gångerna (exakt som förr).
+//   SEKUNDÄR flik = (en extra flik öppen samtidigt) använder sessionStorage → helt egen, isolerad.
+// Valet tas EN gång vid start och fryses för flikens livstid (en sekundär flik blir aldrig primär mitt i).
+// ppStore styr SAVE_KEY, OWNER_KEY och (längre ner) Supabase-inloggningen.
+// Själva låset ligger ALLTID i localStorage (måste delas mellan flikarna för att samordna).
+// ============================================================
+var PP_TABID=(function(){try{var k='pp_tab_id',v=sessionStorage.getItem(k);if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,8);sessionStorage.setItem(k,v);}return v;}catch(e){return 'p'+Math.random().toString(36).slice(2,8);}})();
+var PP_LOCK_KEY='pp_primary_lock', PP_LOCK_STALE=5000;
+function ppReadLock(){try{var r=localStorage.getItem(PP_LOCK_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function ppWriteLock(){try{localStorage.setItem(PP_LOCK_KEY,JSON.stringify({id:PP_TABID,ts:Date.now()}));}catch(e){}}
+var PP_PRIMARY=(function(){try{var lk=ppReadLock(),now=Date.now();if(!lk||(now-(lk.ts||0))>PP_LOCK_STALE||lk.id===PP_TABID){ppWriteLock();return true;}return false;}catch(e){return true;}})();
+if(PP_PRIMARY){try{setInterval(ppWriteLock,2000);}catch(e){}}
+var ppStore=(function(){var base=null;try{base=PP_PRIMARY?window.localStorage:window.sessionStorage;}catch(e){base=null;}
+  return {getItem:function(k){try{return base?base.getItem(k):null;}catch(e){return null;}},
+          setItem:function(k,v){try{if(base)base.setItem(k,v);}catch(e){}},
+          removeItem:function(k){try{if(base)base.removeItem(k);}catch(e){}}};})();
 var _applyingSave=false; // när true: lägg INTE skriv över sparningen (vi byter sparning + laddar om)
 var _gateBlock=false; // när true: inloggnings-gaten är uppe → spela/spara inte
 function saveGame(){
   if(_applyingSave||_gateBlock)return;
-  try{localStorage.setItem(SAVE_KEY,JSON.stringify({
+  try{ppStore.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
@@ -2987,7 +3005,7 @@ function saveGame(){
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
-function loadGame(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function loadGame(){try{var r=ppStore.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function resetGame(){
   if(!confirm('Reset all progress?'))return;
   if(typeof cloudWipe==='function')cloudWipe();
@@ -3024,7 +3042,7 @@ function resetGame(){
   G._discoveredPets={};
   G.settings=Object.assign({},DEFAULT_SETTINGS);
   applySettings();
-  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  try{ppStore.removeItem(SAVE_KEY);}catch(e){}
   switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 }
 function addTestShells(){SHELL_RARITIES.forEach(function(r){G.shells[r.id]=(G.shells[r.id]||0)+300;});}
@@ -5221,7 +5239,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.26<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.27<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5230,7 +5248,7 @@ function renderSettings(){
 function exportSave(){
   saveGame();
   var code='';
-  try{code=localStorage.getItem(SAVE_KEY)||'';}catch(e){code='';}
+  try{code=ppStore.getItem(SAVE_KEY)||'';}catch(e){code='';}
   var io=document.getElementById('set-save-io');if(!io)return;
   var copied=false;
   try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(code);copied=true;}}catch(e){}
@@ -5253,7 +5271,7 @@ function doImportSave(){
   if(!parsed||typeof parsed!=='object'){showGenericModal('❌','Invalid Code','That doesn\'t look like a valid Pet Planet backup code. Make sure you copied the whole thing.');return;}
   showConfirm('Restore This Save?','This will REPLACE your current progress with the backup. Your current save will be lost. Continue?','Restore',function(){
     _applyingSave=true;
-    try{var _imp=JSON.parse(raw);_imp.savedAt=Date.now();localStorage.setItem(SAVE_KEY,JSON.stringify(_imp));}catch(e){try{localStorage.setItem(SAVE_KEY,raw);}catch(e2){}}
+    try{var _imp=JSON.parse(raw);_imp.savedAt=Date.now();ppStore.setItem(SAVE_KEY,JSON.stringify(_imp));}catch(e){try{ppStore.setItem(SAVE_KEY,raw);}catch(e2){}}
     location.reload();
   });
 }
@@ -5283,7 +5301,7 @@ function resetFromSettings(){
     if(G.profile){G.profile.eggSkin='classic';G.profile.background='classic';}
     G.redeemedCodes=[];
     G.stats=freshStats();G._discoveredPets={};
-    try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+    try{ppStore.removeItem(SAVE_KEY);}catch(e){}
     closeSettings();
     switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
     showGenericModal('🌱','Fresh Start','All progress has been reset. Welcome back to the beginning!');
@@ -9005,14 +9023,14 @@ if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins)
 var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
 var sb=null;
-try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY);}}catch(e){sb=null;}
+try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storage:ppStore,persistSession:true,autoRefreshToken:true}});}}catch(e){sb=null;}
 var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 var OWNER_KEY='pp_cloud_owner';
 
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
-function cloudLocalObj(){try{var r=localStorage.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
+function cloudLocalObj(){try{var r=ppStore.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function cloudGateMsg(t){var el=document.getElementById('cloud-gate-msg');if(el)el.textContent=t||'';}
 function cloudStatus(t){cloudGateMsg(t);var el2=document.getElementById('cloud-auth-msg');if(el2)el2.textContent=t||'';}
 function cloudGateInputs(){return [(document.getElementById('cloud-gate-email')||{}).value||'',(document.getElementById('cloud-gate-pwd')||{}).value||''];}
@@ -9069,8 +9087,8 @@ function cloudLogout(){
   showConfirm('Log out?','You will return to the login screen. Your progress is saved in the cloud and loads again when you log back in.<br><br>This also lets you switch to a different account.','Log Out',function(){
     cloudKickedFlag=true;_gateBlock=true;_applyingSave=true; // stoppa all lokal sparning + push DIREKT, så inget skrivs över medan vi loggar ut
 
-    try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-    try{localStorage.removeItem(OWNER_KEY);}catch(e){}
+    try{ppStore.removeItem(SAVE_KEY);}catch(e){}
+    try{ppStore.removeItem(OWNER_KEY);}catch(e){}
     var done=function(){cloudUser=null;try{location.reload();}catch(e){}};
     try{
       if(sb&&sb.auth&&sb.auth.signOut){
@@ -9088,8 +9106,8 @@ function cloudHeartbeat(){
 
 function cloudApplyAndReload(saveStr){
   _applyingSave=true;
-  try{localStorage.setItem(SAVE_KEY,saveStr);}catch(e){}
-  try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}
+  try{ppStore.setItem(SAVE_KEY,saveStr);}catch(e){}
+  try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}
   location.reload();
 }
 
@@ -9101,7 +9119,7 @@ function cloudEnter(){
     sb.from('saves').select('data,client_saved_at').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
       var row=res&&res.data;
       var localObj=cloudLocalObj();
-      var owner=localStorage.getItem(OWNER_KEY);
+      var owner=ppStore.getItem(OWNER_KEY);
       var ownerMine=(owner===cloudUser.id);
       // SÄKERHET: lokal cache litas på ENBART om den tillhör exakt detta konto.
       // Okänd ägare eller annat konto => lita på molnet (eller börja färskt).
@@ -9114,8 +9132,8 @@ function cloudEnter(){
         else{cloudApplyAndReload(JSON.stringify(row.data));}
       }else{
         if(ownerMine){cloudHideGate();}
-        else if(localObj){_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
-        else{try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudHideGate();}
+        else if(localObj){_applyingSave=true;try{ppStore.removeItem(SAVE_KEY);}catch(e){}try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
+        else{try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudHideGate();}
       }
     },function(){cloudShowGate('login','Could not reach the cloud. Tap Log In to try again.');});
   });
@@ -9184,14 +9202,14 @@ function cloudPushNow(cb){
   var o=cloudLocalObj();if(!o){if(cb)cb();return;}
   // EXTRA SPÄRR: spara ENDAST om den lokala cachen tillhör EXAKT det inloggade kontot.
   // (Tidigare släpptes "okänd ägare" igenom — det var en väg för läckan.)
-  var _own=null;try{_own=localStorage.getItem(OWNER_KEY);}catch(e){}
+  var _own=null;try{_own=ppStore.getItem(OWNER_KEY);}catch(e){}
   if(_own!==cloudUser.id){if(cb)cb();return;}
 
   cloudBusy=true;
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
     if(st==='superseded'){cloudKicked();}
-    else if(st==='saved'||st==='created'){cloudDirty=false;try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();}
+    else if(st==='saved'||st==='created'){cloudDirty=false;try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();}
     if(cb)cb(st);
   },function(){cloudBusy=false;if(cb)cb();});
 }
@@ -9199,7 +9217,7 @@ function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudKickedFlag
 function cloudWipe(){
   if(!sb||!cloudUser)return;
   try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
-  try{localStorage.removeItem(OWNER_KEY);}catch(e){}
+  try{ppStore.removeItem(OWNER_KEY);}catch(e){}
 }
 
 function cloudDoLogIn(){
@@ -9228,8 +9246,8 @@ function cloudDoLogOut(){
   if(typeof cloudLogout==='function'){cloudLogout();return;}
   if(!sb)return;
   try{sb.auth.signOut();}catch(e){}
-  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-  try{localStorage.removeItem(OWNER_KEY);}catch(e){}
+  try{ppStore.removeItem(SAVE_KEY);}catch(e){}
+  try{ppStore.removeItem(OWNER_KEY);}catch(e){}
   cloudUser=null;cloudClaimed=false;cloudKickedFlag=false;
   try{location.reload();}catch(e){}
 }
