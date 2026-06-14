@@ -5221,7 +5221,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.23<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.24<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9009,6 +9009,21 @@ try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClien
 var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 var OWNER_KEY='pp_cloud_owner';
+// ---- TILLFÄLLIG DIAGNOSTIK (tas bort när läckan är löst) ----
+var _dbgLines=[];
+function _dbgRender(){
+  try{
+    var d=document.getElementById('pp-dbg');
+    if(!d){d=document.createElement('div');d.id='pp-dbg';d.style.cssText='position:fixed;left:4px;bottom:4px;z-index:2147483647;max-width:94vw;background:rgba(0,0,0,0.85);color:#3f6;font:10px/1.3 monospace;padding:6px 8px;border-radius:6px;white-space:pre-wrap;pointer-events:none;';if(document.body)document.body.appendChild(d);}
+    var u='-';try{if(cloudUser)u=(cloudUser.email||cloudUser.id||'').slice(0,16);}catch(e){}
+    var own='-';try{var o=localStorage.getItem(OWNER_KEY);if(o)own=o.slice(0,8);}catch(e){}
+    var cc='-';try{var r=localStorage.getItem(SAVE_KEY);if(r)cc=Math.round((JSON.parse(r).coins)||0);}catch(e){}
+    var gc='-';try{if(typeof G!=='undefined'&&G)gc=Math.round(G.coins||0);}catch(e){}
+    d.textContent='v6.24 DBG  user:'+u+'\nowner:'+own+'   cache$:'+cc+'   G$:'+gc+'\n'+_dbgLines.join('\n');
+  }catch(e){}
+}
+function _dbg(m){try{_dbgLines.push(m);if(_dbgLines.length>8)_dbgLines.shift();_dbgRender();}catch(e){}}
+try{setInterval(_dbgRender,1000);}catch(e){}
 
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
@@ -9068,6 +9083,7 @@ function cloudKicked(){
 function cloudLogout(){
   showConfirm('Log out?','You will return to the login screen. Your progress is saved in the cloud and loads again when you log back in.<br><br>This also lets you switch to a different account.','Log Out',function(){
     cloudKickedFlag=true;_gateBlock=true;_applyingSave=true; // stoppa all lokal sparning + push DIREKT, så inget skrivs över medan vi loggar ut
+    _dbg('LOGOUT (cache rensas)');
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
     try{localStorage.removeItem(OWNER_KEY);}catch(e){}
     var done=function(){cloudUser=null;try{location.reload();}catch(e){}};
@@ -9101,21 +9117,19 @@ function cloudEnter(){
       var row=res&&res.data;
       var localObj=cloudLocalObj();
       var owner=localStorage.getItem(OWNER_KEY);
-      // SÄKERHET: lokal cache litas på ENBART om den tillhör exakt detta konto.
-      // Okänd ägare eller ett annat konto => lita på molnet (eller börja färskt).
-      // Detta stoppar att ett kontos progress läcker över till ett annat vid kontobyte.
       var ownerMine=(owner===cloudUser.id);
+      _dbg('enter u='+(cloudUser.id||'').slice(0,6)+' own='+((owner||'-')).slice(0,6)+' row='+(row?'Y':'N')+' cache$='+Math.round((localObj&&localObj.coins)||0)+' mine='+ownerMine);
       if(row){
-        if(!ownerMine){cloudApplyAndReload(JSON.stringify(row.data));return;}
+        if(!ownerMine){_dbg('->applyCloud(notmine)');cloudApplyAndReload(JSON.stringify(row.data));return;}
         var cloudAt=Number(row.client_saved_at)||0;
         var localAt=Number(localObj&&localObj.savedAt)||0;
-        if(localAt>cloudAt){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
-        else if(localAt===cloudAt){cloudHideGate();}
-        else{cloudApplyAndReload(JSON.stringify(row.data));}
+        if(localAt>cloudAt){_dbg('->push(localnewer)');cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
+        else if(localAt===cloudAt){_dbg('->keep(equal)');cloudHideGate();}
+        else{_dbg('->applyCloud(older)');cloudApplyAndReload(JSON.stringify(row.data));}
       }else{
-        if(ownerMine){cloudHideGate();}
-        else if(localObj){_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
-        else{try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudHideGate();}
+        if(ownerMine){_dbg('->keepMine(norow)');cloudHideGate();}
+        else if(localObj){_dbg('->WIPE+reload(foreign)');_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
+        else{_dbg('->freshNew');try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudHideGate();}
       }
     },function(){cloudShowGate('login','Could not reach the cloud. Tap Log In to try again.');});
   });
@@ -9185,7 +9199,8 @@ function cloudPushNow(cb){
   // EXTRA SPÄRR: spara ENDAST om den lokala cachen tillhör EXAKT det inloggade kontot.
   // (Tidigare släpptes "okänd ägare" igenom — det var en väg för läckan.)
   var _own=null;try{_own=localStorage.getItem(OWNER_KEY);}catch(e){}
-  if(_own!==cloudUser.id){if(cb)cb();return;}
+  if(_own!==cloudUser.id){_dbg('push BLOCKED own='+((_own||'-')).slice(0,6)+' u='+(cloudUser.id||'').slice(0,6));if(cb)cb();return;}
+  _dbg('push GO $'+Math.round(o.coins||0)+' u='+(cloudUser.id||'').slice(0,6));
   cloudBusy=true;
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
@@ -9208,7 +9223,7 @@ function cloudDoLogIn(){
   cloudGateMsg('Logging in\u2026');cloudKickedFlag=false;
   sb.auth.signInWithPassword({email:em,password:pw}).then(function(res){
     if(res.error){cloudGateMsg(res.error.message);return;}
-    cloudUser=res.data.user;cloudEnter();
+    cloudUser=res.data.user;_dbg('signin '+((res.data.user.email||res.data.user.id||'')).slice(0,12));cloudEnter();
   },function(){cloudGateMsg('Something went wrong. Try again.');});
 }
 function cloudDoSignUp(){
