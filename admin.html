@@ -173,6 +173,8 @@
     <span class="spacer"></span>
     <button id="refresh" class="btn">Refresh</button>
   </div>
+  <input id="search" class="fi" type="search" placeholder="Search players by handle (or paste a user ID)…" autocomplete="off" style="margin-bottom:10px">
+  <div id="searchNote" style="font-size:12px;color:var(--muted);margin:0 0 12px;min-height:14px"></div>
   <div id="list"><div class="loading">Loading accounts…</div></div>
 </main>
 
@@ -317,7 +319,28 @@ async function loadAccounts(){
     renderAccounts(data.accounts||[]);
   }catch(e){ $('list').innerHTML='<div class="empty">Network error. Try Refresh.</div>'; }
 }
-$('refresh').onclick=loadAccounts;
+let searchTimer=null;
+function currentQuery(){ var el=document.getElementById('search'); return el?el.value.trim():''; }
+function onSearch(){
+  const q=currentQuery();
+  clearTimeout(searchTimer);
+  if(!q){ $('searchNote').textContent=''; loadAccounts(); return; }
+  searchTimer=setTimeout(function(){ runSearch(q); },250);
+}
+async function runSearch(q){
+  $('searchNote').textContent='Searching…';
+  $('list').innerHTML='<div class="loading">Searching…</div>';
+  try{
+    const {data,error}=await sb.rpc('pp_admin_search',{p_query:q});
+    if(error||!data||data.ok!==true){ $('searchNote').textContent=''; $('list').innerHTML='<div class="empty">Search failed.</div>'; return; }
+    const accts=data.accounts||[];
+    $('searchNote').textContent=accts.length+' result'+(accts.length===1?'':'s')+' for \u201C'+q+'\u201D';
+    renderAccounts(accts);
+  }catch(e){ $('searchNote').textContent=''; $('list').innerHTML='<div class="empty">Network error.</div>'; }
+}
+function refreshView(){ const q=currentQuery(); if(q){ runSearch(q); } else { loadAccounts(); } }
+document.getElementById('search').addEventListener('input',onSearch);
+$('refresh').onclick=refreshView;
 
 function fullTime(ts){ if(!ts) return '—'; try{ return new Date(ts).toLocaleString(); }catch(e){ return String(ts); } }
 
@@ -359,7 +382,7 @@ async function doRestore(uid,id){
     if(!data||data.ok!==true){ msg.className='mmsg err'; msg.textContent='Restore failed: '+esc((data&&data.error)||'unknown'); return; }
     msg.className='mmsg ok';
     msg.textContent='Restored. Pets — updated '+data.pets_updated+', added '+data.pets_inserted+', removed '+data.pets_deleted+'.';
-    loadAccounts();
+    refreshView();
     setTimeout(closeRestore,1700);
   }catch(e){ msg.className='mmsg err'; msg.textContent='Network error.'; }
 }
@@ -392,7 +415,7 @@ async function applyRes(){
     if(error){ msg.className='mmsg err'; msg.textContent=error.message||'Failed.'; return; }
     if(!data||data.ok!==true){ msg.className='mmsg err'; msg.textContent='Failed: '+esc((data&&data.error)||'unknown')+((data&&data.field)?(' ('+esc(data.field)+')'):''); return; }
     msg.className='mmsg ok'; msg.textContent='Updated.';
-    loadAccounts();
+    refreshView();
     setTimeout(closeRes,1400);
   }catch(e){ msg.className='mmsg err'; msg.textContent='Network error.'; }
 }
