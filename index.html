@@ -4381,7 +4381,11 @@ function friendRespond(rid,accept){
     if(d&&d.ok){friendMsg(accept?'Friend added!':'Request declined.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
   },function(){friendMsg('Could not reach the server. Try again.','err');});
 }
-function friendRemove(uid){
+function friendRemove(uid,handle){
+  var who=handle?('@'+handle):'this friend';
+  showConfirm('Remove friend?','Are you sure you want to remove <b>'+who+'</b> from your friends? You\u2019ll both have to add each other again to become friends.','Remove',function(){friendRemoveDo(uid);});
+}
+function friendRemoveDo(uid){
   sb.rpc('pp_friend_remove',{p_user:uid}).then(function(res){
     var d=res&&res.data;
     if(d&&d.ok){friendMsg('Friend removed.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
@@ -4435,7 +4439,7 @@ function renderFriends(){
   h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.friendCount+'/'+FRIENDS.cap+')'):'')+'</div>';
   if(!FRIENDS.loaded)h+='<div class="frd-note">Loading\u2026</div>';
   else if(!FRIENDS.data.friends.length)h+='<div class="frd-note">No friends yet. Search above to add some!</div>';
-  else FRIENDS.data.friends.forEach(function(p){h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\')">Remove</button></div>');});
+  else FRIENDS.data.friends.forEach(function(p){h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Remove</button></div>');});
   h+='</div>';
   if(FRIENDS.data.outgoing&&FRIENDS.data.outgoing.length){
     h+='<div class="frd-card"><div class="frd-sec">Pending (sent)</div>';
