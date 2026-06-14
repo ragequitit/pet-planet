@@ -105,6 +105,30 @@
   .denied h2{color:var(--red)}
   .copied{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--green);color:#06281d;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;opacity:0;transition:opacity .15s;pointer-events:none}
   .copied.show{opacity:1}
+  .acct .acts{display:flex;gap:8px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+  .btn.sm{padding:7px 11px;font-size:12px}
+  .btn.warn{border-color:#5a4a1f;background:#26210f;color:var(--gold)}
+  .btn.warn:hover{background:#2f2912}
+  .modal{position:fixed;inset:0;background:rgba(4,6,12,.66);display:none;align-items:flex-end;justify-content:center;z-index:50}
+  .modal.open{display:flex}
+  @media(min-width:640px){.modal{align-items:center;padding:20px}}
+  .sheet{background:var(--panel);border:1px solid var(--border);border-radius:16px 16px 0 0;width:100%;max-width:560px;max-height:86vh;overflow:auto;animation:rise .25s ease both}
+  @media(min-width:640px){.sheet{border-radius:16px}}
+  @media(prefers-reduced-motion:reduce){.sheet{animation:none}}
+  .sh-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 16px 12px;position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--border)}
+  .sh-head h3{margin:0;font-size:16px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sh-head .x{cursor:pointer;color:var(--muted);font-size:24px;line-height:1;background:none;border:none;padding:2px 8px}
+  .sh-head .x:hover{color:var(--text)}
+  .sh-body{padding:14px 16px 18px}
+  .snap{display:flex;align-items:center;gap:12px;border:1px solid var(--border);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:var(--panel2)}
+  .snap .info{flex:1;min-width:0}
+  .snap .when{font-weight:700;font-size:13px}
+  .snap .meta{font-size:11px;color:var(--muted);margin-top:3px}
+  .snap .rs{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--border);color:var(--muted);margin-left:7px;vertical-align:middle}
+  .snap .rs.pre{color:var(--gold);border-color:#5a4a1f}
+  .note{font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.55}
+  .mmsg{font-size:13px;min-height:18px;margin-top:8px}
+  .mmsg.err{color:var(--red)} .mmsg.ok{color:var(--green)}
 </style>
 </head>
 <body>
@@ -152,6 +176,20 @@
   <div id="list"><div class="loading">Loading accounts…</div></div>
 </main>
 
+<div id="restoreModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="rmTitle">
+  <div class="sheet">
+    <div class="sh-head">
+      <h3 id="rmTitle">Restore</h3>
+      <button class="x" onclick="closeRestore()" aria-label="Close">&times;</button>
+    </div>
+    <div class="sh-body">
+      <p class="note">Pick a snapshot to roll this account back to. A safety snapshot of the current state is taken first, so a restore can itself be undone. Any open game tab for this account will reload.</p>
+      <div id="rmList"><div class="loading">Loading snapshots…</div></div>
+      <div id="rmMsg" class="mmsg"></div>
+    </div>
+  </div>
+</div>
+
 <div id="copied" class="copied">Copied</div>
 
 <script>
@@ -168,6 +206,7 @@ try{
 const $=id=>document.getElementById(id);
 function show(el,on){ $(el).style.display = on?'':'none'; }
 
+let ACCTS={};
 function fmtNum(x){
   if(x===null||x===undefined||x==='') return '—';
   let n=Number(x); if(!isFinite(n)) return String(x);
@@ -216,7 +255,9 @@ $('pwd').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
 function renderAccounts(list){
   const box=$('list');
   if(!list||!list.length){ box.innerHTML='<div class="empty">No accounts found.</div>'; return; }
+  ACCTS={};
   const cards=list.map(a=>{
+    ACCTS[a.user_id]=a;
     const handle=a.handle||'(no handle)';
     const initial=esc((a.handle||'?').slice(0,1).toUpperCase());
     const on=a.online?'on':'';
@@ -241,6 +282,7 @@ function renderAccounts(list){
         <div class="stat"><div class="k">Snapshots</div><div class="v num">${fmtInt(a.history)}</div></div>
       </div>
       <div class="foot"><span>Last save ${esc(ago(a.updated_at))}</span><span>Seen ${esc(ago(a.last_seen))}</span></div>
+      <div class="acts"><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button></div>
     </div>`;
   }).join('');
   box.innerHTML='<div class="grid">'+cards+'</div>';
@@ -256,6 +298,54 @@ async function loadAccounts(){
   }catch(e){ $('list').innerHTML='<div class="empty">Network error. Try Refresh.</div>'; }
 }
 $('refresh').onclick=loadAccounts;
+
+function fullTime(ts){ if(!ts) return '—'; try{ return new Date(ts).toLocaleString(); }catch(e){ return String(ts); } }
+
+function openRestore(uid){
+  const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
+  $('rmTitle').textContent='Restore — '+handle;
+  $('rmMsg').textContent=''; $('rmMsg').className='mmsg';
+  $('rmList').innerHTML='<div class="loading">Loading snapshots…</div>';
+  $('restoreModal').classList.add('open');
+  loadSnaps(uid);
+}
+function closeRestore(){ $('restoreModal').classList.remove('open'); }
+
+async function loadSnaps(uid){
+  try{
+    const {data,error}=await sb.rpc('pp_admin_history',{p_target:uid});
+    if(error||!data||data.ok!==true){ $('rmList').innerHTML='<div class="empty">Couldn\'t load snapshots.</div>'; return; }
+    const snaps=data.snapshots||[];
+    if(!snaps.length){ $('rmList').innerHTML='<div class="empty">No snapshots yet for this account. They build up as the player plays (about one per hour).</div>'; return; }
+    $('rmList').innerHTML=snaps.map(s=>{
+      const pre=(s.reason==='pre_restore');
+      const tag=pre?'<span class="rs pre">pre-restore</span>':'<span class="rs">auto</span>';
+      return '<div class="snap">'+
+        '<div class="info"><div class="when">'+esc(fullTime(s.snapped_at))+tag+'</div>'+
+        '<div class="meta">Lv '+esc(s.level||'—')+' · '+fmtNum(s.coins)+' sparks · '+fmtInt(s.gems)+' gems · '+fmtInt(s.pets)+' pets</div></div>'+
+        '<button class="btn sm warn" onclick="doRestore(\''+esc(uid)+'\','+Number(s.id)+')">Restore to this</button>'+
+      '</div>';
+    }).join('');
+  }catch(e){ $('rmList').innerHTML='<div class="empty">Network error.</div>'; }
+}
+
+async function doRestore(uid,id){
+  const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
+  if(!confirm('Restore '+handle+' to this snapshot?\n\nThe current state is saved as a safety snapshot first, then rolled back. Any open game tab for this account will reload.')) return;
+  const msg=$('rmMsg'); msg.className='mmsg'; msg.textContent='Restoring…';
+  try{
+    const {data,error}=await sb.rpc('pp_admin_restore',{p_target:uid,p_history_id:id});
+    if(error){ msg.className='mmsg err'; msg.textContent=error.message||'Restore failed.'; return; }
+    if(!data||data.ok!==true){ msg.className='mmsg err'; msg.textContent='Restore failed: '+esc((data&&data.error)||'unknown'); return; }
+    msg.className='mmsg ok';
+    msg.textContent='Restored. Pets — updated '+data.pets_updated+', added '+data.pets_inserted+', removed '+data.pets_deleted+'.';
+    loadAccounts();
+    setTimeout(closeRestore,1700);
+  }catch(e){ msg.className='mmsg err'; msg.textContent='Network error.'; }
+}
+
+document.getElementById('restoreModal').addEventListener('click',e=>{ if(e.target===document.getElementById('restoreModal')) closeRestore(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeRestore(); });
 
 async function boot(){
   // Avgör nuvarande läge: utloggad → gate; inloggad icke-admin → denied; admin → panel.
