@@ -604,7 +604,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .stats-soon{opacity:0.5;font-style:italic;}
 .stats-foot{margin-top:14px;font-size:0.66rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.4;}
 /* Dev-meny */
-#dev-fab{display:none;position:absolute;left:10px;bottom:calc(var(--nav-h) + 10px);padding:7px 11px;background:rgba(20,10,30,0.8);border:1.5px dashed #e07a3a;border-radius:9px;color:#ffb37a;font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1px;cursor:pointer;z-index:95;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:transform 0.12s;}
+#dev-fab{position:absolute;left:10px;bottom:calc(var(--nav-h) + 10px);padding:7px 11px;background:rgba(20,10,30,0.8);border:1.5px dashed #e07a3a;border-radius:9px;color:#ffb37a;font-family:'Fredoka One',cursive;font-size:0.7rem;letter-spacing:1px;cursor:pointer;z-index:95;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,0.5);transition:transform 0.12s;}
 #dev-fab:active{transform:scale(0.93);}
 .dev-note{font-size:0.55rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1.5px;text-align:center;margin-bottom:10px;}
 .dev-row{display:flex;gap:6px;margin-bottom:6px;}
@@ -1401,7 +1401,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <div class="side-btns" id="left-btns">
         <div class="side-btn" id="quests-btn" onclick="switchTab('quests')"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/daily-reward.png" alt="" onerror="this.parentNode.textContent='🎁'"></span><span class="sb-label">Daily</span></div>
-        <div class="side-btn" id="skins-btn" onclick="openSkinPicker('egg')"><span class="sb-icon">🎨</span><span class="sb-label">Skins</span></div>
+        <div class="side-btn" id="skins-btn" onclick="openSkinPicker('egg')" style="display:none;"><span class="sb-icon">🎨</span><span class="sb-label">Skins</span></div>
       </div>
       <div class="side-btns" id="right-btns">
         <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
@@ -3013,15 +3013,6 @@ function renderDevMenu(){
 }
 function openDevMenu(){renderDevMenu();document.getElementById('dev-modal').classList.add('open');}
 function closeDevMenu(){var m=document.getElementById('dev-modal');if(m)m.classList.remove('open');}
-// DEV-knappen visas BARA för ägarens konto (Chriswhippit). Andra inloggade ser den inte.
-var DEV_OWNER_ID='d2b2e750-ff9d-40c2-acbf-03c82a44d655';
-function updateDevFab(){
-  var f=document.getElementById('dev-fab');
-  if(!f)return;
-  var mine=(typeof cloudUser!=='undefined'&&cloudUser&&cloudUser.id===DEV_OWNER_ID);
-  f.style.display=mine?'block':'none';
-  if(!mine)closeDevMenu();
-}
 
 // ============================================================
 // EGG- & BACKGROUND-SKINS (kosmetik)
@@ -8653,7 +8644,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -8667,7 +8658,6 @@ function cloudKicked(){
   if(cloudKickedFlag)return;cloudKickedFlag=true;
   try{sb.auth.signOut();}catch(e){}
   cloudUser=null;
-  try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}
   cloudShowGate('login','You logged in on another device. Log in here again to keep playing on this one.');
 }
 function cloudHeartbeat(){
@@ -8843,7 +8833,7 @@ if(sb){
       if(sess){cloudUser=sess.user;cloudEnter();}
       else{cloudShowGate('login');}
     },function(){cloudShowGate('login','Could not reach the server. Tap Log In to try again.');});
-    sb.auth.onAuthStateChange(function(_e,session){if(!session){cloudUser=null;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}if(!cloudKickedFlag&&!document.getElementById('cloud-gate'))cloudShowGate('login');}});
+    sb.auth.onAuthStateChange(function(_e,session){if(!session){cloudUser=null;if(!cloudKickedFlag&&!document.getElementById('cloud-gate'))cloudShowGate('login');}});
   }catch(e){cloudShowGate('login','Something went wrong. Reload to try again.');}
   setInterval(cloudFlush,8000);
   setInterval(cloudHeartbeat,8000);
