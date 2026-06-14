@@ -524,6 +524,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .sec-cost{flex-shrink:0;display:flex;flex-direction:column;gap:4px;position:relative;z-index:1;}
 .sec-cost-chip{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:1.08rem;color:#fff;white-space:nowrap;justify-content:flex-end;}
 .sec-cost-chip.bad{color:#ff7b7b;}
+.sec-cost-chip.good{color:#5fd47a;}
 .sec-coin{width:21px;height:21px;object-fit:contain;}
 .sec-cshell{font-size:1.17rem;}
 .sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
@@ -1097,6 +1098,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .adv-pick-pet.locked{opacity:0.5;cursor:not-allowed;border-style:dashed;}
 .adv-pick-pet.locked:active{transform:none;}
 .app-lvl{flex-shrink:0;font-size:0.6rem;font-weight:900;color:#cdb6ff;background:rgba(122,90,208,0.22);border:1px solid rgba(122,90,208,0.5);border-radius:6px;padding:1px 6px;font-family:'Baloo 2',sans-serif;}
+.app-lvlcol{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;width:48px;}
+.app-xp{width:100%;height:5px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;border:1px solid rgba(122,90,208,0.3);}
+.app-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:4px;transition:width 0.4s ease;}
+.app-xp-pct{font-size:0.52rem;font-weight:800;color:#b9a3e8;font-family:'Baloo 2',sans-serif;line-height:1;}
 .app-lock{flex-shrink:0;font-family:'Fredoka One',cursive;font-size:0.62rem;color:#ff9a8a;text-align:right;line-height:1.2;}
 .adv-req-note{font-size:0.66rem;color:#cdb6ff;text-align:center;margin:-4px 0 10px;}
 .adv-dreq{display:inline-block;font-size:0.66rem;font-weight:900;color:#e7dcff;background:rgba(122,90,208,0.35);border:1px solid rgba(178,136,255,0.6);border-radius:8px;padding:2px 9px;margin:2px 0 8px;}
@@ -2797,6 +2802,7 @@ function openAdvPicker(advId){
     avail.forEach(function(p){
       var rc=RARITY_CONFIG[p.rarity]||{color:'#aaa',label:''};
       var lv=petLevelFromXp(p.xp||0);
+      var lp=petXpProgress(p);
       var ok=lv>=req;
       var s=petAdvSum(p);var tags=[];
       if(s.coinGain)tags.push('🪙+'+s.coinGain+'%');
@@ -2814,7 +2820,7 @@ function openAdvPicker(advId){
       html+='<div class="adv-pick-pet'+(ok?'':' locked')+'"'+(ok?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+p.e+'</div>';
       html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'</div>';
-      html+='<div class="app-lvl">Lv '+lv+'</div>';
+      html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
       html+=(ok?'<div class="app-go">Send →</div>':'<div class="app-lock">Needs<br>Lv '+req+'</div>')+'</div>';
     });
     html+='</div>';
@@ -3288,10 +3294,10 @@ function openPetSlotModal(idx){
         '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+curPet.e+'</div>'+
         '<div class="pet-option-info"><div class="pet-option-name">'+curPet.name+'</div>'+
           '<div class="pet-option-rarity" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div></div>'+
-        '<div class="slot-current-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
+        '<div class="slot-current-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
       '</div>'+
-      '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" style="width:'+lp.pct+'%"></div></div>'+
-      '<div class="slot-current-xptxt">'+uiIco('pet-xp','⭐',12)+' '+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>'+
+      '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" id="slot-cur-xpfill" style="width:'+lp.pct+'%"></div></div>'+
+      '<div class="slot-current-xptxt">'+uiIco('pet-xp','⭐',12)+' <span id="slot-cur-xpnum">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</span></div>'+
       (cab?('<div class="slot-current-ab">'+cab+'</div>'):'')+
       '<button class="slot-remove-btn" id="slot-remove-btn">❌ Remove Pet</button>';
     list.appendChild(cur);
@@ -3440,6 +3446,21 @@ function softUpdatePetXp(){
     var lv=document.getElementById('pclv-'+pet.uid);
     if(lv)lv.textContent='Lv '+lp.level+(lp.max?' · MAX':'');
   });
+}
+// Live-uppdatering av den aktiva petens XP i "Choose Active Pet"-rutan (slot-modalen)
+function softUpdateSlotXp(){
+  if(typeof activeSlot==='undefined'||activeSlot<0||!G.equippedPets)return;
+  var uid=G.equippedPets[activeSlot];
+  if(uid==null)return;
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+  if(!pet)return;
+  var lp=petXpProgress(pet);
+  var f=document.getElementById('slot-cur-xpfill');
+  if(f)f.style.width=lp.pct+'%';
+  var lv=document.getElementById('slot-cur-lv');
+  if(lv)lv.textContent='Lv '+lp.level+(lp.max?' · MAX':'');
+  var n=document.getElementById('slot-cur-xpnum');
+  if(n)n.textContent=(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'));
 }
 
 // Pet Detail Modal
@@ -4840,7 +4861,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.8<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.9<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -6896,7 +6917,7 @@ function renderShop(){
     if(unlocked){
       html+='<div class="sec-cost">';
       html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
-      html+='<span class="sec-cost-chip'+(shellOk?'':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+sc+'</span>';
+      html+='<span class="sec-cost-chip'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span>';
       html+='</div>';
     }
     // Knappar (Craft över Hatch)
@@ -8472,7 +8493,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();if(document.getElementById('tab-inventory').style.display==='block')softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();var _pm=document.getElementById('pet-modal');if(_pm&&_pm.classList.contains('open'))softUpdateSlotXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
