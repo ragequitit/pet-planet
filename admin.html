@@ -190,6 +190,26 @@
   </div>
 </div>
 
+<div id="resModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="reTitle">
+  <div class="sheet">
+    <div class="sh-head">
+      <h3 id="reTitle">Resources</h3>
+      <button class="x" onclick="closeRes()" aria-label="Close">&times;</button>
+    </div>
+    <div class="sh-body">
+      <p class="note">Set exact amounts. Only these three can be changed. A safety snapshot is taken first, so it can be undone from Restore. If the account is online, its game tab is logged out and must sign in again to see the change — best done while the player is offline.</p>
+      <label class="fl" for="reCoins">Sparks</label>
+      <input id="reCoins" class="fi num" type="number" min="0" step="1" inputmode="decimal">
+      <label class="fl" for="reGems">Gems</label>
+      <input id="reGems" class="fi num" type="number" min="0" step="1" inputmode="numeric">
+      <label class="fl" for="reStar">Stardust</label>
+      <input id="reStar" class="fi num" type="number" min="0" step="1" inputmode="numeric">
+      <button id="reApply" class="btn gold" style="width:100%;margin-top:18px;padding:12px">Apply changes</button>
+      <div id="reMsg" class="mmsg"></div>
+    </div>
+  </div>
+</div>
+
 <div id="copied" class="copied">Copied</div>
 
 <script>
@@ -282,7 +302,7 @@ function renderAccounts(list){
         <div class="stat"><div class="k">Snapshots</div><div class="v num">${fmtInt(a.history)}</div></div>
       </div>
       <div class="foot"><span>Last save ${esc(ago(a.updated_at))}</span><span>Seen ${esc(ago(a.last_seen))}</span></div>
-      <div class="acts"><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button></div>
+      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button></div>
     </div>`;
   }).join('');
   box.innerHTML='<div class="grid">'+cards+'</div>';
@@ -345,7 +365,39 @@ async function doRestore(uid,id){
 }
 
 document.getElementById('restoreModal').addEventListener('click',e=>{ if(e.target===document.getElementById('restoreModal')) closeRestore(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeRestore(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeRestore(); closeRes(); } });
+
+let RES_UID=null;
+function openRes(uid){
+  const a=ACCTS[uid]; if(!a) return;
+  RES_UID=uid;
+  $('reTitle').textContent='Resources — '+((a.handle)||uid);
+  $('reCoins').value = (a.coins!=null&&a.coins!=='') ? Math.round(Number(a.coins)) : 0;
+  $('reGems').value  = (a.gems!=null&&a.gems!=='')  ? Math.round(Number(a.gems))  : 0;
+  $('reStar').value  = (a.stardust!=null&&a.stardust!=='') ? Math.round(Number(a.stardust)) : 0;
+  $('reMsg').textContent=''; $('reMsg').className='mmsg';
+  $('resModal').classList.add('open');
+}
+function closeRes(){ $('resModal').classList.remove('open'); }
+async function applyRes(){
+  const uid=RES_UID; const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
+  const raw={coins:$('reCoins').value, gems:$('reGems').value, stardust:$('reStar').value};
+  const changes={};
+  for(const k in raw){ if(raw[k]!==''){ const n=Number(raw[k]); if(!isFinite(n)||n<0){ const m=$('reMsg'); m.className='mmsg err'; m.textContent='Values must be 0 or higher.'; return; } changes[k]=n; } }
+  if(!Object.keys(changes).length){ const m=$('reMsg'); m.className='mmsg err'; m.textContent='Nothing to change.'; return; }
+  if(!confirm('Apply resource changes to '+handle+'?\n\nA safety snapshot is taken first. If the account is online it will be logged out and must sign in again.')) return;
+  const msg=$('reMsg'); msg.className='mmsg'; msg.textContent='Applying…';
+  try{
+    const {data,error}=await sb.rpc('pp_admin_set_resources',{p_target:uid,p_changes:changes});
+    if(error){ msg.className='mmsg err'; msg.textContent=error.message||'Failed.'; return; }
+    if(!data||data.ok!==true){ msg.className='mmsg err'; msg.textContent='Failed: '+esc((data&&data.error)||'unknown')+((data&&data.field)?(' ('+esc(data.field)+')'):''); return; }
+    msg.className='mmsg ok'; msg.textContent='Updated.';
+    loadAccounts();
+    setTimeout(closeRes,1400);
+  }catch(e){ msg.className='mmsg err'; msg.textContent='Network error.'; }
+}
+$('reApply').onclick=applyRes;
+document.getElementById('resModal').addEventListener('click',e=>{ if(e.target===document.getElementById('resModal')) closeRes(); });
 
 async function boot(){
   // Avgör nuvarande läge: utloggad → gate; inloggad icke-admin → denied; admin → panel.
