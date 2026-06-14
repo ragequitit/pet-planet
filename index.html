@@ -116,8 +116,17 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #ascension-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #ascension-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
 /* Trading-skärmen (skal — server kopplas in senare) */
-#trading-modal .prof-panel,#friends-modal .prof-panel,#tradelive-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
-#trading-modal .prof-body,#friends-modal .prof-body,#tradelive-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+#trading-modal .prof-panel,#friends-modal .prof-panel,#tradelive-modal .prof-panel,#fstats-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#trading-modal .prof-body,#friends-modal .prof-body,#tradelive-modal .prof-body,#fstats-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+.fcmp-head{display:flex;align-items:center;gap:8px;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;margin-bottom:2px;}
+.fcmp-sub{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:12px;display:flex;align-items:center;}
+.fcmp-legend{display:flex;gap:10px;font-size:0.66rem;color:rgba(255,255,255,0.6);margin-bottom:8px;}
+.fcmp-legend b{color:#ffe08a;}
+.fcmp-row{display:flex;align-items:center;background:rgba(27,45,78,0.5);border:1px solid rgba(58,92,184,0.4);border-radius:10px;padding:8px 11px;margin-bottom:6px;}
+.fcmp-lbl{flex:1;font-size:0.76rem;color:rgba(255,255,255,0.8);}
+.fcmp-val{min-width:74px;text-align:right;font-weight:800;font-size:0.82rem;color:rgba(255,255,255,0.85);}
+.fcmp-val.win{color:#ffe08a;}
+.fcmp-cat{font-size:0.62rem;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin:12px 0 5px;}
 .lt-status{border-radius:12px;padding:11px 14px;font-size:0.8rem;text-align:center;margin-bottom:12px;font-family:'Fredoka One',cursive;}
 .lt-status.wait{background:rgba(120,150,230,0.18);border:1px solid rgba(120,150,230,0.4);color:#cdd9ff;}
 .lt-status.ok{background:rgba(46,160,67,0.2);border:1px solid rgba(46,160,67,0.5);color:#9be6a8;}
@@ -149,7 +158,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .frd-btn.tiny{padding:7px 12px;font-size:0.75rem;box-shadow:0 2px 0 #8a6000;}
 .frd-btn.ghost{background:transparent;box-shadow:none;color:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.2);}
 .frd-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.06);}
-.frd-item-info{min-width:0;}
+.frd-item-left{display:flex;align-items:center;gap:9px;min-width:0;flex:1;}
+.frd-avatar-wrap{position:relative;flex-shrink:0;width:42px;height:42px;}
+.frd-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(160deg,#2a3f7a,#15264e);border:2px solid rgba(245,200,66,0.45);display:flex;align-items:center;justify-content:center;font-size:1.35rem;overflow:hidden;line-height:1;}
+.frd-avatar img{width:100%;height:100%;object-fit:cover;}
+.frm-png,.frm-ring{position:absolute;top:-3px;left:-3px;width:calc(100% + 6px);height:calc(100% + 6px);border-radius:50%;pointer-events:none;box-sizing:border-box;}
+.frm-png{object-fit:contain;}
+.frm-ring{border:3px solid #fff;background:transparent;}
+.frd-item-info{min-width:0;flex:1;}
 .frd-item-handle{font-weight:800;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .frd-item-name{font-size:0.66rem;color:rgba(255,255,255,0.5);}
 .frd-item-btns{display:flex;gap:6px;flex-shrink:0;}
@@ -535,6 +551,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .reroll-start:active{transform:translateY(2px);box-shadow:0 2px 0 #3a268f;}
 .frd-toggle-row{display:flex;align-items:center;gap:10px;padding:7px 2px;}
 .frd-toggle-lbl{flex:1;font-size:0.8rem;color:rgba(255,255,255,0.85);}
+.frd-status{font-size:0.66rem;color:rgba(255,255,255,0.5);margin-top:3px;display:flex;align-items:center;}
+.frd-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#6b7280;margin-right:5px;}
+.frd-dot.on{background:#3fcf5f;box-shadow:0 0 5px #3fcf5f;}
 .sec-coin{width:21px;height:21px;object-fit:contain;}
 .sec-cshell{font-size:1.17rem;}
 .sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
@@ -1664,6 +1683,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="prof-body" id="friends-body"></div>
   </div>
 </div>
+<div id="fstats-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title" id="fstats-title">Friend</div>
+      <button class="prof-x" onclick="closeFriendStats()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="prof-body" id="fstats-body"></div>
+  </div>
+</div>
 <div id="tradelive-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -2443,7 +2471,7 @@ var G={
   titlesEarned:{},
   adventureSlots:1,
   adventures:[],
-  profile:{name:'Player',favoritePet:null,equippedTitle:null,eggSkin:'classic',background:'classic'},
+  profile:{name:'Player',favoritePet:null,equippedTitle:null,eggSkin:'classic',background:'classic',frame:null,framesOwned:[]},
   settings:{masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,skyLife:true},
   event:null,
   boosts:{coin:0,luck:0},
@@ -3030,6 +3058,7 @@ function renderDevMenu(){
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Embers</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="addTestCharms()" '+bBlue+'>+10 \ud83c\udfb2 Charms</button></div>';
+  html+='<div class="dev-row"><button onclick="devUnlockFrames()" '+bBlue+'>\ud83d\uddbc\ufe0f Unlock all frames</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
@@ -3125,6 +3154,72 @@ function selectSkin(id){
   applySkins();saveGame();renderSkinPicker();
   var pm=document.getElementById('profile-modal');
   if(pm&&pm.classList.contains('open')&&typeof renderProfile==='function')renderProfile();
+}
+
+// ============================================================
+// PROFILE FRAMES (cosmetic ring around avatar)
+// ============================================================
+var FRAME_BASE=ASSET_BASE+'/assets/ui/frames/';
+var FRAMES=[
+  {id:'none',   name:'No Frame', ring:null,      how:''},
+  {id:'bronze', name:'Bronze',   ring:'#cd7f32', how:'Achievement reward'},
+  {id:'silver', name:'Silver',   ring:'#cfd6e6', how:'Achievement reward'},
+  {id:'gold',   name:'Gold',     ring:'#f5c842', how:'Achievement reward'},
+  {id:'emerald',name:'Emerald',  ring:'#42d98a', how:'Buy in the Shop'},
+  {id:'ruby',   name:'Ruby',     ring:'#ff5a7a', how:'Buy in the Shop'},
+  {id:'cosmic', name:'Cosmic',   ring:'#7af0ff', how:'Buy in the Shop'},
+  {id:'rainbow',name:'Rainbow',  ring:'#b06cff', how:'Event reward'}
+];
+function frameById(id){for(var i=0;i<FRAMES.length;i++){if(FRAMES[i].id===id)return FRAMES[i];}return FRAMES[0];}
+function equippedFrame(){return (G.profile&&G.profile.frame)||'none';}
+function ownsFrame(id){if(!id||id==='none')return true;return !!(G.profile&&Array.isArray(G.profile.framesOwned)&&G.profile.framesOwned.indexOf(id)>=0);}
+function frameOverlay(id){
+  var f=frameById(id);if(!f||f.id==='none')return '';
+  var png=FRAME_BASE+'frame-'+f.id+'.png';
+  return '<img class="frm-png" src="'+png+'" alt="" onerror="this.style.display=\'none\';if(this.nextSibling)this.nextSibling.style.display=\'block\';">'+
+         '<span class="frm-ring" style="display:none;border-color:'+(f.ring||'#fff')+';box-shadow:0 0 7px '+(f.ring||'#fff')+'aa;"></span>';
+}
+function cloudSyncFrame(){try{if(sb&&cloudUser)sb.rpc('pp_set_frame',{p_frame:equippedFrame()});}catch(e){}}
+function openFramePicker(){renderFramePicker();var m=document.getElementById('skin-modal');if(m)m.classList.add('open');}
+function renderFramePicker(){
+  var cur=equippedFrame();
+  var t=document.getElementById('skin-modal-title');if(t)t.textContent='Profile Frame';
+  var h='<div class="skin-grid">';
+  FRAMES.forEach(function(f){
+    var owned=ownsFrame(f.id),sel=(f.id===cur);
+    var prev='<div class="skin-prev"><div class="frd-avatar-wrap" style="width:46px;height:46px;margin:0 auto"><div class="frd-avatar" style="width:46px;height:46px;font-size:1.5rem">'+profAvatarInner()+'</div>'+frameOverlay(f.id)+'</div></div>';
+    h+='<div class="skin-cell'+(sel?' sel':'')+(owned?'':' locked')+'"'+(owned?(' onclick="selectFrame(\''+f.id+'\')"'):'')+'>';
+    h+=prev+'<div class="skin-name">'+f.name+'</div>';
+    h+=owned?(sel?'<div class="skin-tag on">\u2713 Equipped</div>':'<div class="skin-tag">Tap to use</div>'):('<div class="skin-tag lock">'+LOCK_IMG+' '+(f.how||'Locked')+'</div>');
+    h+='</div>';
+  });
+  h+='</div>';
+  var g=document.getElementById('skin-modal-grid');if(g)g.innerHTML=h;
+}
+function selectFrame(id){
+  if(!ownsFrame(id))return;
+  if(!G.profile)G.profile={};
+  G.profile.frame=id;saveGame();cloudSyncFrame();renderFramePicker();
+  var pm=document.getElementById('profile-modal');
+  if(pm&&pm.classList.contains('open')&&typeof renderProfile==='function')renderProfile();
+}
+function grantFrame(id){
+  if(!G.profile)G.profile={};
+  if(!Array.isArray(G.profile.framesOwned))G.profile.framesOwned=[];
+  if(!id||id==='none')return false;
+  if(frameById(id).id!==id)return false; // okänd ram
+  if(G.profile.framesOwned.indexOf(id)>=0)return false; // äger redan
+  G.profile.framesOwned.push(id);saveGame();
+  if(typeof showRewardPopup==='function')showRewardPopup(['\ud83d\uddbc\ufe0f New profile frame unlocked: <b>'+frameById(id).name+'</b>!']);
+  var m=document.getElementById('skin-modal');if(m&&m.classList.contains('open'))renderFramePicker();
+  return true;
+}
+function devUnlockFrames(){
+  if(!G.profile)G.profile={};
+  G.profile.framesOwned=FRAMES.filter(function(f){return f.id!=='none';}).map(function(f){return f.id;});
+  saveGame();
+  var m=document.getElementById('skin-modal');if(m&&m.classList.contains('open'))renderFramePicker();
+  if(typeof showRewardPopup==='function')showRewardPopup(['\ud83d\uddbc\ufe0f All frames unlocked (DEV)']);
 }
 
 // ============================================================
@@ -3851,6 +3946,7 @@ document.getElementById('pet-picker-modal').onclick=function(e){if(e.target===th
 function openMutationModal(html){document.getElementById('mutation-modal-body').innerHTML=html;document.getElementById('mutation-modal').classList.add('open');}
 function closeMutationModal(){document.getElementById('mutation-modal').classList.remove('open');}
 document.getElementById('mutation-modal').onclick=function(e){if(e.target===this)closeMutationModal();};
+var _fsm=document.getElementById('fstats-modal');if(_fsm)_fsm.onclick=function(e){if(e.target===this)closeFriendStats();};
 
 // ============================================================
 // EXTRACTION LAB
@@ -4270,7 +4366,7 @@ function closeAscension(){document.getElementById('ascension-modal').classList.r
 function openTrading(){TRADE.msg='';TRADE.view=null;document.getElementById('trading-modal').classList.add('open');renderTrading();tradeReconcile(function(){renderTrading();});}
 function closeTrading(){document.getElementById('trading-modal').classList.remove('open');}
 document.getElementById('trading-modal').onclick=function(e){if(e.target===this)closeTrading();};
-var FRIENDS={loaded:false,handle:'',data:{friends:[],incoming:[],outgoing:[]},results:null,invites:[],msg:'',msgType:'',allowReq:true,allowTrade:true,friendCount:0,cap:200};
+var FRIENDS={loaded:false,handle:'',data:{friends:[],incoming:[],outgoing:[]},results:null,invites:[],msg:'',msgType:'',allowReq:true,allowTrade:true,allowStats:true,friendCount:0,cap:200};
 function friendMsg(t,type){FRIENDS.msg=t||'';FRIENDS.msgType=type||'';renderFriends();}
 function friendReason(d){
   var r=d&&d.reason;
@@ -4286,11 +4382,11 @@ function friendsInputFocused(){var a=document.activeElement;return !!a&&(a.id===
 function friendsSig(){
   var d=FRIENDS.data||{};var inv=FRIENDS.invites||[];
   function j(arr,f){return (arr||[]).map(f).join(',');}
-  return j(d.friends,function(x){return x.user_id||x.handle||'';})+'|'+
+  return j(d.friends,function(x){return (x.user_id||x.handle||'')+(x.online?'1':'0')+(x.avatar||'')+(x.frame||'');})+'|'+
          j(d.incoming,function(x){return x.request_id||x.handle||'';})+'|'+
          j(d.outgoing,function(x){return x.request_id||x.handle||'';})+'|'+
          j(inv,function(x){return x.session_id||'';})+'|'+
-         (FRIENDS.allowReq?'1':'0')+(FRIENDS.allowTrade?'1':'0')+'|'+FRIENDS.friendCount;
+         (FRIENDS.allowReq?'1':'0')+(FRIENDS.allowTrade?'1':'0')+(FRIENDS.allowStats?'1':'0')+'|'+FRIENDS.friendCount;
 }
 function friendsMaybeRender(){
   var sig=friendsSig();
@@ -4299,17 +4395,18 @@ function friendsMaybeRender(){
 function friendsCapturePrivacy(d){
   if(typeof d.allow_requests==='boolean')FRIENDS.allowReq=d.allow_requests;
   if(typeof d.allow_trades==='boolean')FRIENDS.allowTrade=d.allow_trades;
+  if(typeof d.allow_stats==='boolean')FRIENDS.allowStats=d.allow_stats;
   if(typeof d.friend_count==='number')FRIENDS.friendCount=d.friend_count;
   if(typeof d.cap==='number')FRIENDS.cap=d.cap;
 }
 function friendSetPrivacy(which){
   if(!sb||!cloudUser)return;
-  var req=FRIENDS.allowReq,tr=FRIENDS.allowTrade;
-  if(which==='req')req=!req; else tr=!tr;
-  FRIENDS.allowReq=req;FRIENDS.allowTrade=tr;_frSig='';renderFriends(); // optimistiskt
-  sb.rpc('pp_set_privacy',{p_allow_requests:req,p_allow_trades:tr}).then(function(res){
+  var req=FRIENDS.allowReq,tr=FRIENDS.allowTrade,st=FRIENDS.allowStats;
+  if(which==='req')req=!req; else if(which==='trade')tr=!tr; else st=!st;
+  FRIENDS.allowReq=req;FRIENDS.allowTrade=tr;FRIENDS.allowStats=st;_frSig='';renderFriends(); // optimistiskt
+  sb.rpc('pp_set_privacy',{p_allow_requests:req,p_allow_trades:tr,p_allow_stats:st}).then(function(res){
     var d=res&&res.data;
-    if(d&&d.ok){FRIENDS.allowReq=!!d.allow_requests;FRIENDS.allowTrade=!!d.allow_trades;_frSig='';renderFriends();}
+    if(d&&d.ok){FRIENDS.allowReq=!!d.allow_requests;FRIENDS.allowTrade=!!d.allow_trades;FRIENDS.allowStats=!!d.allow_stats;_frSig='';renderFriends();}
     else friendMsg('Could not save that setting. Try again.','err');
   },function(){friendMsg('Could not reach the server. Try again.','err');});
 }
@@ -4319,6 +4416,49 @@ function friendToggleNotify(which){
   else G.settings.notifyTradeInvite=(G.settings.notifyTradeInvite===false);
   if(typeof saveGame==='function')saveGame();
   _frSig='';renderFriends();
+}
+// --- Vän-stats: klick på en vän → jämför deras stats med dina ---
+var FCMP_GROUPS=[
+  {cat:'Overview',rows:[{label:'Account Level',k:'level'},{label:'Ascensions',k:'asc'}]},
+  {cat:'Economy',rows:[{label:'Sparks Earned',k:'totalCoinsEarned'},{label:'Sparks Spent',k:'totalCoinsSpent'},{label:'Total Clicks',k:'totalClicks'}]},
+  {cat:'Hatching & Embers',rows:[{label:'Eggs Hatched',k:'eggsHatched'},{label:'Embers Collected',k:'totalShellsCollected'}]},
+  {cat:'Pets',rows:[{label:'Pets Collected',k:'totalPetsCollected'},{label:'Unique Pets',k:'uniquePetsDiscovered'},{label:'Pets Fused',k:'totalPetsFused'},{label:'Pets Mutated',k:'totalPetsMutated'}]},
+  {cat:'Adventure & Achievements',rows:[{label:'Adventures',k:'adventuresCompleted'},{label:'Achievements',k:'achievementsCompleted'}]}
+];
+function fcmpMyVal(k){if(k==='level')return G.playerLevel||0;if(k==='asc')return G.ascensions||0;return (G.stats&&G.stats[k])||0;}
+function fcmpTheirVal(d,k){if(k==='level')return d.level||0;if(k==='asc')return d.ascensions||0;return (d.stats&&d.stats[k])||0;}
+function openFriendStats(uid,handle){
+  if(!sb||!cloudUser)return;
+  document.getElementById('fstats-title').textContent='@'+(handle||'friend');
+  document.getElementById('fstats-body').innerHTML='<div class="frd-note">Loading\u2026</div>';
+  document.getElementById('fstats-modal').classList.add('open');
+  sb.rpc('pp_friend_stats',{p_user:uid}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok)renderFriendStats(d);
+    else{
+      var msg=(d&&d.reason==='stats_off')?'This friend has turned off stats sharing.':(d&&d.reason==='not_friends')?'You\u2019re not friends anymore.':'Could not load their stats. Try again.';
+      document.getElementById('fstats-body').innerHTML='<div class="frd-note">'+msg+'</div>';
+    }
+  },function(){document.getElementById('fstats-body').innerHTML='<div class="frd-note">Could not reach the server. Try again.</div>';});
+}
+function closeFriendStats(){var m=document.getElementById('fstats-modal');if(m)m.classList.remove('open');}
+function renderFriendStats(d){
+  var name='@'+(d.handle||'friend');
+  document.getElementById('fstats-title').textContent=name;
+  var av=(d.avatar?(''+d.avatar):'')||'\ud83d\udc64';
+  var avInner=(av.indexOf('http')===0)?('<img src="'+av+'" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.textContent=\'\ud83d\udc64\'">'):av;
+  var h='<div class="fcmp-head"><div class="frd-avatar-wrap" style="width:34px;height:34px"><div class="frd-avatar" style="width:34px;height:34px;font-size:1.1rem">'+avInner+'</div>'+frameOverlay(d.frame)+'</div>'+(d.online?'<span class="frd-dot on"></span>':'<span class="frd-dot"></span>')+name+'</div>';
+  h+='<div class="fcmp-sub">'+(d.display_name?(d.display_name+' \u00b7 '):'')+(d.online?'Online now':'Offline')+'</div>';
+  h+='<div class="fcmp-legend"><span>Left = <b>You</b></span><span>Right = '+name+'</span></div>';
+  FCMP_GROUPS.forEach(function(g){
+    h+='<div class="fcmp-cat">'+g.cat+'</div>';
+    g.rows.forEach(function(r){
+      var mine=fcmpMyVal(r.k),theirs=fcmpTheirVal(d,r.k);
+      var mw=mine>theirs?' win':'',tw=theirs>mine?' win':'';
+      h+='<div class="fcmp-row"><span class="fcmp-val'+mw+'" style="text-align:left">'+fmtShort(mine)+'</span><span class="fcmp-lbl" style="text-align:center">'+r.label+'</span><span class="fcmp-val'+tw+'">'+fmtShort(theirs)+'</span></div>';
+    });
+  });
+  document.getElementById('fstats-body').innerHTML=h;
 }
 function friendsPoll(){
   var m=document.getElementById('friends-modal');
@@ -4391,8 +4531,12 @@ function friendRemoveDo(uid){
     if(d&&d.ok){friendMsg('Friend removed.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
   },function(){friendMsg('Could not reach the server. Try again.','err');});
 }
-function frdItem(p,btns){
-  return '<div class="frd-item"><div class="frd-item-info"><div class="frd-item-handle">@'+(p.handle||'player')+'</div>'+(p.display_name?('<div class="frd-item-name">'+p.display_name+'</div>'):'')+'</div>'+btns+'</div>';
+function frdItem(p,btns,extra,infoClick){
+  var ic=infoClick?(' onclick="'+infoClick+'" style="cursor:pointer"'):'';
+  var av=(p&&p.avatar)?(''+p.avatar):'';if(!av)av='\ud83d\udc64';
+  var avInner=(av.indexOf('http')===0)?('<img src="'+av+'" alt="" onerror="this.parentNode.textContent=\'\ud83d\udc64\'">'):av;
+  var avHtml='<div class="frd-avatar-wrap"><div class="frd-avatar">'+avInner+'</div>'+frameOverlay(p&&p.frame)+'</div>';
+  return '<div class="frd-item"><div class="frd-item-left"'+ic+'>'+avHtml+'<div class="frd-item-info"><div class="frd-item-handle">@'+(p.handle||'player')+'</div>'+(p.display_name?('<div class="frd-item-name">'+p.display_name+'</div>'):'')+(extra||'')+'</div></div>'+btns+'</div>';
 }
 function renderFriends(){
   var body=document.getElementById('friends-body');if(!body)return;
@@ -4416,6 +4560,7 @@ function renderFriends(){
     h+='<div class="frd-card"><div class="frd-sec">Privacy</div>'+
        '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow friend requests</span><button class="set-toggle'+(FRIENDS.allowReq?' on':'')+'" onclick="friendSetPrivacy(\'req\')"><span class="knob"></span></button></div>'+
        '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow trade invites</span><button class="set-toggle'+(FRIENDS.allowTrade?' on':'')+'" onclick="friendSetPrivacy(\'trade\')"><span class="knob"></span></button></div>'+
+       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Let friends see my stats</span><button class="set-toggle'+(FRIENDS.allowStats?' on':'')+'" onclick="friendSetPrivacy(\'stats\')"><span class="knob"></span></button></div>'+
        '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">Turn these off and others can\u2019t send you requests or trades at all.</div></div>';
     h+='<div class="frd-card"><div class="frd-sec">Notifications</div>'+
        '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Friend request popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyFriendReq!==false)?' on':'')+'" onclick="friendToggleNotify(\'req\')"><span class="knob"></span></button></div>'+
@@ -4439,7 +4584,7 @@ function renderFriends(){
   h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.friendCount+'/'+FRIENDS.cap+')'):'')+'</div>';
   if(!FRIENDS.loaded)h+='<div class="frd-note">Loading\u2026</div>';
   else if(!FRIENDS.data.friends.length)h+='<div class="frd-note">No friends yet. Search above to add some!</div>';
-  else FRIENDS.data.friends.forEach(function(p){h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Remove</button></div>');});
+  else FRIENDS.data.friends.forEach(function(p){var st='<div class="frd-status"><span class="frd-dot'+(p.online?' on':'')+'"></span>'+(p.online?'Online':'Offline')+' · tap for stats</div>';h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Remove</button></div>',st,'openFriendStats(\''+p.user_id+'\',\''+(p.handle||'')+'\')');});
   h+='</div>';
   if(FRIENDS.data.outgoing&&FRIENDS.data.outgoing.length){
     h+='<div class="frd-card"><div class="frd-sec">Pending (sent)</div>';
@@ -5065,7 +5210,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.11<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.15<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5406,7 +5551,7 @@ function renderProfile(){
   var h='';
   // HEADER
   h+='<div class="prof-header">';
-  h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div></div>';
+  h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div>'+frameOverlay(equippedFrame())+'</div>';
   h+='<div class="prof-id">';
   h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
   h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
@@ -5539,8 +5684,9 @@ function profFavPet(){if(!G.profile||!G.profile.favoritePet)return null;return G
 function profAvatarInner(){var fp=profFavPet();return (fp&&fp.e)?fp.e:'👤';}
 var profPickerOpen=false;
 function toggleFavPicker(){profPickerOpen=!profPickerOpen;renderProfile();}
-function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();renderProfile();}
-function clearFavoritePet(){if(G.profile)G.profile.favoritePet=null;saveGame();renderProfile();}
+function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();cloudSyncAvatar();renderProfile();}
+function clearFavoritePet(){if(G.profile)G.profile.favoritePet=null;saveGame();cloudSyncAvatar();renderProfile();}
+function cloudSyncAvatar(){try{if(sb&&cloudUser&&typeof profAvatarInner==='function')sb.rpc('pp_set_avatar',{p_avatar:profAvatarInner()});}catch(e){}}
 // ---- Favorit-djur-väljare (popup med sök + raritets-filter + sortering inkl. ålder) ----
 var favPickSearch='',favPickRarity='all',favPickSort='rarity';
 var FAV_RARITY_ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
@@ -5622,7 +5768,9 @@ function renderProfileCustomize(){
   var bs=BG_SKINS.find(function(x){return x.id===equippedBg();})||BG_SKINS[0];
   h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(es.icon||'🥚')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Egg Skin</div><div class="prof-cz-sub">'+es.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'egg\')">Change</button></div>';
   h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(bs.icon||'🌅')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Background</div><div class="prof-cz-sub">'+bs.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'bg\')">Change</button></div>';
-  var locked=[['🖼️','Profile Frame','Decorative border around your avatar'],['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
+  var curFrame=frameById(equippedFrame());
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">\ud83d\uddbc\ufe0f</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Profile Frame</div><div class="prof-cz-sub">'+curFrame.name+'</div></div><button class="prof-cz-btn" onclick="openFramePicker()">Change</button></div>';
+  var locked=[['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
   locked.forEach(function(l){
     h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">'+LOCK_IMG+'</div></div>';
   });
@@ -8802,7 +8950,7 @@ if(savedData){
   G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
   G.playerXp=(typeof savedData.playerXp==='number')?savedData.playerXp:0; // permanent kontonivå (nollställs aldrig)
   G.playerLevel=playerLevelFromXp(G.playerXp);
-  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;}
+  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;if(savedData.profile.frame)G.profile.frame=savedData.profile.frame;if(Array.isArray(savedData.profile.framesOwned))G.profile.framesOwned=savedData.profile.framesOwned;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
   // Migrera gammalt format (v2.9: sfx-boolean + skipConfirm) så ljudet inte plötsligt slår på
@@ -8882,7 +9030,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}try{if(sb&&cloudUser)sb.rpc('pp_touch');}catch(e){}try{if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();}catch(e){}try{if(typeof cloudSyncFrame==='function')cloudSyncFrame();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -8901,6 +9049,7 @@ function cloudKicked(){
 }
 function cloudHeartbeat(){
   if(!sb||!cloudUser||cloudKickedFlag||!cloudClaimed||_gateBlock)return;
+  try{sb.rpc('pp_touch');}catch(e){}
   cloudActiveCheck(function(act){if(act&&act!==''&&act!==cloudSession)cloudKicked();});
 }
 
