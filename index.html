@@ -5239,7 +5239,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.27<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.28<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9023,7 +9023,7 @@ if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins)
 var SUPA_URL='https://dscmsqbmcdczzczhubrq.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzY21zcWJtY2Rjenpjemh1YnJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEyNDg3MjcsImV4cCI6MjA5NjgyNDcyN30.eWFVZM0RX2WaaQREHbaqetrBIyJbx87gguIzcSG2FE8';
 var sb=null;
-try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:{storage:ppStore,persistSession:true,autoRefreshToken:true}});}}catch(e){sb=null;}
+try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){var _ppAuth={storage:ppStore,persistSession:true,autoRefreshToken:true};if(!PP_PRIMARY)_ppAuth.storageKey='sb-pp-tab-'+PP_TABID;sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:_ppAuth});}}catch(e){sb=null;}
 var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 var OWNER_KEY='pp_cloud_owner';
