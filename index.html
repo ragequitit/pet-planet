@@ -5221,7 +5221,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.20<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.21<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9101,25 +9101,21 @@ function cloudEnter(){
       var row=res&&res.data;
       var localObj=cloudLocalObj();
       var owner=localStorage.getItem(OWNER_KEY);
-      var ownerKnown=!!owner;
+      // SÄKERHET: lokal cache litas på ENBART om den tillhör exakt detta konto.
+      // Okänd ägare eller ett annat konto => lita på molnet (eller börja färskt).
+      // Detta stoppar att ett kontos progress läcker över till ett annat vid kontobyte.
       var ownerMine=(owner===cloudUser.id);
       if(row){
-        var cloudAt=Number(row.client_saved_at)||0;
-        if(!ownerKnown&&localObj){
-          var lt=Number(localObj.total)||0, ct=Number(row.data&&row.data.total)||0;
-          if(lt>ct){try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
-          else{cloudApplyAndReload(JSON.stringify(row.data));}
-          return;
-        }
         if(!ownerMine){cloudApplyAndReload(JSON.stringify(row.data));return;}
+        var cloudAt=Number(row.client_saved_at)||0;
         var localAt=Number(localObj&&localObj.savedAt)||0;
         if(localAt>cloudAt){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
         else if(localAt===cloudAt){cloudHideGate();}
         else{cloudApplyAndReload(JSON.stringify(row.data));}
       }else{
-        if(!ownerKnown&&localObj){try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
-        else if(ownerMine){cloudHideGate();}
-        else{_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
+        if(ownerMine){cloudHideGate();}
+        else if(localObj){_applyingSave=true;try{localStorage.removeItem(SAVE_KEY);}catch(e){}try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
+        else{try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudHideGate();}
       }
     },function(){cloudShowGate('login','Could not reach the cloud. Tap Log In to try again.');});
   });
@@ -9223,13 +9219,14 @@ function cloudDoSignUp(){
   },function(){cloudGateMsg('Something went wrong. Try again.');});
 }
 function cloudDoLogOut(){
+  // Enad, säker utloggning: rensar lokal cache + loggar ut + laddar om (via cloudLogout).
+  if(typeof cloudLogout==='function'){cloudLogout();return;}
   if(!sb)return;
-  cloudPushNow(function(){
-    try{sb.auth.signOut();}catch(e){}
-    cloudUser=null;cloudClaimed=false;cloudKickedFlag=false;
-    cloudShowGate('login','Logged out. Your progress is saved.');
-    cloudRefreshUI();
-  });
+  try{sb.auth.signOut();}catch(e){}
+  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
+  try{localStorage.removeItem(OWNER_KEY);}catch(e){}
+  cloudUser=null;cloudClaimed=false;cloudKickedFlag=false;
+  try{location.reload();}catch(e){}
 }
 function cloudRefreshUI(){if(typeof renderSettings==='function'){try{renderSettings();}catch(e){}}}
 
