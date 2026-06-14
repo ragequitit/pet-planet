@@ -5221,7 +5221,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.22<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.23<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9067,7 +9067,7 @@ function cloudKicked(){
 // Logga ut / byt konto: signOut + RENSA lokal cache (så ingen gammal data trycks över ett annat konto) + ladda om till inloggningsskärmen.
 function cloudLogout(){
   showConfirm('Log out?','You will return to the login screen. Your progress is saved in the cloud and loads again when you log back in.<br><br>This also lets you switch to a different account.','Log Out',function(){
-    cloudKickedFlag=true;
+    cloudKickedFlag=true;_gateBlock=true;_applyingSave=true; // stoppa all lokal sparning + push DIREKT, så inget skrivs över medan vi loggar ut
     try{localStorage.removeItem(SAVE_KEY);}catch(e){}
     try{localStorage.removeItem(OWNER_KEY);}catch(e){}
     var done=function(){cloudUser=null;try{location.reload();}catch(e){}};
@@ -9182,9 +9182,10 @@ function cloudRegisterMissingPets(){
 function cloudPushNow(cb){
   if(!sb||!cloudUser||cloudKickedFlag){if(cb)cb();return;}
   var o=cloudLocalObj();if(!o){if(cb)cb();return;}
-  // EXTRA SPÄRR: spara ALDRIG om den lokala cachen tillhör ett ANNAT konto än det inloggade.
+  // EXTRA SPÄRR: spara ENDAST om den lokala cachen tillhör EXAKT det inloggade kontot.
+  // (Tidigare släpptes "okänd ägare" igenom — det var en väg för läckan.)
   var _own=null;try{_own=localStorage.getItem(OWNER_KEY);}catch(e){}
-  if(_own&&_own!==cloudUser.id){if(cb)cb();return;}
+  if(_own!==cloudUser.id){if(cb)cb();return;}
   cloudBusy=true;
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
