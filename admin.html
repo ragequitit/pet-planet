@@ -183,7 +183,7 @@
       <button class="x" onclick="closeRestore()" aria-label="Close">&times;</button>
     </div>
     <div class="sh-body">
-      <p class="note">Pick a snapshot to roll this account back to. A safety snapshot of the current state is taken first, so a restore can itself be undone. Any open game tab for this account will reload.</p>
+      <p class="note">Pick a snapshot to roll this account back to. A safety snapshot of the current state is taken first, so a restore can itself be undone. If this account is online, its game tab will be logged out and must sign in again to load the restored state — best done while the player is offline.</p>
       <div id="rmList"><div class="loading">Loading snapshots…</div></div>
       <div id="rmMsg" class="mmsg"></div>
     </div>
@@ -331,7 +331,7 @@ async function loadSnaps(uid){
 
 async function doRestore(uid,id){
   const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
-  if(!confirm('Restore '+handle+' to this snapshot?\n\nThe current state is saved as a safety snapshot first, then rolled back. Any open game tab for this account will reload.')) return;
+  if(!confirm('Restore '+handle+' to this snapshot?\n\nThe current state is saved as a safety snapshot first, then rolled back. If this account is online, its game tab will be logged out and must sign in again.')) return;
   const msg=$('rmMsg'); msg.className='mmsg'; msg.textContent='Restoring…';
   try{
     const {data,error}=await sb.rpc('pp_admin_restore',{p_target:uid,p_history_id:id});
