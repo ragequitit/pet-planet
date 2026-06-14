@@ -109,6 +109,10 @@
   .btn.sm{padding:7px 11px;font-size:12px}
   .btn.warn{border-color:#5a4a1f;background:#26210f;color:var(--gold)}
   .btn.warn:hover{background:#2f2912}
+  .btn.danger{border-color:#5a2424;background:#2a1414;color:#ff8a8a}
+  .btn.danger:hover{background:#371818}
+  .acct.banned{border-color:#5a2424}
+  .banbar{background:#2a1414;border:1px solid #5a2424;color:#ff8a8a;font-size:11px;font-weight:700;border-radius:8px;padding:6px 9px;margin-bottom:10px;line-height:1.4}
   .modal{position:fixed;inset:0;background:rgba(4,6,12,.66);display:none;align-items:flex-end;justify-content:center;z-index:50}
   .modal.open{display:flex}
   @media(min-width:640px){.modal{align-items:center;padding:20px}}
@@ -284,7 +288,7 @@ function renderAccounts(list){
     const initial=esc((a.handle||'?').slice(0,1).toUpperCase());
     const on=a.online?'on':'';
     const onTxt=a.online?'Online':'Offline';
-    return `<div class="acct">
+    return `<div class="acct${a.banned?' banned':''}">
       <div class="head">
         <div class="ava">${initial}</div>
         <div class="nm">
@@ -293,6 +297,7 @@ function renderAccounts(list){
         </div>
         <div class="status"><span class="s ${on}"></span>${onTxt}</div>
       </div>
+      ${a.banned?('<div class="banbar">\u26d4 Suspended'+(a.ban_reason?': '+esc(a.ban_reason):'')+'</div>'):''}
       <div class="stats">
         <div class="stat"><div class="k">Level</div><div class="v num">${esc(a.level||'—')}</div></div>
         <div class="stat"><div class="k">Progress</div><div class="v num">${esc(a.progress??'—')}</div></div>
@@ -304,7 +309,7 @@ function renderAccounts(list){
         <div class="stat"><div class="k">Snapshots</div><div class="v num">${fmtInt(a.history)}</div></div>
       </div>
       <div class="foot"><span>Last save ${esc(ago(a.updated_at))}</span><span>Seen ${esc(ago(a.last_seen))}</span></div>
-      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button></div>
+      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button>${a.banned?('<button class="btn sm" onclick="doUnban(\''+esc(a.user_id)+'\')">Unban</button>'):('<button class="btn sm danger" onclick="doBan(\''+esc(a.user_id)+'\')">Ban…</button>')}</div>
     </div>`;
   }).join('');
   box.innerHTML='<div class="grid">'+cards+'</div>';
@@ -421,6 +426,26 @@ async function applyRes(){
 }
 $('reApply').onclick=applyRes;
 document.getElementById('resModal').addEventListener('click',e=>{ if(e.target===document.getElementById('resModal')) closeRes(); });
+
+async function doBan(uid){
+  const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
+  const reason=prompt('Ban '+handle+'?\n\nOptional reason (shown to the player on the suspended screen):','');
+  if(reason===null) return;
+  try{
+    const {data,error}=await sb.rpc('pp_admin_ban',{p_target:uid,p_banned:true,p_reason:reason});
+    if(error||!data||data.ok!==true){ toast('Ban failed'); return; }
+    toast('Banned'); refreshView();
+  }catch(e){ toast('Network error'); }
+}
+async function doUnban(uid){
+  const a=ACCTS[uid]; const handle=(a&&a.handle)||uid;
+  if(!confirm('Unban '+handle+'? They will be able to play again.')) return;
+  try{
+    const {data,error}=await sb.rpc('pp_admin_ban',{p_target:uid,p_banned:false});
+    if(error||!data||data.ok!==true){ toast('Unban failed'); return; }
+    toast('Unbanned'); refreshView();
+  }catch(e){ toast('Network error'); }
+}
 
 async function boot(){
   // Avgör nuvarande läge: utloggad → gate; inloggad icke-admin → denied; admin → panel.
