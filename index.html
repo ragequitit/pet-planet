@@ -116,8 +116,46 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #ascension-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #ascension-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
 /* Trading-skärmen (skal — server kopplas in senare) */
-#trading-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
-#trading-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+#trading-modal .prof-panel,#friends-modal .prof-panel,#tradelive-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#trading-modal .prof-body,#friends-modal .prof-body,#tradelive-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+.lt-status{border-radius:12px;padding:11px 14px;font-size:0.8rem;text-align:center;margin-bottom:12px;font-family:'Fredoka One',cursive;}
+.lt-status.wait{background:rgba(120,150,230,0.18);border:1px solid rgba(120,150,230,0.4);color:#cdd9ff;}
+.lt-status.ok{background:rgba(46,160,67,0.2);border:1px solid rgba(46,160,67,0.5);color:#9be6a8;}
+.lt-status.warn{background:rgba(245,200,66,0.18);border:1px solid rgba(245,200,66,0.45);color:#ffe08a;}
+.lt-status.err{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.5);color:#ffb4ab;}
+.lt-offers{display:flex;gap:10px;margin-bottom:14px;}
+.lt-offer{flex:1;min-width:0;background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.12);border-radius:14px;padding:10px;}
+.lt-offer.locked{border-color:#2ea043;box-shadow:0 0 8px rgba(46,160,67,0.35);}
+.lt-offer-title{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#ffe08a;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.lt-lock-badge{font-size:0.6rem;color:#9be6a8;}
+.lt-offer-pets{display:flex;flex-wrap:wrap;gap:5px;min-height:42px;}
+.lt-mini{background:#122446;border:1px solid #1f3d78;border-radius:8px;padding:4px 5px;text-align:center;width:44px;}
+.lt-mini-em{font-size:1.1rem;line-height:1;}
+.lt-mini-nm{font-size:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lt-empty{font-size:0.62rem;color:rgba(255,255,255,0.4);padding:12px 4px;}
+.lt-sec-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#ffe08a;margin:10px 0 8px;}
+.tinv{position:fixed;left:50%;transform:translateX(-50%);top:10px;z-index:9999;width:min(360px,94vw);background:linear-gradient(180deg,#23316a,#16234c);border:1.5px solid #6f8ae0;border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.5);}
+.tinv-txt{flex:1;min-width:0;font-size:0.78rem;}
+.tinv-btn{padding:7px 12px;border:none;border-radius:9px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:0.74rem;cursor:pointer;}
+.tinv-btn.ghost{background:transparent;border:1.5px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);}
+.frd-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px 12px 14px;margin-bottom:12px;}
+.frd-sec{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#ffe08a;margin-bottom:8px;}
+.frd-note{font-size:0.68rem;color:rgba(255,255,255,0.5);line-height:1.5;margin:6px 0;}
+.frd-handle{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#9be6a8;margin-bottom:8px;}
+.frd-row{display:flex;gap:8px;align-items:center;}
+.frd-input{flex:1;min-width:0;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;}
+.frd-btn{padding:10px 14px;border:none;border-radius:10px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;white-space:nowrap;}
+.frd-btn.sm{padding:10px 14px;}
+.frd-btn.tiny{padding:7px 12px;font-size:0.75rem;box-shadow:0 2px 0 #8a6000;}
+.frd-btn.ghost{background:transparent;box-shadow:none;color:rgba(255,255,255,0.7);border:1.5px solid rgba(255,255,255,0.2);}
+.frd-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.06);}
+.frd-item-info{min-width:0;}
+.frd-item-handle{font-weight:800;font-size:0.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.frd-item-name{font-size:0.66rem;color:rgba(255,255,255,0.5);}
+.frd-item-btns{display:flex;gap:6px;flex-shrink:0;}
+.frd-msg{border-radius:10px;padding:9px 12px;font-size:0.74rem;margin-bottom:10px;}
+.frd-msg.err{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.5);color:#ffb4ab;}
+.frd-msg.ok{background:rgba(46,160,67,0.2);border:1px solid rgba(46,160,67,0.5);color:#9be6a8;}
 #events-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
 #events-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 34px;}
 #battlepass-modal .prof-panel{background:linear-gradient(180deg,#241640,#0b1530);border:2px solid #7a4cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
@@ -252,6 +290,33 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .trade-locknote{text-align:center;font-size:0.66rem;color:rgba(255,255,255,0.4);font-weight:700;font-family:'Nunito',sans-serif;margin:6px 0 14px;}
 .trade-propose{width:100%;border:none;border-radius:13px;padding:13px;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:not-allowed;background:rgba(120,150,230,0.2);color:rgba(255,255,255,0.42);box-shadow:0 3px 0 rgba(0,0,0,0.25);}
 .trade-how{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:12px 14px;margin-top:18px;}
+.trd-tabs{display:flex;gap:8px;margin-bottom:14px;}
+.trd-tab{flex:1;text-align:center;padding:10px;border-radius:12px;background:rgba(255,255,255,0.05);border:1.5px solid rgba(255,255,255,0.12);font-family:'Fredoka One',cursive;font-size:0.85rem;color:rgba(255,255,255,0.6);cursor:pointer;}
+.trd-tab.active{background:linear-gradient(180deg,#7c4dff,#5a2fd0);border-color:#9a7aff;color:#fff;}
+.trd-sec-title{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#ffe08a;margin:14px 0 8px;}
+.trd-pets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;}
+.trd-pet{position:relative;background:#122446;border:2px solid #1f3d78;border-radius:12px;padding:8px 6px;text-align:center;cursor:pointer;}
+.trd-pet.sel{border-color:var(--gold);box-shadow:0 0 8px rgba(245,200,66,0.4);}
+.trd-pet.pending{opacity:0.45;cursor:default;}
+.trd-pet.view{cursor:default;}
+.trd-pet-em{font-size:1.6rem;line-height:1;}
+.trd-pet-nm{font-size:0.66rem;font-weight:800;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trd-pet-rr{font-size:0.58rem;margin-top:1px;}
+.trd-pet-tag{font-size:0.52rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+.trd-pet-check{position:absolute;top:3px;right:5px;color:var(--gold);font-size:0.7rem;}
+.trd-btn{width:100%;margin-top:10px;padding:11px;border:none;border-radius:12px;background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 3px 0 #8a6000;}
+.trd-btn.dim{background:#39507e;color:rgba(255,255,255,0.6);box-shadow:0 3px 0 #1f2f4f;}
+.trd-btn.ghost{background:transparent;box-shadow:none;color:rgba(255,255,255,0.6);border:1.5px solid rgba(255,255,255,0.18);}
+.trd-btn.sm{width:auto;margin-top:0;padding:11px 16px;}
+.trd-row{display:flex;gap:8px;align-items:center;}
+.trd-input{flex:1;min-width:0;padding:11px;border-radius:12px;border:1.5px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;letter-spacing:2px;text-transform:uppercase;}
+.trd-codebox{text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:16px;margin-top:8px;}
+.trd-code-lbl{font-size:0.7rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;}
+.trd-code{font-family:'Fredoka One',cursive;font-size:1.8rem;letter-spacing:4px;color:#ffe08a;margin:6px 0 4px;}
+.trd-note{font-size:0.66rem;color:rgba(255,255,255,0.5);line-height:1.5;margin-top:8px;}
+.trd-msg{border-radius:10px;padding:9px 12px;font-size:0.74rem;margin-bottom:10px;}
+.trd-msg.err{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.5);color:#ffb4ab;}
+.trd-msg.ok{background:rgba(46,160,67,0.2);border:1px solid rgba(46,160,67,0.5);color:#9be6a8;}
 .trade-how-title{font-family:'Fredoka One',cursive;font-size:0.8rem;color:var(--gold);margin-bottom:8px;}
 .trade-how-row{display:flex;gap:9px;align-items:flex-start;padding:6px 0;font-family:'Nunito',sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.62);line-height:1.45;font-weight:700;}
 .trade-how-row .thn{flex:none;color:#b8c6ff;}
@@ -1570,6 +1635,24 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeTrading()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="trading-body"></div>
+  </div>
+</div>
+<div id="friends-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/friends.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('👥'))"> Friends</div>
+      <button class="prof-x" onclick="closeFriends()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="prof-body" id="friends-body"></div>
+  </div>
+</div>
+<div id="tradelive-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/trading.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('🔄'))"> <span id="tradelive-title">Live Trade</span></div>
+      <button class="prof-x" onclick="closeLiveTrade()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="prof-body" id="tradelive-body"></div>
   </div>
 </div>
 <div id="events-modal" class="modal-overlay">
@@ -2898,7 +2981,7 @@ function addTestPets(){
       for(var j=0;j<rc.slots;j++){
         abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});
       }
-      G.hatchedPets.push({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1,level:1,xp:0});
+      registerPet({uid:Date.now()+Math.random(),name:species.name,e:species.e,rarity:rarity,world:'starter',abilities:abilities,equippedSlot:-1,level:1,xp:0});
     }
   });
   syncDiscoveredFromInventory();
@@ -3888,13 +3971,14 @@ var MORE_ITEMS=[
   {label:'Achievements',icon:uiIco('achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('inventory','🎒',30),tab:'inventory'},
   {label:'Trading',icon:uiIco('trading','🔄',30),action:'trading'},
+  {label:'Friends',icon:uiIco('friends','👥',30),action:'friends'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
     d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='leaderboard'){openLeaderboard();}else{switchTab(it.tab);}};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='leaderboard'){openLeaderboard();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -4035,44 +4119,404 @@ function closeAscension(){document.getElementById('ascension-modal').classList.r
 // så riktig spelare-mot-spelare-handel kräver en backend som inte finns ännu.
 // När en server tillkommer behöver bara de stubbade knapparna kopplas in —
 // layout, vyer och ikon-väg ligger redan på plats.
-function openTrading(){renderTrading();document.getElementById('trading-modal').classList.add('open');}
+function openTrading(){TRADE.msg='';TRADE.view=null;document.getElementById('trading-modal').classList.add('open');renderTrading();tradeReconcile(function(){renderTrading();});}
 function closeTrading(){document.getElementById('trading-modal').classList.remove('open');}
 document.getElementById('trading-modal').onclick=function(e){if(e.target===this)closeTrading();};
-var _evm=document.getElementById('events-modal');if(_evm)_evm.onclick=function(e){if(e.target===this)closeEvents();};
-function renderTrading(){
-  function side(cls,title){
-    return '<div class="trade-side '+cls+'">'+
-      '<div class="trade-side-title">'+title+'</div>'+
-      '<div class="trade-slots">'+
-        '<div class="trade-slot">+</div>'+
-        '<div class="trade-slot">+</div>'+
-        '<div class="trade-slot">+</div>'+
-      '</div>'+
-      '<button class="trade-addbtn" disabled>+ Add Pet</button>'+
-    '</div>';
-  }
-  function how(n,txt){
-    return '<div class="trade-how-row"><span class="thn">'+n+'</span><span>'+txt+'</span></div>';
-  }
+var FRIENDS={loaded:false,handle:'',data:{friends:[],incoming:[],outgoing:[]},results:null,invites:[],msg:'',msgType:''};
+function friendMsg(t,type){FRIENDS.msg=t||'';FRIENDS.msgType=type||'';renderFriends();}
+function friendReason(d){
+  var r=d&&d.reason;
+  var m={no_auth:'Please sign in.',invalid_format:'Username must be 3\u201320 letters, numbers or _.',blocked:'That username isn\u2019t allowed.',taken:'That username is already taken.',cooldown:'You changed your username recently \u2014 try again later.',too_short:'Type at least 2 letters.',bad_input:'Something\u2019s off \u2014 try again.',no_such_user:'Player not found.',already_friends:'You\u2019re already friends.',not_found:'That request is no longer there.'};
+  return m[r]||'Something went wrong. Try again.';
+}
+function openFriends(){FRIENDS.msg='';FRIENDS.results=null;document.getElementById('friends-modal').classList.add('open');renderFriends();friendsLoad();}
+function closeFriends(){document.getElementById('friends-modal').classList.remove('open');}
+function friendsLoad(){
+  if(!sb||!cloudUser)return;
+  try{
+    sb.from('profiles').select('handle').eq('user_id',cloudUser.id).maybeSingle().then(function(r){
+      FRIENDS.handle=(r&&r.data&&r.data.handle)||'';renderFriends();
+    },function(){});
+  }catch(e){}
+  sb.rpc('pp_friends_list').then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){FRIENDS.data={friends:d.friends||[],incoming:d.incoming||[],outgoing:d.outgoing||[]};FRIENDS.loaded=true;renderFriends();}
+  },function(){});
+  sb.rpc('pp_trade_invites_list').then(function(res){
+    var d=res&&res.data;if(d&&d.ok){FRIENDS.invites=d.invites||[];renderFriends();}
+  },function(){});
+}
+function friendSetHandle(){
+  var el=document.getElementById('frd-handle-input');var hh=(el?el.value:'').trim();
+  if(!hh){friendMsg('Enter a username.','err');return;}
+  var disp=(G&&G.profile&&G.profile.name)||null;
+  friendMsg('Saving\u2026','');
+  sb.rpc('pp_set_handle',{p_handle:hh,p_display:disp}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){FRIENDS.handle=d.handle;friendMsg(d.unchanged?'Saved.':'Username saved!','ok');}
+    else if(d&&d.reason==='cooldown'){var dd=d.days_left||30;friendMsg('You can change your username again in '+dd+' day'+(dd===1?'':'s')+'.','err');}
+    else friendMsg(friendReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendSearch(){
+  var el=document.getElementById('frd-search-input');var q=(el?el.value:'').trim();
+  if(q.length<2){friendMsg('Type at least 2 letters.','err');return;}
+  friendMsg('Searching\u2026','');
+  sb.rpc('pp_search_players',{p_query:q}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){FRIENDS.results=d.results||[];FRIENDS.msg='';renderFriends();}else{FRIENDS.results=null;friendMsg(friendReason(d),'err');}
+  },function(){FRIENDS.results=null;friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendRequest(uid){
+  sb.rpc('pp_friend_request',{p_to:uid}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){friendMsg(d.friended?'You\u2019re now friends!':'Friend request sent.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendRespond(rid,accept){
+  sb.rpc('pp_friend_respond',{p_request_id:rid,p_accept:accept}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){friendMsg(accept?'Friend added!':'Request declined.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendRemove(uid){
+  sb.rpc('pp_friend_remove',{p_user:uid}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){friendMsg('Friend removed.','ok');friendsLoad();}else friendMsg(friendReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function frdItem(p,btns){
+  return '<div class="frd-item"><div class="frd-item-info"><div class="frd-item-handle">@'+(p.handle||'player')+'</div>'+(p.display_name?('<div class="frd-item-name">'+p.display_name+'</div>'):'')+'</div>'+btns+'</div>';
+}
+function renderFriends(){
+  var body=document.getElementById('friends-body');if(!body)return;
+  if(!sb||!cloudUser){body.innerHTML='<div class="frd-note">You need to be signed in to use friends.</div>';return;}
   var h='';
-  h+='<div class="trade-banner">'+
-       '<span class="tb-ico">🌐</span>'+
-       '<span class="tb-txt"><b>Online trading coming soon.</b> Trading with other players needs an internet connection, which isn\'t available yet. The screen below is a preview of how it will work.</span>'+
+  if(FRIENDS.msg)h+='<div class="frd-msg '+FRIENDS.msgType+'">'+FRIENDS.msg+'</div>';
+  if(!FRIENDS.handle){
+    h+='<div class="frd-card"><div class="frd-sec">Choose your username</div>'+
+       '<div class="frd-note">Pick a unique username so friends can find you. 3\u201320 letters, numbers or _.</div>'+
+       '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="username" maxlength="20"><button class="frd-btn sm" onclick="friendSetHandle()">Save</button></div></div>';
+  }else{
+    h+='<div class="frd-card"><div class="frd-sec">Your username</div><div class="frd-handle">@'+FRIENDS.handle+'</div>'+
+       '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="change username" maxlength="20"><button class="frd-btn sm ghost" onclick="friendSetHandle()">Change</button></div></div>';
+    h+='<div class="frd-card"><div class="frd-sec">Find players</div>'+
+       '<div class="frd-row"><input id="frd-search-input" class="frd-input" placeholder="search username" maxlength="20"><button class="frd-btn sm" onclick="friendSearch()">Search</button></div>';
+    if(FRIENDS.results){
+      if(!FRIENDS.results.length)h+='<div class="frd-note">No players found.</div>';
+      else FRIENDS.results.forEach(function(p){h+=frdItem(p,'<button class="frd-btn tiny" onclick="friendRequest(\''+p.user_id+'\')">Add</button>');});
+    }
+    h+='</div>';
+  }
+  if(FRIENDS.data.incoming&&FRIENDS.data.incoming.length){
+    h+='<div class="frd-card"><div class="frd-sec">Friend requests</div>';
+    FRIENDS.data.incoming.forEach(function(p){
+      h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendRespond(\''+p.request_id+'\',true)">Accept</button><button class="frd-btn tiny ghost" onclick="friendRespond(\''+p.request_id+'\',false)">Decline</button></div>');
+    });
+    h+='</div>';
+  }
+  if(FRIENDS.invites&&FRIENDS.invites.length){
+    h+='<div class="frd-card"><div class="frd-sec">Trade invites</div>';
+    FRIENDS.invites.forEach(function(iv){
+      h+=frdItem({handle:iv.handle,display_name:iv.display_name},'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendAcceptTrade(\''+iv.session_id+'\',\''+(iv.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendDeclineTrade(\''+iv.session_id+'\')">Dismiss</button></div>');
+    });
+    h+='</div>';
+  }
+  h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.data.friends.length+')'):'')+'</div>';
+  if(!FRIENDS.loaded)h+='<div class="frd-note">Loading\u2026</div>';
+  else if(!FRIENDS.data.friends.length)h+='<div class="frd-note">No friends yet. Search above to add some!</div>';
+  else FRIENDS.data.friends.forEach(function(p){h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\')">Remove</button></div>');});
+  h+='</div>';
+  if(FRIENDS.data.outgoing&&FRIENDS.data.outgoing.length){
+    h+='<div class="frd-card"><div class="frd-sec">Pending (sent)</div>';
+    FRIENDS.data.outgoing.forEach(function(p){h+=frdItem(p,'<div class="frd-item-name">waiting\u2026</div>');});
+    h+='</div>';
+  }
+  body.innerHTML=h;
+}
+document.getElementById('friends-modal').onclick=function(e){if(e.target===this)closeFriends();};
+/* ===== STEG 6: LIVE VÄN-TRADE ===== */
+var LIVE={sid:null,role:'from',friend:'friend',me:[],them:[],myLocked:false,theirLocked:false,status:'',ch:null,poll:null,errMsg:'',_completed:false};
+function ltReason(d){var r=d&&d.reason;var m={no_auth:'Please sign in.',bad_input:'Something\u2019s off \u2014 try again.',not_friends:'You can only trade with friends.',not_found:'This trade is no longer available.',not_owner:'You don\u2019t own those pets anymore.',offer_invalid:'The offer changed \u2014 pick again and re-lock.'};return m[r]||'Something went wrong. Try again.';}
+function ltMyTradeable(){return (typeof tradeTradeable==='function'?tradeTradeable():(G.hatchedPets||[])).filter(function(p){return p&&p.pet_id;});}
+function ltMyOfferInfo(){return LIVE.me.map(function(id){var p=(G.hatchedPets||[]).find(function(x){return x.pet_id===id;});return p?{pet_id:id,name:p.name,e:p.e,rarity:p.rarity}:{pet_id:id,name:'Pet',e:'🐾'};});}
+function ltOfferBox(title,pets,locked){
+  var h='<div class="lt-offer'+(locked?' locked':'')+'"><div class="lt-offer-title"><span>'+title+'</span>'+(locked?'<span class="lt-lock-badge">🔒 locked</span>':'')+'</div><div class="lt-offer-pets">';
+  if(!pets||!pets.length)h+='<div class="lt-empty">—</div>';
+  else pets.forEach(function(p){h+='<div class="lt-mini"><div class="lt-mini-em">'+(p.e||'🐾')+'</div><div class="lt-mini-nm">'+(p.name||'')+'</div></div>';});
+  return h+'</div></div>';
+}
+function renderLive(){
+  var body=document.getElementById('tradelive-body');if(!body)return;
+  var h='',st=LIVE.status;
+  if(LIVE.role==='from'&&st==='invited'){
+    h+='<div class="lt-status wait">Waiting for @'+LIVE.friend+' to accept\u2026</div>';
+    h+='<button class="trd-btn ghost" onclick="ltCancel()">Cancel</button>';
+    body.innerHTML=h;return;
+  }
+  if(st==='cancelled'){h+='<div class="lt-status err">Trade was cancelled.</div><button class="trd-btn" onclick="closeLiveTrade(true)">Close</button>';body.innerHTML=h;return;}
+  if(st==='done'){h+='<div class="lt-status ok">Trade complete! Your pets have been updated.</div><button class="trd-btn" onclick="closeLiveTrade(true)">Done</button>';body.innerHTML=h;return;}
+  if(LIVE.errMsg)h+='<div class="lt-status err">'+LIVE.errMsg+'</div>';
+  var both=LIVE.myLocked&&LIVE.theirLocked;
+  if(both)h+='<div class="lt-status ok">Both locked \u2014 completing\u2026</div>';
+  else if(LIVE.myLocked)h+='<div class="lt-status warn">You locked in. Waiting for @'+LIVE.friend+'\u2026</div>';
+  else if(LIVE.theirLocked)h+='<div class="lt-status warn">@'+LIVE.friend+' locked in. Your move.</div>';
+  else h+='<div class="lt-status wait">Pick pets to trade with @'+LIVE.friend+'.</div>';
+  h+='<div class="lt-offers">'+ltOfferBox('You',ltMyOfferInfo(),LIVE.myLocked)+ltOfferBox('@'+LIVE.friend,LIVE.them,LIVE.theirLocked)+'</div>';
+  h+='<div class="lt-sec-title">Your pets'+(LIVE.myLocked?' (unlock to change)':'')+'</div>';
+  var pets=ltMyTradeable();
+  if(!pets.length)h+='<div class="lt-empty">No pets available to trade.</div>';
+  else{h+='<div class="trd-pets">';pets.forEach(function(p){
+    var sel=LIVE.me.indexOf(p.pet_id)>=0;var rc=RARITY_CONFIG[p.rarity]||{};
+    var cls='trd-pet'+(sel?' sel':'')+(LIVE.myLocked?' pending':'');
+    var click=LIVE.myLocked?'':' onclick="ltToggle(\''+p.pet_id+'\')"';
+    h+='<div class="'+cls+'"'+click+'><div class="trd-pet-em">'+(p.e||'🐾')+'</div><div class="trd-pet-nm">'+(p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||p.rarity||'')+'</div>'+(sel?'<div class="trd-pet-check">✓</div>':'')+'</div>';
+  });h+='</div>';}
+  if(LIVE.myLocked)h+='<button class="trd-btn dim" onclick="ltUnlock()">Unlock</button>';
+  else h+='<button class="trd-btn" onclick="ltLock()">Lock in'+(LIVE.me.length?(' ('+LIVE.me.length+')'):'')+'</button>';
+  h+='<button class="trd-btn ghost" onclick="ltCancel()">Cancel trade</button>';
+  body.innerHTML=h;
+}
+function ltToggle(id){if(LIVE.myLocked)return;LIVE.errMsg='';var i=LIVE.me.indexOf(id);if(i>=0)LIVE.me.splice(i,1);else LIVE.me.push(id);ltBroadcastSel();renderLive();}
+function ltJoinChannel(){
+  try{
+    if(!sb||!LIVE.sid)return;
+    var ch=sb.channel('trade:'+LIVE.sid,{config:{broadcast:{self:false}}});
+    ch.on('broadcast',{event:'sel'},function(m){if(m&&m.payload){LIVE.them=m.payload.pets||[];renderLive();}});
+    ch.on('broadcast',{event:'hello'},function(){ltBroadcastSel();});
+    ch.on('broadcast',{event:'state'},function(){ltPollOnce();});
+    ch.subscribe(function(status){if(status==='SUBSCRIBED'){ltBroadcast('hello',{});ltBroadcastSel();}});
+    LIVE.ch=ch;
+  }catch(e){}
+}
+function ltLeaveChannel(){try{if(LIVE.ch&&sb)sb.removeChannel(LIVE.ch);}catch(e){}LIVE.ch=null;}
+function ltBroadcast(ev,pl){try{if(LIVE.ch)LIVE.ch.send({type:'broadcast',event:ev,payload:pl||{}});}catch(e){}}
+function ltBroadcastSel(){ltBroadcast('sel',{pets:ltMyOfferInfo()});}
+function ltPollStart(){ltPollStop();LIVE.poll=setInterval(ltPollOnce,2500);ltPollOnce();}
+function ltPollStop(){if(LIVE.poll){clearInterval(LIVE.poll);LIVE.poll=null;}}
+function ltPollOnce(){if(!sb||!LIVE.sid)return;sb.rpc('pp_trade_session_get',{p_session:LIVE.sid}).then(function(res){var d=res&&res.data;if(d&&d.ok&&d.session)ltApplyState(d.session);},function(){});}
+function ltApplyState(s){
+  LIVE.status=s.status;
+  LIVE.myLocked=(LIVE.role==='from')?!!s.from_locked:!!s.to_locked;
+  LIVE.theirLocked=(LIVE.role==='from')?!!s.to_locked:!!s.from_locked;
+  if(s.status==='done'){if(!LIVE._completed)ltComplete();return;}
+  if(s.status==='cancelled'){ltPollStop();ltLeaveChannel();renderLive();return;}
+  renderLive();
+}
+function ltLock(){
+  if(!sb||!LIVE.sid)return;LIVE.errMsg='';
+  sb.rpc('pp_trade_session_lock',{p_session:LIVE.sid,p_pet_ids:LIVE.me}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){LIVE.myLocked=true;ltBroadcast('state',{});if(d.done){ltComplete();}else{renderLive();}}
+    else{LIVE.errMsg=ltReason(d);ltPollOnce();renderLive();}
+  },function(){LIVE.errMsg='Could not reach the server. Try again.';renderLive();});
+}
+function ltUnlock(){
+  if(!sb||!LIVE.sid)return;
+  sb.rpc('pp_trade_session_unlock',{p_session:LIVE.sid}).then(function(res){
+    var d=res&&res.data;if(d&&d.ok){LIVE.myLocked=false;ltBroadcast('state',{});renderLive();}
+  },function(){});
+}
+function ltCancel(){
+  if(LIVE.sid&&sb){try{sb.rpc('pp_trade_session_cancel',{p_session:LIVE.sid}).then(function(){},function(){});}catch(e){}ltBroadcast('state',{});}
+  closeLiveTrade(true);
+}
+function ltComplete(){
+  LIVE.status='done';LIVE._completed=true;ltPollStop();ltLeaveChannel();
+  try{tradeReconcile(function(){renderLive();});}catch(e){renderLive();}
+}
+function closeLiveTrade(skipCancel){
+  try{
+    if(!skipCancel&&LIVE.sid&&sb&&(LIVE.status==='invited'||LIVE.status==='active')){
+      sb.rpc('pp_trade_session_cancel',{p_session:LIVE.sid}).then(function(){},function(){});
+      ltBroadcast('state',{});
+    }
+  }catch(e){}
+  ltPollStop();ltLeaveChannel();
+  var m=document.getElementById('tradelive-modal');if(m)m.classList.remove('open');
+  LIVE.sid=null;LIVE.status='';
+}
+function openLiveTrade(sid,role,friend){
+  LIVE={sid:sid,role:role||'from',friend:friend||'friend',me:[],them:[],myLocked:false,theirLocked:false,status:(role==='to'?'active':'invited'),ch:null,poll:null,errMsg:'',_completed:false};
+  ltDismissBanner();
+  document.getElementById('tradelive-modal').classList.add('open');
+  var t=document.getElementById('tradelive-title');if(t)t.textContent='Trade with @'+LIVE.friend;
+  renderLive();ltJoinChannel();ltPollStart();
+}
+/* Vän-integration */
+function friendTradeInvite(uid,handle){
+  if(!sb||!cloudUser)return;
+  sb.rpc('pp_trade_invite',{p_friend:uid}).then(function(res){
+    var d=res&&res.data;if(d&&d.ok){openLiveTrade(d.session_id,'from',handle);}else friendMsg(ltReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendAcceptTrade(sid,handle){
+  if(!sb)return;
+  sb.rpc('pp_trade_invite_respond',{p_session:sid,p_accept:true}).then(function(res){
+    var d=res&&res.data;if(d&&d.ok){closeFriends();openLiveTrade(sid,'to',handle);}else friendMsg(ltReason(d),'err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendDeclineTrade(sid){if(!sb)return;sb.rpc('pp_trade_invite_respond',{p_session:sid,p_accept:false}).then(function(){friendsLoad();},function(){});}
+/* Global inbjudnings-bevakning + banner */
+var _tinvWatch=null,_tinvShown=null;
+function ltInviteWatchStart(){if(_tinvWatch||!sb||!cloudUser)return;_tinvWatch=setInterval(ltInviteCheck,12000);setTimeout(ltInviteCheck,3000);}
+function ltInviteCheck(){
+  if(!sb||!cloudUser)return;
+  var m=document.getElementById('tradelive-modal');if(m&&m.classList.contains('open'))return;
+  sb.rpc('pp_trade_invites_list').then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok&&d.invites&&d.invites.length){var iv=d.invites[0];if(iv.session_id!==_tinvShown){_tinvShown=iv.session_id;ltShowInviteBanner(iv);}}
+  },function(){});
+}
+function ltShowInviteBanner(iv){
+  ltDismissBanner();
+  var b=document.createElement('div');b.className='tinv';b.id='tinv-banner';
+  b.innerHTML='<div class="tinv-txt">👋 <b>@'+(iv.handle||'A friend')+'</b> wants to trade</div><button class="tinv-btn" id="tinv-open">Open</button><button class="tinv-btn ghost" id="tinv-dismiss">Later</button>';
+  document.body.appendChild(b);
+  document.getElementById('tinv-open').onclick=function(){var hh=iv.handle||'friend',sid=iv.session_id;ltDismissBanner();friendAcceptTrade(sid,hh);};
+  document.getElementById('tinv-dismiss').onclick=function(){ltDismissBanner();};
+}
+function ltDismissBanner(){var b=document.getElementById('tinv-banner');if(b&&b.parentNode)b.parentNode.removeChild(b);}
+document.getElementById('tradelive-modal').onclick=function(e){if(e.target===this){/* kräver knapp för att stänga mitt i trade */}};
+var _evm=document.getElementById('events-modal');if(_evm)_evm.onclick=function(e){if(e.target===this)closeEvents();};
+var TRADE={mode:'make',give:{},code:'',view:null,take:{},msg:'',msgType:''};
+function tradeMsg(t,type){TRADE.msg=t||'';TRADE.msgType=type||'';renderTrading();}
+function tradeSetMode(m){TRADE.mode=m;TRADE.msg='';renderTrading();}
+function tradeTradeable(){return (G.hatchedPets||[]).filter(function(p){return p&&!isPetBusy(p.uid);});}
+function tradeToggleGive(pid){if(TRADE.give[pid])delete TRADE.give[pid];else TRADE.give[pid]=true;renderTrading();}
+function tradeToggleTake(pid){if(TRADE.take[pid])delete TRADE.take[pid];else TRADE.take[pid]=true;renderTrading();}
+function tradeNewOffer(){TRADE.code='';TRADE.give={};TRADE.msg='';renderTrading();}
+function tradePetChip(p,selMap,fn){
+  var rc=RARITY_CONFIG[p.rarity]||{};
+  var sel=!!selMap[p.pet_id];
+  var pending=!p.pet_id;
+  var cls='trd-pet'+(sel?' sel':'')+(pending?' pending':'');
+  var click=pending?'':' onclick="'+fn+'(\''+p.pet_id+'\')"';
+  return '<div class="'+cls+'"'+click+'>'+
+    '<div class="trd-pet-em">'+(p.e||'\ud83d\udc3e')+'</div>'+
+    '<div class="trd-pet-nm">'+(p.name||'Pet')+'</div>'+
+    '<div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||p.rarity||'')+(p.level?(' \u00b7 Lv'+p.level):'')+'</div>'+
+    (pending?'<div class="trd-pet-tag">syncing\u2026</div>':'')+
+    (sel?'<div class="trd-pet-check">\u2713</div>':'')+
+  '</div>';
+}
+function renderTrading(){
+  var body=document.getElementById('trading-body');if(!body)return;
+  if(!sb||!cloudUser){body.innerHTML='<div class="trd-note">You need to be signed in to trade.</div>';return;}
+  var h='';
+  h+='<div class="trd-tabs">'+
+       '<div class="trd-tab'+(TRADE.mode==='make'?' active':'')+'" onclick="tradeSetMode(\'make\')">Make an Offer</div>'+
+       '<div class="trd-tab'+(TRADE.mode==='take'?' active':'')+'" onclick="tradeSetMode(\'take\')">Use a Code</div>'+
      '</div>';
-  h+='<div class="trade-arena">'+
-       side('yours','Your Offer')+
-       '<span class="trade-swap">⇄</span>'+
-       side('theirs','Their Offer')+
-     '</div>';
-  h+='<div class="trade-locknote">'+LOCK_IMG+' Requires an online connection</div>';
-  h+='<button class="trade-propose" disabled>Propose Trade</button>';
-  h+='<div class="trade-how">'+
-       '<div class="trade-how-title">How trading will work</div>'+
-       how('1','Pick pets, cores, or cosmetics to put in your offer.')+
-       how('2','The other player adds what they\'d give in return.')+
-       how('3','Both players confirm — the trade only happens if you both agree.')+
-     '</div>';
-  document.getElementById('trading-body').innerHTML=h;
+  if(TRADE.msg)h+='<div class="trd-msg '+TRADE.msgType+'">'+TRADE.msg+'</div>';
+  if(TRADE.mode==='make'){
+    if(TRADE.code){
+      h+='<div class="trd-codebox"><div class="trd-code-lbl">Your trade code</div>'+
+         '<div class="trd-code">'+TRADE.code+'</div>'+
+         '<button class="trd-btn" onclick="tradeCopyCode()">Copy code</button>'+
+         '<div class="trd-note">Share this code with the other player. They open \u201cUse a Code\u201d, enter it, add what they\u2019ll give back, and confirm. Your pets stay yours until they accept.</div>'+
+         '<button class="trd-btn dim" onclick="tradeCancel()">Cancel this offer</button>'+
+         '<button class="trd-btn ghost" onclick="tradeNewOffer()">Make another offer</button>'+
+       '</div>';
+    }else{
+      var pets=tradeTradeable();
+      var n=Object.keys(TRADE.give).length;
+      h+='<div class="trd-sec-title">Choose pets to give</div>';
+      if(!pets.length)h+='<div class="trd-note">You have no pets to trade yet.</div>';
+      else{h+='<div class="trd-pets">';pets.forEach(function(p){h+=tradePetChip(p,TRADE.give,'tradeToggleGive');});h+='</div>';}
+      h+='<button class="trd-btn'+(n?'':' dim')+'"'+(n?'':' disabled')+' onclick="tradeCreate()">Create trade code'+(n?(' ('+n+')'):'')+'</button>';
+      h+='<div class="trd-note">Only synced pets can be traded. A pet on an adventure can\u2019t be offered.</div>';
+    }
+  }else{
+    h+='<div class="trd-sec-title">Enter a trade code</div>';
+    h+='<div class="trd-row"><input id="trd-code-input" class="trd-input" placeholder="e.g. 3F9A2B1C" value="'+(TRADE.code||'')+'" maxlength="8"><button class="trd-btn sm" onclick="tradeView()">View</button></div>';
+    if(TRADE.view&&TRADE.view.ok){
+      if(TRADE.view.is_own){
+        h+='<div class="trd-note">This is your own offer. Share the code with someone else, or cancel it.</div>';
+        h+='<button class="trd-btn dim" onclick="tradeCancel()">Cancel this offer</button>';
+      }else{
+        h+='<div class="trd-sec-title">They\u2019re offering</div><div class="trd-pets view">';
+        (TRADE.view.from_pets||[]).forEach(function(sp){
+          var p=sp.data||{};var rc=RARITY_CONFIG[p.rarity]||{};
+          h+='<div class="trd-pet view"><div class="trd-pet-em">'+(p.e||'\ud83d\udc3e')+'</div><div class="trd-pet-nm">'+(sp.name||p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||sp.rarity||'')+'</div></div>';
+        });
+        h+='</div>';
+        var pets=tradeTradeable();var n=Object.keys(TRADE.take).length;var off=(TRADE.view.from_pets||[]).length;
+        h+='<div class="trd-sec-title">Give back (optional)</div>';
+        if(!pets.length)h+='<div class="trd-note">You have no pets to give.</div>';
+        else{h+='<div class="trd-pets">';pets.forEach(function(p){h+=tradePetChip(p,TRADE.take,'tradeToggleTake');});h+='</div>';}
+        h+='<button class="trd-btn" onclick="tradeAccept()">'+(n?('Confirm: give '+n+' for '+off):('Accept '+off+' for free'))+'</button>';
+        h+='<div class="trd-note">When you confirm, the swap happens instantly and can\u2019t be undone.</div>';
+      }
+    }
+  }
+  body.innerHTML=h;
+}
+function tradeReason(d){
+  var r=d&&d.reason;
+  var map={no_auth:'Please sign in.',bad_input:'Pick at least one pet.',not_owner:'You don\u2019t own those pets anymore.',already_offered:'One of those pets is already in another open offer.',not_found_or_closed:'That code isn\u2019t valid (or the offer was already taken).',cannot_accept_own:'That\u2019s your own offer.',offer_invalid:'This offer is no longer valid \u2014 the other player changed their pets.'};
+  return map[r]||'Something went wrong. Try again.';
+}
+function tradeCopyCode(){try{navigator.clipboard.writeText(TRADE.code);tradeMsg('Code copied.','ok');}catch(e){tradeMsg('Select the code to copy it.','');}}
+function tradeCreate(){
+  var ids=Object.keys(TRADE.give);if(!ids.length)return;
+  tradeMsg('Creating offer\u2026','');
+  sb.rpc('pp_trade_create',{p_pet_ids:ids}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){TRADE.code=d.code;TRADE.msg='';renderTrading();}else tradeMsg(tradeReason(d),'err');
+  },function(){tradeMsg('Could not reach the server. Try again.','err');});
+}
+function tradeView(){
+  var el=document.getElementById('trd-code-input');var code=(el?el.value:'').trim().toUpperCase();
+  if(!code){tradeMsg('Enter a code first.','err');return;}
+  TRADE.code=code;tradeMsg('Looking up\u2026','');
+  sb.rpc('pp_trade_view',{p_code:code}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){TRADE.view=d;TRADE.take={};TRADE.msg='';renderTrading();}else{TRADE.view=null;tradeMsg(tradeReason(d),'err');}
+  },function(){TRADE.view=null;tradeMsg('Could not reach the server. Try again.','err');});
+}
+function tradeAccept(){
+  if(!TRADE.view||!TRADE.view.ok||TRADE.view.is_own)return;
+  var ids=Object.keys(TRADE.take);
+  tradeMsg('Trading\u2026','');
+  sb.rpc('pp_trade_accept',{p_code:TRADE.code,p_pet_ids:ids}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){TRADE.view=null;TRADE.take={};TRADE.code='';tradeReconcile(function(){tradeMsg('Trade complete! Your pets have been updated.','ok');});}
+    else tradeMsg(tradeReason(d),'err');
+  },function(){tradeMsg('Could not reach the server. Try again.','err');});
+}
+function tradeCancel(){
+  var code=TRADE.code;if(!code)return;
+  sb.rpc('pp_trade_cancel',{p_code:code}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){TRADE.code='';TRADE.view=null;TRADE.give={};tradeMsg('Offer cancelled.','ok');}else tradeMsg(tradeReason(d),'err');
+  },function(){tradeMsg('Could not reach the server. Try again.','err');});
+}
+function tradeReconcile(cb){
+  if(!sb||!cloudUser){if(cb)cb();return;}
+  sb.rpc('pp_pets_pull').then(function(res){
+    var d=res&&res.data;
+    if(!d||!d.ok||!d.pets){if(cb)cb();return;}
+    var serverPets=d.pets,serverIds={};
+    serverPets.forEach(function(sp){serverIds[sp.pet_id]=sp;});
+    var removed=0;
+    (G.hatchedPets||[]).slice().forEach(function(p){if(p.pet_id&&!serverIds[p.pet_id]){destroyPetByUid(p.uid);removed++;}});
+    var localIds={},localUid={};(G.hatchedPets||[]).forEach(function(p){if(p.pet_id)localIds[p.pet_id]=true;if(p.uid!=null)localUid[String(p.uid)]=true;});
+    var added=0;
+    serverPets.forEach(function(sp){
+      if(!localIds[sp.pet_id]&&!(sp.client_uid!=null&&localUid[String(sp.client_uid)])){
+        var pet=Object.assign({},sp.data||{});
+        pet.pet_id=sp.pet_id;
+        if(pet.uid==null)pet.uid=sp.client_uid;
+        pet.equippedSlot=-1;
+        G.hatchedPets.push(pet);
+        if(typeof discoverPet==='function'){try{discoverPet(pet.name,pet.rarity);}catch(e){}}
+        added++;
+      }
+    });
+    if(removed||added){cloudDirty=true;try{if(typeof renderSlotRow==='function')renderSlotRow();if(typeof updateHUD==='function')updateHUD();if(typeof renderPets==='function')renderPets();}catch(e){}}
+    if(cb)cb();
+  },function(){if(cb)cb();});
 }
 function renderAscension(){
   var pending=calcPendingStardust();
@@ -4385,7 +4829,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.4<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.8<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5754,7 +6198,7 @@ function hatchEventEgg(){
   var cfg=rollEventPet();if(!cfg)return ['No event pets configured.'];
   var rc=RARITY_CONFIG[cfg.rarity]||RARITY_CONFIG.common;
   var abilities=[],j;for(j=0;j<rc.slots;j++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});}
-  G.hatchedPets.push({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0});
+  registerPet({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0});
   if(typeof discoverPet==='function')discoverPet(cfg.name,cfg.rarity);
   var isNew=!(G.event.petsOwned&&G.event.petsOwned[cfg.id]);
   if(isNew){if(!G.event.petsOwned)G.event.petsOwned={};G.event.petsOwned[cfg.id]=true;G.event.eggMisses=0;}
@@ -6638,7 +7082,7 @@ function collectHatch(idx){
   // Cosmic
   if(pet.rarity==='cosmic')G.stats.cosmicPetsCreated++;
 
-  G.hatchedPets.push(pet);
+  registerPet(pet);
   if(isEventEgg&&pet.evid){ensureEventState();if(!G.event.petsOwned[pet.evid]){G.event.petsOwned[pet.evid]=true;G.event.eggMisses=0;}else{G.event.eggMisses=(G.event.eggMisses||0)+1;}}
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
@@ -6836,7 +7280,7 @@ function doFusion(){
   });
 
   // Add new pet
-  G.hatchedPets.push(newPet);
+  registerPet(newPet);
 
   // Update stats
   G.stats.totalPetsFused=(G.stats.totalPetsFused||0)+1;
@@ -7558,7 +8002,7 @@ function grantPetReward(rarity){
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var abilities=[];
   for(var i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
-  G.hatchedPets.push({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1,level:1,xp:0});
+  registerPet({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1,level:1,xp:0});
   G.stats.totalPetsCollected=(G.stats.totalPetsCollected||0)+1;
   if(typeof syncDiscoveredFromInventory==='function')syncDiscoveredFromInventory();
 }
@@ -8200,7 +8644,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -8261,6 +8705,64 @@ function cloudEnter(){
   });
 }
 
+// ----- PETS-SPEGEL (steg 1B: håll serverns pets-tabell i synk med klientens djur) -----
+// Speglar bara klientens sanning; ÄNNU INTE auktoritativ. Failsäker: bryter aldrig spelet.
+var _petsSyncSig=null;
+function petsSig(arr){
+  if(!arr||!arr.length)return '0';
+  var s='';
+  for(var i=0;i<arr.length;i++){
+    var p=arr[i],ab='';
+    if(p.abilities){for(var j=0;j<p.abilities.length;j++){ab+=p.abilities[j].id+p.abilities[j].tier+'.';}}
+    s+=p.uid+'|'+p.rarity+'|'+ab+';';   // ändras vid add/remove/fusion/mutation (ej rena XP-tick)
+  }
+  return s;
+}
+function cloudSyncPets(pets){
+  if(!sb||!cloudUser||cloudKickedFlag||_gateBlock)return;
+  try{
+    var sig=petsSig(pets);
+    if(sig===_petsSyncSig)return;            // inget ägande-relevant har ändrats sedan sist
+    sb.rpc('pp_pets_sync',{p_pets:pets||[]}).then(function(res){
+      if(res&&res.data==='synced')_petsSyncSig=sig;
+    },function(){});                         // tyst vid fel; spegeln hämtar ikapp nästa sparning
+  }catch(e){}
+}
+// Registrerar ett NYTT djur (steg 2 A): lokal push direkt (spelet funkar instant/offline)
+// + serverutfärdat pet_id i bakgrunden. Failsäker — bryter aldrig spelet.
+function registerPet(pet){
+  try{ G.hatchedPets.push(pet); }catch(e){ return pet; }
+  try{
+    if(sb&&cloudUser&&!cloudKickedFlag&&!_gateBlock&&pet&&!pet.pet_id){
+      sb.rpc('pp_pet_create',{p_pet:pet}).then(function(res){
+        var d=res&&res.data;
+        if(d&&d.ok&&d.pet_id){ pet.pet_id=d.pet_id; cloudDirty=true; }  // fäst server-ID, spara
+      },function(){});
+    }
+  }catch(e){}
+  return pet;
+}
+// Ikapp-registrering (steg 3): ge alla LOKALA djur som saknar pet_id ett serverutfärdat ID
+// (gamla djur + ev. offline-skapade). Throttlad/sekventiell, failsäker, kör en gång i taget.
+var _regBusy=false;
+function cloudRegisterMissingPets(){
+  if(_regBusy||!sb||!cloudUser||cloudKickedFlag||_gateBlock)return;
+  var list=(G.hatchedPets||[]).filter(function(p){return p&&!p.pet_id;});
+  if(!list.length)return;
+  _regBusy=true;var i=0;
+  (function next(){
+    if(i>=list.length){_regBusy=false;return;}
+    var pet=list[i++];
+    if(!pet||pet.pet_id){setTimeout(next,20);return;}
+    try{
+      sb.rpc('pp_pet_create',{p_pet:pet}).then(function(res){
+        var d=res&&res.data;
+        if(d&&d.ok&&d.pet_id){ pet.pet_id=d.pet_id; cloudDirty=true; }
+        setTimeout(next,150);
+      },function(){setTimeout(next,300);});
+    }catch(e){setTimeout(next,300);}
+  })();
+}
 function cloudPushNow(cb){
   if(!sb||!cloudUser||cloudKickedFlag){if(cb)cb();return;}
   var o=cloudLocalObj();if(!o){if(cb)cb();return;}
@@ -8268,7 +8770,7 @@ function cloudPushNow(cb){
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
     if(st==='superseded'){cloudKicked();}
-    else if(st==='saved'||st==='created'){cloudDirty=false;try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}}
+    else if(st==='saved'||st==='created'){cloudDirty=false;try{localStorage.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();}
     if(cb)cb(st);
   },function(){cloudBusy=false;if(cb)cb();});
 }
