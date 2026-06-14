@@ -5221,7 +5221,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.21<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.22<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9182,6 +9182,9 @@ function cloudRegisterMissingPets(){
 function cloudPushNow(cb){
   if(!sb||!cloudUser||cloudKickedFlag){if(cb)cb();return;}
   var o=cloudLocalObj();if(!o){if(cb)cb();return;}
+  // EXTRA SPÄRR: spara ALDRIG om den lokala cachen tillhör ett ANNAT konto än det inloggade.
+  var _own=null;try{_own=localStorage.getItem(OWNER_KEY);}catch(e){}
+  if(_own&&_own!==cloudUser.id){if(cb)cb();return;}
   cloudBusy=true;
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
