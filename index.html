@@ -556,6 +556,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .frd-dot.on{background:#3fcf5f;box-shadow:0 0 5px #3fcf5f;}
 .sec-coin{width:21px;height:21px;object-fit:contain;}
 .sec-cshell{font-size:1.17rem;}
+.ec-explain{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:rgba(255,255,255,0.62);background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.45);border-radius:11px;padding:8px 11px;margin-bottom:9px;line-height:1.38;}
+.ec-explain b{color:#fff;}
+.sec-shell-chip{flex-direction:column;align-items:flex-end;gap:1px;}
+.sec-shell-rar{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.6rem;line-height:1;color:var(--erc,#fff);text-transform:uppercase;letter-spacing:0.3px;}
+.sec-shell-line{display:flex;align-items:center;gap:3px;}
+.sec-shell-line.good{color:#5fd47a;}
+.sec-shell-line.bad{color:#ff7b7b;}
 .sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
 .sec-btn{padding:9px 4px;border:1.5px solid #0f1a33;border-radius:13px;font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;color:#fff;text-align:center;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -4px 7px rgba(0,0,0,0.4);transition:transform 0.1s;}
 .sec-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -3px 6px rgba(0,0,0,0.4);}
@@ -1823,6 +1830,8 @@ function uiIco(name,emoji,px){
   var st=px?(' style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;"'):'';
   return '<img src="'+ASSET_BASE+'/assets/ui/random/'+name+'.png" alt=""'+st+' onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';
 }
+// Stats-panelens kort-ikoner: pekar på valfri undermapp i assets/ui (t.ex. 'stats-panel/stats-panel-economy2'), med emoji-fallback om bilden saknas.
+function statIco(path,emoji){return '<img src="'+ASSET_BASE+'/assets/ui/'+path+'.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';}
 // Klick-upgrades använder en gemensam click power-ikon (ligger i buildings-mappen); emoji-fallback per linje.
 function clickUpgIconImg(u){
   var e=(u&&u.line==='finger')?'👆':'🖱️';
@@ -1974,16 +1983,16 @@ function shellIcon(id,cls){
 // DATA: EGG SHOP
 // ============================================================
 var EGG_SHOP=[
-  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:75, buildReq:null,        hatchReq:null, coinReq:100},
-  {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'uncommon', shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
-  {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'rare',     shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
-  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'epic',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
-  {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'legendary',shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
-  {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'mythical', shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
-  {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'artifact', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
-  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'heavenly', shellAmt:18, buildReq:'Resort',     hatchReq:'arctic'},
-  {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'eternal',  shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
-  {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'cosmic',   shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
+  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:0,  buildReq:null,        hatchReq:null, coinReq:100},
+  {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'common',   shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
+  {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'uncommon', shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
+  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'rare',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
+  {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'epic',     shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
+  {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'legendary',shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
+  {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'mythical', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
+  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'artifact', shellAmt:18, buildReq:'Resort',     hatchReq:'arctic'},
+  {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'heavenly', shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
+  {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'eternal',  shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
   {id:'cosmic',   name:'Cosmic Egg',   icon:'🌌',shellType:'cosmic',   shellAmt:5,  buildReq:'Breeding Center',hatchReq:'celestial'},
 ];
 
@@ -5210,7 +5219,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.15<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.18<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5616,7 +5625,7 @@ function renderProfileStats(){
   var achPct=achTotal>0?Math.floor(achUnlocked/achTotal*100):0;
   var pdx=getTotalPetdexCount();
   var h='<div class="prof-section-title">Statistics</div>';
-  h+=pstCard('#f5c842','💰','Economy',[
+  h+=pstCard('#f5c842',statIco('stats-panel/stats-panel-economy2','💰'),'Economy',[
     ['Sparks Earned',fmtShort(s.totalCoinsEarned||0)],
     ['Sparks Spent',fmtShort(s.totalCoinsSpent||0)],
     ['Buildings Bought',fmtShort(s.totalBuildingsPurchased||0)],
@@ -5626,14 +5635,14 @@ function renderProfileStats(){
     ['Total Clicks',fmtShort(s.totalClicks||0)],
     ['Offline Collects',fmtShort(s.offlineRewardsClaimed||0)]
   ],false);
-  h+=pstCard('#4caf50','🐾','Pet Stats',[
+  h+=pstCard('#4caf50',statIco('stats-panel/stats-panel-collection','🐾'),'Pet Stats',[
     ['Pets Collected',fmtShort(s.totalPetsCollected||0)],
     ['Unique Discovered',(s.uniquePetsDiscovered||0)+' / '+pdx.total],
     ['Highest Rarity',profRarity(s.highestRarityOwned)],
     ['Rarest Hatched',profRarestPet(s.rarestPetEverHatched)],
     ['Perfect Pets',fmtShort(s.perfectPetsCreated||0)]
   ],false);
-  h+=pstCard('#ff9800','🍳','Hatching',[
+  h+=pstCard('#ff9800',statIco('stats-panel/stats-panel-hatching2','🍳'),'Hatching',[
     ['Eggs Hatched',fmtShort(s.eggsHatched||0)],
     ['Most Hatched',profWorldName(s.mostHatchedWorld)],
     ['Fastest Hatch',profDur(s.fastestHatch)],
@@ -5642,38 +5651,38 @@ function renderProfileStats(){
     ['T5 Abilities',fmtShort(s.tier5AbilitiesHatched||0)],
     ['Duplicates',fmtShort(s.duplicatePetsHatched||0)]
   ],false);
-  h+=pstCard('#ec73c8','🐚','Ember Stats',[
+  h+=pstCard('#ec73c8',statIco('stats-panel/stats-panel-ember','🐚'),'Ember Stats',[
     ['Embers Collected',fmtShort(s.totalShellsCollected||0)],
     ['Embers Spent',fmtShort(s.totalShellsSpent||0)],
     ['Highest Rarity',profRarity(s.highestRarityShellFound)],
     ['Favorite Ember',profRarity(s.favoriteShell)]
   ],false);
-  h+=pstCard('#26c6da','⚗️','Fusion',[
+  h+=pstCard('#26c6da',statIco('stats-panel/stats-panel-fusion','⚗️'),'Fusion',[
     ['Total Fusions',fmtShort(s.totalFusions||0)],
     ['Perfect Fusions',fmtShort(s.perfectFusions||0)],
     ['Pets Consumed',fmtShort(s.petsConsumedInFusion||0)],
     ['Highest Rarity',profRarity(s.highestFusionRarity)],
     ['Cosmic Created',fmtShort(s.cosmicPetsCreated||0)]
   ],false);
-  h+=pstCard('#b388ff','🧬','Mutation',[
+  h+=pstCard('#b388ff',statIco('stats-panel/stats-panel-mutation','🧬'),'Mutation',[
     ['Pets Mutated',fmtShort(s.totalPetsMutated||0)],
     ['Abilities Extracted',fmtShort(s.abilitiesExtracted||0)],
     ['Cores Created',fmtShort(s.mutationCoresCreated||0)],
     ['Cores Used',fmtShort(s.mutationCoresUsed||0)]
   ],true);
-  h+=pstCard('#5c8aff','🗺️','Adventures',[
+  h+=pstCard('#5c8aff',statIco('stats-panel/stats-panel-adventures','🗺️'),'Adventures',[
     ['Completed',fmtShort(s.adventuresCompleted||0)],
     ['Hours Logged',fmtShort(s.adventureHoursLogged||0)],
     ['Pets Found',fmtShort(s.adventurePetsFound||0)],
     ['Items Found',fmtShort(s.discoveryItemsFound||0)],
     ['Special',fmtShort(s.specialAdventures||0)]
   ],true);
-  h+=pstCard('#ef5350','🏆','Achievements',[
+  h+=pstCard('#ef5350',statIco('random/achievements','🏆'),'Achievements',[
     ['Unlocked',achUnlocked+' / '+achTotal],
     ['Secrets Found',fmtShort(s.secretAchievementsFound||0)],
     ['Completion',achPct+'%']
   ],false);
-  h+=pstCard('#ffb74d','⭐','Ascension',[
+  h+=pstCard('#ffb74d',statIco('random/ascension','⭐'),'Ascension',[
     ['Ascensions',fmtShort(s.ascensionsCompleted||0)],
     ['Total Currency',fmtShort(s.totalAscensionCurrency||0)],
     ['Highest Bonus',(s.highestAscensionBonus||0)+'%']
@@ -7164,7 +7173,7 @@ function shopLockReason(egg){
   if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return ''+LOCK_IMG+' Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
   return ''+LOCK_IMG+' Locked';
 }
-function shellCraftedBy(id){return EGG_SHOP.filter(function(e){return e.shellType===id;});}
+function shellCraftedBy(id){return EGG_SHOP.filter(function(e){return e.shellType===id&&getEggCost(e)>0;});}
 function showShellInfo(id){
   var r=SHELL_RARITIES.find(function(x){return x.id===id;});if(!r)return;
   var s=G.stats||{};
@@ -7242,6 +7251,9 @@ function renderShop(){
     wrap.innerHTML=html;return;
   }
 
+  // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
+  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Embers</b>. Rarer eggs need rarer Embers — each card shows the exact Ember it needs. Collect Embers by clicking &amp; idling.</div>';
+
   // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
   // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
 
@@ -7270,7 +7282,7 @@ function renderShop(){
     if(unlocked){
       html+='<div class="sec-cost">';
       html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
-      html+='<span class="sec-cost-chip'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span>';
+      if(sc>0)html+='<span class="sec-cost-chip sec-shell-chip" style="--erc:'+(shellR?shellR.color:'#aaa')+'"><span class="sec-shell-rar">'+(shellR?shellR.name.replace(' Ember',''):'')+'</span><span class="sec-shell-line'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span></span>';
       html+='</div>';
     }
     // Knappar (Craft över Hatch)
@@ -7289,6 +7301,7 @@ function renderShop(){
   wrap.innerHTML=html;
 }
 function getEggCost(egg){
+  if(!egg.shellAmt)return 0;
   return Math.max(1,Math.floor(egg.shellAmt*G.craftDiscount));
 }
 // Coin-kostnad: 100 × 10^tier (starter 100 → cosmic 1 biljon). Påverkas EJ av craft-rabatten.
@@ -7354,10 +7367,12 @@ function showEggInfo(eggId){
   // Unlock requirements
   var reqs=[];
   var cost=getEggCost(egg);
-  var shellR2=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
-  var have2=G.shells[egg.shellType]||0;
-  var shellOk2=have2>=cost;
-  reqs.push({icon:shellIcon(egg.shellType),label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  if(cost>0){
+    var shellR2=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
+    var have2=G.shells[egg.shellType]||0;
+    var shellOk2=have2>=cost;
+    reqs.push({icon:shellIcon(egg.shellType),label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
+  }
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
   reqs.push({icon:COIN_IMG,label:'Sparks (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:COIN_IMG,label:'Earn '+egg.coinReq+' Sparks',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
