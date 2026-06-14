@@ -525,6 +525,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .sec-cost-chip{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:1.08rem;color:#fff;white-space:nowrap;justify-content:flex-end;}
 .sec-cost-chip.bad{color:#ff7b7b;}
 .sec-cost-chip.good{color:#5fd47a;}
+.setup-ability.locked{opacity:0.5;cursor:not-allowed;}
+.reroll-charmbox{display:flex;align-items:center;gap:9px;background:rgba(122,90,208,0.16);border:1.5px solid rgba(122,90,208,0.5);border-radius:14px;padding:12px 14px;margin:10px 0;}
+.reroll-charmbox .rc-ico{font-size:1.4rem;}
+.reroll-charmbox .rc-lbl{flex:1;font-size:0.82rem;font-weight:800;color:#cdb6ff;}
+.reroll-charmbox .rc-num{font-family:'Fredoka One',cursive;font-size:1.25rem;color:#fff;}
+.reroll-note{font-size:0.78rem;color:rgba(255,255,255,0.5);text-align:center;padding:18px 10px;line-height:1.5;}
+.reroll-start{display:block;width:100%;box-sizing:border-box;margin:6px 0 4px;padding:14px;border:none;border-radius:14px;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;background:linear-gradient(180deg,#7c4dff,#5a3ed6);color:#fff;box-shadow:0 4px 0 #3a268f;}
+.reroll-start:active{transform:translateY(2px);box-shadow:0 2px 0 #3a268f;}
+.frd-toggle-row{display:flex;align-items:center;gap:10px;padding:7px 2px;}
+.frd-toggle-lbl{flex:1;font-size:0.8rem;color:rgba(255,255,255,0.85);}
 .sec-coin{width:21px;height:21px;object-fit:contain;}
 .sec-cshell{font-size:1.17rem;}
 .sec-btns{flex-shrink:0;display:flex;flex-direction:column;gap:6px;width:62px;position:relative;z-index:1;}
@@ -582,9 +592,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #nb-pets .ni-img{width:58px;height:58px;}
 .nav-btn span:last-child{font-size:0.74rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
 .nav-btn.active span:last-child{color:#ffe08a;}
-.pets-subnav{display:flex;gap:6px;margin-bottom:10px;}
-.psub-btn{flex:1;padding:8px 4px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
-.psub-btn span{font-size:0.95rem;}
+.pets-subnav{display:flex;gap:4px;margin-bottom:10px;}
+.psub-btn{flex:1;padding:8px 2px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.62rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
+.psub-btn span{font-size:0.82rem;}
 .psub-btn:active{transform:translateY(2px);}
 .psub-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;color:#0b1530;box-shadow:0 2px 0 #8a6000;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
@@ -1452,11 +1462,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
         <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span>⚗️</span> Fusion</button>
         <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span>🧪</span> Extract</button>
         <button class="psub-btn" id="psub-mutate" onclick="petsSub('mutate')"><span>🧬</span> Mutate</button>
+        <button class="psub-btn" id="psub-reroll" onclick="petsSub('reroll')"><span>🎲</span> Reroll</button>
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
       <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
       <div id="psub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
       <div id="psub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
+      <div id="psub-panel-reroll" class="psub-panel" style="display:none"><div id="reroll-wrap"></div></div>
     </div>
     <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
@@ -2436,10 +2448,11 @@ var G={
   event:null,
   boosts:{coin:0,luck:0},
   cosmeticsOwned:{},
+  rerollCharms:0,
   stats:freshStats(),
 };
 // Standardinställningar — fyller i saknade fält vid load (så nya inställningar inte blir "undefined")
-var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short',skyLife:true};
+var DEFAULT_SETTINGS={masterVol:100,musicVol:80,sfxVol:80,vibrate:true,particles:true,reduceMotion:false,damageNumbers:true,confirmFusion:true,hidePedestal:false,numFormat:'short',skyLife:true,notifyFriendReq:true,notifyTradeInvite:true};
 
 // === REDEEM CODES (lokala, inbakade i spelet) ===
 // Koder lösas in EN gång per spelare (sparas i G.redeemedCodes). Nyckeln matchas
@@ -2931,6 +2944,7 @@ function saveGame(){
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
+    rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
@@ -2949,6 +2963,7 @@ function resetGame(){
   G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
+  G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
   G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   G.stardust=0;G.ascensions=0;
@@ -2994,6 +3009,7 @@ function addTestPets(){
   syncDiscoveredFromInventory();
 }
 function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
+function addTestCharms(){G.rerollCharms=(G.rerollCharms||0)+10;if(typeof updateHUD==='function')updateHUD();if(petsSubTab==='reroll'&&typeof renderReroll==='function')renderReroll();if(typeof saveGame==='function')saveGame();}
 
 // ===== DEV-MENY (flytande DEV-knapp) — tas bort innan release =====
 function applyPedestalVisibility(){
@@ -3013,7 +3029,7 @@ function renderDevMenu(){
   var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Embers</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
-  html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button></div>';
+  html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="addTestCharms()" '+bBlue+'>+10 \ud83c\udfb2 Charms</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
@@ -3645,7 +3661,7 @@ function goHome(){
 var petsSubTab='pets';
 function petsSub(sub){
   petsSubTab=sub;
-  ['pets','fusion','extract','mutate'].forEach(function(s){
+  ['pets','fusion','extract','mutate','reroll'].forEach(function(s){
     var p=document.getElementById('psub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('psub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
@@ -3653,8 +3669,108 @@ function petsSub(sub){
   else if(sub==='fusion')renderFusion();
   else if(sub==='extract')renderExtract();
   else if(sub==='mutate')renderMutate();
+  else if(sub==='reroll')renderReroll();
 }
 function showPetsHub(){petsSub(petsSubTab);}
+
+// ============================================================
+// REROLL CHARMS — rulla om TIERN på en ability (Diablo-stil, direkt)
+// Odds är PLATSHÅLLARE (balanseras senare). Rerollad ability LÅSES på peten
+// (kan ej extraheras/muteras) — exploit-skydd mot "rulla T5 → extrahera → massprod".
+// ============================================================
+var REROLL_TIER_WEIGHTS={1:50,2:25,3:14,4:8,5:3};
+function rollRerollTier(){
+  var keys=[1,2,3,4,5],total=0,i;
+  for(i=0;i<keys.length;i++)total+=REROLL_TIER_WEIGHTS[keys[i]]||0;
+  var r=Math.random()*total,acc=0;
+  for(i=0;i<keys.length;i++){acc+=REROLL_TIER_WEIGHTS[keys[i]]||0;if(r<=acc)return keys[i];}
+  return 1;
+}
+function renderReroll(){
+  var wrap=document.getElementById('reroll-wrap');if(!wrap)return;
+  var charms=G.rerollCharms||0;
+  var h='<div class="lab-head"><div class="lab-title">🎲 Reroll Lab</div><div class="lab-sub">Spend a Reroll Charm to re-roll the TIER of one ability on a pet. The new tier is random (weighted) — you can go up or down. Once rerolled, that ability is LOCKED on the pet (it can no longer be extracted or mutated).</div></div>';
+  h+='<div class="reroll-charmbox"><span class="rc-ico">🎲</span><span class="rc-lbl">Reroll Charms</span><span class="rc-num">'+charms+'</span></div>';
+  var hasPets=pickerEligiblePets().length>0;
+  if(charms<=0){
+    h+='<div class="reroll-note">You have no Reroll Charms yet. They drop from gameplay.</div>';
+  } else if(!hasPets){
+    h+='<div class="reroll-note">No pets available to reroll right now.</div>';
+  } else {
+    h+='<button class="reroll-start" onclick="openRerollSetup()">🎲 Reroll an Ability</button>';
+  }
+  wrap.innerHTML=h;
+}
+var rerollSetup=null; // {petUid, abilityIdx}
+function openRerollSetup(){
+  if((G.rerollCharms||0)<=0){showGenericModal('🎲','No Charms','You have no Reroll Charms yet.');return;}
+  if(pickerEligiblePets().length===0){showGenericModal('🐾','No Pets','You have no pets available to reroll.');return;}
+  rerollSetup={petUid:null,abilityIdx:null};renderRerollSetup();document.getElementById('mutation-modal').classList.add('open');
+}
+function rerollPickPet(){openPetPicker(function(uid){rerollSetup.petUid=uid;rerollSetup.abilityIdx=null;renderRerollSetup();});}
+function rerollPickAbility(idx){rerollSetup.abilityIdx=idx;renderRerollSetup();}
+function renderRerollSetup(){
+  var s=rerollSetup;if(!s)return;
+  var pet=s.petUid?petByUid(s.petUid):null;
+  var n=G.rerollCharms||0;
+  var h='<div class="setup-head"><div class="setup-title">🎲 Reroll Tier</div><div class="setup-sub">'+n+' charm'+(n===1?'':'s')+' available</div></div>';
+  h+='<div class="setup-step">1 · Select Pet</div>';
+  if(!pet){h+='<div class="setup-platform" onclick="rerollPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
+  else{
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-step">2 · Select Ability to Reroll</div>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    });
+    if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
+      var ab=pet.abilities[s.abilityIdx];var m3=ABILITY_META[ab.id];
+      h+='<div class="setup-warn">⚠️ Rerolling gives '+m3.name+' a new RANDOM tier (you can gain or lose tiers) and <b>permanently locks</b> it on '+pet.name+' — it can no longer be extracted or mutated.</div>';
+      h+='<button class="setup-go" onclick="confirmReroll()">🎲 Reroll — 1 Charm</button>';
+    }
+  }
+  h+='<button class="setup-cancel" onclick="closeMutationModal()">Cancel</button>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+}
+function confirmReroll(){
+  var s=rerollSetup;if(!s||s.abilityIdx==null)return;
+  var pet=petByUid(s.petUid);if(!pet)return;
+  if((G.rerollCharms||0)<=0)return;
+  var ab=pet.abilities[s.abilityIdx];if(!ab)return;var m=ABILITY_META[ab.id];
+  var h='<div class="mut-warn-i">🎲</div><div class="mut-warn-t">Reroll '+m.name+'?</div>';
+  h+='<div class="mut-warn-b">This re-rolls the tier of <b>'+m.name+'</b> (now T'+ab.tier+') to a new random tier on weighted odds — you might gain or lose tiers. It also <b>permanently locks</b> the ability on '+pet.name+' (no extract, no mutate).</div>';
+  h+='<div class="mut-warn-b" style="font-size:0.72rem;">Costs 1 Reroll Charm. This cannot be undone.</div>';
+  h+='<div class="mut-btns"><button class="mut-cancel2" onclick="renderRerollSetup()">Cancel</button><button class="mut-go" onclick="doReroll()">🎲 Reroll</button></div>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+}
+function doReroll(){
+  var s=rerollSetup;if(!s||s.abilityIdx==null)return;
+  var pet=petByUid(s.petUid);if(!pet)return;
+  if((G.rerollCharms||0)<=0)return;
+  var ab=pet.abilities[s.abilityIdx];if(!ab)return;
+  var m=ABILITY_META[ab.id];var oldTier=ab.tier;
+  var newTier=rollRerollTier();
+  G.rerollCharms-=1;
+  ab.tier=newTier;ab.locked=true;
+  G.stats.abilitiesRerolled=(G.stats.abilitiesRerolled||0)+1;
+  if(typeof buzz==='function')buzz([10,30,12]);
+  var dir=newTier>oldTier?'up':(newTier<oldTier?'down':'same');
+  var col=dir==='up'?'#5fd47a':(dir==='down'?'#ff7b7b':'#cdb6ff');
+  var arrow=dir==='up'?'▲':(dir==='down'?'▼':'＝');
+  var h='<div class="mut-warn-i">🎲</div><div class="mut-warn-t" style="color:'+col+'">'+m.name+': T'+oldTier+' → T'+newTier+' '+arrow+'</div>';
+  h+='<div class="mut-corebox" style="border-color:'+m.color+'66;background:'+m.color+'15;"><span class="mc-icon">'+abilityIconImg(ab.id)+'</span><span class="mc-name" style="color:'+m.color+'">'+m.name+' T'+newTier+'</span><span class="mc-val">+'+TIER_VALUES[newTier]+'%</span></div>';
+  h+='<div class="mut-warn-b" style="font-size:0.72rem;">🔒 This ability is now locked on '+pet.name+'.</div>';
+  h+='<div class="mut-btns"><button class="mut-go" onclick="rerollDone()">Done</button></div>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+  if(typeof updateHUD==='function')updateHUD();
+  saveGame();
+}
+function rerollDone(){
+  closeMutationModal();
+  if(typeof renderReroll==='function')renderReroll();
+  if(typeof renderSlotRow==='function')renderSlotRow();
+  if(typeof renderPets==='function')renderPets();
+}
 
 // ============================================================
 // MUTATION SYSTEM (Fas 9–10): Extraction Chamber + Mutation Cores + Mutation Chamber
@@ -3802,8 +3918,8 @@ function renderExtractSetup(){
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
     h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
-    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="extractPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;var lk=ab.locked;
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var crc=coreRarityConf(ab.tier);var m2=ABILITY_META[ab.id];
@@ -3917,8 +4033,8 @@ function renderMutateSetup(){
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
     h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
-    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="mutatePickSlot('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;var lk=ab.locked;
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.slot!=null){
       h+='<div class="setup-step">3 · Choose Core</div>';
@@ -4154,15 +4270,69 @@ function closeAscension(){document.getElementById('ascension-modal').classList.r
 function openTrading(){TRADE.msg='';TRADE.view=null;document.getElementById('trading-modal').classList.add('open');renderTrading();tradeReconcile(function(){renderTrading();});}
 function closeTrading(){document.getElementById('trading-modal').classList.remove('open');}
 document.getElementById('trading-modal').onclick=function(e){if(e.target===this)closeTrading();};
-var FRIENDS={loaded:false,handle:'',data:{friends:[],incoming:[],outgoing:[]},results:null,invites:[],msg:'',msgType:''};
+var FRIENDS={loaded:false,handle:'',data:{friends:[],incoming:[],outgoing:[]},results:null,invites:[],msg:'',msgType:'',allowReq:true,allowTrade:true,friendCount:0,cap:200};
 function friendMsg(t,type){FRIENDS.msg=t||'';FRIENDS.msgType=type||'';renderFriends();}
 function friendReason(d){
   var r=d&&d.reason;
-  var m={no_auth:'Please sign in.',invalid_format:'Username must be 3\u201320 letters, numbers or _.',blocked:'That username isn\u2019t allowed.',taken:'That username is already taken.',cooldown:'You changed your username recently \u2014 try again later.',too_short:'Type at least 2 letters.',bad_input:'Something\u2019s off \u2014 try again.',no_such_user:'Player not found.',already_friends:'You\u2019re already friends.',not_found:'That request is no longer there.'};
+  var m={no_auth:'Please sign in.',invalid_format:'Username must be 3\u201320 letters, numbers or _.',blocked:'That username isn\u2019t allowed.',taken:'That username is already taken.',cooldown:'You changed your username recently \u2014 try again later.',too_short:'Type at least 2 letters.',bad_input:'Something\u2019s off \u2014 try again.',no_such_user:'Player not found.',already_friends:'You\u2019re already friends.',not_found:'That request is no longer there.',requests_off:'This player isn\u2019t accepting friend requests.',cap_self:'You\u2019ve reached the friend limit (200).',cap_other:'That player\u2019s friend list is full.'};
   return m[r]||'Something went wrong. Try again.';
 }
-function openFriends(){FRIENDS.msg='';FRIENDS.results=null;document.getElementById('friends-modal').classList.add('open');renderFriends();friendsLoad();}
-function closeFriends(){document.getElementById('friends-modal').classList.remove('open');}
+function openFriends(){FRIENDS.msg='';FRIENDS.results=null;document.getElementById('friends-modal').classList.add('open');renderFriends();friendsLoad();friendsWatchStart();}
+function closeFriends(){friendsWatchStop();document.getElementById('friends-modal').classList.remove('open');}
+// Live-uppdatering medan vän-panelen är öppen: pollar servern, ritar bara om vid ändring
+// (och aldrig medan man skriver i ett fält) — så accepterade förfrågningar dyker upp av sig själva.
+var _frWatch=null,_frSig='';
+function friendsInputFocused(){var a=document.activeElement;return !!a&&(a.id==='frd-handle-input'||a.id==='frd-search-input');}
+function friendsSig(){
+  var d=FRIENDS.data||{};var inv=FRIENDS.invites||[];
+  function j(arr,f){return (arr||[]).map(f).join(',');}
+  return j(d.friends,function(x){return x.user_id||x.handle||'';})+'|'+
+         j(d.incoming,function(x){return x.request_id||x.handle||'';})+'|'+
+         j(d.outgoing,function(x){return x.request_id||x.handle||'';})+'|'+
+         j(inv,function(x){return x.session_id||'';})+'|'+
+         (FRIENDS.allowReq?'1':'0')+(FRIENDS.allowTrade?'1':'0')+'|'+FRIENDS.friendCount;
+}
+function friendsMaybeRender(){
+  var sig=friendsSig();
+  if(sig!==_frSig&&!friendsInputFocused()){_frSig=sig;renderFriends();}
+}
+function friendsCapturePrivacy(d){
+  if(typeof d.allow_requests==='boolean')FRIENDS.allowReq=d.allow_requests;
+  if(typeof d.allow_trades==='boolean')FRIENDS.allowTrade=d.allow_trades;
+  if(typeof d.friend_count==='number')FRIENDS.friendCount=d.friend_count;
+  if(typeof d.cap==='number')FRIENDS.cap=d.cap;
+}
+function friendSetPrivacy(which){
+  if(!sb||!cloudUser)return;
+  var req=FRIENDS.allowReq,tr=FRIENDS.allowTrade;
+  if(which==='req')req=!req; else tr=!tr;
+  FRIENDS.allowReq=req;FRIENDS.allowTrade=tr;_frSig='';renderFriends(); // optimistiskt
+  sb.rpc('pp_set_privacy',{p_allow_requests:req,p_allow_trades:tr}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){FRIENDS.allowReq=!!d.allow_requests;FRIENDS.allowTrade=!!d.allow_trades;_frSig='';renderFriends();}
+    else friendMsg('Could not save that setting. Try again.','err');
+  },function(){friendMsg('Could not reach the server. Try again.','err');});
+}
+function friendToggleNotify(which){
+  if(!G.settings)G.settings={};
+  if(which==='req')G.settings.notifyFriendReq=(G.settings.notifyFriendReq===false);
+  else G.settings.notifyTradeInvite=(G.settings.notifyTradeInvite===false);
+  if(typeof saveGame==='function')saveGame();
+  _frSig='';renderFriends();
+}
+function friendsPoll(){
+  var m=document.getElementById('friends-modal');
+  if(!m||!m.classList.contains('open')||!sb||!cloudUser){friendsWatchStop();return;}
+  sb.rpc('pp_friends_list').then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){FRIENDS.data={friends:d.friends||[],incoming:d.incoming||[],outgoing:d.outgoing||[]};FRIENDS.loaded=true;friendsCapturePrivacy(d);friendsMaybeRender();}
+  },function(){});
+  sb.rpc('pp_trade_invites_list').then(function(res){
+    var d=res&&res.data;if(d&&d.ok){FRIENDS.invites=d.invites||[];friendsMaybeRender();}
+  },function(){});
+}
+function friendsWatchStart(){friendsWatchStop();_frSig='';_frWatch=setInterval(friendsPoll,4000);}
+function friendsWatchStop(){if(_frWatch){clearInterval(_frWatch);_frWatch=null;}}
 function friendsLoad(){
   if(!sb||!cloudUser)return;
   try{
@@ -4172,7 +4342,7 @@ function friendsLoad(){
   }catch(e){}
   sb.rpc('pp_friends_list').then(function(res){
     var d=res&&res.data;
-    if(d&&d.ok){FRIENDS.data={friends:d.friends||[],incoming:d.incoming||[],outgoing:d.outgoing||[]};FRIENDS.loaded=true;renderFriends();}
+    if(d&&d.ok){FRIENDS.data={friends:d.friends||[],incoming:d.incoming||[],outgoing:d.outgoing||[]};FRIENDS.loaded=true;friendsCapturePrivacy(d);renderFriends();}
   },function(){});
   sb.rpc('pp_trade_invites_list').then(function(res){
     var d=res&&res.data;if(d&&d.ok){FRIENDS.invites=d.invites||[];renderFriends();}
@@ -4236,9 +4406,17 @@ function renderFriends(){
        '<div class="frd-row"><input id="frd-search-input" class="frd-input" placeholder="search username" maxlength="20"><button class="frd-btn sm" onclick="friendSearch()">Search</button></div>';
     if(FRIENDS.results){
       if(!FRIENDS.results.length)h+='<div class="frd-note">No players found.</div>';
-      else FRIENDS.results.forEach(function(p){h+=frdItem(p,'<button class="frd-btn tiny" onclick="friendRequest(\''+p.user_id+'\')">Add</button>');});
+      else FRIENDS.results.forEach(function(p){var btn=(p.allow_requests===false)?'<div class="frd-item-name">Not accepting requests</div>':'<button class="frd-btn tiny" onclick="friendRequest(\''+p.user_id+'\')">Add</button>';h+=frdItem(p,btn);});
     }
     h+='</div>';
+    h+='<div class="frd-card"><div class="frd-sec">Privacy</div>'+
+       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow friend requests</span><button class="set-toggle'+(FRIENDS.allowReq?' on':'')+'" onclick="friendSetPrivacy(\'req\')"><span class="knob"></span></button></div>'+
+       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow trade invites</span><button class="set-toggle'+(FRIENDS.allowTrade?' on':'')+'" onclick="friendSetPrivacy(\'trade\')"><span class="knob"></span></button></div>'+
+       '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">Turn these off and others can\u2019t send you requests or trades at all.</div></div>';
+    h+='<div class="frd-card"><div class="frd-sec">Notifications</div>'+
+       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Friend request popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyFriendReq!==false)?' on':'')+'" onclick="friendToggleNotify(\'req\')"><span class="knob"></span></button></div>'+
+       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Trade invite popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyTradeInvite!==false)?' on':'')+'" onclick="friendToggleNotify(\'trade\')"><span class="knob"></span></button></div>'+
+       '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">You still receive them \u2014 this just hides the popup.</div></div>';
   }
   if(FRIENDS.data.incoming&&FRIENDS.data.incoming.length){
     h+='<div class="frd-card"><div class="frd-sec">Friend requests</div>';
@@ -4254,7 +4432,7 @@ function renderFriends(){
     });
     h+='</div>';
   }
-  h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.data.friends.length+')'):'')+'</div>';
+  h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.friendCount+'/'+FRIENDS.cap+')'):'')+'</div>';
   if(!FRIENDS.loaded)h+='<div class="frd-note">Loading\u2026</div>';
   else if(!FRIENDS.data.friends.length)h+='<div class="frd-note">No friends yet. Search above to add some!</div>';
   else FRIENDS.data.friends.forEach(function(p){h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\')">Remove</button></div>');});
@@ -4269,7 +4447,7 @@ function renderFriends(){
 document.getElementById('friends-modal').onclick=function(e){if(e.target===this)closeFriends();};
 /* ===== STEG 6: LIVE VÄN-TRADE ===== */
 var LIVE={sid:null,role:'from',friend:'friend',me:[],them:[],myLocked:false,theirLocked:false,status:'',ch:null,poll:null,errMsg:'',_completed:false};
-function ltReason(d){var r=d&&d.reason;var m={no_auth:'Please sign in.',bad_input:'Something\u2019s off \u2014 try again.',not_friends:'You can only trade with friends.',not_found:'This trade is no longer available.',not_owner:'You don\u2019t own those pets anymore.',offer_invalid:'The offer changed \u2014 pick again and re-lock.'};return m[r]||'Something went wrong. Try again.';}
+function ltReason(d){var r=d&&d.reason;var m={no_auth:'Please sign in.',bad_input:'Something\u2019s off \u2014 try again.',not_friends:'You can only trade with friends.',not_found:'This trade is no longer available.',not_owner:'You don\u2019t own those pets anymore.',offer_invalid:'The offer changed \u2014 pick again and re-lock.',trades_off:'This friend isn\u2019t accepting trade invites.'};return m[r]||'Something went wrong. Try again.';}
 function ltMyTradeable(){return (typeof tradeTradeable==='function'?tradeTradeable():(G.hatchedPets||[])).filter(function(p){return p&&p.pet_id;});}
 function ltMyOfferInfo(){return LIVE.me.map(function(id){var p=(G.hatchedPets||[]).find(function(x){return x.pet_id===id;});return p?{pet_id:id,name:p.name,e:p.e,rarity:p.rarity}:{pet_id:id,name:'Pet',e:'🐾'};});}
 function ltOfferBox(title,pets,locked){
@@ -4394,6 +4572,7 @@ var _tinvWatch=null,_tinvShown=null;
 function ltInviteWatchStart(){if(_tinvWatch||!sb||!cloudUser)return;_tinvWatch=setInterval(ltInviteCheck,12000);setTimeout(ltInviteCheck,3000);}
 function ltInviteCheck(){
   if(!sb||!cloudUser)return;
+  if(G.settings&&G.settings.notifyTradeInvite===false)return; // notis avstängd
   var m=document.getElementById('tradelive-modal');if(m&&m.classList.contains('open'))return;
   sb.rpc('pp_trade_invites_list').then(function(res){
     var d=res&&res.data;
@@ -4409,6 +4588,27 @@ function ltShowInviteBanner(iv){
   document.getElementById('tinv-dismiss').onclick=function(){ltDismissBanner();};
 }
 function ltDismissBanner(){var b=document.getElementById('tinv-banner');if(b&&b.parentNode)b.parentNode.removeChild(b);}
+// Notis vid INKOMMANDE vänförfrågan (speglar trade-invite-bannern ovan). Visas en gång per ny förfrågan.
+var _frReqWatch=null,_frReqShown=null;
+function frReqWatchStart(){if(_frReqWatch||!sb||!cloudUser)return;_frReqWatch=setInterval(frReqCheck,12000);setTimeout(frReqCheck,3500);}
+function frReqCheck(){
+  if(!sb||!cloudUser)return;
+  if(G.settings&&G.settings.notifyFriendReq===false)return; // notis avstängd
+  var fm=document.getElementById('friends-modal');if(fm&&fm.classList.contains('open'))return; // panelen visar dem redan live
+  sb.rpc('pp_friends_list').then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok&&d.incoming&&d.incoming.length){var rq=d.incoming[0];var key=rq.request_id||rq.handle;if(key&&key!==_frReqShown){_frReqShown=key;frShowReqBanner(rq);}}
+  },function(){});
+}
+function frShowReqBanner(rq){
+  frDismissReqBanner();
+  var b=document.createElement('div');b.className='tinv';b.id='frreq-banner';b.style.top='64px';
+  b.innerHTML='<div class="tinv-txt">👋 <b>@'+(rq.handle||'Someone')+'</b> sent you a friend request</div><button class="tinv-btn" id="frreq-open">View</button><button class="tinv-btn ghost" id="frreq-dismiss">Later</button>';
+  document.body.appendChild(b);
+  document.getElementById('frreq-open').onclick=function(){frDismissReqBanner();if(typeof openFriends==='function')openFriends();};
+  document.getElementById('frreq-dismiss').onclick=function(){frDismissReqBanner();};
+}
+function frDismissReqBanner(){var b=document.getElementById('frreq-banner');if(b&&b.parentNode)b.parentNode.removeChild(b);}
 document.getElementById('tradelive-modal').onclick=function(e){if(e.target===this){/* kräver knapp för att stänga mitt i trade */}};
 var _evm=document.getElementById('events-modal');if(_evm)_evm.onclick=function(e){if(e.target===this)closeEvents();};
 var TRADE={mode:'make',give:{},code:'',view:null,take:{},msg:'',msgType:''};
@@ -4861,7 +5061,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.9<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.11<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -4911,6 +5111,7 @@ function resetFromSettings(){
     G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
+    G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
     G.permBonus={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
     G.stardust=0;G.ascensions=0;
@@ -8575,6 +8776,7 @@ if(savedData){
   syncDiscoveredFromInventory(); // allt man äger ska finnas i Petdex
   G.achievements=savedData.achievements||{unlocked:{},claimed:{}};
   G.gems=savedData.gems||0;
+  G.rerollCharms=savedData.rerollCharms||0;
   G.permBonus=savedData.permBonus||{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
   ['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'].forEach(function(k){if(G.permBonus[k]==null)G.permBonus[k]=0;});
   G.stardust=savedData.stardust||0;
@@ -8676,7 +8878,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -8746,7 +8948,7 @@ function petsSig(arr){
   var s='';
   for(var i=0;i<arr.length;i++){
     var p=arr[i],ab='';
-    if(p.abilities){for(var j=0;j<p.abilities.length;j++){ab+=p.abilities[j].id+p.abilities[j].tier+'.';}}
+    if(p.abilities){for(var j=0;j<p.abilities.length;j++){ab+=p.abilities[j].id+p.abilities[j].tier+(p.abilities[j].locked?'L':'')+'.';}}
     s+=p.uid+'|'+p.rarity+'|'+ab+';';   // ändras vid add/remove/fusion/mutation (ej rena XP-tick)
   }
   return s;
