@@ -1640,7 +1640,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="egg-info-content"></div>
   </div>
 </div>
-<div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+<div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;z-index:1100;">
   <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;position:relative;">
     <button id="shell-info-close" class="modal-close" onclick="document.getElementById('shell-info-modal').classList.remove('open')" style="position:absolute;top:6px;right:10px;font-size:1.5rem;padding:6px 10px;line-height:1;z-index:2;"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="shell-info-content"></div>
@@ -2252,13 +2252,13 @@ var PET_POOL={
       {name:'Jackal',e:'🐺'},{name:'Camel',e:'🐪'},{name:'Horned Lizard',e:'🦎'}
     ],
     uncommon:[
-      {name:'Vulture',e:'🦅'},{name:'Fennec Fox',e:'🦊'},{name:'Cobra',e:'🐍'}
+      {name:'Vulture',e:'🦅'},{name:'Cobra',e:'🐍'}
     ],
     rare:[
-      {name:'Oryx',e:'🐂'},{name:'Sand Cat',e:'🐆'}
+      {name:'Oryx',e:'🐂'},{name:'Fennec Fox',e:'🦊'}
     ],
     epic:[
-      {name:'Caracal',e:'🐈'}
+      {name:'Caracal',e:'🐈'},{name:'Sand Cat',e:'🐆'}
     ],
     legendary:[
       {name:'Scorpion',e:'🦂'}
@@ -2283,13 +2283,13 @@ var PET_POOL={
       {name:'Toucan',e:'🦜'},{name:'Poison Dart Frog',e:'🐸'},{name:'Orangutan',e:'🦧'}
     ],
     rare:[
-      {name:'Gorilla',e:'🦍'},{name:'Crocodile',e:'🐊'},{name:'Anaconda',e:'🐍'}
+      {name:'Crocodile',e:'🐊'},{name:'Anaconda',e:'🐍'}
     ],
     epic:[
-      {name:'Panther',e:'🐈‍⬛'},{name:'Chameleon',e:'🦎'}
+      {name:'Chameleon',e:'🦎'},{name:'Gorilla',e:'🦍'}
     ],
     legendary:[
-      {name:'Tiger',e:'🐅'}
+      {name:'Tiger',e:'🐅'},{name:'Panther',e:'🐈‍⬛'}
     ],
     mythical:[
       {name:'Jaguar',e:'🐆'}
@@ -2314,13 +2314,13 @@ var PET_POOL={
       {name:'Ember Chick',e:'🐤'},{name:'Ash Bat',e:'🦇'},{name:'Lava Lizard',e:'🦎'}
     ],
     epic:[
-      {name:'Molten Kitty',e:'🐱'},{name:'Magma Golem',e:'🪨'},{name:'Fire Serpent',e:'🐍'}
+      {name:'Molten Kitty',e:'🐱'},{name:'Fire Serpent',e:'🐍'}
     ],
     legendary:[
-      {name:'Inferno Bull',e:'🐂'},{name:'Flame Spirit',e:'🔥'}
+      {name:'Inferno Bull',e:'🐂'},{name:'Magma Golem',e:'🪨'}
     ],
     mythical:[
-      {name:'Hellhound',e:'🐺'}
+      {name:'Hellhound',e:'🐺'},{name:'Flame Spirit',e:'🔥'}
     ],
     artifact:[
       {name:'Volcano Dragon',e:'🐉'}
@@ -2331,13 +2331,13 @@ var PET_POOL={
       {name:'Unicorn',e:'🦄'},{name:'Griffin',e:'🦅'},{name:'Phoenix',e:'🔥'}
     ],
     legendary:[
-      {name:'Basilisk',e:'🐍'},{name:'Celestial Stag',e:'🦌'},{name:'Spirit Dragon',e:'🐉'}
+      {name:'Basilisk',e:'🐍'},{name:'Celestial Stag',e:'🦌'}
     ],
     mythical:[
-      {name:'Nine-Tailed Fox',e:'🦊'},{name:'Moon Raven',e:'🌙'}
+      {name:'Moon Raven',e:'🌙'},{name:'Spirit Dragon',e:'🐉'}
     ],
     artifact:[
-      {name:'Arcane Panther',e:'🔮'}
+      {name:'Arcane Panther',e:'🔮'},{name:'Nine-Tailed Fox',e:'🦊'}
     ],
     heavenly:[
       {name:'Chimera',e:'🦁'}
@@ -2390,7 +2390,7 @@ var EGG_RARITY_WEIGHTS={
   arctic:    {rare:15,epic:30,legendary:35,mythical:20},
   volcano:   {epic:20,legendary:35,mythical:30,artifact:15},
   mystic:    {epic:10,legendary:25,mythical:40,artifact:20,heavenly:5},
-  celestial: {mythical:5,artifact:35,heavenly:40,eternal:20},
+  celestial: {artifact:40,heavenly:40,eternal:20},
   cosmic:    {cosmic:100},
 };
 
@@ -2637,6 +2637,7 @@ function freshStats(){
     // SHELLS
     totalShellsCollected:0,totalShellsSpent:0,
     shellsCollectedByRarity:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+    shellDropsByRarity:{},
     highestRarityShellFound:'common',favoriteShell:'common',
     // HATCHING
     eggsHatched:0,eggsHatchedByWorld:{},fastestHatch:null,longestHatch:null,totalHatchTimeWaited:0,
@@ -2838,6 +2839,8 @@ function dropShell(){
   // Stats
   G.stats.totalShellsCollected+=amt;
   G.stats.shellsCollectedByRarity[r.id]=(G.stats.shellsCollectedByRarity[r.id]||0)+amt;
+  if(!G.stats.shellDropsByRarity)G.stats.shellDropsByRarity={};
+  G.stats.shellDropsByRarity[r.id]=(G.stats.shellDropsByRarity[r.id]||0)+1;
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   if(rarityOrder.indexOf(r.id)>rarityOrder.indexOf(G.stats.highestRarityShellFound))G.stats.highestRarityShellFound=r.id;
   // Favorite shell (mest samlad)
@@ -5687,7 +5690,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.45<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.48<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -7658,6 +7661,7 @@ function showShellInfo(id){
   var s=G.stats||{};
   var owned=(G.shells&&G.shells[id])||0;
   var life=(s.shellsCollectedByRarity&&s.shellsCollectedByRarity[id])||0;
+  var drops=(s.shellDropsByRarity&&s.shellDropsByRarity[id])||0;
   var w=getRarityWeights();var tot=w.reduce(function(a,b){return a+b;},0)||1;
   var idx=SHELL_RARITIES.findIndex(function(x){return x.id===id;});
   var pct=idx>=0?w[idx]/tot*100:0;
@@ -7668,16 +7672,19 @@ function showShellInfo(id){
   html+='</div>';
   html+='<div class="sinfo-stats">';
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(owned)+'</div><div class="sinfo-l">Owned</div></div>';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(drops)+'</div><div class="sinfo-l">Drops</div></div>';
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(life)+'</div><div class="sinfo-l">Lifetime</div></div>';
-  html+='<div class="sinfo-stat"><div class="sinfo-v">'+shellPctFmt(pct)+'%</div><div class="sinfo-l">Drop chance</div></div>';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+shellPctFmt(pct)+'%</div><div class="sinfo-l">Chance</div></div>';
   html+='</div>';
   html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">Drop 15%/click · 5%/s idle · higher with 🍀 Luck</div>';
-  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Crafts these eggs</div>';
+  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Crafts these eggs &middot; cost shown</div>';
   if(crafts.length===0){html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;padding:4px 0;">— not used to craft any egg —</div>';}
   else{
     html+='<div class="sinfo-eggs">';
     crafts.forEach(function(egg){
-      html+='<div class="sinfo-egg"><img class="sinfo-egg-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"><span>'+egg.name.replace(' Egg','')+'</span></div>';
+      var cost=getEggCost(egg);
+      var afford=owned>=cost;
+      html+='<div class="sinfo-egg"><img class="sinfo-egg-img" src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"><span>'+egg.name.replace(' Egg','')+'</span><span style="display:inline-flex;align-items:center;gap:2px;margin-left:4px;font-family:\'Fredoka One\',cursive;color:'+(afford?'#7ed957':'#ff9a8a')+';">'+fmtShort(cost)+shellIcon(id)+'</span></div>';
     });
     html+='</div>';
   }
@@ -9526,6 +9533,8 @@ function cloudShowGate(mode,msg){
     '<input id="cloud-gate-pwd" type="password" style="'+inp+'" placeholder="Password (min 6 characters)" autocomplete="current-password">'+
     '<button onclick="cloudDoLogIn()" style="'+btn+'background:linear-gradient(180deg,#7b5cff,#5a3ed6);color:#fff;box-shadow:0 3px 0 #3a268f;margin-bottom:8px;">Log In</button>'+
     '<button onclick="cloudDoSignUp()" style="'+btn+'background:linear-gradient(180deg,#2bb0ff,#1f86d6);color:#fff;box-shadow:0 3px 0 #14598f;">Create Account</button>'+
+    '<div style="display:flex;align-items:center;gap:10px;margin:14px 0 12px;opacity:0.6;font-size:0.8rem;"><div style="flex:1;height:1px;background:rgba(255,255,255,0.25);"></div>OR<div style="flex:1;height:1px;background:rgba(255,255,255,0.25);"></div></div>'+
+    '<button onclick="cloudOAuth(\'google\')" style="'+btn+'background:#fff;color:#1f1f1f;box-shadow:0 3px 0 #b8b8b8;display:flex;align-items:center;justify-content:center;gap:10px;"><span style="font-family:\'Fredoka One\',cursive;font-weight:bold;font-size:1.1rem;color:#4285F4;">G</span>Continue with Google</button>'+
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
@@ -9718,6 +9727,24 @@ function cloudDoSignUp(){
     if(res.data&&res.data.session){cloudUser=res.data.user;cloudEnter();}
     else{cloudGateMsg('Account created! Check your email to confirm, then Log In.');}
   },function(){cloudGateMsg('Something went wrong. Try again.');});
+}
+// Social sign-in (Google/Apple). Opens the provider; on return the page reloads and
+// the boot getSession() flow picks up the new session automatically (same as email login).
+// Uses skipBrowserRedirect so we can show a friendly message if the provider isn't enabled yet.
+function cloudOAuth(provider){
+  if(!sb){cloudGateMsg('Server not available. Reload and try again.');return;}
+  var nice=(provider==='google')?'Google':(provider==='apple')?'Apple':provider;
+  cloudGateMsg('Opening '+nice+'\u2026');cloudKickedFlag=false;
+  var ret;try{ret=window.location.origin+window.location.pathname;}catch(e){ret=undefined;}
+  var opts={skipBrowserRedirect:true};if(ret)opts.redirectTo=ret;
+  try{
+    sb.auth.signInWithOAuth({provider:provider,options:opts}).then(function(res){
+      if(res&&res.error){cloudGateMsg(res.error.message||(nice+' sign-in is not available yet.'));return;}
+      var url=res&&res.data&&res.data.url;
+      if(url){window.location.href=url;}
+      else{cloudGateMsg(nice+' sign-in is not available yet.');}
+    },function(){cloudGateMsg('Something went wrong. Try again.');});
+  }catch(e){cloudGateMsg('Sign-in not available right now. Try again.');}
 }
 function cloudDoLogOut(){
   // Enad, säker utloggning: rensar lokal cache + loggar ut + laddar om (via cloudLogout).
