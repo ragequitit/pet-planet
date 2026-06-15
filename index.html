@@ -1705,6 +1705,65 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
     <div class="prof-body" id="trading-body"></div>
   </div>
 </div>
+<style>
+/* ===== Friends-redesign (v6.34) ===== */
+#friends-modal .prof-topbar-title{font-size:0;}
+.fr2-hero{position:relative;margin:2px 0 12px;padding:16px 14px 12px;border-radius:16px;text-align:center;
+  background:linear-gradient(180deg,#2a1f6e 0%,#1a1746 100%);border:1px solid #5b4bd6;
+  box-shadow:0 0 0 1px rgba(124,108,255,0.25),0 6px 20px rgba(80,60,200,0.35),inset 0 1px 0 rgba(255,255,255,0.12);overflow:hidden;}
+.fr2-hero::before,.fr2-hero::after{content:"";position:absolute;top:18px;width:34%;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#a78bff,transparent);filter:drop-shadow(0 0 4px #7c6cff);opacity:.8;}
+.fr2-hero::before{left:4%;} .fr2-hero::after{right:4%;}
+.fr2-hero-ic{font-size:1.5rem;line-height:1;display:inline-block;vertical-align:middle;margin-right:6px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));}
+.fr2-hero-tt{display:inline-block;vertical-align:middle;font-size:1.7rem;font-weight:900;letter-spacing:1px;color:#fff;
+  text-shadow:0 0 8px rgba(167,139,255,.9),0 2px 0 #4a2fa0;}
+.fr2-hero-sub{margin-top:2px;font-size:0.78rem;color:#c7c0ff;font-weight:600;}
+.fr2-panel{background:rgba(20,18,48,0.6);border:1px solid #34306a;border-radius:14px;padding:10px 11px;margin-bottom:12px;}
+.fr2-phead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.fr2-ptitle{font-size:0.82rem;font-weight:800;letter-spacing:.6px;color:#fff;}
+.fr2-viewall{background:transparent;border:1px solid #7c6cff;color:#cfc7ff;border-radius:9px;padding:5px 11px;font-size:0.72rem;font-weight:700;cursor:pointer;}
+.fr2-viewall:active{background:rgba(124,108,255,0.18);}
+.fr2-nrow{display:flex;align-items:center;gap:9px;padding:9px 2px;border-top:1px solid rgba(255,255,255,0.06);cursor:pointer;}
+.fr2-nrow:first-of-type{border-top:none;}
+.fr2-nic{width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;font-size:1.15rem;}
+.fr2-ntx{flex:1;min-width:0;font-size:0.82rem;color:#e7e6f5;line-height:1.25;}
+.fr2-ntx b{color:#fff;}
+.fr2-ntime{font-size:0.7rem;color:#9a93cf;white-space:nowrap;}
+.fr2-nchev{color:#6f68a8;font-size:1rem;}
+.fr2-empty{color:rgba(255,255,255,0.45);font-size:0.8rem;text-align:center;padding:10px 4px;}
+.fr2-sort{background:#1d1b40;border:1px solid #3a3670;color:#d7d2ff;border-radius:9px;padding:5px 8px;font-size:0.72rem;font-weight:600;max-width:130px;}
+.fr2-card{display:flex;align-items:center;gap:10px;background:rgba(28,26,60,0.55);border:1px solid #322e63;border-radius:13px;padding:9px 10px;margin-bottom:9px;}
+.fr2-card.online{border-color:#3ad36a;box-shadow:0 0 0 1px rgba(58,211,106,0.5),0 0 12px rgba(58,211,106,0.18);}
+.fr2-av{width:52px;height:52px;flex:none;border-radius:11px;overflow:hidden;background:#0e0c28;border:1px solid #3a3670;display:flex;align-items:center;justify-content:center;font-size:1.6rem;}
+.fr2-av img{width:100%;height:100%;object-fit:cover;}
+.fr2-info{flex:1;min-width:0;}
+.fr2-name{display:flex;align-items:center;gap:6px;font-weight:800;font-size:0.95rem;color:#fff;}
+.fr2-dot{width:9px;height:9px;border-radius:50%;background:#6b7180;flex:none;}
+.fr2-dot.on{background:#3ad36a;box-shadow:0 0 6px #3ad36a;}
+.fr2-lvl{font-size:0.78rem;color:#a99cff;font-weight:600;margin-top:1px;}
+.fr2-st{font-size:0.74rem;margin-top:1px;}
+.fr2-st.on{color:#3ad36a;} .fr2-st.busy{color:#ffb04a;} .fr2-st.off{color:#8b86b5;}
+.fr2-shield{width:40px;height:46px;flex:none;display:flex;align-items:center;justify-content:center;font-size:0.66rem;font-weight:900;color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+  -webkit-clip-path:polygon(50% 0,100% 15%,100% 62%,50% 100%,0 62%,0 15%);clip-path:polygon(50% 0,100% 15%,100% 62%,50% 100%,0 62%,0 15%);}
+.fr2-shield.gold{background:linear-gradient(180deg,#ffd75e,#e08a1e);}
+.fr2-shield.purple{background:linear-gradient(180deg,#b07bff,#6a37c8);}
+.fr2-shield.blue{background:linear-gradient(180deg,#5aa8ff,#2f5fd6);}
+.fr2-acts{display:flex;flex-direction:column;gap:6px;flex:none;}
+.fr2-btn{border:none;border-radius:9px;padding:7px 12px;font-size:0.76rem;font-weight:800;cursor:pointer;color:#fff;min-width:64px;}
+.fr2-btn.profile{background:linear-gradient(180deg,#4a86e6,#2f55c8);box-shadow:0 2px 0 #1d3a8f;}
+.fr2-btn.trade{background:linear-gradient(180deg,#4fc04a,#2f8a2a);box-shadow:0 2px 0 #1d5a1a;}
+.fr2-btn:active{transform:translateY(1px);}
+.fr2-addbtn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1px solid #8a5bff;border-radius:14px;padding:13px 14px;margin-bottom:6px;cursor:pointer;
+  background:linear-gradient(180deg,#5a37b8,#3a2080);box-shadow:0 3px 0 #271457,0 0 14px rgba(124,108,255,0.25);color:#fff;}
+.fr2-addbtn:active{transform:translateY(1px);}
+.fr2-add-ic{font-size:1.4rem;flex:none;}
+.fr2-add-tx{flex:1;display:flex;flex-direction:column;line-height:1.2;}
+.fr2-add-tx b{font-size:0.95rem;font-weight:900;letter-spacing:.5px;}
+.fr2-add-tx span{font-size:0.74rem;color:#d6ccff;}
+.fr2-add-ch{font-size:1.3rem;color:#d6ccff;}
+.fr2-sub-sec{font-size:0.74rem;font-weight:800;letter-spacing:.5px;color:#a99cff;margin:14px 2px 7px;text-transform:uppercase;}
+</style>
 <div id="friends-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -1712,6 +1771,24 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <button class="prof-x" onclick="closeFriends()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
     <div class="prof-body" id="friends-body"></div>
+  </div>
+</div>
+<div id="frnotif-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">🔔 Notifications</div>
+      <button class="prof-x" onclick="closeFriendNotifs()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="prof-body" id="frnotif-body"></div>
+  </div>
+</div>
+<div id="fradd-modal" class="modal-overlay">
+  <div class="prof-panel">
+    <div class="prof-topbar">
+      <div class="prof-topbar-title">👤 Add Friend</div>
+      <button class="prof-x" onclick="closeFriendAdd()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="prof-body" id="fradd-body"></div>
   </div>
 </div>
 <div id="fstats-modal" class="modal-overlay">
@@ -4577,6 +4654,7 @@ function fcmpMyVal(k){if(k==='level')return G.playerLevel||0;if(k==='asc')return
 function fcmpTheirVal(d,k){if(k==='level')return d.level||0;if(k==='asc')return d.ascensions||0;return (d.stats&&d.stats[k])||0;}
 function openFriendStats(uid,handle){
   if(!sb||!cloudUser)return;
+  FRIENDS._statUid=uid;FRIENDS._statHandle=handle||'';
   document.getElementById('fstats-title').textContent='@'+(handle||'friend');
   document.getElementById('fstats-body').innerHTML='<div class="frd-note">Loading\u2026</div>';
   document.getElementById('fstats-modal').classList.add('open');
@@ -4606,6 +4684,7 @@ function renderFriendStats(d){
       h+='<div class="fcmp-row"><span class="fcmp-val'+mw+'" style="text-align:left">'+fmtShort(mine)+'</span><span class="fcmp-lbl" style="text-align:center">'+r.label+'</span><span class="fcmp-val'+tw+'">'+fmtShort(theirs)+'</span></div>';
     });
   });
+  h+='<button class="fr2-btn" style="margin-top:14px;width:100%;background:linear-gradient(180deg,#a4444e,#72282e);box-shadow:0 2px 0 #511c20" onclick="closeFriendStats();friendRemove(FRIENDS._statUid,FRIENDS._statHandle)">Remove friend</button>';
   document.getElementById('fstats-body').innerHTML=h;
 }
 function friendsPoll(){
@@ -4686,62 +4765,170 @@ function frdItem(p,btns,extra,infoClick){
   var avHtml='<div class="frd-avatar-wrap"><div class="frd-avatar">'+avInner+'</div>'+frameOverlay(p&&p.frame)+'</div>';
   return '<div class="frd-item"><div class="frd-item-left"'+ic+'>'+avHtml+'<div class="frd-item-info"><div class="frd-item-handle">@'+(p.handle||'player')+'</div>'+(p.display_name?('<div class="frd-item-name">'+p.display_name+'</div>'):'')+(extra||'')+'</div></div>'+btns+'</div>';
 }
+function frEsc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function frTimeAgo(ts){
+  if(!ts)return '';
+  var t=(typeof ts==='number')?ts:Date.parse(ts);
+  if(!t||isNaN(t))return '';
+  var s=Math.max(0,(Date.now()-t)/1000);
+  if(s<60)return 'just now';
+  var m=Math.floor(s/60); if(m<60)return m+'m ago';
+  var hh=Math.floor(m/60); if(hh<24)return hh+'h ago';
+  return Math.floor(hh/24)+'d ago';
+}
+function frPetdexPct(uniq){
+  if(uniq==null)return null;
+  var tot=0; try{tot=getTotalSpeciesCount().total||0;}catch(e){tot=0;}
+  if(!tot)return null;
+  return Math.max(0,Math.min(100,Math.round(uniq/tot*100)));
+}
+function frShieldCls(pct){return pct>=90?'gold':(pct>=70?'purple':'blue');}
+function frName(p){return p.display_name||('@'+(p.handle||'player'));}
+function frAvatarHtml(p){
+  var av=(p&&p.avatar)?(''+p.avatar):'';if(!av)av='\ud83d\udc64';
+  var inner=(av.indexOf('http')===0)?('<img src="'+av+'" alt="" onerror="this.parentNode.textContent=\'\ud83d\udc64\'">'):av;
+  return '<div class="fr2-av">'+inner+'</div>';
+}
+function frNotifList(){
+  var out=[];
+  (FRIENDS.data.incoming||[]).forEach(function(p){
+    out.push({ic:'\ud83d\udc64\u2795',name:frName(p),text:'sent you a Friend Request!',time:p.created_at});
+  });
+  (FRIENDS.invites||[]).forEach(function(iv){
+    out.push({ic:'\ud83e\udd1d',name:(iv.display_name||('@'+(iv.handle||'A friend'))),text:'offered you a trade!',time:iv.created_at});
+  });
+  out.sort(function(a,b){return (Date.parse(b.time)||0)-(Date.parse(a.time)||0);});
+  return out;
+}
+function frNotifRow(n){
+  var t=frTimeAgo(n.time);
+  return '<div class="fr2-nrow" onclick="openFriendNotifs()">'+
+    '<div class="fr2-nic">'+n.ic+'</div>'+
+    '<div class="fr2-ntx"><b>'+frEsc(n.name)+'</b> '+n.text+'</div>'+
+    (t?'<div class="fr2-ntime">'+t+'</div>':'')+
+    '<div class="fr2-nchev">\u203a</div></div>';
+}
 function renderFriends(){
   var body=document.getElementById('friends-body');if(!body)return;
   if(!sb||!cloudUser){body.innerHTML='<div class="frd-note">You need to be signed in to use friends.</div>';return;}
+  if(!FRIENDS.sort)FRIENDS.sort='online';
   var h='';
+  h+='<div class="fr2-hero"><span class="fr2-hero-ic">\ud83d\udc65</span><span class="fr2-hero-tt">FRIENDS</span><div class="fr2-hero-sub">'+(FRIENDS.loaded?(FRIENDS.friendCount+' Friends'):'\u00a0')+'</div></div>';
   if(FRIENDS.msg)h+='<div class="frd-msg '+FRIENDS.msgType+'">'+FRIENDS.msg+'</div>';
   if(!FRIENDS.handle){
-    h+='<div class="frd-card"><div class="frd-sec">Choose your username</div>'+
-       '<div class="frd-note">Pick a unique username so friends can find you. 3\u201320 letters, numbers or _.</div>'+
+    h+='<div class="fr2-panel"><div class="fr2-ptitle" style="margin-bottom:6px">Choose your username</div>'+
+       '<div class="frd-note" style="margin-bottom:8px">Pick a unique username so friends can find you. 3\u201320 letters, numbers or _.</div>'+
        '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="username" maxlength="20"><button class="frd-btn sm" onclick="friendSetHandle()">Save</button></div></div>';
-  }else{
-    h+='<div class="frd-card"><div class="frd-sec">Your username</div><div class="frd-handle">@'+FRIENDS.handle+'</div>'+
-       '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="change username" maxlength="20"><button class="frd-btn sm ghost" onclick="friendSetHandle()">Change</button></div></div>';
-    h+='<div class="frd-card"><div class="frd-sec">Find players</div>'+
-       '<div class="frd-row"><input id="frd-search-input" class="frd-input" placeholder="search username" maxlength="20"><button class="frd-btn sm" onclick="friendSearch()">Search</button></div>';
-    if(FRIENDS.results){
-      if(!FRIENDS.results.length)h+='<div class="frd-note">No players found.</div>';
-      else FRIENDS.results.forEach(function(p){var btn=(p.allow_requests===false)?'<div class="frd-item-name">Not accepting requests</div>':'<button class="frd-btn tiny" onclick="friendRequest(\''+p.user_id+'\')">Add</button>';h+=frdItem(p,btn);});
-    }
-    h+='</div>';
-    h+='<div class="frd-card"><div class="frd-sec">Privacy</div>'+
-       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow friend requests</span><button class="set-toggle'+(FRIENDS.allowReq?' on':'')+'" onclick="friendSetPrivacy(\'req\')"><span class="knob"></span></button></div>'+
-       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow trade invites</span><button class="set-toggle'+(FRIENDS.allowTrade?' on':'')+'" onclick="friendSetPrivacy(\'trade\')"><span class="knob"></span></button></div>'+
-       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Let friends see my stats</span><button class="set-toggle'+(FRIENDS.allowStats?' on':'')+'" onclick="friendSetPrivacy(\'stats\')"><span class="knob"></span></button></div>'+
-       '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">Turn these off and others can\u2019t send you requests or trades at all.</div></div>';
-    h+='<div class="frd-card"><div class="frd-sec">Notifications</div>'+
-       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Friend request popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyFriendReq!==false)?' on':'')+'" onclick="friendToggleNotify(\'req\')"><span class="knob"></span></button></div>'+
-       '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Trade invite popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyTradeInvite!==false)?' on':'')+'" onclick="friendToggleNotify(\'trade\')"><span class="knob"></span></button></div>'+
-       '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">You still receive them \u2014 this just hides the popup.</div></div>';
+    body.innerHTML=h;return;
   }
-  if(FRIENDS.data.incoming&&FRIENDS.data.incoming.length){
-    h+='<div class="frd-card"><div class="frd-sec">Friend requests</div>';
-    FRIENDS.data.incoming.forEach(function(p){
-      h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendRespond(\''+p.request_id+'\',true)">Accept</button><button class="frd-btn tiny ghost" onclick="friendRespond(\''+p.request_id+'\',false)">Decline</button></div>');
+  var notifs=frNotifList();
+  h+='<div class="fr2-panel"><div class="fr2-phead"><span class="fr2-ptitle">NOTIFICATIONS</span><button class="fr2-viewall" onclick="openFriendNotifs()">View All</button></div>';
+  if(!notifs.length)h+='<div class="fr2-empty">No new notifications.</div>';
+  else notifs.slice(0,4).forEach(function(n){h+=frNotifRow(n);});
+  h+='</div>';
+  h+='<div class="fr2-panel"><div class="fr2-phead"><span class="fr2-ptitle">FRIEND LIST'+(FRIENDS.loaded?(' ('+FRIENDS.friendCount+')'):'')+'</span>'+
+     '<select class="fr2-sort" onchange="friendSetSort(this.value)">'+
+       frSortOpt('online','Last Online')+frSortOpt('level','Level')+frSortOpt('petdex','Petdex %')+frSortOpt('name','Name')+
+     '</select></div>';
+  if(!FRIENDS.loaded)h+='<div class="fr2-empty">Loading\u2026</div>';
+  else if(!FRIENDS.data.friends.length)h+='<div class="fr2-empty">No friends yet. Tap Add Friend below!</div>';
+  else friendSortedList().forEach(function(p){h+=frCard(p);});
+  h+='</div>';
+  h+='<button class="fr2-addbtn" onclick="openFriendAdd()"><span class="fr2-add-ic">\ud83d\udc64\u2795</span><span class="fr2-add-tx"><b>ADD FRIEND</b><span>Search and add new friends!</span></span><span class="fr2-add-ch">\u203a</span></button>';
+  body.innerHTML=h;
+  var am=document.getElementById('fradd-modal');if(am&&am.classList.contains('open'))renderFriendAdd();
+  var nm=document.getElementById('frnotif-modal');if(nm&&nm.classList.contains('open'))renderFriendNotifs();
+}
+function frSortOpt(v,label){return '<option value="'+v+'"'+(FRIENDS.sort===v?' selected':'')+'>'+label+'</option>';}
+function friendSetSort(v){FRIENDS.sort=v;renderFriends();}
+function friendSortedList(){
+  var a=(FRIENDS.data.friends||[]).slice(),s=FRIENDS.sort||'online';
+  a.sort(function(x,y){
+    if(s==='level')return (y.level||0)-(x.level||0);
+    if(s==='petdex')return (y.unique||0)-(x.unique||0);
+    if(s==='name')return frName(x).toLowerCase().localeCompare(frName(y).toLowerCase());
+    if((y.online?1:0)!==(x.online?1:0))return (y.online?1:0)-(x.online?1:0);
+    return (Date.parse(y.last_seen)||0)-(Date.parse(x.last_seen)||0);
+  });
+  return a;
+}
+function frCard(p){
+  var lvl=(p.level!=null)?('<div class="fr2-lvl">Level '+p.level+'</div>'):'';
+  var stCls,stTxt;
+  if(p.online){stCls='on';stTxt='Online';}
+  else{stCls='off';var ta=frTimeAgo(p.last_seen);stTxt=ta?('Last seen: '+ta):'Offline';}
+  var st='<div class="fr2-st '+stCls+'">'+stTxt+'</div>';
+  var pct=frPetdexPct(p.unique);
+  var shield=(pct!=null)?('<div class="fr2-shield '+frShieldCls(pct)+'">'+pct+'%</div>'):'';
+  var uid=frEsc(p.user_id),hh=frEsc(p.handle||'');
+  return '<div class="fr2-card'+(p.online?' online':'')+'">'+
+    frAvatarHtml(p)+
+    '<div class="fr2-info"><div class="fr2-name"><span class="fr2-dot'+(p.online?' on':'')+'"></span>'+frEsc(frName(p))+'</div>'+lvl+st+'</div>'+
+    shield+
+    '<div class="fr2-acts"><button class="fr2-btn profile" onclick="openFriendStats(\''+uid+'\',\''+hh+'\')">Profile</button>'+
+    '<button class="fr2-btn trade" onclick="friendTradeInvite(\''+uid+'\',\''+hh+'\')">Trade</button></div>'+
+  '</div>';
+}
+function openFriendNotifs(){var m=document.getElementById('frnotif-modal');if(m)m.classList.add('open');renderFriendNotifs();}
+function closeFriendNotifs(){var m=document.getElementById('frnotif-modal');if(m)m.classList.remove('open');}
+function renderFriendNotifs(){
+  var body=document.getElementById('frnotif-body');if(!body)return;
+  var inc=FRIENDS.data.incoming||[],inv=FRIENDS.invites||[],h='';
+  if(!inc.length&&!inv.length){body.innerHTML='<div class="fr2-empty">No new notifications right now.</div>';return;}
+  if(inc.length){
+    h+='<div class="fr2-sub-sec">Friend requests</div>';
+    inc.forEach(function(p){
+      h+='<div class="fr2-card"><div class="fr2-nic" style="font-size:1.3rem">\ud83d\udc64\u2795</div>'+
+        '<div class="fr2-info"><div class="fr2-name">'+frEsc(frName(p))+'</div><div class="fr2-st off">@'+frEsc(p.handle||'player')+' \u00b7 '+frTimeAgo(p.created_at)+'</div></div>'+
+        '<div class="fr2-acts"><button class="fr2-btn trade" onclick="friendRespond(\''+frEsc(p.request_id)+'\',true)">Accept</button>'+
+        '<button class="fr2-btn profile" style="background:linear-gradient(180deg,#5a5570,#3a3650);box-shadow:0 2px 0 #25223a" onclick="friendRespond(\''+frEsc(p.request_id)+'\',false)">Decline</button></div></div>';
     });
-    h+='</div>';
   }
-  if(FRIENDS.invites&&FRIENDS.invites.length){
-    h+='<div class="frd-card"><div class="frd-sec">Trade invites</div>';
-    FRIENDS.invites.forEach(function(iv){
-      h+=frdItem({handle:iv.handle,display_name:iv.display_name},'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendAcceptTrade(\''+iv.session_id+'\',\''+(iv.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendDeclineTrade(\''+iv.session_id+'\')">Dismiss</button></div>');
+  if(inv.length){
+    h+='<div class="fr2-sub-sec">Trade invites</div>';
+    inv.forEach(function(iv){
+      h+='<div class="fr2-card"><div class="fr2-nic" style="font-size:1.3rem">\ud83e\udd1d</div>'+
+        '<div class="fr2-info"><div class="fr2-name">'+frEsc(iv.display_name||('@'+(iv.handle||'A friend')))+'</div><div class="fr2-st off">wants to trade'+(iv.created_at?(' \u00b7 '+frTimeAgo(iv.created_at)):'')+'</div></div>'+
+        '<div class="fr2-acts"><button class="fr2-btn trade" onclick="closeFriendNotifs();friendAcceptTrade(\''+frEsc(iv.session_id)+'\',\''+frEsc(iv.handle||'')+'\')">Trade</button>'+
+        '<button class="fr2-btn profile" style="background:linear-gradient(180deg,#5a5570,#3a3650);box-shadow:0 2px 0 #25223a" onclick="friendDeclineTrade(\''+frEsc(iv.session_id)+'\');renderFriendNotifs();">Dismiss</button></div></div>';
     });
-    h+='</div>';
   }
-  h+='<div class="frd-card"><div class="frd-sec">Friends'+(FRIENDS.loaded?(' ('+FRIENDS.friendCount+'/'+FRIENDS.cap+')'):'')+'</div>';
-  if(!FRIENDS.loaded)h+='<div class="frd-note">Loading\u2026</div>';
-  else if(!FRIENDS.data.friends.length)h+='<div class="frd-note">No friends yet. Search above to add some!</div>';
-  else FRIENDS.data.friends.forEach(function(p){var st='<div class="frd-status"><span class="frd-dot'+(p.online?' on':'')+'"></span>'+(p.online?'Online':'Offline')+' · tap for stats</div>';h+=frdItem(p,'<div class="frd-item-btns"><button class="frd-btn tiny" onclick="friendTradeInvite(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Trade</button><button class="frd-btn tiny ghost" onclick="friendRemove(\''+p.user_id+'\',\''+(p.handle||'')+'\')">Remove</button></div>',st,'openFriendStats(\''+p.user_id+'\',\''+(p.handle||'')+'\')');});
+  body.innerHTML=h;
+}
+function openFriendAdd(){var m=document.getElementById('fradd-modal');if(m)m.classList.add('open');renderFriendAdd();}
+function closeFriendAdd(){var m=document.getElementById('fradd-modal');if(m)m.classList.remove('open');}
+function renderFriendAdd(){
+  var body=document.getElementById('fradd-body');if(!body)return;
+  var h='';
+  if(FRIENDS.msg)h+='<div class="frd-msg '+FRIENDS.msgType+'">'+FRIENDS.msg+'</div>';
+  h+='<div class="frd-card"><div class="frd-sec">Your username</div><div class="frd-handle">@'+(FRIENDS.handle||'')+'</div>'+
+     '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="change username" maxlength="20"><button class="frd-btn sm ghost" onclick="friendSetHandle()">Change</button></div></div>';
+  h+='<div class="frd-card"><div class="frd-sec">Find players</div>'+
+     '<div class="frd-row"><input id="frd-search-input" class="frd-input" placeholder="search username" maxlength="20"><button class="frd-btn sm" onclick="friendSearch()">Search</button></div>';
+  if(FRIENDS.results){
+    if(!FRIENDS.results.length)h+='<div class="frd-note">No players found.</div>';
+    else FRIENDS.results.forEach(function(p){var btn=(p.allow_requests===false)?'<div class="frd-item-name">Not accepting requests</div>':'<button class="frd-btn tiny" onclick="friendRequest(\''+p.user_id+'\')">Add</button>';h+=frdItem(p,btn);});
+  }
   h+='</div>';
   if(FRIENDS.data.outgoing&&FRIENDS.data.outgoing.length){
     h+='<div class="frd-card"><div class="frd-sec">Pending (sent)</div>';
     FRIENDS.data.outgoing.forEach(function(p){h+=frdItem(p,'<div class="frd-item-name">waiting\u2026</div>');});
     h+='</div>';
   }
+  h+='<div class="frd-card"><div class="frd-sec">Privacy</div>'+
+     '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow friend requests</span><button class="set-toggle'+(FRIENDS.allowReq?' on':'')+'" onclick="friendSetPrivacy(\'req\')"><span class="knob"></span></button></div>'+
+     '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Allow trade invites</span><button class="set-toggle'+(FRIENDS.allowTrade?' on':'')+'" onclick="friendSetPrivacy(\'trade\')"><span class="knob"></span></button></div>'+
+     '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Let friends see my stats</span><button class="set-toggle'+(FRIENDS.allowStats?' on':'')+'" onclick="friendSetPrivacy(\'stats\')"><span class="knob"></span></button></div></div>';
+  h+='<div class="frd-card"><div class="frd-sec">Notifications</div>'+
+     '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Friend request popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyFriendReq!==false)?' on':'')+'" onclick="friendToggleNotify(\'req\')"><span class="knob"></span></button></div>'+
+     '<div class="frd-toggle-row"><span class="frd-toggle-lbl">Trade invite popups</span><button class="set-toggle'+((G.settings&&G.settings.notifyTradeInvite!==false)?' on':'')+'" onclick="friendToggleNotify(\'trade\')"><span class="knob"></span></button></div>'+
+     '<div class="frd-note" style="text-align:left;padding:6px 2px 0;">You still receive them \u2014 this just hides the popup.</div></div>';
   body.innerHTML=h;
 }
+
 document.getElementById('friends-modal').onclick=function(e){if(e.target===this)closeFriends();};
+document.getElementById('frnotif-modal').onclick=function(e){if(e.target===this)closeFriendNotifs();};
+document.getElementById('fradd-modal').onclick=function(e){if(e.target===this)closeFriendAdd();};
 /* ===== STEG 6: LIVE VÄN-TRADE ===== */
 var LIVE={sid:null,role:'from',friend:'friend',me:[],them:[],myLocked:false,theirLocked:false,status:'',ch:null,poll:null,errMsg:'',_completed:false};
 function ltReason(d){var r=d&&d.reason;var m={no_auth:'Please sign in.',bad_input:'Something\u2019s off \u2014 try again.',not_friends:'You can only trade with friends.',not_found:'This trade is no longer available.',not_owner:'You don\u2019t own those pets anymore.',offer_invalid:'The offer changed \u2014 pick again and re-lock.',trades_off:'This friend isn\u2019t accepting trade invites.'};return m[r]||'Something went wrong. Try again.';}
@@ -5359,7 +5546,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.33<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.34<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
