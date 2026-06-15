@@ -4266,14 +4266,16 @@ var MORE_ITEMS=[
   {label:'Petdex',icon:uiIco('petdex','📖',30),tab:'petdex'},
   {label:'Achievements',icon:uiIco('achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('inventory','🎒',30),tab:'inventory'},
-  {label:'Trading',icon:uiIco('trading','🔄',30),action:'trading'},
   {label:'Friends',icon:uiIco('friends','👥',30),action:'friends'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
-    var ibadge=(it.action==='inbox')?'<span class="mi-badge" id="mi-inbox-badge" style="'+(mailUnread>0?'':'display:none')+'">'+(mailUnread>99?'99+':mailUnread)+'</span>':'';
+    var bn=0,bid='';
+    if(it.action==='inbox'){bn=mailUnread;bid='mi-inbox-badge';}
+    else if(it.action==='friends'){bn=friendsUnread;bid='mi-friends-badge';}
+    var ibadge=bid?'<span class="mi-badge" id="'+bid+'" style="'+(bn>0?'':'display:none')+'">'+(bn>99?'99+':bn)+'</span>':'';
     d.innerHTML='<span class="mi-icon" style="position:relative">'+it.icon+ibadge+'</span><span class="mi-label">'+it.label+'</span>';
     d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='leaderboard'){openLeaderboard();}else{switchTab(it.tab);}};
     g.appendChild(d);
@@ -4293,16 +4295,25 @@ document.getElementById('more-drawer').onclick=function(e){if(e.target===this)cl
 // ============================================================
 var mailCache=[];
 var mailUnread=0;
-function mailBadgeUpdate(){
-  var n=mailUnread||0,txt=(n>99?'99+':n);
-  var nb=document.getElementById('more-badge');
-  if(nb){if(n>0){nb.textContent=txt;nb.style.display='flex';}else{nb.style.display='none';}}
-  var ib=document.getElementById('mi-inbox-badge');
-  if(ib){if(n>0){ib.textContent=txt;ib.style.display='flex';}else{ib.style.display='none';}}
+var friendsUnread=0;
+// Uppdaterar alla röda siffror: More-knappen (summan av allt) + Inbox-raden (mail) + Friends-raden (vän/trade-inbjudningar).
+function badgesUpdate(){
+  var set=function(id,n){var e=document.getElementById(id);if(e){if(n>0){e.textContent=(n>99?'99+':n);e.style.display='flex';}else{e.style.display='none';}}};
+  set('more-badge',(mailUnread||0)+(friendsUnread||0));
+  set('mi-inbox-badge',mailUnread||0);
+  set('mi-friends-badge',friendsUnread||0);
 }
+function mailBadgeUpdate(){badgesUpdate();}
 function cloudMailRefreshBadge(){
   if(!sb||!cloudUser||cloudKickedFlag||_gateBlock)return;
-  cloudMailFetch(function(list){if(Array.isArray(list)){mailUnread=list.length;mailBadgeUpdate();}});
+  cloudMailFetch(function(list){if(Array.isArray(list)){mailUnread=list.length;badgesUpdate();}});
+}
+// Räknar INKOMMANDE vänförfrågningar + trade-inbjudningar (oberoende av om popup-notiserna är på/av).
+function cloudSocialRefreshBadge(){
+  if(!sb||!cloudUser||cloudKickedFlag||_gateBlock)return;
+  var ti=0,fr=0,left=2,done=function(){left--;if(left<=0){friendsUnread=ti+fr;badgesUpdate();}};
+  sb.rpc('pp_trade_invites_list').then(function(res){var d=res&&res.data;if(d&&d.ok&&d.invites)ti=d.invites.length;done();},function(){done();});
+  sb.rpc('pp_friends_list').then(function(res){var d=res&&res.data;if(d&&d.ok&&d.incoming)fr=d.incoming.length;done();},function(){done();});
 }
 function mailEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}).replace(/\n/g,'<br>');}
 function cloudMailFetch(cb){
@@ -4511,7 +4522,7 @@ function friendReason(d){
   return m[r]||'Something went wrong. Try again.';
 }
 function openFriends(){FRIENDS.msg='';FRIENDS.results=null;document.getElementById('friends-modal').classList.add('open');renderFriends();friendsLoad();friendsWatchStart();}
-function closeFriends(){friendsWatchStop();document.getElementById('friends-modal').classList.remove('open');}
+function closeFriends(){friendsWatchStop();document.getElementById('friends-modal').classList.remove('open');if(typeof cloudSocialRefreshBadge==='function')cloudSocialRefreshBadge();}
 // Live-uppdatering medan vän-panelen är öppen: pollar servern, ritar bara om vid ändring
 // (och aldrig medan man skriver i ett fält) — så accepterade förfrågningar dyker upp av sig själva.
 var _frWatch=null,_frSig='';
@@ -5348,7 +5359,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.31<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.32<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9178,7 +9189,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}try{if(sb&&cloudUser)sb.rpc('pp_touch');}catch(e){}try{if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();}catch(e){}try{if(typeof cloudSyncFrame==='function')cloudSyncFrame();}catch(e){}try{if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();}catch(e){}}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}try{if(sb&&cloudUser)sb.rpc('pp_touch');}catch(e){}try{if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();}catch(e){}try{if(typeof cloudSyncFrame==='function')cloudSyncFrame();}catch(e){}try{if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();}catch(e){}try{if(typeof cloudSocialRefreshBadge==='function')cloudSocialRefreshBadge();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -9399,6 +9410,7 @@ if(sb){
   setInterval(cloudFlush,8000);
   setInterval(cloudHeartbeat,8000);
   setInterval(function(){if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();},45000);
+  setInterval(function(){if(typeof cloudSocialRefreshBadge==='function')cloudSocialRefreshBadge();},20000);
   try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){cloudHeartbeat();}else{cloudFlush();}});}catch(e){}
 }else{
   _gateBlock=true; cloudShowGate('error');
