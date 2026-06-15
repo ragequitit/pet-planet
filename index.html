@@ -368,6 +368,29 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .asc-buy{flex:none;align-self:stretch;min-width:74px;padding:0 12px;border:none;border-radius:11px;background:linear-gradient(180deg,#5a8de0,#3a5cb8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.82rem;cursor:pointer;box-shadow:0 3px 0 #243a78;display:flex;align-items:center;justify-content:center;}
 .asc-buy.dim{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:not-allowed;}
 .asc-buy.maxed{background:transparent;color:#8fe0a0;box-shadow:none;font-size:0.8rem;}
+/* ===== v6.49: ASCENSION node-grid (skill-tree-look) — steg 1 (befintliga 6 bonusar) ===== */
+.asc-statbar{display:flex;align-items:stretch;background:linear-gradient(180deg,#1c2c60,#12204a);border:1px solid rgba(120,150,230,0.35);border-radius:16px;padding:14px 8px;margin-bottom:18px;}
+.asc-statbar .asc-stat{flex:1;text-align:center;}
+.asc-statbar .asc-stat-v{font-family:'Fredoka One',cursive;font-size:1.45rem;color:#c9a8ff;}
+.asc-statbar .asc-stat-l{font-size:0.6rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.6px;margin-top:3px;}
+.asc-statbar .asc-stat-div{width:1px;background:rgba(120,150,230,0.3);margin:3px 0;flex:none;}
+.asc-tree{position:relative;margin:0 4px 18px;}
+.asc-trow{display:grid;grid-template-columns:repeat(3,1fr);height:120px;position:relative;z-index:1;}
+.asc-trow.r1{margin-bottom:16px;}
+.asc-line{position:absolute;background:rgba(120,150,230,0.38);z-index:0;border-radius:2px;}
+.asc-line.asc-h{height:3px;left:16.666%;right:16.666%;}
+.asc-line.asc-v{width:3px;top:35px;height:136px;transform:translateX(-50%);}
+.asc-node{display:flex;flex-direction:column;align-items:center;padding:8px 2px 0;cursor:default;-webkit-tap-highlight-color:transparent;}
+.asc-node.buy{cursor:pointer;}
+.asc-node.buy:active{transform:translateY(1px);}
+.asc-orb{position:relative;box-sizing:border-box;width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:3px solid var(--c);background:radial-gradient(circle at 50% 35%,rgba(255,255,255,0.12),#0e1c3c 72%);box-shadow:0 0 9px var(--c),inset 0 0 8px rgba(0,0,0,0.55);}
+.asc-node.maxed .asc-orb{box-shadow:0 0 14px var(--c),inset 0 0 0 60px rgba(255,255,255,0.07);}
+.asc-node.dim .asc-orb{filter:grayscale(0.45);opacity:0.6;}
+.asc-orb-lvl{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:#0b1530;border:1.5px solid var(--c);border-radius:9px;padding:0 6px;font-family:'Nunito',sans-serif;font-weight:800;font-size:0.58rem;color:#fff;white-space:nowrap;line-height:1.5;}
+.asc-neff{font-family:'Fredoka One',cursive;font-size:0.72rem;margin-top:12px;text-align:center;line-height:1.1;}
+.asc-ncost{margin-top:5px;font-family:'Fredoka One',cursive;font-size:0.64rem;color:#d2b6ff;background:rgba(120,80,200,0.2);border:1px solid rgba(160,120,255,0.4);border-radius:9px;padding:2px 8px;white-space:nowrap;}
+.asc-ncost.dim{color:rgba(255,255,255,0.4);border-color:rgba(255,255,255,0.14);background:rgba(255,255,255,0.05);}
+.asc-ncost.max{color:#8fe0a0;border-color:rgba(120,220,150,0.45);background:rgba(80,200,120,0.13);}
 .set-content{padding-top:14px;}
 .set-tabs{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding:11px 14px;margin:0 -14px;position:sticky;top:0;z-index:4;background:linear-gradient(180deg,#13224a,#101d40);border-bottom:1px solid rgba(58,92,184,0.35);flex:none;scrollbar-width:none;}
 .set-tabs::-webkit-scrollbar{display:none;}
@@ -2079,6 +2102,15 @@ var ASC_SHOP=[
   {id:'shellGain', icon:'🐚',name:'Shell Hunter', desc:'Permanent +Shell find',             perLevel:4,max:15,baseCost:2,costMult:2},
   {id:'hatchSpeed',icon:'⚡',name:'Quick Hatch',  desc:'Permanent faster hatching',         perLevel:3,max:10,baseCost:3,costMult:2},
 ];
+// Visuell info per ascension-bonus (färg på orb-ringen + kort effekt-etikett) — v6.49 node-grid.
+var ASC_VIS={
+  coinGain:{c:'#f5c842',cat:'Spark'},
+  idleGain:{c:'#64b5f6',cat:'Idle'},
+  clickPower:{c:'#ef9a9a',cat:'Click'},
+  luck:{c:'#81c784',cat:'Luck'},
+  shellGain:{c:'#ce93d8',cat:'Shell'},
+  hatchSpeed:{c:'#ffcc80',cat:'Hatch'}
+};
 // === KLICK-UPGRADES (Steg 2) — EPS-skalande klick + "Helping Paws" (flat per byggnad/klick) ===
 // Köps en gång var, låses upp vid milstolpar. ALLT tunbart (epsAdd/fingerBase/trösklar/cost).
 // EPS-linjen ökar andelen av EPS varje klick ger (additivt ovanpå CLICK_EPS_SHARE).
@@ -5378,49 +5410,56 @@ function tradeReconcile(cb){
     if(cb)cb();
   },function(){if(cb)cb();});
 }
+// Bygger EN ascension-nod (orb + effekt + kostnad) till node-grid:en (v6.49).
+function ascNode(it){
+  if(!it)return '';
+  var L=(G.ascensionUpgrades&&G.ascensionUpgrades[it.id])||0;
+  var maxed=L>=it.max;
+  var vis=ASC_VIS[it.id]||{c:'#9fc0ff',cat:''};
+  var sign=(it.id==='hatchSpeed')?'-':'+';
+  var cost=maxed?0:ascUpgradeCost(it,L);
+  var afford=(G.stardust||0)>=cost;
+  var canBuy=!maxed&&afford;
+  var cls='asc-node'+(maxed?' maxed':'')+(canBuy?' buy':'')+((!maxed&&!afford)?' dim':'');
+  var click=canBuy?' onclick="buyAscensionUpgrade(\''+it.id+'\')"':'';
+  var costPill=maxed?'<div class="asc-ncost max">MAX</div>':'<div class="asc-ncost'+(afford?'':' dim')+'">\u2728 '+fmtShort(cost)+'</div>';
+  return '<div class="'+cls+'"'+click+' style="--c:'+vis.c+'">'+
+    '<div class="asc-orb"><span class="asc-orb-ic">'+it.icon+'</span><span class="asc-orb-lvl">'+(maxed?'MAX':(L+'/'+it.max))+'</span></div>'+
+    '<div class="asc-neff" style="color:'+vis.c+'">'+sign+it.perLevel+'% '+vis.cat+'</div>'+
+    costPill+
+  '</div>';
+}
 function renderAscension(){
   var pending=calcPendingStardust();
   var able=pending>=1;
   var h='';
-  // Header: nuvarande Stardust + ascension-räknare
-  h+='<div class="asc-hero">';
-  h+='<div class="asc-bal">✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
-  h+='<div class="asc-sub">🔼 Ascensions: '+(G.ascensions||0)+'</div>';
+  // Stat-bar: tillgänglig + total intjänad Stardust (matchar designens topp)
+  h+='<div class="asc-statbar">';
+  h+='<div class="asc-stat"><div class="asc-stat-v">\u2728 '+fmtShort(G.stardust||0)+'</div><div class="asc-stat-l">Stardust Available</div></div>';
+  h+='<div class="asc-stat-div"></div>';
+  h+='<div class="asc-stat"><div class="asc-stat-v">\u2728 '+fmtShort((G.stats&&G.stats.totalAscensionCurrency)||0)+'</div><div class="asc-stat-l">Total Earned</div></div>';
   h+='</div>';
-  // Ascend-knappen
+  // Bonus-träd: 3×2 noder med kopplande linjer (befintliga 6 bonusar)
+  var ascOrder=['coinGain','clickPower','idleGain','luck','shellGain','hatchSpeed'];
+  var ascNodes=ascOrder.map(function(id){return ASC_SHOP.find(function(x){return x.id===id;});});
+  h+='<div class="asc-tree">';
+  h+='<div class="asc-line asc-h" style="top:35px"></div><div class="asc-line asc-h" style="top:171px"></div>';
+  h+='<div class="asc-line asc-v" style="left:16.666%"></div><div class="asc-line asc-v" style="left:50%"></div><div class="asc-line asc-v" style="left:83.333%"></div>';
+  h+='<div class="asc-trow r1">'+ascNode(ascNodes[0])+ascNode(ascNodes[1])+ascNode(ascNodes[2])+'</div>';
+  h+='<div class="asc-trow">'+ascNode(ascNodes[3])+ascNode(ascNodes[4])+ascNode(ascNodes[5])+'</div>';
+  h+='</div>';
+  // Ascend-knappen (nu under trädet, som i designen)
   h+='<div class="asc-act">';
   if(able){
-    h+='<div class="asc-gain">Ascend now → <b>+'+fmtShort(pending)+' ✨</b></div>';
-    h+='<button class="asc-btn" onclick="confirmAscension()">🔼 Ascend</button>';
+    h+='<div class="asc-gain">Ascend now \u2192 <b>+'+fmtShort(pending)+' \u2728</b></div>';
+    h+='<button class="asc-btn" onclick="confirmAscension()">\ud83d\udd3c Ascend</button>';
   }else{
     h+='<div class="asc-gain dim">Earn more to ascend</div>';
-    h+='<div class="asc-need">Need about <b>'+fmtShort(coinsToNextStardust())+'</b> more coins for 1 ✨</div>';
-    h+='<button class="asc-btn dim" disabled>🔼 Ascend</button>';
+    h+='<div class="asc-need">Need about <b>'+fmtShort(coinsToNextStardust())+'</b> more coins for 1 \u2728</div>';
+    h+='<button class="asc-btn dim" disabled>\ud83d\udd3c Ascend</button>';
   }
   h+='<div class="asc-info">Resets: coins, buildings, boosts, upgrades & world. <b>Keeps:</b> pets, Petdex, achievements, shells, Gems & Stardust.</div>';
   h+='</div>';
-  // Shop
-  h+='<div class="asc-shop-title">Ascension Shop</div>';
-  ASC_SHOP.forEach(function(it){
-    var L=(G.ascensionUpgrades&&G.ascensionUpgrades[it.id])||0;
-    var maxed=L>=it.max;
-    var cur=L*it.perLevel;
-    var inv=(it.id==='hatchSpeed');
-    var sign=inv?'-':'+';
-    var cost=maxed?0:ascUpgradeCost(it,L);
-    var afford=(G.stardust||0)>=cost;
-    h+='<div class="asc-row'+(maxed?' maxed':'')+'">';
-    h+='<div class="asc-ico">'+it.icon+'</div>';
-    h+='<div class="asc-mid"><div class="asc-name">'+it.name+' <span class="asc-lvl">Lv '+L+'/'+it.max+'</span></div>';
-    h+='<div class="asc-desc">'+it.desc+'</div>';
-    h+='<div class="asc-cur">Current: <b>'+sign+cur+'%</b>'+(maxed?'':' → '+sign+((L+1)*it.perLevel)+'%')+'</div></div>';
-    if(maxed){
-      h+='<div class="asc-buy maxed">MAX</div>';
-    }else{
-      h+='<button class="asc-buy'+(afford?'':' dim')+'" onclick="buyAscensionUpgrade(\''+it.id+'\')"'+(afford?'':' disabled')+'>✨ '+fmtShort(cost)+'</button>';
-    }
-    h+='</div>';
-  });
   document.getElementById('ascension-body').innerHTML=h;
 }
 function confirmAscension(){
@@ -5690,7 +5729,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.48<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.49<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
