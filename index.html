@@ -1420,6 +1420,23 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .prof-petpick-n{font-size:0.5rem;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .prof-cz-empty{text-align:center;color:rgba(255,255,255,0.45);font-size:0.72rem;padding:18px;}
 </style>
+<style>
+/* ===== Global 3D-knappkänsla (v6.37): alla knappar trycks ner vid klick ===== */
+button, [class*="btn"], .inbox-claim, .ev-claim, .ev-go, .fr2-viewall, .prof-x, .shf-btn, .qf-btn {
+  transition: transform .06s ease, box-shadow .06s ease, filter .06s ease;
+}
+button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev-go:active, .fr2-viewall:active, .prof-x:active, .shf-btn:active, .qf-btn:active {
+  transform: translateY(2px) !important;
+  filter: brightness(0.93);
+}
+/* Ge platta knappar samma upphöjda kant som navet/byggnadsknapparna */
+.tb-rbtn, .top-btn, .set-btn, .he-btn, .side-btn, .tinv-btn, .fr2-viewall, .pet-sort-btn {
+  box-shadow: 0 3px 0 rgba(0,0,0,0.38), inset 0 2px 0 rgba(255,255,255,0.16);
+}
+.tb-rbtn:active, .top-btn:active, .set-btn:active, .he-btn:active, .side-btn:active, .tinv-btn:active, .fr2-viewall:active, .pet-sort-btn:active {
+  box-shadow: 0 1px 0 rgba(0,0,0,0.38), inset 0 2px 0 rgba(255,255,255,0.14);
+}
+</style>
 </head>
 <body>
 <div id="app">
@@ -5578,7 +5595,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.36<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.37<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
