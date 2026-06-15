@@ -1455,6 +1455,17 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
    tvåfonts-look som Adventures: Fredoka One på rubriker/namn/knappar,
    Nunito kvar på brödtext. */
 .fr2-hero-tt, .fr2-ptitle, .fr2-name, .fr2-btn, .fr2-viewall, .fr2-sub-sec, .fr2-add-tx b, .fr2-sort{font-family:'Fredoka One',cursive;}
+
+/* ===== v6.39: Profile/Trade-knapparna ska se ut som craft/hatch-knapparna =====
+   Samma chunky 3D-kant, ram, hörnradie och textstorlek (0.72rem) som .sec-btn.
+   Behåller knapparnas egna blå/gröna bakgrundsfärger. */
+.fr2-btn, .fr2-btn.profile, .fr2-btn.trade{
+  padding:9px 14px;border:1.5px solid #0f1a33;border-radius:13px;font-size:0.72rem;font-weight:normal;
+  box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -4px 7px rgba(0,0,0,0.4);
+}
+.fr2-btn:active, .fr2-btn.profile:active, .fr2-btn.trade:active{
+  box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -3px 6px rgba(0,0,0,0.4);
+}
 </style>
 </head>
 <body>
@@ -5614,7 +5625,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.38<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.39<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
