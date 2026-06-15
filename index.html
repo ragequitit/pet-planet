@@ -470,7 +470,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .shop-placeholder .sp-title{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#fff;margin:8px 0 5px;}
 .shop-placeholder .sp-sub{font-size:0.8rem;line-height:1.5;max-width:240px;margin:0 auto;}
 /* ===== SHELL CODEX (Egg Shells-fliken) ===== */
-/* Quick-fuse-väljare (Egg Crafting → Fuse Embers-fliken) */
+/* Quick-fuse-väljare (Egg Crafting → Fuse Shells-fliken) */
 .qf-intro{font-size:0.7rem;color:rgba(255,255,255,0.55);line-height:1.4;margin:4px 2px 10px;}
 .qf-list{display:flex;flex-direction:column;gap:7px;}
 .qf-row{display:flex;align-items:center;gap:8px;background:rgba(27,45,78,0.5);border:1px solid rgba(58,92,184,0.4);border-radius:12px;padding:8px 10px;}
@@ -1786,7 +1786,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 <div id="shell-src-modal" class="modal-overlay">
   <div class="modal-box">
     <button class="modal-close" onclick="document.getElementById('shell-src-modal').classList.remove('open')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div class="modal-title">Choose Source Ember</div>
+    <div class="modal-title">Choose Source Shell</div>
     <div id="shell-src-list"></div>
   </div>
 </div>
@@ -1900,7 +1900,7 @@ var ASC_SHOP=[
   {id:'idleGain',  icon:'🌙',name:'Idle Mastery', desc:'Permanent +offline/idle income',     perLevel:5,max:20,baseCost:1,costMult:2},
   {id:'clickPower',icon:'👆',name:'Click Mastery',desc:'Permanent +click income',            perLevel:5,max:20,baseCost:1,costMult:2},
   {id:'luck',      icon:'🍀',name:'Lucky Star',   desc:'Permanent +luck (better rarities)',  perLevel:4,max:15,baseCost:2,costMult:2},
-  {id:'shellGain', icon:'🐚',name:'Ember Hunter', desc:'Permanent +Ember find',             perLevel:4,max:15,baseCost:2,costMult:2},
+  {id:'shellGain', icon:'🐚',name:'Shell Hunter', desc:'Permanent +Shell find',             perLevel:4,max:15,baseCost:2,costMult:2},
   {id:'hatchSpeed',icon:'⚡',name:'Quick Hatch',  desc:'Permanent faster hatching',         perLevel:3,max:10,baseCost:3,costMult:2},
 ];
 // === KLICK-UPGRADES (Steg 2) — EPS-skalande klick + "Helping Paws" (flat per byggnad/klick) ===
@@ -1984,16 +1984,16 @@ var PET_POS=[{left:0,top:0},{left:52,top:15},{left:118,top:22},{left:184,top:15}
 // DATA: SHELL RARITIES
 // ============================================================
 var SHELL_RARITIES=[
-  {id:'common',    name:'Common Ember',    icon:'⚪',color:'#aaa',   weight:60},
-  {id:'uncommon',  name:'Uncommon Ember',  icon:'🟢',color:'#4caf50',weight:25},
-  {id:'rare',      name:'Rare Ember',      icon:'🔵',color:'#2196f3',weight:10},
-  {id:'epic',      name:'Epic Ember',      icon:'🟣',color:'#9c27b0',weight:3},
-  {id:'legendary', name:'Legendary Ember', icon:'🟠',color:'#ff9800',weight:1},
-  {id:'mythical',  name:'Mythical Ember',  icon:'🔴',color:'#f44336',weight:0.5},
-  {id:'artifact',  name:'Artifact Ember',  icon:'🟡',color:'#ffd700',weight:0.1},
-  {id:'heavenly',  name:'Heavenly Ember',  icon:'💎',color:'#00bcd4',weight:0.05},
-  {id:'eternal',   name:'Eternal Ember',   icon:'✨',color:'#fff',   weight:0.01},
-  {id:'cosmic',    name:'Cosmic Ember',    icon:'🌌',color:'#e040fb',weight:0.001},
+  {id:'common',    name:'Common Shell',    icon:'⚪',color:'#aaa',   weight:60},
+  {id:'uncommon',  name:'Uncommon Shell',  icon:'🟢',color:'#4caf50',weight:25},
+  {id:'rare',      name:'Rare Shell',      icon:'🔵',color:'#2196f3',weight:10},
+  {id:'epic',      name:'Epic Shell',      icon:'🟣',color:'#9c27b0',weight:3},
+  {id:'legendary', name:'Legendary Shell', icon:'🟠',color:'#ff9800',weight:1},
+  {id:'mythical',  name:'Mythical Shell',  icon:'🔴',color:'#f44336',weight:0.5},
+  {id:'artifact',  name:'Artifact Shell',  icon:'🟡',color:'#ffd700',weight:0.1},
+  {id:'heavenly',  name:'Heavenly Shell',  icon:'💎',color:'#00bcd4',weight:0.05},
+  {id:'eternal',   name:'Eternal Shell',   icon:'✨',color:'#fff',   weight:0.01},
+  {id:'cosmic',    name:'Cosmic Shell',    icon:'🌌',color:'#e040fb',weight:0.001},
 ];
 // Shell-ikoner: custom-PNG per raritet (assets/ui/shell/<id>-shell.png) med emoji-fallback.
 // Alla shell-PNG:er finns nu (inkl. eternal-shell.png). ✨ används bara som onerror-fallback om en bild inte laddar.
@@ -2227,7 +2227,7 @@ var ABILITY_META={
   idleGain:  {name:'Idle Gain',        icon:'💤', color:'#64b5f6', desc:function(v){return '+'+v+'% idle production';}},
   clickPower:{name:'Click Power',      icon:'👆', color:'#ef9a9a', desc:function(v){return '+'+v+'% click strength';}},
   luck:      {name:'Luck',             icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% shell drop chance';}},
-  shellGain: {name:'Ember Drop',       icon:'🐚', color:'#ce93d8', desc:function(v){return '+'+v+'% more Embers per drop';}},
+  shellGain: {name:'Shell Drop',       icon:'🐚', color:'#ce93d8', desc:function(v){return '+'+v+'% more Shells per drop';}},
   hatchSpeed:{name:'Hatch Speed',      icon:'⏱️', color:'#ffcc80', desc:function(v){return '-'+v+'% hatch time';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
@@ -2409,7 +2409,7 @@ function getBonusBreakdown(){
 var STAT_PANEL_GROUPS=[
   {cat:'Economy',ico:'💰',    items:[{id:'coinGain',name:'Spark Gain'},{id:'idleGain',name:'Offline / Idle Income'},{id:'clickPower',name:'Click Income'}]},
   {cat:'Hatching',ico:'🥚',   items:[{id:'hatchSpeed',name:'Hatch Speed',invert:true},{id:'luck',name:'Luck'}]},
-  {cat:'Collection',ico:'🐾', items:[{id:'shellGain',name:'Ember Gain'}]}
+  {cat:'Collection',ico:'🐾', items:[{id:'shellGain',name:'Shell Gain'}]}
 ];
 function renderStatsPanel(){
   var bd=getBonusBreakdown();
@@ -2561,7 +2561,7 @@ var ACTIVE_EVENT={
   ],
   pet:{name:'Festive Reindeer', rarity:'mythical', emoji:'\ud83e\udd8c',
        img:ASSET_BASE+'/assets/ui/events/festive-reindeer.png',
-       abilities:[{name:'Spark Gain',val:'+55%'},{name:'Luck',val:'+40%'},{name:'Ember Gain',val:'+45%'}]},
+       abilities:[{name:'Spark Gain',val:'+55%'},{name:'Luck',val:'+40%'},{name:'Shell Gain',val:'+45%'}]},
   eggPityN:8,
   eggHatchSeconds:15,
   pets:[
@@ -2586,7 +2586,7 @@ var ACTIVE_EVENT={
   // kind: egg(centerpiece, last tills petsen finns) | bundle(resurser, live) | boost(soon) | cosmetic(soon).
   shop:[
     {id:'egg_winter', kind:'egg',    status:'live', icon:'\ud83e\udd5a', name:'Winter Event Egg', desc:'A real egg \u2014 hatch it in your Hatchery for a limited Winter pet.', cost:250},
-    {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Rare Ember Pack', desc:'10 Rare Embers for crafting.',  cost:120, reward:{shells:{rare:10}}},
+    {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Rare Shell Pack', desc:'10 Rare Shells for crafting.',  cost:120, reward:{shells:{rare:10}}},
     {id:'core_1',   kind:'bundle',   status:'live', icon:'\u2b21',       name:'Mutation Core',   desc:'A random Uncommon ability core.', cost:180, reward:{cores:1, coreTier:2}},
     {id:'gems_s',   kind:'bundle',   status:'live', icon:'\ud83d\udc8e', name:'Gem Pouch',       desc:'A small pouch of Gems.',        cost:300, reward:{gems:25}},
     {id:'frenzy',   kind:'boost',    status:'live', icon:'\ud83d\udd25', name:'Winter Frenzy',   desc:'x2 Sparks for 30 minutes.',  cost:150, boostType:'coin', durationS:1800},
@@ -2964,7 +2964,7 @@ function renderAdventure(){
   html+='<div class="adv-rewards">';
   html+=advRewItem('🪙','Sparks','~'+fmtShort(coinsNow),true);
   var shTypes=sel.shellLoot.map(function(L){var r=SHELL_RARITIES.find(function(s){return s.id===L.type;});return shellIcon(L.type);}).join('');
-  html+=advRewItem(shTypes||'🐚','Embers','',true);
+  html+=advRewItem(shTypes||'🐚','Shells','',true);
   html+=advRewItem(uiIco('pet-xp','⭐',22),'Pet XP','+'+sel.xp,true);
   (sel.bonusLoot||[]).forEach(function(B){
     if(B.type==='gems'){html+=advRewItem(GEM_IMG,'Gems',Math.round(B.chance*100)+'%',true);}
@@ -3107,7 +3107,7 @@ function renderDevMenu(){
   var pedOn=!(G.settings&&G.settings.hidePedestal);
   var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
-  html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Embers</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
+  html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="addTestCharms()" '+bBlue+'>+10 \ud83c\udfb2 Charms</button></div>';
   html+='<div class="dev-row"><button onclick="devUnlockFrames()" '+bBlue+'>\ud83d\uddbc\ufe0f Unlock all frames</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
@@ -3540,7 +3540,7 @@ function renderPets(){
   if(b.idleGain>0)chips.push(bIco('idleGain')+'+'+b.idleGain+'% Idle');
   if(b.clickPower>0)chips.push(bIco('clickPower')+'+'+b.clickPower+'% Click');
   if(b.luck>0)chips.push(bIco('luck')+'+'+b.luck+'% Luck');
-  if(b.shellGain>0)chips.push(bIco('shellGain')+'+'+b.shellGain+'% Embers');
+  if(b.shellGain>0)chips.push(bIco('shellGain')+'+'+b.shellGain+'% Shells');
   if(b.hatchSpeed>0)chips.push(bIco('hatchSpeed')+'-'+b.hatchSpeed+'% Hatch');
   if(chips.length>0){
     html+='<div class="bonus-strip">';
@@ -4569,7 +4569,7 @@ function friendToggleNotify(which){
 var FCMP_GROUPS=[
   {cat:'Overview',rows:[{label:'Account Level',k:'level'},{label:'Ascensions',k:'asc'}]},
   {cat:'Economy',rows:[{label:'Sparks Earned',k:'totalCoinsEarned'},{label:'Sparks Spent',k:'totalCoinsSpent'},{label:'Total Clicks',k:'totalClicks'}]},
-  {cat:'Hatching & Embers',rows:[{label:'Eggs Hatched',k:'eggsHatched'},{label:'Embers Collected',k:'totalShellsCollected'}]},
+  {cat:'Hatching & Shells',rows:[{label:'Eggs Hatched',k:'eggsHatched'},{label:'Shells Collected',k:'totalShellsCollected'}]},
   {cat:'Pets',rows:[{label:'Pets Collected',k:'totalPetsCollected'},{label:'Unique Pets',k:'uniquePetsDiscovered'},{label:'Pets Fused',k:'totalPetsFused'},{label:'Pets Mutated',k:'totalPetsMutated'}]},
   {cat:'Adventure & Achievements',rows:[{label:'Adventures',k:'adventuresCompleted'},{label:'Achievements',k:'achievementsCompleted'}]}
 ];
@@ -5359,7 +5359,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.32<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.33<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5443,7 +5443,7 @@ function applyRedeemReward(rw){
   var parts=[];
   if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtNum(rw.coins)+' Sparks');}
   if(rw.gems){G.gems=(G.gems||0)+rw.gems;parts.push(GEM_IMG+' +'+rw.gems+' Gems');}
-  if(rw.shells){Object.keys(rw.shells).forEach(function(id){var amt=rw.shells[id];if(!amt)return;G.shells[id]=(G.shells[id]||0)+amt;parts.push('+'+amt+' '+id.charAt(0).toUpperCase()+id.slice(1)+' Embers');});}
+  if(rw.shells){Object.keys(rw.shells).forEach(function(id){var amt=rw.shells[id];if(!amt)return;G.shells[id]=(G.shells[id]||0)+amt;parts.push('+'+amt+' '+id.charAt(0).toUpperCase()+id.slice(1)+' Shells');});}
   return parts;
 }
 function doRedeem(){
@@ -5652,7 +5652,7 @@ var BADGE_DEFS=[
   // Crafting
   {name:'Alchemist',icon:'⚗️',cat:'Crafting',desc:'Perform 25 fusions.',check:function(){return (G.stats.totalFusions||0)>=25;}},
   {name:'Geneticist',icon:'🧬',cat:'Crafting',desc:'Mutate 25 pets.',check:function(){return (G.stats.totalPetsMutated||0)>=25;}},
-  {name:'Ember Baron',icon:'🐚',cat:'Crafting',desc:'Collect 10,000 Embers.',check:function(){return (G.stats.totalShellsCollected||0)>=10000;}},
+  {name:'Shell Baron',icon:'🐚',cat:'Crafting',desc:'Collect 10,000 Shells.',check:function(){return (G.stats.totalShellsCollected||0)>=10000;}},
   // Dedication
   {name:'Click Champion',icon:'👆',cat:'Dedication',desc:'Tap the egg 25,000 times.',check:function(){return (G.stats.totalClicks||0)>=25000;}},
   {name:'Well Rested',icon:'😴',cat:'Dedication',desc:'Claim an 8-hour offline reward.',check:function(){return (G.stats.offlineRewardsClaimed||0)>=1;}},
@@ -5791,11 +5791,11 @@ function renderProfileStats(){
     ['T5 Abilities',fmtShort(s.tier5AbilitiesHatched||0)],
     ['Duplicates',fmtShort(s.duplicatePetsHatched||0)]
   ],false);
-  h+=pstCard('#ec73c8',statIco('stats-panel/stats-panel-ember','🐚'),'Ember Stats',[
-    ['Embers Collected',fmtShort(s.totalShellsCollected||0)],
-    ['Embers Spent',fmtShort(s.totalShellsSpent||0)],
+  h+=pstCard('#ec73c8',statIco('stats-panel/stats-panel-shell','🐚'),'Shell Stats',[
+    ['Shells Collected',fmtShort(s.totalShellsCollected||0)],
+    ['Shells Spent',fmtShort(s.totalShellsSpent||0)],
     ['Highest Rarity',profRarity(s.highestRarityShellFound)],
-    ['Favorite Ember',profRarity(s.favoriteShell)]
+    ['Favorite Shell',profRarity(s.favoriteShell)]
   ],false);
   h+=pstCard('#26c6da',statIco('stats-panel/stats-panel-fusion','⚗️'),'Fusion',[
     ['Total Fusions',fmtShort(s.totalFusions||0)],
@@ -6008,7 +6008,7 @@ var DAILY_QUEST_POOL={
     {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{shells:{common:6}}},
     {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{shells:{uncommon:3}}},
     {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{shells:{uncommon:4}}},
-    {type:'shells',name:'Ember Picker',icon:'\ud83d\udc1a',target:15,reward:{gems:2}},
+    {type:'shells',name:'Shell Picker',icon:'\ud83d\udc1a',target:15,reward:{gems:2}},
     {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{shells:{uncommon:4}}}
   ],
   med:[
@@ -6016,7 +6016,7 @@ var DAILY_QUEST_POOL={
     {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{shells:{common:8}}},
     {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{shells:{uncommon:5}}},
     {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{shells:{uncommon:5}}},
-    {type:'shells',name:'Ember Gatherer',icon:'\ud83d\udc1a',target:40,reward:{shells:{uncommon:5}}},
+    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{shells:{uncommon:5}}},
     {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{shells:{uncommon:5}}},
     {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{shells:{common:8}}}
   ],
@@ -6025,7 +6025,7 @@ var DAILY_QUEST_POOL={
     {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{gems:6}},
     {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{gems:6}},
     {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
-    {type:'shells',name:'Ember Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{rare:3}}},
+    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{rare:3}}},
     {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
     {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{gems:6}},
     {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
@@ -6095,7 +6095,7 @@ var WEEKLY_QUEST_POOL={
     {type:'hatch',name:'Hatch Master',icon:'\ud83e\udd5a',target:120,reward:{gems:25}},
     {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{shells:{epic:3}}},
     {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{shells:{epic:3}}},
-    {type:'shells',name:'Ember Collector',icon:'\ud83d\udc1a',target:400,reward:{gems:25}},
+    {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{gems:25}},
     {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{gems:25}},
     {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{gems:25}}
   ],
@@ -6107,7 +6107,7 @@ var WEEKLY_QUEST_POOL={
     {type:'mutate',name:'Master Mutator',icon:'\ud83e\uddec',target:5,reward:{gems:50,cores:1}},
     {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{gems:50}},
     {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{gems:50}},
-    {type:'shells',name:'Ember Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,cores:1}}
+    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,cores:1}}
   ]
 };
 function weeklyCycleMs(){return WEEKLY_QUEST_CYCLE_HOURS*3600000;}
@@ -6202,7 +6202,7 @@ function questGo(type){
 }
 // Gemensam quest-rad (används av både daily och weekly). claimFn = namn på claim-funktionen.
 // allowReroll = visa reroll-knapp (bara daily).
-// Quest-ikon per typ (annars quest-objektets emoji). tap=total-clicks, shells=common Ember, craft=starter Ember, send=nav-adventures.
+// Quest-ikon per typ (annars quest-objektets emoji). tap=total-clicks, shells=common Shell, craft=starter Shell, send=nav-adventures.
 function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
   if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/random/finger-tap.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
@@ -6510,7 +6510,7 @@ function grantEventReward(rw){
   var parts=[];
   if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtShort(rw.coins)+' Sparks');}
   if(rw.gems){G.gems+=rw.gems;parts.push('+'+rw.gems+' \ud83d\udc8e Gems');}
-  if(rw.shells){for(var r in rw.shells){G.shells[r]=(G.shells[r]||0)+rw.shells[r];parts.push('+'+rw.shells[r]+' '+r.charAt(0).toUpperCase()+r.slice(1)+' Embers');}}
+  if(rw.shells){for(var r in rw.shells){G.shells[r]=(G.shells[r]||0)+rw.shells[r];parts.push('+'+rw.shells[r]+' '+r.charAt(0).toUpperCase()+r.slice(1)+' Shells');}}
   if(rw.cores){var _ct=rw.coreTier||1,_i;for(_i=0;_i<rw.cores;_i++){G.mutationCores.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_ct});}if(G.stats)G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+rw.cores;parts.push('+'+rw.cores+' Mutation Core'+(rw.cores>1?'s':''));}
   if(rw.title){if(!G.titlesEarned)G.titlesEarned={};G.titlesEarned[rw.title]=true;parts.push('Title: '+rw.title);}
   if(rw.cosmetic){if(!G.cosmeticsOwned)G.cosmeticsOwned={};G.cosmeticsOwned[rw.cosmetic]=true;parts.push('Cosmetic unlocked!');}
@@ -7234,12 +7234,12 @@ function renderInventory(){
   var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
   var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
   var html='<div class="inv-tabs">';
-  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"> Embers</div>';
+  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"> Shells</div>';
   html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:-0.18em" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"> Eggs</div>';
   html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')">🧪 Cores</div>';
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
   html+='</div>';
-  html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Embers</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
+  html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
   SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
@@ -7353,11 +7353,11 @@ function shellCodexHtml(){
   var hasRarest=rarest&&(s.totalShellsCollected||0)>0;
   var fav=SHELL_RARITIES.find(function(x){return x.id===s.favoriteShell;});
   var hasFav=fav&&s.shellsCollectedByRarity&&(s.shellsCollectedByRarity[s.favoriteShell]||0)>0;
-  var h='<div class="codex-intro">🐚 Embers drop while you click and idle. Collect them to craft eggs — rarer eggs need rarer Embers.</div>';
+  var h='<div class="codex-intro">🐚 Shells drop while you click and idle. Collect them to craft eggs — rarer eggs need rarer Shells.</div>';
   h+='<div class="codex-stats">';
   h+='<div class="cstat"><div class="cs-ic"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"></div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
-  h+='<div class="cstat"><div class="cs-ic">'+(hasRarest?shellIcon(rarest.id):'—')+'</div><div class="cs-v" style="color:'+(hasRarest?rarest.color:'rgba(255,255,255,0.45)')+'">'+(hasRarest?rarest.name.replace(' Ember',''):'—')+'</div><div class="cs-l">Rarest found</div></div>';
-  h+='<div class="cstat"><div class="cs-ic">'+(hasFav?shellIcon(fav.id):'—')+'</div><div class="cs-v" style="color:'+(hasFav?fav.color:'rgba(255,255,255,0.45)')+'">'+(hasFav?fav.name.replace(' Ember',''):'—')+'</div><div class="cs-l">Favorite</div></div>';
+  h+='<div class="cstat"><div class="cs-ic">'+(hasRarest?shellIcon(rarest.id):'—')+'</div><div class="cs-v" style="color:'+(hasRarest?rarest.color:'rgba(255,255,255,0.45)')+'">'+(hasRarest?rarest.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Rarest found</div></div>';
+  h+='<div class="cstat"><div class="cs-ic">'+(hasFav?shellIcon(fav.id):'—')+'</div><div class="cs-v" style="color:'+(hasFav?fav.color:'rgba(255,255,255,0.45)')+'">'+(hasFav?fav.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Favorite</div></div>';
   h+='</div>';
   h+='<div class="codex-droprate">Drop chance: <b>15%</b> per click · <b>5%</b>/s idle · higher with 🍀 Luck. Rare+ odds rise as your production grows.</div>';
   h+='<div class="codex-list">';
@@ -7368,7 +7368,7 @@ function shellCodexHtml(){
     var crafts=shellCraftedBy(r.id).map(function(e){return e.icon+' '+e.name.replace(' Egg','');}).join(', ')||'—';
     h+='<div class="codex-card'+(life>0?'':' dim')+'" style="border-left-color:'+r.color+'">';
     h+='<div class="cc-ic">'+shellIcon(r.id)+'</div>';
-    h+='<div class="cc-mid"><div class="cc-name" style="color:'+r.color+'">'+r.name.replace(' Ember','')+(life>0?'':' <span class="cc-new">· not found yet</span>')+'</div>';
+    h+='<div class="cc-mid"><div class="cc-name" style="color:'+r.color+'">'+r.name.replace(' Shell','')+(life>0?'':' <span class="cc-new">· not found yet</span>')+'</div>';
     h+='<div class="cc-meta">Drop '+shellPctFmt(pct)+'% · Lifetime '+fmtShort(life)+'</div>';
     h+='<div class="cc-crafts">Crafts: '+crafts+'</div></div>';
     h+='<div class="cc-own"><span class="cc-owncount">'+fmtShort(owned)+'</span><span class="cc-ownlbl">owned</span></div>';
@@ -7383,7 +7383,7 @@ function renderShop(){
   html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
   html+='<div class="shop-tabs">';
   html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE EMBERS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
@@ -7392,7 +7392,7 @@ function renderShop(){
   }
 
   // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
-  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Embers</b>. Rarer eggs need rarer Embers — each card shows the exact Ember it needs. Collect Embers by clicking &amp; idling.</div>';
+  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Shells</b>. Rarer eggs need rarer Shells — each card shows the exact Shell it needs. Collect Shells by clicking &amp; idling.</div>';
 
   // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
   // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
@@ -7422,7 +7422,7 @@ function renderShop(){
     if(unlocked){
       html+='<div class="sec-cost">';
       html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
-      if(sc>0)html+='<span class="sec-cost-chip sec-shell-chip" style="--erc:'+(shellR?shellR.color:'#aaa')+'"><span class="sec-shell-rar">'+(shellR?shellR.name.replace(' Ember',''):'')+'</span><span class="sec-shell-line'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span></span>';
+      if(sc>0)html+='<span class="sec-cost-chip sec-shell-chip" style="--erc:'+(shellR?shellR.color:'#aaa')+'"><span class="sec-shell-rar">'+(shellR?shellR.name.replace(' Shell',''):'')+'</span><span class="sec-shell-line'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span></span>';
       html+='</div>';
     }
     // Knappar (Craft över Hatch)
@@ -7915,7 +7915,7 @@ function quickFuseShells(fromRarity,batches){
   if(typeof renderShop==='function')renderShop();
 }
 function shellQuickFuseHtml(){
-  var h='<div class="qf-intro">⚗️ Quick-fuse Embers — 5 lower = 1 higher. Combine spares into rarer Embers to craft better eggs.</div>';
+  var h='<div class="qf-intro">⚗️ Quick-fuse Shells — 5 lower = 1 higher. Combine spares into rarer Shells to craft better eggs.</div>';
   h+='<div class="qf-list">';
   var any=false;
   SHELL_RARITIES.forEach(function(r){
@@ -7924,7 +7924,7 @@ function shellQuickFuseHtml(){
     any=true;
     var maxB=Math.floor(have/5);var canFuse=maxB>0;var nm=shellMeta(next);
     h+='<div class="qf-row'+(canFuse?'':' dim')+'">';
-    h+='<div class="qf-from"><span class="qf-ic" style="filter:drop-shadow(0 0 3px '+r.color+')">'+shellIcon(r.id)+'</span><div class="qf-from-txt"><div class="qf-name" style="color:'+r.color+'">'+r.name.replace(' Ember','')+'</div><div class="qf-have">Have '+fmtShort(have)+'</div></div></div>';
+    h+='<div class="qf-from"><span class="qf-ic" style="filter:drop-shadow(0 0 3px '+r.color+')">'+shellIcon(r.id)+'</span><div class="qf-from-txt"><div class="qf-name" style="color:'+r.color+'">'+r.name.replace(' Shell','')+'</div><div class="qf-have">Have '+fmtShort(have)+'</div></div></div>';
     h+='<div class="qf-arrow">→</div>';
     h+='<div class="qf-to"><span class="qf-ic" style="filter:drop-shadow(0 0 3px '+nm.color+')">'+shellIcon(next)+'</span></div>';
     h+='<div class="qf-btns">';
@@ -7936,7 +7936,7 @@ function shellQuickFuseHtml(){
     }
     h+='</div></div>';
   });
-  if(!any)h+='<div class="qf-empty">No Embers yet — they drop while you click and idle. Come back when you have some to fuse!</div>';
+  if(!any)h+='<div class="qf-empty">No Shells yet — they drop while you click and idle. Come back when you have some to fuse!</div>';
   h+='</div>';
   return h;
 }
@@ -7948,14 +7948,14 @@ function renderShellFusion(){
   var sm=src?shellMeta(src):null;
   var nm=next?shellMeta(next):null;
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
-  var h='<div class="shf-intro">Pick a source Ember, choose how many higher Embers to make. 5 lower = 1 higher.</div>';
+  var h='<div class="shf-intro">Pick a source Shell, choose how many higher Shells to make. 5 lower = 1 higher.</div>';
   // INPUT → OUTPUT
   h+='<div class="shf-io">';
   h+='<div class="shf-box pick" onclick="openShellSrcPicker()">';
   if(src){
     h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+shellIcon(src)+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
   } else {
-    h+='<div class="shf-box-ic"><img src="'+shellImgUrl('common')+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))"></div><div class="shf-box-empty">Tap to choose an Ember</div>';
+    h+='<div class="shf-box-ic"><img src="'+shellImgUrl('common')+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))"></div><div class="shf-box-empty">Tap to choose an Shell</div>';
   }
   h+='</div>';
   h+='<div class="shf-io-arrow">→</div>';
@@ -7980,9 +7980,9 @@ function renderShellFusion(){
   // FUSE
   var ready=src&&next&&qty>=1;
   if(ready){
-    h+='<button class="shf-fuse ready" onclick="tryFuseShells()">🐚 Fuse Embers ('+fmtShort(qty*5)+' → '+fmtShort(qty)+')</button>';
+    h+='<button class="shf-fuse ready" onclick="tryFuseShells()">🐚 Fuse Shells ('+fmtShort(qty*5)+' → '+fmtShort(qty)+')</button>';
   } else {
-    var msg=!src?'Choose a source Ember':(maxOut<1?('Need 5 '+(sm?sm.label:'')+' Embers'):'Select an amount');
+    var msg=!src?'Choose a source Shell':(maxOut<1?('Need 5 '+(sm?sm.label:'')+' Shells'):'Select an amount');
     h+='<button class="shf-fuse disabled">'+msg+'</button>';
   }
   return h;
@@ -7997,7 +7997,7 @@ function renderShellSrcList(){
     if(!getNextRarity(rid))return; // cosmic kan inte konverteras
     var have=G.shells[rid]||0;if(have<=0)return;
     any=true;var sm=shellMeta(rid),maxOut=Math.floor(have/5);
-    h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+shellIcon(rid)+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Ember</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
+    h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+shellIcon(rid)+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Shell</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
   });
   if(!any)h='<div class="shf-empty">You have no shells that can be converted yet.<br>Collect shells by tapping and idling first.</div>';
   wrap.innerHTML=h;
@@ -8010,7 +8010,7 @@ function tryFuseShells(){
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
   if(qty<1)return;
   var sm=shellMeta(src),nm=shellMeta(next),cost=qty*5;
-  showConfirm('Fuse Embers','This will permanently destroy <b style="color:'+sm.color+'">'+fmtShort(cost)+' '+sm.label+' Ember'+(cost>1?'s':'')+'</b> to create <b style="color:'+nm.color+'">'+fmtShort(qty)+' '+nm.label+' Ember'+(qty>1?'s':'')+'</b>.<br><br>Destroyed Embers cannot be recovered.','🐚 Fuse',function(){convertShells(src,qty);shellFuseQty=1;renderFusion();},true);
+  showConfirm('Fuse Shells','This will permanently destroy <b style="color:'+sm.color+'">'+fmtShort(cost)+' '+sm.label+' Shell'+(cost>1?'s':'')+'</b> to create <b style="color:'+nm.color+'">'+fmtShort(qty)+' '+nm.label+' Shell'+(qty>1?'s':'')+'</b>.<br><br>Destroyed Shells cannot be recovered.','🐚 Fuse',function(){convertShells(src,qty);shellFuseQty=1;renderFusion();},true);
 }
 
 function autoSelectFusion(){
@@ -8035,7 +8035,7 @@ function renderFusion(){
   var wrap=document.getElementById('fusion-wrap');if(!wrap)return;
   var modeTabs='<div style="display:flex;gap:6px;margin-bottom:12px;">'
     +'<div class="fusion-tab'+(fusionMode==='pets'?' active':'')+'" onclick="setFusionMode(\'pets\')">⚗️ Pet Fusion</div>'
-    +'<div class="fusion-tab'+(fusionMode==='shells'?' active':'')+'" onclick="setFusionMode(\'shells\')">🐚 Ember Fusion</div>'
+    +'<div class="fusion-tab'+(fusionMode==='shells'?' active':'')+'" onclick="setFusionMode(\'shells\')">🐚 Shell Fusion</div>'
     +'</div>';
   if(fusionMode==='shells'){wrap.innerHTML=modeTabs+renderShellFusion();return;}
   var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
@@ -8205,18 +8205,18 @@ var ACHIEVEMENTS=[
   {id:'cosmic_explorer',cat:'Progression',icon:'🌌',name:'Cosmic Explorer',desc:'Unlock Cosmic Egg',check:function(){return G.eggsHatched&&G.eggsHatched['celestial'];},progress:function(){return {cur:(G.eggsHatched&&G.eggsHatched['celestial'])?1:0,max:1};}},
 
   // SHELLS
-  {id:'first_shell',cat:'Gameplay',icon:'🐚',name:'First Ember',desc:'Obtain your first Ember',check:function(){return G.stats.totalShellsCollected>=1;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1),max:1};}},
-  {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Ember Collector',desc:'Collect 1,000 Embers',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
-  {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Ember Hoarder',desc:'Collect 10,000 Embers',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
-  {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Ember Empire',desc:'Collect 100,000 Embers',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
-  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Rare Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.rare||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.rare)||0,1),max:1};}},
-  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Epic Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.epic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.epic)||0,1),max:1};}},
-  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Legendary Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.legendary||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.legendary)||0,1),max:1};}},
-  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Mythical Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mythical||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mythical)||0,1),max:1};}},
-  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Artifact Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.artifact||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.artifact)||0,1),max:1};}},
-  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Heavenly Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.heavenly||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.heavenly)||0,1),max:1};}},
-  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Eternal Ember',desc:'Obtain your first Eternal Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.eternal||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.eternal)||0,1),max:1};}},
-  {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Ember',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'first_shell',cat:'Gameplay',icon:'🐚',name:'First Shell',desc:'Obtain your first Shell',check:function(){return G.stats.totalShellsCollected>=1;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1),max:1};}},
+  {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Shell Collector',desc:'Collect 1,000 Shells',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
+  {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
+  {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
+  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Rare Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.rare||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.rare)||0,1),max:1};}},
+  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Epic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.epic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.epic)||0,1),max:1};}},
+  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Legendary Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.legendary||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.legendary)||0,1),max:1};}},
+  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Mythical Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mythical||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mythical)||0,1),max:1};}},
+  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Artifact Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.artifact||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.artifact)||0,1),max:1};}},
+  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Heavenly Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.heavenly||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.heavenly)||0,1),max:1};}},
+  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Eternal Shell',desc:'Obtain your first Eternal Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.eternal||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.eternal)||0,1),max:1};}},
+  {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
 
   // BUILDINGS
   {id:'entrepreneur',cat:'Progression',icon:'🏗️',name:'Entrepreneur',desc:'Buy your first Building',check:function(){return G.stats.totalBuildingsPurchased>=1;},progress:function(){return {cur:Math.min(G.stats.totalBuildingsPurchased,1),max:1};}},
@@ -8259,7 +8259,7 @@ var ACHIEVEMENTS=[
   // SECRET
   {id:'cosmic_destiny',cat:'Secret',icon:'🌌',name:'Cosmic Destiny',desc:'Hatch a Cosmic Pet from a Cosmic Egg',check:function(){return G.stats.cosmicPetsCreated>=1;},progress:function(){return {cur:Math.min(G.stats.cosmicPetsCreated,1),max:1};}},
   {id:'tier5_jackpot',cat:'Secret',icon:'✨',name:'Tier 5 Jackpot',desc:'Hatch a pet with a Tier 5 Ability',check:function(){return G.stats.tier5AbilitiesHatched>=1;},progress:function(){return {cur:Math.min(G.stats.tier5AbilitiesHatched,1),max:1};}},
-  {id:'pure_luck',cat:'Secret',icon:'🍀',name:'Pure Luck',desc:'Obtain a Cosmic Ember from a click',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'pure_luck',cat:'Secret',icon:'🍀',name:'Pure Luck',desc:'Obtain a Cosmic Shell from a click',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
 ];
 
 // Achievement state
@@ -8318,7 +8318,7 @@ var ACH_GROUPS=[
   {label:'🐾 Pet Collection',ids:['first_friend','small_collection','growing_zoo','pet_enthusiast','collector','pet_master']},
   {label:'🌈 Rarity Firsts',ids:['uncommon_find','rare_discovery','epic_encounter','legendary_moment','mythical_being','artifact_hunter','heavenly_creature','eternal_soul','cosmic_event']},
   {label:'🌍 Egg Worlds',ids:['welcome_home','into_the_woods','mountain_explorer','desert_wanderer','ocean_traveler','cosmic_explorer']},
-  {label:'🐚 Embers',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','lucky_drop','epic_fortune','legendary_treasure','mythical_discovery','artifact_find','heavenly_luck','eternal_shell','cosmic_miracle']},
+  {label:'🐚 Shells',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','lucky_drop','epic_fortune','legendary_treasure','mythical_discovery','artifact_find','heavenly_luck','eternal_shell','cosmic_miracle']},
   {label:'🏗️ Buildings',ids:['entrepreneur','small_operation','growing_business','economic_powerhouse']},
   {label:'⚡ Production (SPS)',ids:['first_production','productive','industrial','mass_producer']},
   {label:'🪙 Sparks',ids:['millionaire','billionaire','trillionaire']},
@@ -8525,7 +8525,7 @@ var ACH_REWARDS={
   tier5_jackpot:{gems:12,pet:'mythical'},
   pure_luck:{gems:15,pet:'mythical',perm:{luck:5}}
 };
-var PERM_LABELS={coinGain:'Spark Gain',idleGain:'Idle Gain',clickPower:'Click Power',luck:'Luck',shellGain:'Ember Gain',hatchSpeed:'Hatch Speed'};
+var PERM_LABELS={coinGain:'Spark Gain',idleGain:'Idle Gain',clickPower:'Click Power',luck:'Luck',shellGain:'Shell Gain',hatchSpeed:'Hatch Speed'};
 function rwCap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function grantShellsReward(rarity,n){
   G.shells[rarity]=(G.shells[rarity]||0)+n;
@@ -8554,7 +8554,7 @@ function applyPermReward(stat,pct){
 function grantReward(id){
   var r=ACH_REWARDS[id];if(!r)return [];
   var parts=[];
-  if(r.shells)Object.keys(r.shells).forEach(function(rar){grantShellsReward(rar,r.shells[rar]);parts.push(r.shells[rar]+' '+rwCap(rar)+' Embers');});
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){grantShellsReward(rar,r.shells[rar]);parts.push(r.shells[rar]+' '+rwCap(rar)+' Shells');});
   if(r.eggs)Object.keys(r.eggs).forEach(function(eid){G.eggsOwned[eid]=(G.eggsOwned[eid]||0)+r.eggs[eid];var em=EGG_SHOP.find(function(e){return e.id===eid;});parts.push(r.eggs[eid]+'× '+(em?em.name:eid));});
   if(r.gems){G.gems=(G.gems||0)+r.gems;parts.push(r.gems+' '+GEM_IMG+' Gems');}
   if(r.pet){grantPetReward(r.pet);parts.push('1 '+rwCap(r.pet)+' pet 🐾');}
@@ -8565,7 +8565,7 @@ function grantReward(id){
 function rewardShortText(id){
   var r=ACH_REWARDS[id];if(!r)return '';
   var p=[];
-  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' Embers');});
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' Shells');});
   if(r.eggs)Object.keys(r.eggs).forEach(function(eid){var em=EGG_SHOP.find(function(e){return e.id===eid;});p.push(r.eggs[eid]+'× '+(em?em.name:eid));});
   if(r.gems)p.push(r.gems+' '+GEM_IMG);
   if(r.pet)p.push(rwCap(r.pet)+' pet 🐾');
