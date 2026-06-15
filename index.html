@@ -4545,6 +4545,7 @@ function doAscension(){
   if(gain<1)return;
   G.stardust=(G.stardust||0)+gain;
   G.ascensions=(G.ascensions||0)+1;
+  try{ logActivity('ascended',{count:G.ascensions}); }catch(e){}
   G.stats.ascensionsCompleted=(G.stats.ascensionsCompleted||0)+1;
   G.stats.totalAscensionCurrency=(G.stats.totalAscensionCurrency||0)+gain;
   // NOLLSTÄLLS (låsta regler): coins, byggnader, doublingar, upgrade-nivåer, klick-upgrades, världs-progression, ägda ägg.
@@ -4611,6 +4612,7 @@ function friendsSig(){
          j(d.incoming,function(x){return x.request_id||x.handle||'';})+'|'+
          j(d.outgoing,function(x){return x.request_id||x.handle||'';})+'|'+
          j(inv,function(x){return x.session_id||'';})+'|'+
+         j(FRIENDS.activity,function(x){return x.id||'';})+'|'+
          (FRIENDS.allowReq?'1':'0')+(FRIENDS.allowTrade?'1':'0')+(FRIENDS.allowStats?'1':'0')+'|'+FRIENDS.friendCount;
 }
 function friendsMaybeRender(){
@@ -4697,6 +4699,9 @@ function friendsPoll(){
   sb.rpc('pp_trade_invites_list').then(function(res){
     var d=res&&res.data;if(d&&d.ok){FRIENDS.invites=d.invites||[];friendsMaybeRender();}
   },function(){});
+  sb.rpc('pp_activity_feed',{p_limit:20}).then(function(res){
+    var d=res&&res.data;if(d&&d.ok){FRIENDS.activity=d.activity||[];friendsMaybeRender();}
+  },function(){});
 }
 function friendsWatchStart(){friendsWatchStop();_frSig='';_frWatch=setInterval(friendsPoll,4000);}
 function friendsWatchStop(){if(_frWatch){clearInterval(_frWatch);_frWatch=null;}}
@@ -4713,6 +4718,9 @@ function friendsLoad(){
   },function(){});
   sb.rpc('pp_trade_invites_list').then(function(res){
     var d=res&&res.data;if(d&&d.ok){FRIENDS.invites=d.invites||[];renderFriends();}
+  },function(){});
+  sb.rpc('pp_activity_feed',{p_limit:20}).then(function(res){
+    var d=res&&res.data;if(d&&d.ok){FRIENDS.activity=d.activity||[];renderFriends();}
   },function(){});
 }
 function friendSetHandle(){
@@ -4789,6 +4797,17 @@ function frAvatarHtml(p){
   var inner=(av.indexOf('http')===0)?('<img src="'+av+'" alt="" onerror="this.parentNode.textContent=\'\ud83d\udc64\'">'):av;
   return '<div class="fr2-av">'+inner+'</div>';
 }
+function frCap(s){s=String(s||'');return s.charAt(0).toUpperCase()+s.slice(1);}
+function frActIcon(t){return {petdex_world:'\ud83c\udfc6',pet_found:'\u2728',rare_hatch:'\ud83e\udd5a',ascended:'\ud83d\udd3c',level_milestone:'\u2b50'}[t]||'\ud83d\udd14';}
+function frActText(a){
+  var d=a.detail||{};
+  if(a.type==='petdex_world')return 'completed '+frEsc(d.world||'a')+' Petdex!';
+  if(a.type==='pet_found')return d.adventure?'found an Adventure Pet!':('found a '+frEsc(frCap(d.rarity))+' Pet!');
+  if(a.type==='rare_hatch')return 'hatched a '+frEsc(frCap(d.rarity))+' Pet!';
+  if(a.type==='ascended')return 'ascended!'+(d.count?(' (\u00d7'+d.count+')'):'');
+  if(a.type==='level_milestone')return 'reached Level '+frEsc(''+(d.level||'?'))+'!';
+  return 'did something!';
+}
 function frNotifList(){
   var out=[];
   (FRIENDS.data.incoming||[]).forEach(function(p){
@@ -4796,6 +4815,9 @@ function frNotifList(){
   });
   (FRIENDS.invites||[]).forEach(function(iv){
     out.push({ic:'\ud83e\udd1d',name:(iv.display_name||('@'+(iv.handle||'A friend'))),text:'offered you a trade!',time:iv.created_at});
+  });
+  (FRIENDS.activity||[]).forEach(function(a){
+    out.push({ic:frActIcon(a.type),name:(a.display_name||('@'+(a.handle||'A friend'))),text:frActText(a),time:a.created_at});
   });
   out.sort(function(a,b){return (Date.parse(b.time)||0)-(Date.parse(a.time)||0);});
   return out;
@@ -4873,8 +4895,8 @@ function openFriendNotifs(){var m=document.getElementById('frnotif-modal');if(m)
 function closeFriendNotifs(){var m=document.getElementById('frnotif-modal');if(m)m.classList.remove('open');}
 function renderFriendNotifs(){
   var body=document.getElementById('frnotif-body');if(!body)return;
-  var inc=FRIENDS.data.incoming||[],inv=FRIENDS.invites||[],h='';
-  if(!inc.length&&!inv.length){body.innerHTML='<div class="fr2-empty">No new notifications right now.</div>';return;}
+  var inc=FRIENDS.data.incoming||[],inv=FRIENDS.invites||[],act=FRIENDS.activity||[],h='';
+  if(!inc.length&&!inv.length&&!act.length){body.innerHTML='<div class="fr2-empty">No new notifications right now.</div>';return;}
   if(inc.length){
     h+='<div class="fr2-sub-sec">Friend requests</div>';
     inc.forEach(function(p){
@@ -4891,6 +4913,16 @@ function renderFriendNotifs(){
         '<div class="fr2-info"><div class="fr2-name">'+frEsc(iv.display_name||('@'+(iv.handle||'A friend')))+'</div><div class="fr2-st off">wants to trade'+(iv.created_at?(' \u00b7 '+frTimeAgo(iv.created_at)):'')+'</div></div>'+
         '<div class="fr2-acts"><button class="fr2-btn trade" onclick="closeFriendNotifs();friendAcceptTrade(\''+frEsc(iv.session_id)+'\',\''+frEsc(iv.handle||'')+'\')">Trade</button>'+
         '<button class="fr2-btn profile" style="background:linear-gradient(180deg,#5a5570,#3a3650);box-shadow:0 2px 0 #25223a" onclick="friendDeclineTrade(\''+frEsc(iv.session_id)+'\');renderFriendNotifs();">Dismiss</button></div></div>';
+    });
+  }
+  if(act.length){
+    h+='<div class="fr2-sub-sec">Activity</div>';
+    act.forEach(function(a){
+      var nm=a.display_name||('@'+(a.handle||'A friend'));
+      h+='<div class="fr2-card" style="cursor:pointer" onclick="closeFriendNotifs();openFriendStats(\''+frEsc(a.user_id)+'\',\''+frEsc(a.handle||'')+'\')">'+
+        '<div class="fr2-nic" style="font-size:1.3rem">'+frActIcon(a.type)+'</div>'+
+        '<div class="fr2-info"><div class="fr2-name" style="font-size:0.88rem">'+frEsc(nm)+'</div><div class="fr2-st off">'+frActText(a)+' \u00b7 '+frTimeAgo(a.created_at)+'</div></div>'+
+        '<div class="fr2-nchev">\u203a</div></div>';
     });
   }
   body.innerHTML=h;
@@ -5546,7 +5578,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.34<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.36<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9019,7 +9051,7 @@ function claimWorldReward(worldId,milestone){
   var gems=milestone===75?wr.g75:wr.g100;
   G.gems=(G.gems||0)+gems;
   var parts=[gems+' '+GEM_IMG+' Gems'];
-  if(milestone===100){G.titlesEarned[wr.title]=true;parts.push('Title: '+wr.title+' 🏷️');}
+  if(milestone===100){G.titlesEarned[wr.title]=true;parts.push('Title: '+wr.title+' 🏷️');try{logActivity('petdex_world',{world:worldId.charAt(0).toUpperCase()+worldId.slice(1)},worldId);}catch(e){}}
   if(typeof updateHUD==='function')updateHUD();
   renderWorldCompletion();
   if(typeof showRewardPopup==='function')showRewardPopup(parts);
@@ -9029,6 +9061,7 @@ function claimGrandPetdex(){
   if(G.worldClaims['grand'])return;
   var o=getTotalSpeciesCount();if(o.total===0||o.found<o.total)return;
   G.worldClaims['grand']=true;
+  try{ logActivity('petdex_world',{world:'the entire'},'grand'); }catch(e){}
   G.gems=(G.gems||0)+GRAND_PETDEX_REWARD.gems;
   G.titlesEarned[GRAND_PETDEX_REWARD.title]=true;
   if(typeof updateHUD==='function')updateHUD();
@@ -9482,8 +9515,13 @@ function cloudSyncPets(pets){
 }
 // Registrerar ett NYTT djur (steg 2 A): lokal push direkt (spelet funkar instant/offline)
 // + serverutfärdat pet_id i bakgrunden. Failsäker — bryter aldrig spelet.
+function logActivity(type,detail,key){
+  try{ if(sb&&cloudUser&&!cloudKickedFlag&&!_gateBlock) sb.rpc('pp_activity_log',{p_type:type,p_detail:detail||null,p_key:key||null}).then(function(){},function(){}); }catch(e){}
+}
+var FR_NOTABLE_RARITIES={mythical:1,artifact:1,heavenly:1,eternal:1,cosmic:1};
 function registerPet(pet){
   try{ G.hatchedPets.push(pet); }catch(e){ return pet; }
+  try{ if(pet&&FR_NOTABLE_RARITIES[pet.rarity]) logActivity('pet_found',{rarity:pet.rarity}); }catch(e){}
   try{
     if(sb&&cloudUser&&!cloudKickedFlag&&!_gateBlock&&pet&&!pet.pet_id){
       sb.rpc('pp_pet_create',{p_pet:pet}).then(function(res){
