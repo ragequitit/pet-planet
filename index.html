@@ -1437,6 +1437,25 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   box-shadow: 0 1px 0 rgba(0,0,0,0.38), inset 0 2px 0 rgba(255,255,255,0.14);
 }
 </style>
+<style>
+/* ===== v6.38 fixar (4 buggar) ===== */
+/* (1) Den globala 3D-knappregeln träffade av misstag KNAPP-BEHÅLLARE
+   (klassnamn som innehåller "btn": side-btns/sec-btns/qf-btns/mut-btns).
+   :active ärvdes upp till behållaren → hela raden av knappar flyttades ner.
+   Nollställ transform på just behållarna (knapparna själva trycks fortf. ner). */
+.side-btns:active, .sec-btns:active, .qf-btns:active, .mut-btns:active{transform:none !important;}
+
+/* (2)+(3) Add Friend-popupen och Notifications/View All-popupen saknade
+   panel-bakgrund (var inte med i någon .prof-panel-regel) → genomskinliga/"wonky".
+   Ge dem samma stylade panel som övriga modaler. */
+#fradd-modal .prof-panel, #frnotif-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;}
+#fradd-modal .prof-body, #frnotif-modal .prof-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 14px 34px;}
+
+/* (4) Friends-sidan blandade fonter (mest Nunito, lite Fredoka). Enhetlig
+   tvåfonts-look som Adventures: Fredoka One på rubriker/namn/knappar,
+   Nunito kvar på brödtext. */
+.fr2-hero-tt, .fr2-ptitle, .fr2-name, .fr2-btn, .fr2-viewall, .fr2-sub-sec, .fr2-add-tx b, .fr2-sort{font-family:'Fredoka One',cursive;}
+</style>
 </head>
 <body>
 <div id="app">
@@ -5595,7 +5614,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.37<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.38<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
