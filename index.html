@@ -1432,7 +1432,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
       <div class="tb-gems" onclick="showComingSoon('💎 Gems','The premium currency Gems. Here you will be able to see how to earn Gems (achievements, dailies, battle pass) and buy more. Coming in a later update.')"><span style="font-size:0.95rem"><img class="gem-ic" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode('💎'))"></span><span class="tg-val" id="tb-gems-val">0</span></div>
       <div class="tb-rbtn" id="bp-btn" onclick="openBattlePass()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/Battle-pass.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('🎟️'))"></div>
       <div class="tb-rbtn profile" onclick="showProfile()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/profile-icon.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('👤'))"></div>
-      <div class="tb-rbtn" onclick="openMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/more.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('⋯'))"></div>
+      <div class="tb-rbtn" id="more-navbtn" style="position:relative" onclick="openMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/more.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('⋯'))"><span class="nav-badge" id="more-badge" style="display:none"></span></div>
       <div class="tb-rbtn" onclick="showSettings()">⚙️</div>
     </div>
   </div>
@@ -1610,6 +1610,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .inbox-claim{margin-top:10px;width:100%;padding:9px 0;border:none;border-radius:10px;background:linear-gradient(180deg,#ffcf5a,#f5a623);color:#2a1c00;font-weight:800;font-size:0.86rem;cursor:pointer;}
 .inbox-claim:disabled{opacity:0.55;cursor:default;}
 .inbox-claim.msg{background:linear-gradient(180deg,#6ea8ff,#3f6fd6);color:#fff;}
+.nav-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:9px;background:#ff3b50;color:#fff;font-size:0.62rem;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1;box-shadow:0 0 0 2px rgba(0,0,0,0.3);pointer-events:none;}
+.mi-badge{position:absolute;top:-6px;right:-12px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:#ff3b50;color:#fff;font-size:0.64rem;font-weight:800;display:flex;align-items:center;justify-content:center;line-height:1;pointer-events:none;}
 </style>
 <div id="inbox-modal" class="modal-overlay">
   <div class="modal-box">
@@ -4271,7 +4273,8 @@ function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
   MORE_ITEMS.forEach(function(it){
     var d=document.createElement('div');d.className='more-item';
-    d.innerHTML='<span class="mi-icon">'+it.icon+'</span><span class="mi-label">'+it.label+'</span>';
+    var ibadge=(it.action==='inbox')?'<span class="mi-badge" id="mi-inbox-badge" style="'+(mailUnread>0?'':'display:none')+'">'+(mailUnread>99?'99+':mailUnread)+'</span>':'';
+    d.innerHTML='<span class="mi-icon" style="position:relative">'+it.icon+ibadge+'</span><span class="mi-label">'+it.label+'</span>';
     d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='leaderboard'){openLeaderboard();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
@@ -4289,6 +4292,18 @@ document.getElementById('more-drawer').onclick=function(e){if(e.target===this)cl
 // servern minns claim så ingen kan dubbel-hämta. Olästa-badge byggs i ett separat steg.
 // ============================================================
 var mailCache=[];
+var mailUnread=0;
+function mailBadgeUpdate(){
+  var n=mailUnread||0,txt=(n>99?'99+':n);
+  var nb=document.getElementById('more-badge');
+  if(nb){if(n>0){nb.textContent=txt;nb.style.display='flex';}else{nb.style.display='none';}}
+  var ib=document.getElementById('mi-inbox-badge');
+  if(ib){if(n>0){ib.textContent=txt;ib.style.display='flex';}else{ib.style.display='none';}}
+}
+function cloudMailRefreshBadge(){
+  if(!sb||!cloudUser||cloudKickedFlag||_gateBlock)return;
+  cloudMailFetch(function(list){if(Array.isArray(list)){mailUnread=list.length;mailBadgeUpdate();}});
+}
 function mailEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}).replace(/\n/g,'<br>');}
 function cloudMailFetch(cb){
   if(!sb||!cloudUser){if(cb)cb([]);return;}
@@ -4312,6 +4327,7 @@ function mailRewardPreview(rw){
   return ps.length?('<div class="inbox-reward">'+ps.join('<span style="opacity:.35">|</span>')+'</div>'):'';
 }
 function renderInbox(){
+  if(Array.isArray(mailCache)){mailUnread=mailCache.length;mailBadgeUpdate();}
   var b=document.getElementById('inbox-body');if(!b)return;
   if(mailCache===null){b.innerHTML='<div class="frd-note">Could not reach the server. Try again.</div>';return;}
   if(!mailCache.length){b.innerHTML='<div class="frd-note">No new mail. Check back later!</div>';return;}
@@ -5332,7 +5348,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.30<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.31<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9162,7 +9178,7 @@ function cloudShowGate(mode,msg){
     '<div id="cloud-gate-msg" style="min-height:1.2em;margin-top:10px;font-size:0.9rem;opacity:0.95;">'+(msg||'')+'</div>'
   );
 }
-function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}try{if(sb&&cloudUser)sb.rpc('pp_touch');}catch(e){}try{if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();}catch(e){}try{if(typeof cloudSyncFrame==='function')cloudSyncFrame();}catch(e){}}
+function cloudHideGate(){var d=document.getElementById('cloud-gate');if(d&&d.parentNode)d.parentNode.removeChild(d);_gateBlock=false;try{if(typeof updateDevFab==='function')updateDevFab();}catch(e){}try{if(typeof tradeReconcile==='function')tradeReconcile();}catch(e){}try{if(typeof ltInviteWatchStart==='function')ltInviteWatchStart();}catch(e){}try{if(typeof frReqWatchStart==='function')frReqWatchStart();}catch(e){}try{if(sb&&cloudUser)sb.rpc('pp_touch');}catch(e){}try{if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();}catch(e){}try{if(typeof cloudSyncFrame==='function')cloudSyncFrame();}catch(e){}try{if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();}catch(e){}}
 
 function cloudClaimSession(cb){
   if(!sb||!cloudUser){if(cb)cb();return;}
@@ -9382,6 +9398,7 @@ if(sb){
   }catch(e){cloudShowGate('login','Something went wrong. Reload to try again.');}
   setInterval(cloudFlush,8000);
   setInterval(cloudHeartbeat,8000);
+  setInterval(function(){if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();},45000);
   try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){cloudHeartbeat();}else{cloudFlush();}});}catch(e){}
 }else{
   _gateBlock=true; cloudShowGate('error');

@@ -105,7 +105,7 @@
   .denied h2{color:var(--red)}
   .copied{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--green);color:#06281d;font-weight:700;font-size:13px;padding:8px 14px;border-radius:999px;opacity:0;transition:opacity .15s;pointer-events:none}
   .copied.show{opacity:1}
-  .acct .acts{display:flex;gap:8px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+  .acct .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
   .btn.sm{padding:7px 11px;font-size:12px}
   .btn.warn{border-color:#5a4a1f;background:#26210f;color:var(--gold)}
   .btn.warn:hover{background:#2f2912}
@@ -133,6 +133,9 @@
   .note{font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.55}
   .mmsg{font-size:13px;min-height:18px;margin-top:8px}
   .mmsg.err{color:var(--red)} .mmsg.ok{color:var(--green)}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .row3 .rl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin:0 0 4px}
+  textarea.fi{font-family:inherit;line-height:1.4}
 </style>
 </head>
 <body>
@@ -175,6 +178,7 @@
     <span class="who">Signed in as <b id="whoEmail">—</b></span>
     <span class="pill admin">ADMIN</span>
     <span class="spacer"></span>
+    <button id="composeMail" class="btn">✉️ Send Mail</button>
     <button id="refresh" class="btn">Refresh</button>
   </div>
   <input id="search" class="fi" type="search" placeholder="Search players by handle (or paste a user ID)…" autocomplete="off" style="margin-bottom:10px">
@@ -212,6 +216,42 @@
       <input id="reStar" class="fi num" type="number" min="0" step="1" inputmode="numeric">
       <button id="reApply" class="btn gold" style="width:100%;margin-top:18px;padding:12px">Apply changes</button>
       <div id="reMsg" class="mmsg"></div>
+    </div>
+  </div>
+</div>
+
+<div id="mailModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="mailTitle">
+  <div class="sheet">
+    <div class="sh-head">
+      <h3 id="mailTitle">Send mail</h3>
+      <button class="x" onclick="closeMail()" aria-label="Close">&times;</button>
+    </div>
+    <div class="sh-body">
+      <p class="note">Sends a message to players' in-game Inbox, with an optional reward they claim themselves. Broadcast reaches everyone; the reward is added when the player taps Claim. Nothing is logged out — it works for offline players too.</p>
+      <label class="fl" for="mailScope">Send to</label>
+      <select id="mailScope" class="fi">
+        <option value="broadcast">All players (broadcast)</option>
+        <option value="user">Specific player</option>
+      </select>
+      <div id="mailTargetRow" style="display:none">
+        <label class="fl" for="mailTarget">Player user ID</label>
+        <input id="mailTarget" class="fi num" type="text" placeholder="Paste a user ID (tap an account's ID to copy)" autocomplete="off">
+      </div>
+      <label class="fl" for="mailTitleIn">Title</label>
+      <input id="mailTitleIn" class="fi" type="text" maxlength="80" placeholder="e.g. Winter Bonanza has begun!">
+      <label class="fl" for="mailBody">Message</label>
+      <textarea id="mailBody" class="fi" rows="3" maxlength="600" placeholder="Optional message body…" style="resize:vertical"></textarea>
+      <label class="fl">Reward (optional)</label>
+      <div class="row3">
+        <div><div class="rl">Gems</div><input id="mailGems" class="fi num" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+        <div><div class="rl">Sparks</div><input id="mailCoins" class="fi num" type="number" min="0" step="1" inputmode="decimal" placeholder="0"></div>
+        <div><div class="rl">Stardust</div><input id="mailStar" class="fi num" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <label class="fl" for="mailExpiry">Expires (optional)</label>
+      <input id="mailExpiry" class="fi" type="datetime-local">
+      <div class="note" style="margin:6px 0 0">Leave expiry empty for no expiry — the mail stays until claimed.</div>
+      <button id="mailSend" class="btn gold" style="width:100%;margin-top:18px;padding:12px">Send mail</button>
+      <div id="mailMsg" class="mmsg"></div>
     </div>
   </div>
 </div>
@@ -309,7 +349,7 @@ function renderAccounts(list){
         <div class="stat"><div class="k">Snapshots</div><div class="v num">${fmtInt(a.history)}</div></div>
       </div>
       <div class="foot"><span>Last save ${esc(ago(a.updated_at))}</span><span>Seen ${esc(ago(a.last_seen))}</span></div>
-      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button>${a.banned?('<button class="btn sm" onclick="doUnban(\''+esc(a.user_id)+'\')">Unban</button>'):('<button class="btn sm danger" onclick="doBan(\''+esc(a.user_id)+'\')">Ban…</button>')}</div>
+      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button><button class="btn sm" onclick="openMail('${esc(a.user_id)}')">Mail…</button>${a.banned?('<button class="btn sm" onclick="doUnban(\''+esc(a.user_id)+'\')">Unban</button>'):('<button class="btn sm danger" onclick="doBan(\''+esc(a.user_id)+'\')">Ban…</button>')}</div>
     </div>`;
   }).join('');
   box.innerHTML='<div class="grid">'+cards+'</div>';
@@ -393,7 +433,7 @@ async function doRestore(uid,id){
 }
 
 document.getElementById('restoreModal').addEventListener('click',e=>{ if(e.target===document.getElementById('restoreModal')) closeRestore(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeRestore(); closeRes(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeRestore(); closeRes(); closeMail(); } });
 
 let RES_UID=null;
 function openRes(uid){
@@ -446,6 +486,59 @@ async function doUnban(uid){
     toast('Unbanned'); refreshView();
   }catch(e){ toast('Network error'); }
 }
+
+function openMail(uid){
+  $('mailScope').value = uid?'user':'broadcast';
+  $('mailTarget').value = uid||'';
+  $('mailTargetRow').style.display = uid?'':'none';
+  $('mailTitleIn').value=''; $('mailBody').value='';
+  $('mailGems').value=''; $('mailCoins').value=''; $('mailStar').value='';
+  $('mailExpiry').value='';
+  $('mailMsg').textContent=''; $('mailMsg').className='mmsg';
+  $('mailModal').classList.add('open');
+  setTimeout(function(){ try{ (uid?$('mailTitleIn'):$('mailTitleIn')).focus(); }catch(e){} },60);
+}
+function closeMail(){ $('mailModal').classList.remove('open'); }
+$('mailScope').addEventListener('change',function(){ $('mailTargetRow').style.display = (this.value==='user')?'':'none'; });
+$('composeMail').onclick=function(){ openMail(); };
+document.getElementById('mailModal').addEventListener('click',e=>{ if(e.target===document.getElementById('mailModal')) closeMail(); });
+
+function mailReadReward(){
+  const out={};
+  const fields=[['mailGems','gems','Gems'],['mailCoins','coins','Sparks'],['mailStar','stardust','Stardust']];
+  for(const [id,key,label] of fields){
+    const raw=$(id).value;
+    if(raw!==''){ const n=Number(raw); if(!isFinite(n)||n<0){ return {err:label+' must be 0 or higher.'}; } if(n>0) out[key]=Math.floor(n); }
+  }
+  return {reward: Object.keys(out).length?out:null};
+}
+async function sendMail(){
+  const scope=$('mailScope').value;
+  const target=$('mailTarget').value.trim();
+  const title=$('mailTitleIn').value.trim();
+  const body=$('mailBody').value;
+  const msg=$('mailMsg'); msg.className='mmsg';
+  if(!title){ msg.className='mmsg err'; msg.textContent='Title is required.'; return; }
+  if(scope==='user' && !target){ msg.className='mmsg err'; msg.textContent='Paste a player user ID, or switch to All players.'; return; }
+  const rr=mailReadReward();
+  if(rr.err){ msg.className='mmsg err'; msg.textContent=rr.err; return; }
+  const rewardArg=rr.reward;
+  let expiresArg=null;
+  const ev=$('mailExpiry').value;
+  if(ev){ const d=new Date(ev); if(isNaN(d.getTime())){ msg.className='mmsg err'; msg.textContent='Invalid expiry date.'; return; } expiresArg=d.toISOString(); }
+  const who = scope==='broadcast' ? 'ALL players' : ('player '+target);
+  const rewardTxt = rewardArg ? (' with reward '+JSON.stringify(rewardArg)) : ' (no reward)';
+  if(!confirm('Send this mail to '+who+rewardTxt+'?')) return;
+  msg.className='mmsg'; msg.textContent='Sending…';
+  try{
+    const {data,error}=await sb.rpc('pp_admin_send_mail',{p_scope:scope,p_target:scope==='user'?target:null,p_title:title,p_body:body,p_reward:rewardArg,p_expires_at:expiresArg});
+    if(error){ msg.className='mmsg err'; msg.textContent=error.message||'Send failed.'; return; }
+    if(!data||data.ok!==true){ msg.className='mmsg err'; msg.textContent='Send failed: '+esc((data&&data.error)||'unknown')+((data&&data.field)?(' ('+esc(data.field)+')'):''); return; }
+    msg.className='mmsg ok'; msg.textContent='Sent! Mail #'+data.id+' is now in players\u2019 inboxes.';
+    setTimeout(closeMail,1500);
+  }catch(e){ msg.className='mmsg err'; msg.textContent='Network error.'; }
+}
+$('mailSend').onclick=sendMail;
 
 async function boot(){
   // Avgör nuvarande läge: utloggad → gate; inloggad icke-admin → denied; admin → panel.
