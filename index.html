@@ -726,7 +726,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-parts{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
 .pc2-parts i{position:absolute;bottom:-6px;width:4px;height:4px;border-radius:50%;background:var(--rc);box-shadow:0 0 5px var(--rc);opacity:0;animation:pc2part 3.8s linear infinite;}
 @keyframes pc2part{0%{transform:translateY(0) scale(.5);opacity:0}14%{opacity:.9}82%{opacity:.65}100%{transform:translateY(-150px) scale(1);opacity:0}}
-.pc2-skim{position:absolute;top:-18%;bottom:-18%;left:0;width:62%;z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:.5;background:linear-gradient(90deg,transparent 0%,var(--rc) 28%,rgba(255,255,255,0.92) 50%,var(--rc) 72%,transparent 100%);transform:translateX(-180%) skewX(-13deg);animation:pc2skim var(--sd,4.6s) linear infinite;animation-delay:var(--d,0s);}
+.pc2-skim{position:absolute;top:-18%;bottom:-18%;left:0;width:var(--sw,62%);z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:var(--so,.5);background:linear-gradient(90deg,transparent 0%,var(--rc) 28%,rgba(255,255,255,0.92) 50%,var(--rc) 72%,transparent 100%);transform:translateX(-180%) skewX(-13deg);animation:pc2skim var(--sd,4.6s) linear infinite;animation-delay:var(--d,0s);}
 @keyframes pc2skim{0%{transform:translateX(-180%) skewX(-13deg)}52%,100%{transform:translateX(340%) skewX(-13deg)}}
 .pc2-lvl{position:absolute;top:5px;right:5px;z-index:5;font-size:0.62rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:7px;padding:2px 7px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
 .pc2-act{position:absolute;top:5px;left:5px;z-index:5;font-size:0.66rem;background:var(--gold);color:#0b1530;border-radius:6px;padding:0 4px;font-weight:900;line-height:1.35;}
@@ -3882,6 +3882,8 @@ function renderPets(){
     var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
     var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
     var FX_PN=[0,0,0,3,4,5,5,6,6,7];
+    var FX_SW=[62,62,82,80,76,72,68,64,60,56];
+    var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
     html+='<div class="pet-grid">';
     sorted.forEach(function(pet,idx){
       var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
@@ -3891,7 +3893,7 @@ function renderPets(){
       var emoji=pet.e||'\ud83d\udc3e';
       var dly=((idx%7)*0.55).toFixed(2)+'s';
       var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'');
-      var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--d:'+dly;
+      var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
       html+='<div class="'+cls+'" style="'+sv+'" onclick="openPetDetail(\''+pet.uid+'\')">';
       // World-BG (cover) + mörk shade för läsbarhet
       if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
@@ -5865,7 +5867,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.62<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.63<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
