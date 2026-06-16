@@ -782,8 +782,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes hatchSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes hatchSpinRev{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 @keyframes hatchPulse{0%,100%{opacity:0.5;}50%{opacity:0.9;}}
-.hatch-pet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;font-size:min(50vw,185px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn 0.5s ease;}
-.hatch-pet .hpe{display:block;line-height:1;}
+.hatch-pet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;width:min(50vw,185px);height:min(50vw,185px);font-size:min(50vw,185px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn 0.5s ease;}
+.hatch-pet .hpe{display:flex;align-items:center;justify-content:center;width:100%;height:100%;line-height:1;}
 .hatch-pet .hpi{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:none;}
 .hatch-pet .hpi.on{display:block;}
 .hatch-top{position:absolute;left:0;right:0;top:3.2%;z-index:5;text-align:center;padding:0 14px;}
@@ -5801,7 +5801,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.56<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.57<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8189,7 +8189,7 @@ function collectHatch(idx){
   if(isEventEgg&&pet.evid){ensureEventState();if(!G.event.petsOwned[pet.evid]){G.event.petsOwned[pet.evid]=true;G.event.eggMisses=0;}else{G.event.eggMisses=(G.event.eggMisses||0)+1;}}
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
-  playSfx('hatch');buzz([12,40,18]);
+  buzz([12,40,18]);
   showPetResult(pet);
   renderHatchery();
 }
