@@ -707,25 +707,39 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-sort-btn{flex:1;padding:5px 4px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
 .pet-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
 .pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
-/* ── PET CARD v6.59 (rarity-färgad ram/glow/skimmer, stor djurbild, 3 per rad) ── */
-.pc2{--rc:#888;position:relative;display:flex;flex-direction:column;border-radius:14px;padding:7px 6px 8px;cursor:pointer;overflow:hidden;border:2px solid var(--rc);background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(8,14,34,0.92));box-shadow:0 0 11px -3px var(--rc),inset 0 0 18px -10px var(--rc);transition:transform .12s;}
+/* ── PET CARD v6.60 (rarity-stege: glow/aura/skimmer/strålkrans/partiklar + world-BG) ── */
+.pc2{--rc:#888;--gl:0px;--au:0;position:relative;display:flex;flex-direction:column;aspect-ratio:2/3;border-radius:14px;padding:7px 6px 8px;cursor:pointer;overflow:hidden;border:2px solid var(--rc);background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(8,14,34,0.92));box-shadow:0 0 var(--gl) -3px var(--rc);transition:transform .12s;}
 .pc2:active{transform:scale(0.97);}
-.pc2.equipped{box-shadow:0 0 14px -2px var(--rc),inset 0 0 0 1px #f5c842;}
-.pc2-skim{position:absolute;inset:-2px;border-radius:15px;pointer-events:none;z-index:4;background:linear-gradient(115deg,transparent 40%,var(--rc) 47%,#fff 50%,var(--rc) 53%,transparent 60%);background-size:260% 100%;opacity:.4;mix-blend-mode:screen;animation:pc2skim 4.6s linear infinite;}
-@keyframes pc2skim{0%{background-position:130% 0}100%{background-position:-70% 0}}
+.pc2.fx0{border-color:#cfd4df;}
+.pc2.equipped{box-shadow:0 0 var(--gl) -3px var(--rc),inset 0 0 0 2px #f5c842;}
+.pc2-bg{position:absolute;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;}
+.pc2-bgshade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(6,11,28,0.5) 0%,rgba(6,11,28,0.12) 36%,rgba(6,11,28,0.8) 100%);}
+.pc2-aura{position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:13px;box-shadow:inset 0 0 20px -3px var(--rc);opacity:var(--au);}
+.pc2.fxpulse .pc2-aura{animation:pc2aura 2.8s ease-in-out infinite;animation-delay:var(--d,0s);}
+@keyframes pc2aura{0%,100%{opacity:calc(var(--au)*0.4)}50%{opacity:var(--au)}}
+.pc2-rays{position:absolute;left:50%;top:46%;width:170%;height:170%;z-index:1;pointer-events:none;transform:translate(-50%,-50%);background:repeating-conic-gradient(from 0deg,var(--rc) 0deg 5deg,transparent 5deg 17deg);-webkit-mask:radial-gradient(circle,#000 16%,transparent 60%);mask:radial-gradient(circle,#000 16%,transparent 60%);opacity:.2;animation:pc2spin 15s linear infinite;}
+@keyframes pc2spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.pc2.fx5 .pc2-rays,.pc2.fx6 .pc2-rays{opacity:.26;animation-duration:12s;}
+.pc2.fx7 .pc2-rays,.pc2.fx8 .pc2-rays{opacity:.3;animation-duration:10s;}
+.pc2.fx9 .pc2-rays{opacity:.36;animation-duration:8s;}
+.pc2-glow{position:absolute;left:50%;top:50%;width:86%;height:74%;transform:translate(-50%,-50%);z-index:1;border-radius:50%;background:radial-gradient(circle,var(--rc),transparent 66%);opacity:.45;filter:blur(5px);pointer-events:none;}
+.pc2-parts{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
+.pc2-parts i{position:absolute;bottom:-6px;width:4px;height:4px;border-radius:50%;background:var(--rc);box-shadow:0 0 5px var(--rc);opacity:0;animation:pc2part 3.8s linear infinite;}
+@keyframes pc2part{0%{transform:translateY(0) scale(.5);opacity:0}14%{opacity:.9}82%{opacity:.65}100%{transform:translateY(-150px) scale(1);opacity:0}}
+.pc2-skim{position:absolute;top:-12%;left:0;width:42%;height:124%;z-index:4;pointer-events:none;background:linear-gradient(105deg,transparent 30%,var(--rc) 44%,rgba(255,255,255,0.85) 50%,var(--rc) 56%,transparent 70%);transform:translateX(-170%) skewX(-15deg);opacity:.5;animation:pc2skim var(--sd,4.6s) linear infinite;animation-delay:var(--d,0s);}
+@keyframes pc2skim{0%{transform:translateX(-170%) skewX(-15deg)}55%,100%{transform:translateX(380%) skewX(-15deg)}}
 .pc2-lvl{position:absolute;top:5px;right:5px;z-index:5;font-size:0.5rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:6px;padding:1px 4px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
 .pc2-act{position:absolute;top:5px;left:5px;z-index:5;font-size:0.6rem;background:var(--gold);color:#0b1530;border-radius:6px;padding:0 3px;font-weight:900;line-height:1.3;}
-.pc2-head{position:relative;z-index:2;padding-right:32px;min-height:24px;}
-.pc2-name{font-family:'Fredoka One',cursive;font-size:0.62rem;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pc2-rarity{font-size:0.55rem;font-weight:900;margin-top:1px;}
-.pc2-art{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center;min-height:80px;margin:3px 0 5px;}
-.pc2-glow{position:absolute;width:88%;height:88%;border-radius:50%;background:radial-gradient(circle,var(--rc),transparent 66%);opacity:.5;filter:blur(5px);}
-.pc2-img{position:relative;width:100%;height:100%;max-height:94px;object-fit:contain;filter:drop-shadow(0 0 6px var(--rc));}
-.pc2-emoji{position:absolute;font-size:2.8rem;}
-.pc2-abils{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:3px 4px;margin-bottom:6px;}
-.pc2-ab{display:inline-flex;align-items:center;gap:2px;font-size:0.5rem;font-weight:800;color:rgba(255,255,255,0.88);background:rgba(0,0,0,0.32);border-radius:6px;padding:1px 4px;white-space:nowrap;}
-.pc2-ab .abil-img{width:11px;height:11px;}
-.pc2-xp{position:relative;z-index:2;height:5px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(122,90,208,0.3);}
+.pc2-head{position:relative;z-index:3;padding-right:32px;min-height:24px;}
+.pc2-name{font-family:'Fredoka One',cursive;font-size:0.62rem;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
+.pc2-rarity{font-size:0.55rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
+.pc2-art{position:relative;z-index:3;flex:1;display:flex;align-items:center;justify-content:center;min-height:56px;margin:3px 0 5px;}
+.pc2-img{position:relative;width:100%;height:100%;max-height:96px;object-fit:contain;filter:drop-shadow(0 0 6px var(--rc));}
+.pc2-emoji{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:2.8rem;}
+.pc2-abils{position:relative;z-index:3;display:flex;flex-wrap:wrap;justify-content:center;gap:2px 3px;margin-bottom:6px;}
+.pc2-ab{display:inline-flex;align-items:center;gap:2px;font-size:0.46rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.5);border-radius:5px;padding:1px 3px;white-space:nowrap;}
+.pc2-ab .abil-img{width:10px;height:10px;}
+.pc2-xp{position:relative;z-index:3;height:5px;background:rgba(0,0,0,0.5);border-radius:4px;overflow:hidden;border:1px solid rgba(122,90,208,0.4);}
 .pc2-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:4px;transition:width 0.4s ease;}
 .pet-card{border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
 .pet-card::before{content:'';position:absolute;inset:0;opacity:0.08;pointer-events:none;}
@@ -2651,6 +2665,7 @@ function generatePet(eggId){
 // Bilden skalar med textstorleken (1em) sa den passar dar emojin tidigare stod.
 function petSlug(name){return String(name||'').toLowerCase().trim().replace(/\s+/g,'-');}
 function petImgUrl(world,name){return ASSET_BASE+'/assets/pets/'+world+'/'+petSlug(name)+'.png';}
+function petBgUrl(world){return ASSET_BASE+'/assets/pets/'+world+'/card-bg.png';}
 function petIco(pet,worldOverride){
   if(!pet)return '\ud83d\udc3e';
   var world=worldOverride||pet.world||'';
@@ -3860,26 +3875,54 @@ function renderPets(){
   if(sorted.length===0){
     html+='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
   } else {
+    var FX_GL=[0,8,10,12,14,17,19,22,26,32];
+    var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
+    var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
+    var FX_PN=[0,0,0,3,4,5,5,6,6,7];
     html+='<div class="pet-grid">';
-    sorted.forEach(function(pet){
+    sorted.forEach(function(pet,idx){
       var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+      var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
       var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
       var lp=petXpProgress(pet);
       var emoji=pet.e||'\ud83d\udc3e';
-      // Stor djurbild med emoji-fallback (emoji visas tills PNG laddats; behålls om bilden saknas)
+      var dly=((idx%7)*0.55).toFixed(2)+'s';
+      var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'');
+      var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--d:'+dly;
+      html+='<div class="'+cls+'" style="'+sv+'" onclick="openPetDetail(\''+pet.uid+'\')">';
+      // World-BG (cover) + mörk shade för läsbarhet
+      if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
+      html+='<div class="pc2-bgshade"></div>';
+      // Aura (uncommon+), pulsar för rare+
+      if(fx>=1)html+='<div class="pc2-aura"></div>';
+      // Bakom djuret: mjuk glow (1-3) eller roterande strålkrans (legendary+)
+      if(fx>=4)html+='<div class="pc2-rays"></div>';
+      else if(fx>=1)html+='<div class="pc2-glow"></div>';
+      // Partiklar (epic+)
+      if(FX_PN[fx]>0){
+        html+='<div class="pc2-parts">';
+        var pn=FX_PN[fx];
+        for(var pi=0;pi<pn;pi++){
+          var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
+          var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
+          html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
+        }
+        html+='</div>';
+      }
+      // Skimmer (rare+)
+      if(fx>=2)html+='<div class="pc2-skim"></div>';
+      html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
+      if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
+      html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
+      html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
+      // Stor djurbild med emoji-fallback
       var artHtml;
       if(pet.world){
         artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
       } else {
         artHtml='<span class="pc2-emoji">'+emoji+'</span>';
       }
-      html+='<div class="pc2'+(isEquipped?' equipped':'')+'" style="--rc:'+rc.color+'" onclick="openPetDetail(\''+pet.uid+'\')">';
-      html+='<div class="pc2-skim"></div>';
-      html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
-      if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
-      html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
-      html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
-      html+='<div class="pc2-art"><div class="pc2-glow"></div>'+artHtml+'</div>';
+      html+='<div class="pc2-art">'+artHtml+'</div>';
       html+='<div class="pc2-abils">';
       pet.abilities.forEach(function(ab){
         if(!ABILITY_META[ab.id])return;
@@ -5816,7 +5859,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.59<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.60<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
