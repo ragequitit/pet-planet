@@ -726,8 +726,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-parts{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
 .pc2-parts i{position:absolute;bottom:-6px;width:4px;height:4px;border-radius:50%;background:var(--rc);box-shadow:0 0 5px var(--rc);opacity:0;animation:pc2part 3.8s linear infinite;}
 @keyframes pc2part{0%{transform:translateY(0) scale(.5);opacity:0}14%{opacity:.9}82%{opacity:.65}100%{transform:translateY(-150px) scale(1);opacity:0}}
-.pc2-skim{position:absolute;inset:-2px;z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:.55;background:linear-gradient(115deg,transparent 38%,var(--rc) 46%,rgba(255,255,255,0.95) 50%,var(--rc) 54%,transparent 62%);transform:translateX(-100%);animation:pc2skim var(--sd,4.6s) linear infinite;animation-delay:var(--d,0s);}
-@keyframes pc2skim{0%{transform:translateX(-100%)}55%,100%{transform:translateX(100%)}}
+.pc2-skim{position:absolute;top:-18%;bottom:-18%;left:0;width:62%;z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:.5;background:linear-gradient(90deg,transparent 0%,var(--rc) 28%,rgba(255,255,255,0.92) 50%,var(--rc) 72%,transparent 100%);transform:translateX(-180%) skewX(-13deg);animation:pc2skim var(--sd,4.6s) linear infinite;animation-delay:var(--d,0s);}
+@keyframes pc2skim{0%{transform:translateX(-180%) skewX(-13deg)}52%,100%{transform:translateX(340%) skewX(-13deg)}}
 .pc2-lvl{position:absolute;top:5px;right:5px;z-index:5;font-size:0.62rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:7px;padding:2px 7px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
 .pc2-act{position:absolute;top:5px;left:5px;z-index:5;font-size:0.66rem;background:var(--gold);color:#0b1530;border-radius:6px;padding:0 4px;font-weight:900;line-height:1.35;}
 .pc2-head{position:relative;z-index:3;padding-right:40px;min-height:26px;}
@@ -5865,7 +5865,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.61<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.62<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
