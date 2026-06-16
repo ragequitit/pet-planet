@@ -706,7 +706,27 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-sort-row{display:flex;gap:4px;margin-bottom:10px;}
 .pet-sort-btn{flex:1;padding:5px 4px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
 .pet-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
-.pet-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+/* ── PET CARD v6.59 (rarity-färgad ram/glow/skimmer, stor djurbild, 3 per rad) ── */
+.pc2{--rc:#888;position:relative;display:flex;flex-direction:column;border-radius:14px;padding:7px 6px 8px;cursor:pointer;overflow:hidden;border:2px solid var(--rc);background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(8,14,34,0.92));box-shadow:0 0 11px -3px var(--rc),inset 0 0 18px -10px var(--rc);transition:transform .12s;}
+.pc2:active{transform:scale(0.97);}
+.pc2.equipped{box-shadow:0 0 14px -2px var(--rc),inset 0 0 0 1px #f5c842;}
+.pc2-skim{position:absolute;inset:-2px;border-radius:15px;pointer-events:none;z-index:4;background:linear-gradient(115deg,transparent 40%,var(--rc) 47%,#fff 50%,var(--rc) 53%,transparent 60%);background-size:260% 100%;opacity:.4;mix-blend-mode:screen;animation:pc2skim 4.6s linear infinite;}
+@keyframes pc2skim{0%{background-position:130% 0}100%{background-position:-70% 0}}
+.pc2-lvl{position:absolute;top:5px;right:5px;z-index:5;font-size:0.5rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:6px;padding:1px 4px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
+.pc2-act{position:absolute;top:5px;left:5px;z-index:5;font-size:0.6rem;background:var(--gold);color:#0b1530;border-radius:6px;padding:0 3px;font-weight:900;line-height:1.3;}
+.pc2-head{position:relative;z-index:2;padding-right:32px;min-height:24px;}
+.pc2-name{font-family:'Fredoka One',cursive;font-size:0.62rem;color:#fff;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pc2-rarity{font-size:0.55rem;font-weight:900;margin-top:1px;}
+.pc2-art{position:relative;z-index:2;flex:1;display:flex;align-items:center;justify-content:center;min-height:80px;margin:3px 0 5px;}
+.pc2-glow{position:absolute;width:88%;height:88%;border-radius:50%;background:radial-gradient(circle,var(--rc),transparent 66%);opacity:.5;filter:blur(5px);}
+.pc2-img{position:relative;width:100%;height:100%;max-height:94px;object-fit:contain;filter:drop-shadow(0 0 6px var(--rc));}
+.pc2-emoji{position:absolute;font-size:2.8rem;}
+.pc2-abils{position:relative;z-index:2;display:flex;flex-wrap:wrap;justify-content:center;gap:3px 4px;margin-bottom:6px;}
+.pc2-ab{display:inline-flex;align-items:center;gap:2px;font-size:0.5rem;font-weight:800;color:rgba(255,255,255,0.88);background:rgba(0,0,0,0.32);border-radius:6px;padding:1px 4px;white-space:nowrap;}
+.pc2-ab .abil-img{width:11px;height:11px;}
+.pc2-xp{position:relative;z-index:2;height:5px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(122,90,208,0.3);}
+.pc2-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:4px;transition:width 0.4s ease;}
 .pet-card{border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
 .pet-card::before{content:'';position:absolute;inset:0;opacity:0.08;pointer-events:none;}
 .pet-card:active{transform:scale(0.97);}
@@ -3844,31 +3864,29 @@ function renderPets(){
     sorted.forEach(function(pet){
       var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
       var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
-      var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
-      // Bakgrundsfärg baserad på raritet
-      var bgColor='rgba(27,45,78,0.5)';
-      var borderColor=rc.color+'55';
-      var shaderColor=rc.color+'18';
-      if(isEquipped){borderColor='#f5c842';}
-      html+='<div class="pet-card'+(isEquipped?' equipped':'')+'" onclick="openPetDetail(\''+pet.uid+'\')" style="background:linear-gradient(135deg,'+shaderColor+',rgba(12,21,48,0.8));border-color:'+borderColor+';">';
-      // Raritetsfärgad stripe längst upp
-      html+='<div style="position:absolute;top:0;left:0;right:0;height:3px;background:'+rc.color+';border-radius:12px 12px 0 0;opacity:0.8;"></div>';
       var lp=petXpProgress(pet);
-      html+='<div class="pet-card-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
-      html+='<div class="pet-card-top">';
-      html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+petIco(pet)+'</div>';
-      html+='<div class="pet-card-info"><div class="pet-card-name">'+pet.name+'</div>';
-      html+='<div class="pet-card-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
-      html+='<div class="pet-card-world">'+eggInfo.icon+' '+eggInfo.name+'</div>';
-      if(isEquipped)html+='<div class="equipped-badge">⚡ Active</div>';
-      html+='</div></div>';
-      html+='<div class="pet-abilities">';
+      var emoji=pet.e||'\ud83d\udc3e';
+      // Stor djurbild med emoji-fallback (emoji visas tills PNG laddats; behålls om bilden saknas)
+      var artHtml;
+      if(pet.world){
+        artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
+      } else {
+        artHtml='<span class="pc2-emoji">'+emoji+'</span>';
+      }
+      html+='<div class="pc2'+(isEquipped?' equipped':'')+'" style="--rc:'+rc.color+'" onclick="openPetDetail(\''+pet.uid+'\')">';
+      html+='<div class="pc2-skim"></div>';
+      html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
+      if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
+      html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
+      html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
+      html+='<div class="pc2-art"><div class="pc2-glow"></div>'+artHtml+'</div>';
+      html+='<div class="pc2-abils">';
       pet.abilities.forEach(function(ab){
-        var m=ABILITY_META[ab.id];if(!m)return;
-        html+='<div class="pet-ability-row"><span class="pa-icon">'+abilityIconImg(ab.id)+'</span><span class="pa-name">'+m.name+'</span><span class="pa-tier" style="color:'+m.color+'">T'+ab.tier+'</span><span class="pa-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+        if(!ABILITY_META[ab.id])return;
+        html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'+'+TIER_VALUES[ab.tier]+'%</span>';
       });
       html+='</div>';
-      html+='<div class="pc-xp"><div class="pc-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div></div>';
+      html+='<div class="pc2-xp"><div class="pc2-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div></div>';
       html+='</div>';
     });
     html+='</div>';
@@ -5798,7 +5816,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.58<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.59<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
