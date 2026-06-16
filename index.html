@@ -2581,8 +2581,17 @@ function generatePet(eggId){
   };
 }
 
-// ============================================================
-// COMPUTE ACTIVE PET BONUSES
+// ── PET-BILDER: custom-PNG per pet i assets/pets/<world>/<namn>.png, med emoji som reserv.
+// Bilden skalar med textstorleken (1em) sa den passar dar emojin tidigare stod.
+function petSlug(name){return String(name||'').toLowerCase().trim().replace(/\s+/g,'-');}
+function petImgUrl(world,name){return ASSET_BASE+'/assets/pets/'+world+'/'+petSlug(name)+'.png';}
+function petIco(pet,worldOverride){
+  if(!pet)return '\ud83d\udc3e';
+  var world=worldOverride||pet.world||'';
+  var emoji=pet.e||'\ud83d\udc3e';
+  if(!world)return emoji; // ingen varld kand -> bara emoji
+  return '<img src="'+petImgUrl(world,pet.name)+'" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';
+}
 // ============================================================
 function getActiveBonuses(){
   var bonuses={coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0};
@@ -3112,7 +3121,7 @@ function openAdvPicker(advId){
       }).join('');
       var oddsLine='<div class="app-odds"><span class="app-odds-lbl">BONUS</span>'+oddsHtml+(ec.aff?' <span class="app-aff-tag">🎯 Affinity!</span>':'')+'</div>';
       html+='<div class="adv-pick-pet'+(ok?'':' locked')+'"'+(ok?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
-      html+='<div class="app-emoji">'+p.e+'</div>';
+      html+='<div class="app-emoji">'+petIco(p)+'</div>';
       html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'</div>';
       html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
       html+=(ok?'<div class="app-go">Send →</div>':'<div class="app-lock">Needs<br>Lv '+req+'</div>')+'</div>';
@@ -3199,7 +3208,7 @@ function renderAdventure(){
     html+='<div class="adv-recpets">';
     var recs=[];var pool=PET_POOL[sel.affinity];
     Object.keys(pool).forEach(function(r){pool[r].forEach(function(sp){if(recs.length<6)recs.push(sp);});});
-    recs.forEach(function(sp){html+='<div class="adv-recpet"><span class="arp-e">'+sp.e+'</span><span class="arp-n">'+sp.name+'</span></div>';});
+    recs.forEach(function(sp){html+='<div class="adv-recpet"><span class="arp-e">'+petIco(sp,sel.affinity)+'</span><span class="arp-n">'+sp.name+'</span></div>';});
     html+='</div>';
   }
   var selBusy=isAdvActive(sel.id);
@@ -3644,7 +3653,7 @@ function renderSlotRow(){
     var petUid=G.equippedPets[i];
     var pet=petUid?G.hatchedPets.find(function(p){return p.uid===petUid;}):null;
     if(unlocked){
-      inner.innerHTML=pet?('<span style="font-size:1.3rem">'+pet.e+'</span>'):'<span style="font-size:0.7rem;opacity:0.4">+</span>';
+      inner.innerHTML=pet?('<span style="font-size:1.3rem">'+petIco(pet)+'</span>'):'<span style="font-size:0.7rem;opacity:0.4">+</span>';
       (function(idx){d.onclick=function(ev){ev.stopPropagation();openPetSlotModal(idx);};})(i);
     } else if(i===G.petSlots){
       // Nästa slot i tur: klickbar för att låsas upp
@@ -3673,7 +3682,7 @@ function openPetSlotModal(idx){
     var cur=document.createElement('div');cur.className='slot-current';
     cur.innerHTML=
       '<div class="slot-current-head">'+
-        '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+curPet.e+'</div>'+
+        '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+petIco(curPet)+'</div>'+
         '<div class="pet-option-info"><div class="pet-option-name">'+curPet.name+'</div>'+
           '<div class="pet-option-rarity" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div></div>'+
         '<div class="slot-current-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
@@ -3699,7 +3708,7 @@ function openPetSlotModal(idx){
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
     var d=document.createElement('div');d.className='pet-option';
     var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+' T'+a.tier:'';}).join(' ');
-    d.innerHTML='<div class="pet-option-icon">'+pet.e+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
+    d.innerHTML='<div class="pet-option-icon">'+petIco(pet)+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
     d.onclick=function(){
       // unequip whatever was in this slot
       if(G.equippedPets[activeSlot]){
@@ -3794,7 +3803,7 @@ function renderPets(){
       var lp=petXpProgress(pet);
       html+='<div class="pet-card-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
       html+='<div class="pet-card-top">';
-      html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+pet.e+'</div>';
+      html+='<div class="pet-card-icon" style="background:'+rc.color+'22;">'+petIco(pet)+'</div>';
       html+='<div class="pet-card-info"><div class="pet-card-name">'+pet.name+'</div>';
       html+='<div class="pet-card-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
       html+='<div class="pet-card-world">'+eggInfo.icon+' '+eggInfo.name+'</div>';
@@ -3875,7 +3884,7 @@ function openPetDetail(uid){
   var isEquipped=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
   var html='<div style="text-align:center;margin-bottom:12px;">';
-  html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+pet.e+'</div>';
+  html+='<div style="font-size:3.5rem;margin-bottom:4px;">'+petIco(pet)+'</div>';
   html+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#fff;">'+pet.name+'</div>';
   html+='<div style="color:'+rc.color+';font-size:0.85rem;margin:2px 0;">'+rc.icon+' '+rc.label+'</div>';
   var si=petSourceInfo(pet);
@@ -4092,7 +4101,7 @@ function renderRerollSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="rerollPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Reroll</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
       h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
@@ -4213,7 +4222,7 @@ function renderPetPicker(){
     list.forEach(function(pet){
       var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
       var ab=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+'T'+a.tier:'';}).join(' ');
-      h+='<div class="pp-card" onclick="pickPet(\''+pet.uid+'\')" style="border-color:'+rc.color+'66;background:linear-gradient(135deg,'+rc.color+'18,rgba(12,21,48,0.85));"><div class="pp-emoji">'+pet.e+'</div><div class="pp-name">'+pet.name+'</div><div class="pp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pp-ab">'+ab+'</div></div>';
+      h+='<div class="pp-card" onclick="pickPet(\''+pet.uid+'\')" style="border-color:'+rc.color+'66;background:linear-gradient(135deg,'+rc.color+'18,rgba(12,21,48,0.85));"><div class="pp-emoji">'+petIco(pet)+'</div><div class="pp-name">'+pet.name+'</div><div class="pp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pp-ab">'+ab+'</div></div>';
     });
     h+='</div>';
   }
@@ -4291,7 +4300,7 @@ function renderExtractSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="extractPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;var lk=ab.locked;
       h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
@@ -4363,7 +4372,7 @@ function mutateChamberHtml(i){
   var now=Date.now();var done=now>=c.endAt;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;
   var crc=coreRarityConf(c.coreTier);var m=ABILITY_META[c.coreId]||{icon:'❔',name:'?'};
   var html='<div class="chamber active">';
-  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+c.pet.e+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.pet.name+'</div><div class="ch-extracting" style="color:'+crc.color+'">→ '+m.icon+' '+m.name+' T'+c.coreTier+'</div></div></div>';
+  html+='<div class="ch-top"><div class="ch-platform"><span class="ch-pet">'+petIco(c.pet)+'</span></div><div class="ch-runinfo"><div class="ch-name">'+c.pet.name+'</div><div class="ch-extracting" style="color:'+crc.color+'">→ '+m.icon+' '+m.name+' T'+c.coreTier+'</div></div></div>';
   if(done){html+='<button class="ch-collect green" onclick="collectMutate('+i+')">✅ Collect Pet</button>';}
   else{
     html+='<div class="ch-bar"><div class="ch-fill" id="mufill'+i+'" style="width:'+pct+'%"></div></div>';
@@ -4406,7 +4415,7 @@ function renderMutateSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="mutatePickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+pet.e+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;var lk=ab.locked;
       h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
@@ -5118,7 +5127,7 @@ function ltMyOfferInfo(){return LIVE.me.map(function(id){var p=(G.hatchedPets||[
 function ltOfferBox(title,pets,locked){
   var h='<div class="lt-offer'+(locked?' locked':'')+'"><div class="lt-offer-title"><span>'+title+'</span>'+(locked?'<span class="lt-lock-badge">🔒 locked</span>':'')+'</div><div class="lt-offer-pets">';
   if(!pets||!pets.length)h+='<div class="lt-empty">—</div>';
-  else pets.forEach(function(p){h+='<div class="lt-mini"><div class="lt-mini-em">'+(p.e||'🐾')+'</div><div class="lt-mini-nm">'+(p.name||'')+'</div></div>';});
+  else pets.forEach(function(p){h+='<div class="lt-mini"><div class="lt-mini-em">'+(petIco(p)||'🐾')+'</div><div class="lt-mini-nm">'+(p.name||'')+'</div></div>';});
   return h+'</div></div>';
 }
 function renderLive(){
@@ -5145,7 +5154,7 @@ function renderLive(){
     var sel=LIVE.me.indexOf(p.pet_id)>=0;var rc=RARITY_CONFIG[p.rarity]||{};
     var cls='trd-pet'+(sel?' sel':'')+(LIVE.myLocked?' pending':'');
     var click=LIVE.myLocked?'':' onclick="ltToggle(\''+p.pet_id+'\')"';
-    h+='<div class="'+cls+'"'+click+'><div class="trd-pet-em">'+(p.e||'🐾')+'</div><div class="trd-pet-nm">'+(p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||p.rarity||'')+'</div>'+(sel?'<div class="trd-pet-check">✓</div>':'')+'</div>';
+    h+='<div class="'+cls+'"'+click+'><div class="trd-pet-em">'+(petIco(p)||'🐾')+'</div><div class="trd-pet-nm">'+(p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||p.rarity||'')+'</div>'+(sel?'<div class="trd-pet-check">✓</div>':'')+'</div>';
   });h+='</div>';}
   if(LIVE.myLocked)h+='<button class="trd-btn dim" onclick="ltUnlock()">Unlock</button>';
   else h+='<button class="trd-btn" onclick="ltLock()">Lock in'+(LIVE.me.length?(' ('+LIVE.me.length+')'):'')+'</button>';
@@ -5292,7 +5301,7 @@ function tradePetChip(p,selMap,fn){
   var cls='trd-pet'+(sel?' sel':'')+(pending?' pending':'');
   var click=pending?'':' onclick="'+fn+'(\''+p.pet_id+'\')"';
   return '<div class="'+cls+'"'+click+'>'+
-    '<div class="trd-pet-em">'+(p.e||'\ud83d\udc3e')+'</div>'+
+    '<div class="trd-pet-em">'+(petIco(p)||'\ud83d\udc3e')+'</div>'+
     '<div class="trd-pet-nm">'+(p.name||'Pet')+'</div>'+
     '<div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||p.rarity||'')+(p.level?(' \u00b7 Lv'+p.level):'')+'</div>'+
     (pending?'<div class="trd-pet-tag">syncing\u2026</div>':'')+
@@ -5337,7 +5346,7 @@ function renderTrading(){
         h+='<div class="trd-sec-title">They\u2019re offering</div><div class="trd-pets view">';
         (TRADE.view.from_pets||[]).forEach(function(sp){
           var p=sp.data||{};var rc=RARITY_CONFIG[p.rarity]||{};
-          h+='<div class="trd-pet view"><div class="trd-pet-em">'+(p.e||'\ud83d\udc3e')+'</div><div class="trd-pet-nm">'+(sp.name||p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||sp.rarity||'')+'</div></div>';
+          h+='<div class="trd-pet view"><div class="trd-pet-em">'+(petIco(p)||'\ud83d\udc3e')+'</div><div class="trd-pet-nm">'+(sp.name||p.name||'Pet')+'</div><div class="trd-pet-rr" style="color:'+(rc.color||'#aaa')+'">'+(rc.label||sp.rarity||'')+'</div></div>';
         });
         h+='</div>';
         var pets=tradeTradeable();var n=Object.keys(TRADE.take).length;var off=(TRADE.view.from_pets||[]).length;
@@ -5736,7 +5745,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.52<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.53<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -6232,7 +6241,7 @@ function renderProfile(){
 function profDur(s){if(s===null||s===undefined)return '—';s=Math.floor(s);if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m '+(s%60)+'s';if(s<86400)return Math.floor(s/3600)+'h '+Math.floor((s%3600)/60)+'m';return Math.floor(s/86400)+'d '+Math.floor((s%86400)/3600)+'h';}
 function profRarity(id){if(!id)return '<span style="color:rgba(255,255,255,0.35)">—</span>';var rc=RARITY_CONFIG[id];return rc?'<span style="color:'+rc.color+'">'+rc.label+'</span>':profEsc(String(id));}
 function profWorldName(id){if(!id)return '—';var e=EGG_SHOP.find(function(x){return x.id===id;});return e?profEsc(e.name):profEsc(String(id));}
-function profRarestPet(p){if(!p)return '<span style="color:rgba(255,255,255,0.35)">—</span>';var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#fff';return '<span style="color:'+col+'">'+(p.e?p.e+' ':'')+profEsc(p.name||'')+'</span>';}
+function profRarestPet(p){if(!p)return '<span style="color:rgba(255,255,255,0.35)">—</span>';var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#fff';return '<span style="color:'+col+'">'+(p.e?petIco(p)+' ':'')+profEsc(p.name||'')+'</span>';}
 function pstCard(color,icon,title,rows,soon){
   var h='<div class="pst-card'+(soon?' soon':'')+'" style="--cat:'+color+'">';
   h+='<div class="pst-head"><span class="pst-head-icon">'+icon+'</span><span class="pst-head-title">'+title+'</span>'+(soon?'<span class="pst-soon-tag">Not built yet</span>':'')+'</div>';
@@ -6313,7 +6322,7 @@ function renderProfileStats(){
   return h;
 }
 function profFavPet(){if(!G.profile||!G.profile.favoritePet)return null;return G.hatchedPets.find(function(p){return p.uid===G.profile.favoritePet;})||null;}
-function profAvatarInner(){var fp=profFavPet();return (fp&&fp.e)?fp.e:'👤';}
+function profAvatarInner(){var fp=profFavPet();return (fp&&petIco(fp))?petIco(fp):'👤';}
 var profPickerOpen=false;
 function toggleFavPicker(){profPickerOpen=!profPickerOpen;renderProfile();}
 function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();cloudSyncAvatar();renderProfile();}
@@ -6363,7 +6372,7 @@ function renderFavPickerList(){
       var sel=(G.profile&&G.profile.favoritePet===p.uid)?' sel':'';
       var age=petAgeLabel(p);
       h+='<div class="prof-petpick'+sel+'" style="border-color:'+(sel?'var(--gold)':(col+'66'))+'" onclick="pickFav('+JSON.stringify(p.uid)+')">';
-      h+='<div class="prof-petpick-e">'+(p.e||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div>';
+      h+='<div class="prof-petpick-e">'+(petIco(p)||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div>';
       if(age)h+='<div class="favpick-age">'+age+' old</div>';
       h+='</div>';
     });
@@ -6376,7 +6385,7 @@ function renderProfileCustomize(){
   var h='<div class="prof-section-title">Customize</div>';
   var fp=profFavPet();
   var sub=fp?(profEsc(fp.name)+' · '+(RARITY_CONFIG[fp.rarity]?RARITY_CONFIG[fp.rarity].label:fp.rarity)):'None selected — shows as your avatar';
-  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+((fp&&fp.e)?fp.e:'⭐')+'</div>';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+((fp&&petIco(fp))?petIco(fp):'⭐')+'</div>';
   h+='<div class="prof-cz-mid"><div class="prof-cz-lbl">Favorite Pet</div><div class="prof-cz-sub">'+sub+'</div></div>';
   h+='<button class="prof-cz-btn" onclick="toggleFavPicker()">'+(profPickerOpen?'Close':(fp?'Change':'Choose'))+'</button></div>';
   if(profPickerOpen){
@@ -6391,7 +6400,7 @@ function renderProfileCustomize(){
         var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#aaa';
         var sel=(G.profile&&G.profile.favoritePet===p.uid)?' sel':'';
         h+='<div class="prof-petpick'+sel+'" style="border-color:'+(sel?'var(--gold)':(col+'66'))+'" onclick="setFavoritePet('+JSON.stringify(p.uid)+')">';
-        h+='<div class="prof-petpick-e">'+(p.e||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div></div>';
+        h+='<div class="prof-petpick-e">'+(petIco(p)||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div></div>';
       });
       h+='</div>';
       if(fp)h+='<div style="text-align:center;margin-bottom:12px"><button class="prof-cz-btn" style="background:linear-gradient(180deg,#37507f,#243a63);box-shadow:0 2px 0 #16263f" onclick="clearFavoritePet()">Clear favorite</button></div>';
@@ -8049,7 +8058,7 @@ function showEggInfo(eggId){
     var rc=RARITY_CONFIG[rarity];if(!rc)return;
     pool[rarity].forEach(function(pet){
       html+='<div class="egg-info-pet" style="border:1px solid '+rc.color+'44;">';
-      html+='<span>'+pet.e+'</span>';
+      html+='<span>'+petIco(pet,eggId)+'</span>';
       html+='<span style="color:rgba(255,255,255,0.7);">'+pet.name+'</span>';
       html+='</div>';
     });
@@ -8107,7 +8116,7 @@ function collectHatch(idx){
   G.stats.totalPetsCollected++;
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   if(rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.highestRarityOwned))G.stats.highestRarityOwned=pet.rarity;
-  if(!G.stats.rarestPetEverHatched||rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.rarestPetEverHatched.rarity))G.stats.rarestPetEverHatched={name:pet.name,e:pet.e,rarity:pet.rarity};
+  if(!G.stats.rarestPetEverHatched||rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.rarestPetEverHatched.rarity))G.stats.rarestPetEverHatched={name:pet.name,e:pet.e,world:pet.world,rarity:pet.rarity};
   // Tier 5 abilities
   pet.abilities.forEach(function(ab){if(ab.tier===5)G.stats.tier5AbilitiesHatched++;});
   // Duplicate check
@@ -8131,7 +8140,7 @@ function collectHatch(idx){
 function showPetResult(pet){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
-  document.getElementById('pet-result-icon').textContent=pet.e;
+  document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>';
   document.getElementById('pet-result-world').textContent=eggInfo.icon+' '+eggInfo.name;
@@ -8228,7 +8237,7 @@ function getFusionOdds(){
   var total=filled.length;
   return Object.keys(counts).map(function(name){
     var pet=G.hatchedPets.find(function(p){return p.name===name;});
-    return {name:name,e:pet?pet.e:'🐾',pct:Math.round(counts[name]/total*100)};
+    return {name:name,e:pet?pet.e:'🐾',world:pet?pet.world:'',pct:Math.round(counts[name]/total*100)};
   }).sort(function(a,b){return b.pct-a.pct;});
 }
 
@@ -8343,7 +8352,7 @@ function doFusion(){
 
 function showFusionResult(pet,perfect){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-  document.getElementById('pet-result-icon').textContent=pet.e;
+  document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').innerHTML='<span style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</span>'+(perfect?' <span style="color:var(--gold);font-size:0.7rem">⭐ Perfect Fusion!</span>':'');
   document.getElementById('pet-result-world').textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));
@@ -8559,7 +8568,7 @@ function renderFusion(){
     var rc2=slotPet?RARITY_CONFIG[slotPet.rarity]:null;
     if(slotPet){
       html+='<div style="display:flex;align-items:center;gap:4px;background:'+(rc2?rc2.color+'22':'rgba(0,0,0,0.3)')+';border:1.5px solid '+(rc2?rc2.color+'66':'rgba(58,92,184,0.4)')+';border-radius:20px;padding:4px 10px 4px 6px;cursor:pointer;" data-fusion-slot="'+i+'">';
-      html+='<span style="font-size:1.1rem;">'+slotPet.e+'</span>';
+      html+='<span style="font-size:1.1rem;">'+petIco(slotPet)+'</span>';
       html+='<span style="font-size:0.6rem;color:rgba(255,255,255,0.7);">'+slotPet.name+'</span>';
       html+='<span style="font-size:0.55rem;color:rgba(255,100,100,0.8);margin-left:2px;">✕</span>';
       html+='</div>';
@@ -8588,7 +8597,7 @@ function renderFusion(){
       html+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.85rem;color:'+nextRc.color+'">'+nextRc.icon+' '+nextRc.label+'</div>';
       if(ready&&odds.length>0){
         odds.forEach(function(o){
-          html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+o.e+' '+o.name+' · '+o.pct+'%</div>';
+          html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+petIco(o)+' '+o.name+' · '+o.pct+'%</div>';
         });
       }
       html+='</div>';
@@ -8631,7 +8640,7 @@ function renderFusion(){
       var disabled=isFull||wrongRarity;
       html+='<div class="fusion-pet-card'+(isSelected?' selected':disabled?' disabled':'')+'" style="border-color:'+(isSelected?rc4.color+'aa':rc4.color+'33')+';background:'+(isSelected?rc4.color+'15':'rgba(27,45,78,0.5)')+'" data-fusion-pet="'+pet.uid+'">';
       if(isSelected)html+='<div class="fusion-check">✓</div>';
-      html+='<div class="fp-icon">'+pet.e+'</div>';
+      html+='<div class="fp-icon">'+petIco(pet)+'</div>';
       html+='<div class="fp-name">'+pet.name+'</div>';
       html+='<div class="fp-rarity" style="color:'+rc4.color+'">'+rc4.label+'</div>';
       html+='</div>';
@@ -9250,7 +9259,7 @@ function renderPetdexSpecies(){
   var comp=ob.length>0?Math.floor(found.length/ob.length*100):0;
   var h='';
   // Stor bild
-  h+='<div class="pdsp-art">'+meta.e+'</div>';
+  h+='<div class="pdsp-art">'+petIco(meta,pdexSpWorld)+'</div>';
   // Completion
   h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Completion · '+found.length+' / '+ob.length+' rarities</div>';
   h+='<div class="pdsp-compl-bar"><div class="pdsp-compl-fill" style="width:'+comp+'%"></div></div>';
@@ -9268,7 +9277,7 @@ function renderPetdexSpecies(){
   h+='<div class="pdsp-sec"><div class="pdsp-sec-title">Evolution Line</div><div class="pdsp-evo">';
   ob.forEach(function(r){
     var disc=isPetDiscovered(meta.name,r);var rc=RARITY_CONFIG[r]||{};
-    h+='<div class="pdsp-evo-cell"><div class="pdsp-evo-art" style="border-color:'+(disc?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';'+(disc?'':'filter:brightness(0) opacity(0.5);')+'">'+meta.e+'<span class="pdsp-evo-badge" style="background:'+(disc?'#4caf50':'#444')+'">'+(disc?'✓':''+LOCK_IMG+'')+'</span></div>';
+    h+='<div class="pdsp-evo-cell"><div class="pdsp-evo-art" style="border-color:'+(disc?(rc.color||'#888'):'rgba(255,255,255,0.15)')+';'+(disc?'':'filter:brightness(0) opacity(0.5);')+'">'+petIco(meta,pdexSpWorld)+'<span class="pdsp-evo-badge" style="background:'+(disc?'#4caf50':'#444')+'">'+(disc?'✓':''+LOCK_IMG+'')+'</span></div>';
     h+='<div class="pdsp-evo-lbl" style="color:'+(disc?(rc.color||'#aaa'):'rgba(255,255,255,0.4)')+'">'+(rc.label||r)+'</div></div>';
   });
   h+='</div></div>';
@@ -9423,7 +9432,7 @@ function renderPetdex(){
     var comp=found?speciesCompletion(sp.name,sp.native):0;
     html+='<div class="pdx-card '+(found?'found':'undiscovered')+'"'+(found?' onclick="openPetdexSpecies(\''+sp.name+'\',\''+petdexActiveWorld+'\')"':' style="cursor:default"')+'>';
     if(found)html+='<div class="pdx-card-badge">✓</div>';
-    html+='<div class="pdx-card-art">'+sp.e+'</div>';
+    html+='<div class="pdx-card-art">'+petIco(sp)+'</div>';
     html+='<div class="pdx-card-name">'+(found?sp.name:'?????')+'</div>';
     html+='<div class="pdx-card-pct">'+comp+'%</div>';
     html+='</div>';
