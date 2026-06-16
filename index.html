@@ -649,6 +649,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .psub-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;color:#0b1530;box-shadow:0 2px 0 #8a6000;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
 #generic-modal{z-index:1200;}
+#username-modal{z-index:1300;}
 #skin-modal{z-index:1100;}
 .modal-overlay.open{display:flex;}
 .modal-box{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:20px;width:var(--w);max-width:100vw;max-height:75vh;overflow-y:auto;}
@@ -1753,6 +1754,14 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div class="modal-title" id="generic-modal-title" style="margin-bottom:8px;"></div>
     <div id="generic-modal-body" style="font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;white-space:pre-line;"></div>
     <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
+  </div>
+</div>
+<div id="username-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered">
+    <button class="modal-close" onclick="closeUsernameModal()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/random/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    <div style="font-size:2.2rem;margin-bottom:6px;">🏷️</div>
+    <div class="modal-title" id="username-modal-title" style="margin-bottom:14px;">Username</div>
+    <div id="username-modal-body"></div>
   </div>
 </div>
 <div id="redeem-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
@@ -4980,9 +4989,9 @@ function renderFriends(){
   h+='<div class="fr2-hero"><span class="fr2-hero-ic">\ud83d\udc65</span><span class="fr2-hero-tt">FRIENDS</span><div class="fr2-hero-sub">'+(FRIENDS.loaded?(FRIENDS.friendCount+' Friends'):'\u00a0')+'</div></div>';
   if(FRIENDS.msg)h+='<div class="frd-msg '+FRIENDS.msgType+'">'+FRIENDS.msg+'</div>';
   if(!FRIENDS.handle){
-    h+='<div class="fr2-panel"><div class="fr2-ptitle" style="margin-bottom:6px">Choose your username</div>'+
-       '<div class="frd-note" style="margin-bottom:8px">Pick a unique username so friends can find you. 3\u201320 letters, numbers or _.</div>'+
-       '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="username" maxlength="20"><button class="frd-btn sm" onclick="friendSetHandle()">Save</button></div></div>';
+    h+='<div class="fr2-panel"><div class="fr2-ptitle" style="margin-bottom:6px">Set your username</div>'+
+       '<div class="frd-note" style="margin-bottom:10px">Pick a unique username in your Profile so friends can find you.</div>'+
+       '<button class="frd-btn" style="width:100%" onclick="closeFriends();showProfile();openUsernameModal();">Open Profile</button></div>';
     body.innerHTML=h;return;
   }
   var notifs=frNotifList();
@@ -5075,8 +5084,6 @@ function renderFriendAdd(){
   var body=document.getElementById('fradd-body');if(!body)return;
   var h='';
   if(FRIENDS.msg)h+='<div class="frd-msg '+FRIENDS.msgType+'">'+FRIENDS.msg+'</div>';
-  h+='<div class="frd-card"><div class="frd-sec">Your username</div><div class="frd-handle">@'+(FRIENDS.handle||'')+'</div>'+
-     '<div class="frd-row"><input id="frd-handle-input" class="frd-input" placeholder="change username" maxlength="20"><button class="frd-btn sm ghost" onclick="friendSetHandle()">Change</button></div></div>';
   h+='<div class="frd-card"><div class="frd-sec">Find players</div>'+
      '<div class="frd-row"><input id="frd-search-input" class="frd-input" placeholder="search username" maxlength="20"><button class="frd-btn sm" onclick="friendSearch()">Search</button></div>';
   if(FRIENDS.results){
@@ -5729,7 +5736,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.49<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.50<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5860,7 +5867,7 @@ function doRedeem(){
 // ===== PROFILE HUB =====
 var profileSubTab='overview';
 function profEsc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function showProfile(){profileSubTab='overview';renderProfile();document.getElementById('profile-modal').classList.add('open');}
+function showProfile(){profileSubTab='overview';renderProfile();document.getElementById('profile-modal').classList.add('open');ensureHandleLoaded(function(){var pm=document.getElementById('profile-modal');if(pm&&pm.classList.contains('open'))renderProfile();});}
 function closeProfile(){document.getElementById('profile-modal').classList.remove('open');}
 function profileSub(s){profileSubTab=s;renderProfile();}
 function profActiveSince(){var d=new Date(G.stats.firstPlayDate||Date.now());return d.getDate()+'/'+(d.getMonth()+1)+'/'+(d.getFullYear()+'').slice(-2);}
@@ -5898,6 +5905,56 @@ function saveProfileName(){
     return; // spara INTE — input ligger kvar så de kan rätta
   }
   if(!G.profile)G.profile={};G.profile.name=v;saveGame();renderProfile();
+}
+// ── USERNAME (handle) — nu redigerat fran Profile via penna -> popup. Slar ihop player name + handle till ETT namn.
+var USERNAME_MSG='',USERNAME_MSGTYPE='';
+function ensureHandleLoaded(cb){
+  if(!sb||!cloudUser){if(cb)cb();return;}
+  try{
+    sb.from('profiles').select('handle').eq('user_id',cloudUser.id).maybeSingle().then(function(r){
+      FRIENDS.handle=(r&&r.data&&r.data.handle)||'';
+      if(cb)cb();
+    },function(){if(cb)cb();});
+  }catch(e){if(cb)cb();}
+}
+function openUsernameModal(){USERNAME_MSG='';USERNAME_MSGTYPE='';renderUsernameModal();document.getElementById('username-modal').classList.add('open');}
+function closeUsernameModal(){var m=document.getElementById('username-modal');if(m)m.classList.remove('open');}
+function usernameMsg(t,type){USERNAME_MSG=t;USERNAME_MSGTYPE=type||'';renderUsernameModal();}
+function renderUsernameModal(){
+  var body=document.getElementById('username-modal-body');if(!body)return;
+  var t=document.getElementById('username-modal-title');
+  var has=!!(FRIENDS&&FRIENDS.handle);
+  if(t)t.textContent=has?'Change Username':'Choose Username';
+  if(!sb||!cloudUser){body.innerHTML='<div class="frd-note">You need to be signed in to set a username.</div>';return;}
+  var h='';
+  if(USERNAME_MSG)h+='<div class="frd-msg '+USERNAME_MSGTYPE+'">'+USERNAME_MSG+'</div>';
+  if(has)h+='<div class="frd-note" style="margin-bottom:2px">Current username</div><div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;color:var(--gold);margin-bottom:12px">@'+profEsc(FRIENDS.handle)+'</div>';
+  h+='<input id="username-modal-input" class="frd-input" placeholder="'+(has?'new username':'username')+'" maxlength="20" style="width:100%;text-align:center;margin-bottom:10px">';
+  h+='<div class="frd-note" style="margin-bottom:14px">3\u201320 characters. Letters, numbers or _ only. Must be unique.<br><b style="color:#ffce54">You can only change your username once every 30 days.</b></div>';
+  h+='<button class="frd-btn" style="width:100%" onclick="saveUsername()">'+(has?'Change Username':'Save Username')+'</button>';
+  body.innerHTML=h;
+  var inp=document.getElementById('username-modal-input');
+  if(inp){inp.focus();inp.addEventListener('keydown',function(e){if(e.key==='Enter')saveUsername();});}
+}
+function saveUsername(){
+  if(!sb||!cloudUser){usernameMsg('You need to be signed in.','err');return;}
+  var el=document.getElementById('username-modal-input');var hh=(el?el.value:'').trim();
+  if(!hh){usernameMsg('Enter a username.','err');return;}
+  USERNAME_MSG='Saving\u2026';USERNAME_MSGTYPE='';renderUsernameModal();
+  sb.rpc('pp_set_handle',{p_handle:hh,p_display:hh}).then(function(res){
+    var d=res&&res.data;
+    if(d&&d.ok){
+      FRIENDS.handle=d.handle;
+      if(!G.profile)G.profile={};
+      G.profile.name=d.handle;
+      saveGame();
+      closeUsernameModal();
+      if(typeof renderProfile==='function')renderProfile();
+      if(typeof renderFriends==='function')renderFriends();
+    }
+    else if(d&&d.reason==='cooldown'){var dd=d.days_left||30;usernameMsg('You can change your username again in '+dd+' day'+(dd===1?'':'s')+'.','err');}
+    else usernameMsg(friendReason(d),'err');
+  },function(){usernameMsg('Could not reach the server. Try again.','err');});
 }
 function profOvCard(icon,lbl,val){return '<div class="prof-ov-card"><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div></div>';}
 function profSoon(icon,title,body){return '<div class="prof-soon"><div class="prof-soon-icon">'+icon+'</div><div class="prof-soon-title">'+title+'</div><div class="prof-soon-body">'+body+'</div></div>';}
@@ -6072,7 +6129,12 @@ function renderProfile(){
   h+='<div class="prof-header">';
   h+='<div class="prof-avatar-wrap"><div class="prof-avatar" onclick="openFavPicker()" title="Choose favorite pet" style="cursor:pointer">'+profAvatarInner()+'</div>'+frameOverlay(equippedFrame())+'</div>';
   h+='<div class="prof-id">';
-  h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(name)+'</span><button class="prof-edit" onclick="startRenameProfile()">✏️</button></div>';
+  var uname=(FRIENDS&&FRIENDS.handle)?FRIENDS.handle:'';
+  if(uname){
+    h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name">'+profEsc(uname)+'</span><button class="prof-edit" onclick="openUsernameModal()">✏️</button></div>';
+  }else{
+    h+='<div class="prof-name-row" id="prof-name-row"><span class="prof-name" onclick="openUsernameModal()" style="cursor:pointer;color:rgba(255,255,255,0.55);font-size:0.95rem">Tap to set username</span><button class="prof-edit" onclick="openUsernameModal()">✏️</button></div>';
+  }
   h+='<div class="prof-titletext">'+profEsc(getEquippedTitle())+'</div>';
   var plp=playerXpProgress();
   h+='<div class="prof-level-row"><span class="prof-lvl">Lv '+plp.level+'</span><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:'+plp.pct+'%"></div></div></div>';
