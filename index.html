@@ -770,22 +770,28 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   -webkit-mask:radial-gradient(circle,#000 8%,rgba(0,0,0,0.5) 32%,transparent 60%);mask:radial-gradient(circle,#000 8%,rgba(0,0,0,0.5) 32%,transparent 60%);
   opacity:0.5;animation:hatchSpin 20s linear infinite;}
 .hatch-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
-.hatch-glow{position:absolute;left:50%;top:54%;width:min(66vw,240px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;pointer-events:none;
+.hatch-glow-big{position:absolute;left:50%;top:54%;width:min(132vw,480px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;pointer-events:none;
   background:radial-gradient(circle,#ffffff 0%,var(--rc) 26%,transparent 62%),repeating-conic-gradient(from 0deg,var(--rc) 0deg 4deg,transparent 4deg 11deg);
   -webkit-mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);
-  opacity:0.8;animation:hatchSpin 9s linear infinite, hatchPulse 2.6s ease-in-out infinite;}
+  opacity:0.6;animation:hatchSpinRev 20.25s linear infinite, hatchPulse 3s ease-in-out infinite;}
+.hatch-glow{position:absolute;left:50%;top:54%;width:min(66vw,240px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none;
+  background:radial-gradient(circle,#ffffff 0%,var(--rc) 26%,transparent 62%),repeating-conic-gradient(from 0deg,var(--rc) 0deg 4deg,transparent 4deg 11deg);
+  -webkit-mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);
+  opacity:0.8;animation:hatchSpin 13.5s linear infinite, hatchPulse 2.6s ease-in-out infinite;}
 @keyframes hatchSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+@keyframes hatchSpinRev{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 @keyframes hatchPulse{0%,100%{opacity:0.5;}50%{opacity:0.9;}}
-.hatch-pet{position:absolute;left:50%;top:53%;transform:translate(-50%,-50%);z-index:3;font-size:min(34vw,124px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:petBounce 0.5s ease;}
-.hatch-top{position:absolute;left:0;right:0;top:3.2%;z-index:4;text-align:center;padding:0 14px;}
-.hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;text-shadow:0 2px 0 #a76f00,0 0 16px rgba(255,200,60,0.55);}
+.hatch-pet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;font-size:min(50vw,185px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:petBounce 0.5s ease;}
+.hatch-top{position:absolute;left:0;right:0;top:3.2%;z-index:5;text-align:center;padding:0 14px;}
+.hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;animation:hatchTitleGlow 5s ease-in-out infinite;}
+@keyframes hatchTitleGlow{0%,100%{text-shadow:0 2px 0 #a76f00,0 0 8px rgba(255,205,70,0.3);}50%{text-shadow:0 2px 0 #a76f00,0 0 28px rgba(255,212,82,0.9);}}
 .hatch-sub{font-size:0.82rem;color:rgba(255,255,255,0.82);margin-top:7px;}
 .hatch-badge{display:inline-block;margin-top:7px;padding:3px 15px;border-radius:999px;font-family:'Fredoka One',cursive;font-size:0.85rem;color:#0b1530;background:var(--rc);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
 .hatch-name{font-family:'Fredoka One',cursive;font-size:1.55rem;color:#fff;margin-top:8px;text-shadow:0 2px 7px rgba(0,0,0,0.65);}
-.hatch-bottom{position:absolute;left:0;right:0;bottom:3.4%;z-index:4;padding:0 16px;}
-#pet-result-card .pet-result-abilities{background:rgba(8,12,24,0.66);margin:0 0 10px;}
+.hatch-bottom{position:absolute;left:0;right:0;bottom:3.4%;z-index:5;padding:0 16px;text-align:center;}
+#pet-result-card .pet-result-abilities{background:rgba(8,12,24,0.66);width:58%;min-width:168px;max-width:240px;margin:0 auto 10px;}
 .hatch-world{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:6px;text-align:center;}
-.hatch-collect{width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(180deg,#ffd34d,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:1.05rem;cursor:pointer;box-shadow:0 4px 0 #8a6000;}
+.hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#ffd34d,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #8a6000;}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 
@@ -1680,6 +1686,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   <div id="pet-result-card" class="hatch-card">
     <div class="hatch-rays"></div>
     <img id="pet-result-bg" class="hatch-bg" alt="">
+    <div class="hatch-glow-big"></div>
     <div class="hatch-glow"></div>
     <div class="hatch-top">
       <div id="pet-result-title" class="hatch-title">HATCH SUCCESSFUL!</div>
@@ -5783,7 +5790,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.54<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.55<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8187,7 +8194,7 @@ function showPetResult(pet){
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').textContent=rc.label;
-  document.getElementById('pet-result-world').textContent=eggInfo.icon+' '+eggInfo.name;
+  var w=document.getElementById('pet-result-world');if(w){w.textContent='';w.style.display='none';}
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
@@ -8406,7 +8413,7 @@ function showFusionResult(pet,perfect){
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=pet.name;
   document.getElementById('pet-result-rarity').textContent=rc.label;
-  document.getElementById('pet-result-world').textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));
+  var w=document.getElementById('pet-result-world');if(w){w.style.display='';w.textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));}
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
