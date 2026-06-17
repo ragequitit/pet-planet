@@ -24,9 +24,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btns{position:absolute;top:24px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
-.side-btn{position:relative;width:54px;padding:34px 3px 7px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:13px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);overflow:visible;}
+.side-btn{position:relative;width:54px;padding:28px 3px 4px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:13px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);overflow:visible;}
 .side-btn:active{transform:translateY(2px);}
-.side-btn .sb-icon{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
+.side-btn .sb-icon{position:absolute;top:-17px;left:0;right:0;text-align:center;font-size:2.1rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
 .side-btn .sb-img{width:42px;height:42px;object-fit:contain;display:inline-block;}
 .side-btn .sb-label{font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
@@ -6108,7 +6108,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.90<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.91<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
