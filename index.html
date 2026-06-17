@@ -1676,7 +1676,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div class="side-btns" id="left-btns">
         <div class="side-btn" id="quests-btn" onclick="openQuests()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/daily-reward.png" alt="" onerror="this.parentNode.textContent='🎁'"></span><span class="sb-label">Daily</span></div>
-        <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon">🎚️</span><span class="sb-label">Loadouts</span></div>
+        <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/loadout.png" alt="" onerror="this.parentNode.textContent='🎚️'"></span><span class="sb-label">Loadouts</span></div>
         <div class="side-btn" id="skins-btn" onclick="openSkinPicker('egg')" style="display:none;"><span class="sb-icon">🎨</span><span class="sb-label">Skins</span></div>
       </div>
       <div class="side-btns" id="right-btns">
@@ -1704,8 +1704,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       </div>
       <div id="sheet-body">
         <div id="home-toggle">
-          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('📈'))"></span> Upgrades</button>
-          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
+          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('📈'))"></span> Upgrades</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
         </div>
         <div id="tab-buildings" class="tab-content active">
           <div id="blist"></div>
@@ -4860,7 +4860,7 @@ function coresInvHtml(){
 // Tillfällig More-meny — håller vyer som ännu inte fått sin permanenta plats
 // i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
 var MORE_ITEMS=[
-  {label:'Inbox',icon:uiIco('menu/inbox','📬',30),action:'inbox'},
+  {label:'Inbox',icon:uiIco('more/inbox','📬',30),action:'inbox'},
   {label:'Ascension',icon:uiIco('menu/ascension','🔼',30),action:'ascension'},
   {label:'Leaderboard',icon:uiIco('menu/leaderboard','🥇',30),action:'leaderboard'},
   {label:'Petdex',icon:uiIco('stats/petdex','📖',30),tab:'petdex'},
@@ -6108,7 +6108,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.88<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.90<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
