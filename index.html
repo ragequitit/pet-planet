@@ -734,7 +734,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
 .pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
-.pc2-img{position:relative;top:-10%;width:180%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 5s ease-in-out infinite;animation-delay:var(--d,0s);}
+.pc2-img{position:relative;top:-10%;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 5s ease-in-out infinite;animation-delay:var(--d,0s);}
 @keyframes pc2breathe{0%,100%{transform:translateY(1.5px) scale(0.99)}50%{transform:translateY(-2.5px) scale(1.03)}}
 .pc2-emoji{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:3.4rem;}
 .pc2-abils{position:relative;z-index:3;display:flex;flex-direction:column;gap:3px;margin-bottom:6px;}
@@ -3978,6 +3978,11 @@ function petSortBarHtml(cur,onchangeFn){
   h+='</select></div>';return h;
 }
 var petSearchQuery='';
+// Per-djur finjustering av bildens läge på korten (x=höger+, y=ner+ i pixlar). Lägg till fler efter behov.
+var PET_IMG_NUDGE={
+  'rabbit':{x:5,y:-5},
+  'turtle':{x:10,y:0}
+};
 var petFilter={rarity:{},ability:{},favOnly:false};
 var petFilterOpen=false;
 function petActiveFilterCount(){
@@ -4135,7 +4140,9 @@ function renderPetGrid(){
     html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
     var artHtml;
     if(pet.world){
-      artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
+      var nd=PET_IMG_NUDGE[(pet.name||'').toLowerCase()];
+      var ndStyle=nd?(' style="left:'+nd.x+'px;margin-top:'+nd.y+'px"'):'';
+      artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img"'+ndStyle+' src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
     } else {
       artHtml='<span class="pc2-emoji">'+emoji+'</span>';
     }
@@ -6078,7 +6085,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.73<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.74<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
