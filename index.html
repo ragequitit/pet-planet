@@ -4200,6 +4200,69 @@ function togglePetFav(uid){
   saveGame();
   renderPetGrid();
 }
+// FX-data per raritets-index (delas av Pets-fliken och pet-väljaren) — v6.92
+var FX_GL=[0,8,10,12,14,17,19,22,26,32];
+var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
+var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
+var FX_PN=[0,0,0,3,4,5,5,6,6,7];
+var FX_SW=[62,62,82,80,76,72,68,64,60,56];
+var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
+// Bygger ETT pet-kort (pc2). opts.onClick = JS-sträng för klicket (standard: öppna detaljer).
+// opts.extraClass = ev. extra klass på kortet (t.ex. för väljar-läget).
+function petCardHtml(pet,idx,opts){
+  opts=opts||{};
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
+  var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+  var lp=petXpProgress(pet);
+  var emoji=pet.e||'\ud83d\udc3e';
+  var dly=((idx%7)*0.55).toFixed(2)+'s';
+  var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'')+(opts.extraClass?(' '+opts.extraClass):'');
+  var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
+  var onClick=opts.onClick||("openPetDetail('"+pet.uid+"')");
+  var html='<div class="'+cls+'" style="'+sv+'" onclick="'+onClick+'">';
+  if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
+  html+='<div class="pc2-bgshade"></div>';
+  if(fx>=1)html+='<div class="pc2-aura"></div>';
+  if(fx>=4)html+='<div class="pc2-rays"></div>';
+  else if(fx>=1)html+='<div class="pc2-glow"></div>';
+  if(FX_PN[fx]>0){
+    html+='<div class="pc2-parts">';
+    var pn=FX_PN[fx];
+    for(var pi=0;pi<pn;pi++){
+      var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
+      var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
+      html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
+    }
+    html+='</div>';
+  }
+  if(fx>=2)html+='<div class="pc2-skim"></div>';
+  html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
+  html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
+  if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
+  html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
+  html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
+  var artHtml;
+  if(pet.world){
+    var nd=PET_IMG_NUDGE[(pet.name||'').toLowerCase()];
+    var ndStyle=nd?(' style="left:'+nd.x+'px;margin-top:'+nd.y+'px"'):'';
+    artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img"'+ndStyle+' src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
+  } else {
+    artHtml='<span class="pc2-emoji">'+emoji+'</span>';
+  }
+  html+='<div class="pc2-art">'+artHtml+'</div>';
+  html+='<div class="pc2-abils">';
+  pet.abilities.forEach(function(ab){
+    var m=ABILITY_META[ab.id];if(!m)return;
+    html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+TIER_VALUES[ab.tier]+'%</span></span>';
+  });
+  html+='</div>';
+  var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
+  html+='<div class="pc2-xp"><div class="pc2-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div><div class="pc2-xp-txt" id="pcxpt-'+pet.uid+'">'+xpTxt+'</div></div>';
+  html+='</div>';
+  return html;
+}
 function renderPetGrid(){
   var host=document.getElementById('pet-grid-host');if(!host)return;
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
@@ -4220,63 +4283,8 @@ function renderPetGrid(){
     host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearPetFilters();clearPetSearch();">Clear search &amp; filters</button></div>';
     return;
   }
-  var FX_GL=[0,8,10,12,14,17,19,22,26,32];
-  var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
-  var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
-  var FX_PN=[0,0,0,3,4,5,5,6,6,7];
-  var FX_SW=[62,62,82,80,76,72,68,64,60,56];
-  var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
   html+='<div class="pet-grid">';
-  sorted.forEach(function(pet,idx){
-    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
-    var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
-    var lp=petXpProgress(pet);
-    var emoji=pet.e||'\ud83d\udc3e';
-    var dly=((idx%7)*0.55).toFixed(2)+'s';
-    var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'');
-    var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
-    html+='<div class="'+cls+'" style="'+sv+'" onclick="openPetDetail(\''+pet.uid+'\')">';
-    if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
-    html+='<div class="pc2-bgshade"></div>';
-    if(fx>=1)html+='<div class="pc2-aura"></div>';
-    if(fx>=4)html+='<div class="pc2-rays"></div>';
-    else if(fx>=1)html+='<div class="pc2-glow"></div>';
-    if(FX_PN[fx]>0){
-      html+='<div class="pc2-parts">';
-      var pn=FX_PN[fx];
-      for(var pi=0;pi<pn;pi++){
-        var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
-        var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
-        html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
-      }
-      html+='</div>';
-    }
-    if(fx>=2)html+='<div class="pc2-skim"></div>';
-    html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
-    html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
-    if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
-    html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
-    html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
-    var artHtml;
-    if(pet.world){
-      var nd=PET_IMG_NUDGE[(pet.name||'').toLowerCase()];
-      var ndStyle=nd?(' style="left:'+nd.x+'px;margin-top:'+nd.y+'px"'):'';
-      artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img"'+ndStyle+' src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
-    } else {
-      artHtml='<span class="pc2-emoji">'+emoji+'</span>';
-    }
-    html+='<div class="pc2-art">'+artHtml+'</div>';
-    html+='<div class="pc2-abils">';
-    pet.abilities.forEach(function(ab){
-      var m=ABILITY_META[ab.id];if(!m)return;
-      html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+TIER_VALUES[ab.tier]+'%</span></span>';
-    });
-    html+='</div>';
-    var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
-    html+='<div class="pc2-xp"><div class="pc2-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div><div class="pc2-xp-txt" id="pcxpt-'+pet.uid+'">'+xpTxt+'</div></div>';
-    html+='</div>';
-  });
+  sorted.forEach(function(pet,idx){ html+=petCardHtml(pet,idx); });
   html+='</div>';
   host.innerHTML=html;
 }
