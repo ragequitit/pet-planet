@@ -718,9 +718,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-sort-btn{flex:1;padding:5px 4px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
 .pet-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
 .pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
-/* Pet-väljaren (slot-modal) testar 4 kort i bredd — Pets-fliken är kvar på 3 (v6.92 Step 3) */
-#pet-modal .modal-box{padding-left:12px;padding-right:12px;}
-#pet-modal .pet-grid{grid-template-columns:repeat(4,1fr);gap:5px;}
 /* ── PET CARD v6.60 (rarity-stege: glow/aura/skimmer/strålkrans/partiklar + world-BG) ── */
 .pc2{--rc:#888;--gl:0px;--au:0;position:relative;display:flex;flex-direction:column;min-height:178px;border-radius:14px;padding:7px 6px 8px;cursor:pointer;overflow:hidden;border:2px solid var(--rc);background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(8,14,34,0.92));box-shadow:0 0 var(--gl) -3px var(--rc);transition:transform .12s;}
 .pc2:active{transform:scale(0.97);}
@@ -751,6 +748,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
 .pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 7.5s ease-in-out infinite;animation-delay:var(--d,0s);}
 @keyframes pc2breathe{0%,100%{transform:scale(0.99)}50%{transform:scale(1.03)}}
+/* Lite-kort (pet-väljaren): ingen andning/aura-puls — billigt att rita (v6.92) */
+.pc2-lite .pc2-img{animation:none;}
+.pc2-lite.fxpulse .pc2-aura{animation:none;}
 .pc2-emoji{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:3.4rem;}
 .pc2-abils{position:relative;z-index:3;display:flex;flex-direction:column;gap:3px;margin-bottom:6px;}
 .pc2-ab{display:flex;align-items:center;gap:5px;font-size:0.56rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.5);border-radius:7px;padding:2px 6px;}
@@ -4074,7 +4074,7 @@ function renderSlotPickGrid(){
   if(filtering)html+='<div class="pet-result-line">Showing '+sel.length+' of '+pool.length+'</div>';
   if(sel.length===0){host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearSlotFilters();clearSlotPickSearch();">Clear search &amp; filters</button></div>';return;}
   html+='<div class="pet-grid">';
-  sel.forEach(function(pet,idx){ html+=petCardHtml(pet,idx,{onClick:"equipPetToActiveSlot('"+pet.uid+"')"}); });
+  sel.forEach(function(pet,idx){ html+=petCardHtml(pet,idx,{onClick:"equipPetToActiveSlot('"+pet.uid+"')",lite:true}); });
   html+='</div>';
   host.innerHTML=html;
 }
@@ -4245,6 +4245,7 @@ var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
 // opts.extraClass = ev. extra klass på kortet (t.ex. för väljar-läget).
 function petCardHtml(pet,idx,opts){
   opts=opts||{};
+  var lite=!!opts.lite; // lättviktsläge: hoppa över rays/partiklar/skimmer/andning (för väljaren)
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
@@ -4252,26 +4253,30 @@ function petCardHtml(pet,idx,opts){
   var lp=petXpProgress(pet);
   var emoji=pet.e||'\ud83d\udc3e';
   var dly=((idx%7)*0.55).toFixed(2)+'s';
-  var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'')+(opts.extraClass?(' '+opts.extraClass):'');
+  var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'')+(lite?' pc2-lite':'')+(opts.extraClass?(' '+opts.extraClass):'');
   var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
   var onClick=opts.onClick||("openPetDetail('"+pet.uid+"')");
   var html='<div class="'+cls+'" style="'+sv+'" onclick="'+onClick+'">';
   if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
   html+='<div class="pc2-bgshade"></div>';
   if(fx>=1)html+='<div class="pc2-aura"></div>';
-  if(fx>=4)html+='<div class="pc2-rays"></div>';
-  else if(fx>=1)html+='<div class="pc2-glow"></div>';
-  if(FX_PN[fx]>0){
-    html+='<div class="pc2-parts">';
-    var pn=FX_PN[fx];
-    for(var pi=0;pi<pn;pi++){
-      var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
-      var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
-      html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
+  if(!lite){
+    if(fx>=4)html+='<div class="pc2-rays"></div>';
+    else if(fx>=1)html+='<div class="pc2-glow"></div>';
+    if(FX_PN[fx]>0){
+      html+='<div class="pc2-parts">';
+      var pn=FX_PN[fx];
+      for(var pi=0;pi<pn;pi++){
+        var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
+        var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
+        html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
+      }
+      html+='</div>';
     }
-    html+='</div>';
+    if(fx>=2)html+='<div class="pc2-skim"></div>';
+  } else if(fx>=1){
+    html+='<div class="pc2-glow"></div>';
   }
-  if(fx>=2)html+='<div class="pc2-skim"></div>';
   html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
   html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
   if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
