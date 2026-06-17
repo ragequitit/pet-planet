@@ -1906,15 +1906,47 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 
     <div class="howto-sec">Things You'll Find</div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode('\u2728'))"></div><div class="howto-txt"><div class="howto-nm">Sparks</div><div class="howto-desc">The main currency. Earned by tapping &amp; idling. Spent on crafting eggs, buildings, upgrades and slots.</div></div></div>
-    <div class="howto-row"><div class="howto-ic">&#x1F41A;</div><div class="howto-txt"><div class="howto-nm">Shells</div><div class="howto-desc">Egg-crafting material in 10 rarities (Common &#x2192; Cosmic). Rarer eggs need rarer Shells. Combine 5 lower into 1 higher with Quick-fuse.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83c\udfe0'))"></div><div class="howto-txt"><div class="howto-nm">Buildings</div><div class="howto-desc">Your idle engine. Each building generates Sparks over time &#x2014; unlock and upgrade more to keep your income growing while you play and while you're away.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shell/uncommon-shell.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc1a'))"></div><div class="howto-txt"><div class="howto-nm">Shells</div><div class="howto-desc">Egg-crafting material in 10 rarities (Common &#x2192; Cosmic). Rarer eggs need rarer Shells. Combine 5 lower into 1 higher with Quick-fuse.</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))"></div><div class="howto-txt"><div class="howto-nm">Gems</div><div class="howto-desc">Premium currency. Used for speed-ups and cosmetics.</div></div></div>
-    <div class="howto-row"><div class="howto-ic">&#x1F95A;</div><div class="howto-txt"><div class="howto-nm">Eggs</div><div class="howto-desc">Crafted from Sparks + Shells, then hatched into pets. Each world has its own eggs.</div></div></div>
-    <div class="howto-row"><div class="howto-ic">&#x1F43E;</div><div class="howto-txt"><div class="howto-nm">Pets</div><div class="howto-desc">Hatched from eggs. Each pet has abilities &#x2014; equip them for bonuses, send them on adventures, or fuse and mutate them.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83e\udd5a'))"></div><div class="howto-txt"><div class="howto-nm">Eggs</div><div class="howto-desc">Crafted from Sparks + Shells, then hatched in the Hatchery to become a pet.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-pets.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc3e'))"></div><div class="howto-txt"><div class="howto-nm">Pets</div><div class="howto-desc">Hatched from eggs. Each pet has abilities &#x2014; equip them for bonuses, send them on adventures, or fuse and mutate them.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x2B50;</div><div class="howto-txt"><div class="howto-nm">Abilities</div><div class="howto-desc">Every pet ability has a tier &#x2014; a higher tier means a bigger bonus (e.g. Spark Gain, Shell Gain, Luck).</div></div></div>
-    <div class="howto-row"><div class="howto-ic">&#x1F9EB;</div><div class="howto-txt"><div class="howto-nm">Mutation Core</div><div class="howto-desc">Made by Extracting an ability from a pet (that pet is destroyed). Apply it in the Mutation Chamber to place that ability on another pet &#x2014; the pet survives.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/mutation/mutation-cores-rare.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83e\uddeb'))"></div><div class="howto-txt"><div class="howto-nm">Mutation Core</div><div class="howto-desc">Made by Extracting an ability from a pet (that pet is destroyed). Apply it in the Mutation Chamber to place that ability on another pet &#x2014; the pet survives.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x1F3B2;</div><div class="howto-txt"><div class="howto-nm">Reroll Charm</div><div class="howto-desc">Re-rolls the tier of one ability on a pet &#x2014; it can go up or down. The rerolled ability becomes locked. Charms drop from gameplay.</div></div></div>
 
     <div class="howto-foot">This is a quick guide &#x2014; more tips coming soon.</div>
+  </div>
+</div>
+<style>
+/* STAT BREAKDOWN POPUP (v6.92) */
+#statbreak-modal{z-index:1250;}
+#statbreak-modal .modal-box{max-width:420px;}
+.prof-ov-tap{cursor:pointer;position:relative;}
+.prof-ov-tap:active{transform:scale(0.97);}
+.prof-ov-hint{font-size:0.54rem;font-weight:800;letter-spacing:0.3px;color:#b488ff;margin-top:4px;text-transform:uppercase;}
+.sb-total{font-size:0.78rem;color:rgba(255,255,255,0.7);margin:2px 2px 12px;}
+.sb-total b{color:#fff;}
+.sb-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.04);border:1px solid rgba(58,92,184,0.35);border-radius:11px;padding:9px 11px;margin-bottom:8px;}
+.sb-ic{flex:0 0 30px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:rgba(11,21,48,0.6);border:1px solid rgba(58,92,184,0.45);border-radius:8px;}
+.sb-ic img{width:1.35em;height:1.35em;object-fit:contain;display:block;}
+.sb-main{flex:1;min-width:0;}
+.sb-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;}
+.sb-name{font-weight:700;font-size:0.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-cnt{font-family:'Fredoka One',cursive;font-size:0.8rem;color:var(--gold);flex-shrink:0;}
+.sb-barwrap{height:6px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
+.sb-bar{height:100%;background:linear-gradient(90deg,#7a5ad0,#b488ff);border-radius:4px;}
+.sb-pct{flex:0 0 40px;text-align:right;font-size:0.74rem;font-weight:800;color:rgba(255,255,255,0.75);}
+.sb-empty{font-size:0.8rem;color:rgba(255,255,255,0.55);text-align:center;padding:18px 6px;line-height:1.45;}
+.sb-note{margin-top:10px;font-size:0.64rem;color:rgba(255,255,255,0.42);text-align:center;line-height:1.4;}
+</style>
+<div id="statbreak-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="more-head">
+      <div class="more-head-title" id="sb-title"></div>
+      <button class="prof-x" onclick="closeStatBreakdown()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div id="sb-body"></div>
   </div>
 </div>
 <div id="leaderboard-modal" class="modal-overlay">
@@ -2879,10 +2911,13 @@ function getShellBonus(){
 // ============================================================
 // GAME STATE
 // ============================================================
+// Spårar Sparks per källa (v6.92, steg 2). Lazy-init så gamla sparfiler inte kraschar.
+function trackCoins(src,amt){if(!G||!G.stats||!amt)return;if(!G.stats.coinsBySource)G.stats.coinsBySource={click:0,idle:0,offline:0,adventure:0,rewards:0};G.stats.coinsBySource[src]=(G.stats.coinsBySource[src]||0)+amt;}
 function freshStats(){
   return {
     // ECONOMY
     totalCoinsEarned:0,totalCoinsSpent:0,totalBuildingsPurchased:0,totalUpgradesPurchased:0,
+    coinsBySource:{click:0,idle:0,offline:0,adventure:0,rewards:0},
     highestEpsReached:0,biggestSingleClick:0,offlineRewardsClaimed:0,
     // CLICKING
     totalClicks:0,highestClicksPerSecond:0,mostClicksInSession:0,
@@ -3253,7 +3288,7 @@ function claimAdventure(index){
   if(!adv){G.adventures.splice(index,1);renderAdventure();return;}
   var pet=G.hatchedPets.find(function(p){return p.uid===a.petUid;});
   var rw=rollAdvReward(adv,pet);
-  G.coins+=rw.coins;G.total+=rw.coins;G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;
+  G.coins+=rw.coins;G.total+=rw.coins;G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;trackCoins('adventure',rw.coins);
   if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
   var parts=['+'+fmtShort(rw.coins)+' Sparks'];
   rw.shells.forEach(function(sh){
@@ -3807,7 +3842,7 @@ function eggTap(clientX,clientY){
   clickWindowAccum++;
   G.stats.totalClicks++;addBattlePassXp(BP_XP.click);addPlayerXp(PLAYER_XP.click);
   if(clickVal>G.stats.biggestSingleClick)G.stats.biggestSingleClick=clickVal;
-  G.stats.totalCoinsEarned+=clickVal;
+  G.stats.totalCoinsEarned+=clickVal;trackCoins('click',clickVal);
   if(Math.random()<getDropChance(0.15))dropShell();
   var stage=document.getElementById('egg-stage');if(!stage)return;
   if(!G.settings||G.settings.damageNumbers!==false){
@@ -6242,7 +6277,7 @@ function redeemMsg(txt,ok){var m=document.getElementById('redeem-msg');if(!m)ret
 // Dela ut belöningen och bygg en lista med vad spelaren fick (för bekräftelsen)
 function applyRedeemReward(rw){
   var parts=[];
-  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtNum(rw.coins)+' Sparks');}
+  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;trackCoins('rewards',rw.coins);parts.push('+'+fmtNum(rw.coins)+' Sparks');}
   if(rw.gems){G.gems=(G.gems||0)+rw.gems;parts.push(GEM_IMG+' +'+rw.gems+' Gems');}
   if(rw.shells){Object.keys(rw.shells).forEach(function(id){var amt=rw.shells[id];if(!amt)return;G.shells[id]=(G.shells[id]||0)+amt;parts.push('+'+amt+' '+id.charAt(0).toUpperCase()+id.slice(1)+' Shells');});}
   return parts;
@@ -6431,7 +6466,43 @@ function doUsernameSet(hh){
     else usernameMsg(friendReason(d),'err');
   },function(){usernameMsg('Could not reach the server. Try again.','err');});
 }
-function profOvCard(icon,lbl,val){return '<div class="prof-ov-card"><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div></div>';}
+function profOvCard(icon,lbl,val,tap){var cls='prof-ov-card'+(tap?' prof-ov-tap':'');var onc=tap?' onclick="openStatBreakdown(\''+tap+'\')"':'';var hint=tap?'<div class="prof-ov-hint">Tap for details \u203a</div>':'';return '<div class="'+cls+'"'+onc+'><div class="prof-ov-icon">'+icon+'</div><div class="prof-ov-val">'+val+'</div><div class="prof-ov-lbl">'+lbl+'</div>'+hint+'</div>';}
+// STAT BREAKDOWN (v6.92) — klickbara Overview-kort öppnar en uppdelning. Steg 1: Eggs Hatched per äggtyp.
+function statBreakRow(icon,name,count,total){
+  var pct=total>0?(count/total*100):0;
+  var pctTxt=(pct>=10?Math.round(pct):Math.round(pct*10)/10)+'%';
+  return '<div class="sb-row"><div class="sb-ic">'+icon+'</div><div class="sb-main"><div class="sb-top"><span class="sb-name">'+name+'</span><span class="sb-cnt">'+fmtShort(count)+'</span></div><div class="sb-barwrap"><div class="sb-bar" style="width:'+pct.toFixed(1)+'%"></div></div></div><div class="sb-pct">'+pctTxt+'</div></div>';
+}
+function openStatBreakdown(type){
+  var title='',iconHtml='',rows=[],total=0,empty='',note='';
+  if(type==='sparks'){
+    title='Sparks Earned';iconHtml='<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">';
+    var cs=G.stats.coinsBySource||{};
+    var srcDefs=[['click','From Clicking','👆'],['idle','Idle Income','🏠'],['offline','Offline Income','🌙'],['adventure','Adventures','🗺️'],['rewards','Rewards & Events','🎁']];
+    srcDefs.forEach(function(d){total+=(cs[d[0]]||0);});
+    var sarr=srcDefs.map(function(d){return {label:d[1],icon:d[2],count:Math.floor(cs[d[0]]||0)};});
+    sarr.sort(function(a,b){return b.count-a.count;});
+    sarr.forEach(function(a){if(a.count>0)rows.push(statBreakRow(a.icon,a.label,a.count,total));});
+    total=Math.floor(total);
+    empty='No Sparks earned yet. Tap the egg or let your buildings work, and it will show up here.';
+  }
+  if(type==='eggs'){
+    title='Eggs Hatched';iconHtml='🍳';
+    var by=G.stats.eggsHatchedByWorld||{};
+    var keys=Object.keys(by);
+    keys.forEach(function(k){total+=(by[k]||0);});
+    var arr=keys.map(function(k){var e=EGG_SHOP.find(function(x){return x.id===k;});return {name:e?e.name:String(k),icon:e?e.icon:'🥚',count:by[k]||0};});
+    arr.sort(function(a,b){return b.count-a.count;});
+    arr.forEach(function(a){if(a.count>0)rows.push(statBreakRow(a.icon,profEsc(a.name),a.count,total));});
+    empty='No eggs hatched yet. Hatch an egg in the Hatchery and it will show up here.';
+  }
+  var body=rows.length?('<div class="sb-total">Total: <b>'+fmtShort(total)+'</b></div>'+rows.join('')+(note?'<div class="sb-note">'+note+'</div>':'')):('<div class="sb-empty">'+empty+'</div>');
+  var t=document.getElementById('sb-title');if(t)t.innerHTML=iconHtml+' '+title;
+  var b=document.getElementById('sb-body');if(b)b.innerHTML=body;
+  var m=document.getElementById('statbreak-modal');if(m)m.classList.add('open');
+}
+function closeStatBreakdown(){var m=document.getElementById('statbreak-modal');if(m)m.classList.remove('open');}
+document.getElementById('statbreak-modal').onclick=function(e){if(e.target===this)closeStatBreakdown();};
 function profSoon(icon,title,body){return '<div class="prof-soon"><div class="prof-soon-icon">'+icon+'</div><div class="prof-soon-title">'+title+'</div><div class="prof-soon-body">'+body+'</div></div>';}
 // ============================================================
 // TITLES — central katalog. check() avgör om titeln är upplåst.
@@ -6632,9 +6703,9 @@ function renderProfile(){
   if(profileSubTab==='overview'){
     h+='<div class="prof-section-title">Lifetime Overview</div>';
     h+='<div class="prof-ov-grid">';
-    h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0));
+    h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0),'sparks');
     h+=profOvCard(uiIco('stats/pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
-    h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0));
+    h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0),'eggs');
     h+=profOvCard(uiIco('stats/total-clicks','👆',26),'Total Clicks',fmtShort(G.stats.totalClicks||0));
     h+=profOvCard('⚗️','Fusions',fmtShort(G.stats.totalFusions||0));
     h+=profOvCard(uiIco('stats/playtime','⏱️',26),'Playtime',profPlaytime());
@@ -7426,7 +7497,7 @@ function goEventQuest(goto){
 }
 function grantEventReward(rw){
   var parts=[];
-  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;parts.push('+'+fmtShort(rw.coins)+' Sparks');}
+  if(rw.coins){G.coins+=rw.coins;G.total+=rw.coins;if(G.stats)G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;trackCoins('rewards',rw.coins);parts.push('+'+fmtShort(rw.coins)+' Sparks');}
   if(rw.gems){G.gems+=rw.gems;parts.push('+'+rw.gems+' \ud83d\udc8e Gems');}
   if(rw.shells){for(var r in rw.shells){G.shells[r]=(G.shells[r]||0)+rw.shells[r];parts.push('+'+rw.shells[r]+' '+r.charAt(0).toUpperCase()+r.slice(1)+' Shells');}}
   if(rw.cores){var _ct=rw.coreTier||1,_i;for(_i=0;_i<rw.cores;_i++){G.mutationCores.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_ct});}if(G.stats)G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+rw.cores;parts.push('+'+rw.cores+' Mutation Core'+(rw.cores>1?'s':''));}
@@ -9912,7 +9983,7 @@ function tick(now){
   var dt=(now-lastT)/1000;lastT=now;
   var currentEps=eps();
   G.coins+=currentEps*dt;G.total+=currentEps*dt;
-  G.stats.totalCoinsEarned+=currentEps*dt;
+  G.stats.totalCoinsEarned+=currentEps*dt;trackCoins('idle',currentEps*dt);
   tickActivePetXp(dt); // aktiva pets tjänar XP medan de jobbar
   if(currentEps>G.stats.highestEpsReached)G.stats.highestEpsReached=currentEps;
   G.stats.totalTimePlayed+=dt;
@@ -10070,7 +10141,7 @@ if(savedData){
       offlineCoins=offlineRate*(offlineMs/1000);
       G.coins+=offlineCoins;G.total+=offlineCoins;
       G.stats.offlineRewardsClaimed++;
-      G.stats.totalCoinsEarned+=offlineCoins;
+      G.stats.totalCoinsEarned+=offlineCoins;trackCoins('offline',offlineCoins);
     }
   }
 }
