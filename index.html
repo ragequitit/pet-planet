@@ -733,6 +733,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2.fx5 .pc2-rays,.pc2.fx6 .pc2-rays{opacity:.26;animation-duration:12s;}
 .pc2.fx7 .pc2-rays,.pc2.fx8 .pc2-rays{opacity:.3;animation-duration:10s;}
 .pc2.fx9 .pc2-rays{opacity:.36;animation-duration:8s;}
+.pc2.fx4 .pc2-rays{opacity:.18;animation-duration:22.5s;} /* Legendary: 50% långsammare snurr + 10% mindre opacity (v6.92) */
 .pc2-glow{position:absolute;left:50%;top:50%;width:86%;height:74%;transform:translate(-50%,-50%);z-index:1;border-radius:50%;background:radial-gradient(circle,var(--rc),transparent 66%);opacity:.45;filter:blur(5px);pointer-events:none;}
 .pc2-parts{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden;}
 .pc2-parts i{position:absolute;bottom:-6px;width:4px;height:4px;border-radius:50%;background:var(--rc);box-shadow:0 0 5px var(--rc);opacity:0;animation:pc2part 3.8s linear infinite;}
@@ -3088,6 +3089,15 @@ function fmtCompact(n){ // alltid kort suffix-stil (1.5K, 8.3M) — för trånga
   var tier=Math.floor(Math.log10(n)/3);
   if(tier<FMT_SUFFIX.length){var s=n/Math.pow(10,tier*3);return s.toFixed(2).replace(/\.?0+$/,'')+FMT_SUFFIX[tier];}
   var exp=Math.floor(Math.log10(n));return (n/Math.pow(10,exp)).toFixed(2)+'e'+exp; // bortom listan → scientific
+}
+// HUD-toppsiffran: alltid 3 decimaler + behåll nollor, så bakre siffran tickar synligt (v6.92)
+function fmtHudCoins(n){
+  if(n===Infinity)return '∞';if(isNaN(n))return '0';
+  if(n<0)return '-'+fmtHudCoins(-n);
+  if(n<1e3)return Math.floor(n)+'';
+  var tier=Math.floor(Math.log10(n)/3);
+  if(tier<FMT_SUFFIX.length){var s=n/Math.pow(10,tier*3);return s.toFixed(3)+FMT_SUFFIX[tier];}
+  var exp=Math.floor(Math.log10(n));return (n/Math.pow(10,exp)).toFixed(3)+'e'+exp;
 }
 function fmtFull(n){ // fulla siffror med tusentalsavgränsare (15,000), tak sen fallback
   if(n<0)return '-'+fmtFull(-n);
@@ -9984,7 +9994,7 @@ function setPetdexWorld(worldId){
   renderPetdex();
 }
 function updateHUD(){
-  var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmtCompact(G.coins);
+  var tbc=document.getElementById('tb-coins');if(tbc)tbc.textContent=fmtHudCoins(G.coins);
   var tbg=document.getElementById('tb-gems-val');if(tbg)tbg.textContent=fmtCompact(G.gems||0);
   var tbe=document.getElementById('tb-eps');if(tbe)tbe.textContent='SPS: '+fmtCompact(epsDispVal);
   var ccLegacy=document.getElementById('coin-count');if(ccLegacy)ccLegacy.textContent=fmt(G.coins);
