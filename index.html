@@ -1661,12 +1661,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div class="side-btns" id="left-btns">
         <div class="side-btn" id="quests-btn" onclick="openQuests()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/daily-reward.png" alt="" onerror="this.parentNode.textContent='🎁'"></span><span class="sb-label">Daily</span></div>
+        <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon">🎚️</span><span class="sb-label">Loadouts</span></div>
         <div class="side-btn" id="skins-btn" onclick="openSkinPicker('egg')" style="display:none;"><span class="sb-icon">🎨</span><span class="sb-label">Skins</span></div>
       </div>
       <div class="side-btns" id="right-btns">
         <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
         <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent='📊'"></span><span class="sb-label">Stats</span></div>
-        <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon">🎚️</span><span class="sb-label">Loadouts</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/event.png" alt="" onerror="this.parentNode.textContent='🎉'"></span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -6085,7 +6085,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.74<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.75<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
