@@ -1698,8 +1698,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       </div>
       <div id="sheet-body">
         <div id="home-toggle">
-          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span>📈</span> Upgrades</button>
-          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/buildings.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
+          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('📈'))"></span> Upgrades</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
         </div>
         <div id="tab-buildings" class="tab-content active">
           <div id="blist"></div>
@@ -1712,9 +1712,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="tab-pets" class="tab-content">
       <div class="pets-subnav">
         <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
-        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span>⚗️</span> Fusion</button>
-        <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span>🧪</span> Extract</button>
-        <button class="psub-btn" id="psub-mutate" onclick="petsSub('mutate')"><span>🧬</span> Mutate</button>
+        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Fusion</button>
+        <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
+        <button class="psub-btn" id="psub-mutate" onclick="petsSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Mutate</button>
         <button class="psub-btn" id="psub-reroll" onclick="petsSub('reroll')"><span>🎲</span> Reroll</button>
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
@@ -5012,7 +5012,7 @@ function loadLeaderboard(metric){
     if(!rows.length){body.innerHTML='<div class="lb-msg">No entries yet — be the first!</div>';return;}
     var h='';
     rows.forEach(function(r){
-      var medal=r.rank===1?'🥇':r.rank===2?'🥈':r.rank===3?'🥉':('#'+r.rank);
+      var medal=r.rank===1?uiIco('leaderboard/guld-medalj','🥇',26):r.rank===2?uiIco('leaderboard/silver-medalj','🥈',26):r.rank===3?uiIco('leaderboard/bronze-medal','🥉',26):('#'+r.rank);
       h+='<div class="lb-row'+(r.is_me?' me':'')+'">'+
          '<div class="lb-rank">'+medal+'</div>'+
          '<div class="lb-name">'+lbEscape(r.name)+(r.is_me?' <span class="lb-you">YOU</span>':'')+'</div>'+
@@ -6102,7 +6102,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.83<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.86<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -6442,7 +6442,7 @@ function renderProfileTitles(){
   var total=TITLE_DEFS.length;
   var tpct=total>0?Math.round(earned/total*100):0;
   var cats=['Starter','Hatching','Collection','Mastery','Achievements','Petdex','Events'];
-  var catIcons={Starter:'🌱',Hatching:'🍳',Collection:'🐾',Mastery:'⚔️',Achievements:'🏆',Petdex:'📖',Events:'❄️'};
+  var catIcons={Starter:'🌱',Hatching:'🍳',Collection:'🐾',Mastery:uiIco('titles/mastery','⚔️',20),Achievements:'🏆',Petdex:'📖',Events:'❄️'};
   var h='';
   h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Titles Earned</span><span class="prof-compl-pct">'+earned+'/'+total+'</span></div>';
   h+='<div class="prof-compl-bar"><div class="prof-compl-fill" style="width:'+tpct+'%"></div></div></div>';
@@ -6743,7 +6743,7 @@ function renderProfileCustomize(){
   var h='<div class="prof-section-title">Customize</div>';
   var fp=profFavPet();
   var sub=fp?(profEsc(fp.name)+' · '+(RARITY_CONFIG[fp.rarity]?RARITY_CONFIG[fp.rarity].label:fp.rarity)):'None selected — shows as your avatar';
-  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+((fp&&petIco(fp))?petIco(fp):'⭐')+'</div>';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+((fp&&petIco(fp))?petIco(fp):uiIco('profiles/favorite-pet','⭐',24))+'</div>';
   h+='<div class="prof-cz-mid"><div class="prof-cz-lbl">Favorite Pet</div><div class="prof-cz-sub">'+sub+'</div></div>';
   h+='<button class="prof-cz-btn" onclick="toggleFavPicker()">'+(profPickerOpen?'Close':(fp?'Change':'Choose'))+'</button></div>';
   if(profPickerOpen){
@@ -6766,11 +6766,11 @@ function renderProfileCustomize(){
   }
   var es=EGG_SKINS.find(function(x){return x.id===equippedEggSkin();})||EGG_SKINS[0];
   var bs=BG_SKINS.find(function(x){return x.id===equippedBg();})||BG_SKINS[0];
-  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(es.icon||'🥚')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Egg Skin</div><div class="prof-cz-sub">'+es.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'egg\')">Change</button></div>';
-  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+(bs.icon||'🌅')+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Background</div><div class="prof-cz-sub">'+bs.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'bg\')">Change</button></div>';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+uiIco('profiles/egg-skin','🥚',24)+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Egg Skin</div><div class="prof-cz-sub">'+es.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'egg\')">Change</button></div>';
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+uiIco('profiles/background','🌅',24)+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Background</div><div class="prof-cz-sub">'+bs.name+'</div></div><button class="prof-cz-btn" onclick="openSkinPicker(\'bg\')">Change</button></div>';
   var curFrame=frameById(equippedFrame());
-  h+='<div class="prof-cz-row"><div class="prof-cz-ic">\ud83d\uddbc\ufe0f</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Profile Frame</div><div class="prof-cz-sub">'+curFrame.name+'</div></div><button class="prof-cz-btn" onclick="openFramePicker()">Change</button></div>';
-  var locked=[['🎨','Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],['✨','Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
+  h+='<div class="prof-cz-row"><div class="prof-cz-ic">'+uiIco('profiles/profile-frame','🖼️',24)+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">Profile Frame</div><div class="prof-cz-sub">'+curFrame.name+'</div></div><button class="prof-cz-btn" onclick="openFramePicker()">Change</button></div>';
+  var locked=[[uiIco('profiles/name-color','🎨',24),'Name Color','Color your display name'],['🏷️','Title Display','Show an earned title'],[uiIco('profiles/effect','✨',24),'Effect','Animated profile effect'],['📈','Profile Prestige','Long-term profile leveling']];
   locked.forEach(function(l){
     h+='<div class="prof-cz-row locked"><div class="prof-cz-ic">'+l[0]+'</div><div class="prof-cz-mid"><div class="prof-cz-lbl">'+l[1]+'</div><div class="prof-cz-sub">'+l[2]+'</div></div><div class="prof-cz-lock">'+LOCK_IMG+'</div></div>';
   });
@@ -8098,7 +8098,7 @@ function renderInventory(){
   html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"> Shells</div>';
   html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:-0.18em" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"> Eggs</div>';
   html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')">🧪 Cores</div>';
-  html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">🗝️ Loot</div>';
+  html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">'+uiIco('inventory/loot','🗝️',16)+' Loot</div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
   SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
