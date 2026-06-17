@@ -706,12 +706,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .slot-hero-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(7,13,32,0.18),rgba(7,13,32,0.5) 46%,rgba(7,13,32,0.86));}
 .slot-hero-art2{position:relative;z-index:2;flex:0 0 42%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
 .slot-hero-art2 .shh-emoji{font-size:4.3rem;line-height:1;align-self:center;}
-.slot-hero-art2 .shh-img{width:155%;max-width:none;height:auto;object-fit:contain;align-self:flex-end;filter:drop-shadow(0 0 6px var(--rc,#f5c842));}
+.slot-hero-art2 .shh-img{position:relative;width:155%;max-width:none;height:auto;object-fit:contain;align-self:flex-end;filter:drop-shadow(0 0 6px var(--rc,#f5c842));}
 .slot-hero-side{position:relative;z-index:2;flex:1;min-width:0;display:flex;flex-direction:column;padding:11px 12px;}
 .slot-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .slot-hero-name{font-family:'Fredoka One',cursive;font-size:1.08rem;color:#fff;line-height:1.08;text-shadow:0 1px 3px rgba(0,0,0,0.65);}
 .slot-hero-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.7rem;color:#ffe08a;background:rgba(11,21,48,0.85);border:1.5px solid #2a3c6c;border-radius:8px;padding:3px 8px;white-space:nowrap;}
 .slot-hero-rar{font-size:0.76rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
+.slot-hero-from{font-size:0.64rem;color:rgba(255,255,255,0.66);margin-top:4px;display:flex;align-items:center;gap:4px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
+.slot-hero-fav{position:absolute;top:7px;left:9px;z-index:5;font-size:1.5rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.62);text-shadow:0 1px 3px rgba(0,0,0,0.85);transition:transform .1s ease,color .12s;}
+.slot-hero-fav.on{color:var(--gold);text-shadow:0 0 7px rgba(245,200,66,0.8);}
+.slot-hero-fav:active{transform:scale(0.85);}
 .slot-hero-abils{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
 .sh-ab{display:inline-flex;align-items:center;gap:4px;background:rgba(8,15,35,0.55);border:1px solid rgba(255,255,255,0.14);border-radius:8px;padding:3px 7px;font-size:0.66rem;color:rgba(255,255,255,0.9);}
 .sh-ab img{width:1.05em;height:1.05em;object-fit:contain;}
@@ -4048,8 +4052,10 @@ function openPetSlotModal(idx){
     var crc=RARITY_CONFIG[curPet.rarity]||RARITY_CONFIG.common;
     var lp=petXpProgress(curPet);
     var hemoji=curPet.e||'\ud83d\udc3e';
+    var hnd=PET_IMG_NUDGE[(curPet.name||'').toLowerCase()];
+    var hndStyle=hnd?(' style="left:'+hnd.x+'px;margin-top:'+hnd.y+'px"'):'';
     var artBig=curPet.world
-      ? '<span class="shh-emoji">'+hemoji+'</span><img class="shh-img" src="'+petImgUrl(curPet.world,curPet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">'
+      ? '<span class="shh-emoji">'+hemoji+'</span><img class="shh-img"'+hndStyle+' src="'+petImgUrl(curPet.world,curPet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">'
       : '<span class="shh-emoji">'+hemoji+'</span>';
     var abChips='';
     if(curPet.abilities&&curPet.abilities.length){
@@ -4057,13 +4063,18 @@ function openPetSlotModal(idx){
       curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">+'+TIER_VALUES[a.tier]+'%</span></span>';});
       abChips+='</div>';
     }
+    var favStar='<div class="slot-hero-fav'+(curPet.fav?' on':'')+'" onclick="event.stopPropagation();slotToggleHeroFav(\''+curPet.uid+'\')">\u2605</div>';
+    var worldNm=curPet.world?(curPet.world.charAt(0).toUpperCase()+curPet.world.slice(1)):'';
+    var fromLine=curPet.world?('<div class="slot-hero-from">\ud83e\udd5a Hatched from '+worldNm+' Egg</div>'):'';
     h+='<div class="slot-hero" style="--rc:'+crc.color+'">'+
       (curPet.world?'<img class="slot-hero-bg" src="'+petBgUrl(curPet.world)+'" alt="" onerror="this.remove()">':'')+
       '<div class="slot-hero-shade"></div>'+
+      favStar+
       '<div class="slot-hero-art2">'+artBig+'</div>'+
       '<div class="slot-hero-side">'+
         '<div class="slot-hero-row"><div class="slot-hero-name">'+curPet.name+'</div><div class="slot-hero-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div></div>'+
         '<div class="slot-hero-rar" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div>'+
+        fromLine+
         abChips+
         '<div class="slot-hero-xp"><div class="shx-bar"><div class="shx-fill" id="slot-cur-xpfill" style="width:'+lp.pct+'%"></div></div>'+
           '<div class="shx-txt">'+uiIco('stats/pet-xp','⭐',11)+' <span id="slot-cur-xpnum">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</span></div></div>'+
@@ -4127,6 +4138,14 @@ function slotRemovePet(){
   G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
 }
 function closePetModal(){document.getElementById('pet-modal').classList.remove('open');activeSlot=-1;}
+function slotToggleHeroFav(uid){
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+  if(!pet)return;
+  pet.fav=!pet.fav;
+  saveGame();
+  if(activeSlot>=0)openPetSlotModal(activeSlot);
+  if(typeof renderPets==='function')renderPets();
+}
 function setSlotPickSort(v){slotPickSort=v;renderSlotPickGrid();}
 function onSlotPickSearch(v){slotPickSearch=v;renderSlotPickGrid();}
 function clearSlotPickSearch(){slotPickSearch='';if(activeSlot>=0)openPetSlotModal(activeSlot);}
@@ -6293,7 +6312,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.92<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.94<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
