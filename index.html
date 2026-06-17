@@ -733,7 +733,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-head{position:relative;z-index:3;padding-right:40px;min-height:26px;}
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
-.pc2-art{position:relative;z-index:3;flex:1;display:flex;align-items:flex-start;justify-content:center;min-height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
+.pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
 .pc2-img{position:relative;width:200%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 5s ease-in-out infinite;animation-delay:var(--d,0s);}
 @keyframes pc2breathe{0%,100%{transform:translateY(1.5px) scale(0.99)}50%{transform:translateY(-2.5px) scale(1.03)}}
 .pc2-emoji{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:3.4rem;}
@@ -745,6 +745,48 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-xp{position:relative;z-index:3;height:16px;background:rgba(0,0,0,0.55);border-radius:8px;overflow:hidden;border:1px solid rgba(122,90,208,0.5);}
 .pc2-xp-fill{position:absolute;inset:0;height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:8px;transition:width 0.4s ease;}
 .pc2-xp-txt{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;font-size:0.54rem;font-weight:800;color:#fff;letter-spacing:0.2px;text-shadow:0 1px 2px rgba(0,0,0,0.9);font-family:'Baloo 2',sans-serif;}
+/* Pet Loadouts (v6.68) */
+.lo-title{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fff;margin-bottom:4px;}
+.lo-sub{font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.3;margin-bottom:12px;}
+.lo-saverow{display:flex;gap:6px;margin-bottom:14px;}
+.lo-input{flex:1;min-width:0;background:rgba(0,0,0,0.35);border:1px solid rgba(122,90,208,0.5);border-radius:9px;color:#fff;font-size:0.8rem;padding:7px 10px;font-family:'Baloo 2',sans-serif;}
+.lo-input::placeholder{color:rgba(255,255,255,0.35);}
+.lo-save-btn{flex-shrink:0;background:linear-gradient(180deg,#7c4dff,#5a32c4);color:#fff;border:none;border-radius:9px;font-weight:800;font-size:0.78rem;padding:7px 11px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
+.lo-empty{font-size:0.78rem;color:rgba(255,255,255,0.45);line-height:1.4;text-align:center;padding:18px 10px;background:rgba(0,0,0,0.2);border-radius:10px;}
+.lo-row{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:9px 10px;margin-bottom:9px;}
+.lo-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;}
+.lo-name-lbl{font-family:'Baloo 2',sans-serif;font-weight:800;color:#fff;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lo-cells{display:flex;gap:5px;margin-bottom:9px;}
+.lo-cell{width:34px;height:34px;border-radius:8px;border:2px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;}
+.lo-cell.empty{color:rgba(255,255,255,0.25);border-style:dashed;font-size:1.1rem;}
+.lo-cell.missing{color:rgba(255,120,120,0.7);border-color:rgba(255,120,120,0.4);font-size:1.1rem;}
+.lo-actions{display:flex;gap:6px;}
+.lo-apply{flex:1;background:linear-gradient(180deg,#37c871,#1f9b53);color:#fff;border:none;border-radius:8px;font-weight:800;font-size:0.78rem;padding:7px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
+.lo-over{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:8px;font-weight:700;font-size:0.74rem;padding:7px 10px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
+.lo-del{background:rgba(220,70,70,0.18);color:#ff8a8a;border:1px solid rgba(220,70,70,0.4);border-radius:8px;font-weight:800;font-size:0.78rem;padding:7px 11px;cursor:pointer;}
+/* Pets: Search + Filter toolbar (v6.69) */
+.pet-tools{display:flex;gap:7px;margin-bottom:8px;}
+.pet-search{flex:1;position:relative;display:flex;align-items:center;background:rgba(0,0,0,0.32);border:1px solid rgba(122,90,208,0.4);border-radius:10px;padding:0 8px;}
+.pet-search-ic{font-size:0.8rem;opacity:0.6;margin-right:5px;}
+.pet-search-in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#fff;font-size:0.82rem;padding:8px 0;font-family:'Baloo 2',sans-serif;}
+.pet-search-in::placeholder{color:rgba(255,255,255,0.35);}
+.pet-search-x{cursor:pointer;color:rgba(255,255,255,0.5);font-size:0.8rem;padding:0 2px 0 6px;}
+.pet-filter-btn{flex-shrink:0;background:rgba(0,0,0,0.32);border:1px solid rgba(122,90,208,0.4);border-radius:10px;color:#fff;font-size:0.8rem;font-weight:700;padding:0 12px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
+.pet-filter-btn.on{border-color:var(--gold);color:var(--gold);}
+.pet-filter-btn.open{background:rgba(122,90,208,0.25);}
+.pet-filter-panel{background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;margin-bottom:9px;}
+.pf-group-lbl{font-size:0.66rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.5);margin:2px 0 6px;}
+.pf-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.pf-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);border-radius:20px;color:rgba(255,255,255,0.8);font-size:0.7rem;font-weight:700;padding:4px 10px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
+.pf-chip img{width:12px;height:12px;}
+.pf-chip.active{background:rgba(122,90,208,0.3);border-color:#b388ff;color:#fff;}
+.pf-chip.pf-rar.active{background:transparent;border-color:var(--cc);color:var(--cc);box-shadow:0 0 6px -2px var(--cc);}
+.pf-clear{width:100%;background:rgba(220,70,70,0.15);border:1px solid rgba(220,70,70,0.35);color:#ff9a9a;border-radius:8px;font-size:0.74rem;font-weight:700;padding:7px;cursor:pointer;font-family:'Baloo 2',sans-serif;margin-top:2px;}
+.pet-result-line{font-size:0.72rem;color:rgba(255,255,255,0.5);margin-bottom:7px;font-weight:600;}
+.pf-chip.pf-fav.active{background:rgba(245,200,66,0.18);border-color:var(--gold);color:var(--gold);}
+.pc2-fav{position:absolute;top:26px;right:6px;z-index:5;font-size:0.82rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.32);text-shadow:0 1px 2px rgba(0,0,0,0.75);transition:transform .1s ease,color .12s;}
+.pc2-fav.on{color:var(--gold);text-shadow:0 0 6px rgba(245,200,66,0.75);}
+.pc2-fav:active{transform:scale(1.3);}
 .pet-card{border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
 .pet-card::before{content:'';position:absolute;inset:0;opacity:0.08;pointer-events:none;}
 .pet-card:active{transform:scale(0.97);}
@@ -1624,6 +1666,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div class="side-btns" id="right-btns">
         <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
         <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent='📊'"></span><span class="sb-label">Stats</span></div>
+        <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon">🎚️</span><span class="sb-label">Loadouts</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/event.png" alt="" onerror="this.parentNode.textContent='🎉'"></span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -1746,6 +1789,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   <div class="modal-box centered" style="width:320px;max-height:80vh;overflow-y:auto;">
     <button class="modal-close" onclick="document.getElementById('egg-info-modal').classList.remove('open')" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="egg-info-content"></div>
+  </div>
+</div>
+<div id="loadout-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered" style="width:330px;max-height:84vh;overflow-y:auto;position:relative;">
+    <button class="modal-close" onclick="document.getElementById('loadout-modal').classList.remove('open')" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    <div id="loadout-content"></div>
   </div>
 </div>
 <div id="shell-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;z-index:1100;">
@@ -2805,6 +2854,7 @@ var G={
   redeemedCodes:[],
   craftDiscount:1,hatchDiscount:1,offlineMult:0.5,
   equippedPets:[null,null,null,null,null],
+  loadouts:[],
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   buildingDoublings:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   clickUpgrades:{},
@@ -3342,6 +3392,7 @@ function saveGame(){
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
+    loadouts:G.loadouts,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
@@ -3356,6 +3407,7 @@ function resetGame(){
   G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
   G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
   G.equippedPets=[null,null,null,null,null];
+  G.loadouts=[];
   G.owned=new Array(20).fill(0);
   G.buildingDoublings=new Array(20).fill(0);
   G.clickUpgrades={};
@@ -3758,6 +3810,85 @@ function renderSlotRow(){
 }
 
 // ============================================================
+// PET LOADOUTS (spelar-sparade equip-set — v6.68)
+// ============================================================
+var LOADOUT_MAX=8;
+function loEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function loSnapshot(){return G.equippedPets.slice(0,5).map(function(u){return u==null?null:u;});}
+function openLoadoutModal(){if(!Array.isArray(G.loadouts))G.loadouts=[];renderLoadoutModal();document.getElementById('loadout-modal').classList.add('open');}
+function loCell(uid){
+  if(uid==null)return '<span class="lo-cell empty">+</span>';
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+  if(!pet)return '<span class="lo-cell missing">?</span>';
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  return '<span class="lo-cell" style="border-color:'+rc.color+'">'+petIco(pet)+'</span>';
+}
+function renderLoadoutModal(){
+  var c=document.getElementById('loadout-content');if(!c)return;
+  var slots=G.petSlots;
+  var h='<div class="lo-title">Pet Loadouts</div>';
+  h+='<div class="lo-sub">Save your current set of equipped pets and switch between builds with one tap. Pets that are gone or out on an adventure are skipped.</div>';
+  h+='<div class="lo-saverow"><input id="lo-name" class="lo-input" type="text" maxlength="18" placeholder="Name this set…"><button class="lo-save-btn" onclick="saveCurrentLoadout()">＋ Save</button></div>';
+  if(!G.loadouts.length){
+    h+='<div class="lo-empty">No saved sets yet.<br>Equip the pets you want in your slots, type a name, and tap “Save”.</div>';
+  } else {
+    G.loadouts.forEach(function(lo,i){
+      var cells='';
+      for(var s=0;s<5;s++){ if(s<slots) cells+=loCell(lo.pets?lo.pets[s]:null); }
+      h+='<div class="lo-row">'+
+           '<div class="lo-row-top"><div class="lo-name-lbl">'+loEsc(lo.name||('Set '+(i+1)))+'</div></div>'+
+           '<div class="lo-cells">'+cells+'</div>'+
+           '<div class="lo-actions">'+
+             '<button class="lo-apply" onclick="applyLoadout('+i+')">Equip set</button>'+
+             '<button class="lo-over" onclick="overwriteLoadout('+i+')">Update</button>'+
+             '<button class="lo-del" onclick="deleteLoadout('+i+')">✕</button>'+
+           '</div>'+
+         '</div>';
+    });
+  }
+  c.innerHTML=h;
+}
+function saveCurrentLoadout(){
+  if(!Array.isArray(G.loadouts))G.loadouts=[];
+  if(G.loadouts.length>=LOADOUT_MAX){alert('You can save up to '+LOADOUT_MAX+' loadouts. Delete one first.');return;}
+  var snap=loSnapshot();
+  if(!snap.some(function(u){return u!=null;})){alert('No pets are equipped — set up your slots first, then save.');return;}
+  var inp=document.getElementById('lo-name');
+  var nm=(inp&&inp.value?inp.value:'').trim();
+  if(!nm)nm='Set '+(G.loadouts.length+1);
+  G.loadouts.push({name:nm,pets:snap});
+  saveGame();renderLoadoutModal();
+}
+function overwriteLoadout(i){
+  var lo=G.loadouts[i];if(!lo)return;
+  if(!confirm('Update “'+(lo.name||('Set '+(i+1)))+'” to your current equipped pets?'))return;
+  lo.pets=loSnapshot();
+  saveGame();renderLoadoutModal();
+}
+function deleteLoadout(i){
+  var lo=G.loadouts[i];if(!lo)return;
+  if(!confirm('Delete loadout “'+(lo.name||('Set '+(i+1)))+'”?'))return;
+  G.loadouts.splice(i,1);saveGame();renderLoadoutModal();
+}
+function applyLoadout(i){
+  var lo=G.loadouts[i];if(!lo)return;
+  var newEq=[null,null,null,null,null];var used={};
+  for(var s=0;s<5;s++){
+    if(s>=G.petSlots)break;
+    var uid=lo.pets?lo.pets[s]:null;
+    if(uid==null||used[uid])continue;
+    var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+    if(!pet)continue;                 // peten finns inte längre → lämna luckan tom
+    if(typeof isPetBusy==='function'&&isPetBusy(pet.uid))continue; // ute på äventyr → hoppa
+    newEq[s]=pet.uid;used[pet.uid]=true;
+  }
+  G.equippedPets=newEq;
+  G.hatchedPets.forEach(function(p){p.equippedSlot=G.equippedPets.indexOf(p.uid);});
+  renderSlotRow();updateHUD();renderPets();saveGame();
+  document.getElementById('loadout-modal').classList.remove('open');
+}
+
+// ============================================================
 // PET SLOT MODAL (choose which pet to equip in a slot)
 // ============================================================
 var activeSlot=-1;
@@ -3846,6 +3977,30 @@ function petSortBarHtml(cur,onchangeFn){
   PET_SORT_OPTS.forEach(function(s){h+='<option value="'+s[0]+'"'+(cur===s[0]?' selected':'')+'>'+s[1]+'</option>';});
   h+='</select></div>';return h;
 }
+var petSearchQuery='';
+var petFilter={rarity:{},ability:{},favOnly:false};
+var petFilterOpen=false;
+function petActiveFilterCount(){
+  var n=0;
+  Object.keys(petFilter.rarity).forEach(function(k){if(petFilter.rarity[k])n++;});
+  Object.keys(petFilter.ability).forEach(function(k){if(petFilter.ability[k])n++;});
+  if(petFilter.favOnly)n++;
+  return n;
+}
+function petMatchesFilter(pet){
+  if(petFilter.favOnly&&!pet.fav)return false;
+  if(petSearchQuery){
+    if((pet.name||'').toLowerCase().indexOf(petSearchQuery.toLowerCase())<0)return false;
+  }
+  var rk=Object.keys(petFilter.rarity).filter(function(k){return petFilter.rarity[k];});
+  if(rk.length&&rk.indexOf(pet.rarity)<0)return false;
+  var ak=Object.keys(petFilter.ability).filter(function(k){return petFilter.ability[k];});
+  if(ak.length){
+    var has=pet.abilities.some(function(ab){return ak.indexOf(ab.id)>=0;});
+    if(!has)return false;
+  }
+  return true;
+}
 function renderPets(){
   var wrap=document.getElementById('pets-wrap');if(!wrap)return;
   var total=G.hatchedPets.length;
@@ -3869,81 +4024,130 @@ function renderPets(){
     html+='</div>';
   }
 
-  // Sort dropdown (delad hjälpare — inkl. level)
+  // Verktygsrad: sök + filter-knapp + sortering
+  var fcount=petActiveFilterCount();
+  html+='<div class="pet-tools">';
+  html+='<div class="pet-search"><span class="pet-search-ic">🔍</span><input id="pet-search-input" class="pet-search-in" type="text" placeholder="Search pets…" value="'+(petSearchQuery.replace(/"/g,'&quot;'))+'" oninput="onPetSearch(this.value)">'+(petSearchQuery?'<span class="pet-search-x" onclick="clearPetSearch()">✕</span>':'')+'</div>';
+  html+='<button class="pet-filter-btn'+(fcount?' on':'')+(petFilterOpen?' open':'')+'" onclick="togglePetFilterPanel()">⚙ Filter'+(fcount?(' ('+fcount+')'):'')+'</button>';
+  html+='</div>';
   html+=petSortBarHtml(petSortMode,'setPetSort');
 
-  // Sort pets
-  var sorted=G.hatchedPets.slice();
-  sorted.sort(function(a,b){return petSortCompare(a,b,petSortMode);});
-
-  if(sorted.length===0){
-    html+='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
-  } else {
-    var FX_GL=[0,8,10,12,14,17,19,22,26,32];
-    var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
-    var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
-    var FX_PN=[0,0,0,3,4,5,5,6,6,7];
-    var FX_SW=[62,62,82,80,76,72,68,64,60,56];
-    var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
-    html+='<div class="pet-grid">';
-    sorted.forEach(function(pet,idx){
-      var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-      var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
-      var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
-      var lp=petXpProgress(pet);
-      var emoji=pet.e||'\ud83d\udc3e';
-      var dly=((idx%7)*0.55).toFixed(2)+'s';
-      var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'');
-      var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
-      html+='<div class="'+cls+'" style="'+sv+'" onclick="openPetDetail(\''+pet.uid+'\')">';
-      // World-BG (cover) + mörk shade för läsbarhet
-      if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
-      html+='<div class="pc2-bgshade"></div>';
-      // Aura (uncommon+), pulsar för rare+
-      if(fx>=1)html+='<div class="pc2-aura"></div>';
-      // Bakom djuret: mjuk glow (1-3) eller roterande strålkrans (legendary+)
-      if(fx>=4)html+='<div class="pc2-rays"></div>';
-      else if(fx>=1)html+='<div class="pc2-glow"></div>';
-      // Partiklar (epic+)
-      if(FX_PN[fx]>0){
-        html+='<div class="pc2-parts">';
-        var pn=FX_PN[fx];
-        for(var pi=0;pi<pn;pi++){
-          var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
-          var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
-          html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
-        }
-        html+='</div>';
-      }
-      // Skimmer (rare+)
-      if(fx>=2)html+='<div class="pc2-skim"></div>';
-      html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
-      if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
-      html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
-      html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
-      // Stor djurbild med emoji-fallback
-      var artHtml;
-      if(pet.world){
-        artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
-      } else {
-        artHtml='<span class="pc2-emoji">'+emoji+'</span>';
-      }
-      html+='<div class="pc2-art">'+artHtml+'</div>';
-      html+='<div class="pc2-abils">';
-      pet.abilities.forEach(function(ab){
-        var m=ABILITY_META[ab.id];if(!m)return;
-        html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+TIER_VALUES[ab.tier]+'%</span></span>';
-      });
-      html+='</div>';
-      var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
-      html+='<div class="pc2-xp"><div class="pc2-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div><div class="pc2-xp-txt" id="pcxpt-'+pet.uid+'">'+xpTxt+'</div></div>';
-      html+='</div>';
+  // Filterpanel (uppfälld)
+  if(petFilterOpen){
+    html+='<div class="pet-filter-panel">';
+    html+='<div class="pf-group-lbl">Show</div><div class="pf-chips"><button class="pf-chip pf-fav'+(petFilter.favOnly?' active':'')+'" onclick="togglePetFavFilter()">★ Favorites only</button></div>';
+    html+='<div class="pf-group-lbl">Rarity</div><div class="pf-chips">';
+    rarityOrder.forEach(function(r){
+      var rc=RARITY_CONFIG[r]||{};var on=!!petFilter.rarity[r];
+      html+='<button class="pf-chip pf-rar'+(on?' active':'')+'" style="--cc:'+(rc.color||'#888')+'" onclick="togglePetFilterChip(\'rarity\',\''+r+'\')">'+(rc.label||r)+'</button>';
     });
     html+='</div>';
+    html+='<div class="pf-group-lbl">Ability</div><div class="pf-chips">';
+    Object.keys(ABILITY_META).forEach(function(aid){
+      var m=ABILITY_META[aid];var on=!!petFilter.ability[aid];
+      html+='<button class="pf-chip'+(on?' active':'')+'" onclick="togglePetFilterChip(\'ability\',\''+aid+'\')">'+abilityIconImg(aid)+' '+m.name+'</button>';
+    });
+    html+='</div>';
+    if(fcount>0)html+='<button class="pf-clear" onclick="clearPetFilters()">Clear all filters</button>';
+    html+='</div>';
   }
+
+  html+='<div id="pet-grid-host"></div>';
   wrap.innerHTML=html;
+  renderPetGrid();
 }
-function setPetSort(mode){petSortMode=mode;renderPets();}
+function onPetSearch(v){petSearchQuery=v;renderPetGrid();}
+function clearPetSearch(){petSearchQuery='';renderPets();}
+function togglePetFilterPanel(){petFilterOpen=!petFilterOpen;renderPets();}
+function togglePetFilterChip(group,key){petFilter[group][key]=!petFilter[group][key];renderPets();}
+function clearPetFilters(){petFilter={rarity:{},ability:{},favOnly:false};renderPets();}
+function togglePetFavFilter(){petFilter.favOnly=!petFilter.favOnly;renderPets();}
+function togglePetFav(uid){
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
+  if(!pet)return;
+  pet.fav=!pet.fav;
+  saveGame();
+  renderPetGrid();
+}
+function renderPetGrid(){
+  var host=document.getElementById('pet-grid-host');if(!host)return;
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var total=G.hatchedPets.length;
+
+  if(total===0){
+    host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
+    return;
+  }
+  var sorted=G.hatchedPets.filter(petMatchesFilter);
+  sorted.sort(function(a,b){return petSortCompare(a,b,petSortMode);});
+
+  var html='';
+  var filtering=(petSearchQuery||petActiveFilterCount()>0);
+  if(filtering)html+='<div class="pet-result-line">Showing '+sorted.length+' of '+total+'</div>';
+
+  if(sorted.length===0){
+    host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearPetFilters();clearPetSearch();">Clear search &amp; filters</button></div>';
+    return;
+  }
+  var FX_GL=[0,8,10,12,14,17,19,22,26,32];
+  var FX_AU=[0,0.45,0.6,0.68,0.74,0.8,0.85,0.9,0.95,1];
+  var FX_SD=[4.6,4.6,5.4,5.0,4.6,4.2,3.9,3.6,3.3,3.0];
+  var FX_PN=[0,0,0,3,4,5,5,6,6,7];
+  var FX_SW=[62,62,82,80,76,72,68,64,60,56];
+  var FX_SO=[0.5,0.5,0.32,0.36,0.4,0.45,0.5,0.56,0.63,0.7];
+  html+='<div class="pet-grid">';
+  sorted.forEach(function(pet,idx){
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    var fx=rarityOrder.indexOf(pet.rarity);if(fx<0)fx=0;
+    var isEquipped=G.equippedPets.indexOf(pet.uid)>=0;
+    var lp=petXpProgress(pet);
+    var emoji=pet.e||'\ud83d\udc3e';
+    var dly=((idx%7)*0.55).toFixed(2)+'s';
+    var cls='pc2 fx'+fx+(fx>=2?' fxpulse':'')+(isEquipped?' equipped':'');
+    var sv='--rc:'+rc.color+';--gl:'+FX_GL[fx]+'px;--au:'+FX_AU[fx]+';--sd:'+FX_SD[fx]+'s;--sw:'+FX_SW[fx]+'%;--so:'+FX_SO[fx]+';--d:'+dly;
+    html+='<div class="'+cls+'" style="'+sv+'" onclick="openPetDetail(\''+pet.uid+'\')">';
+    if(pet.world)html+='<img class="pc2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">';
+    html+='<div class="pc2-bgshade"></div>';
+    if(fx>=1)html+='<div class="pc2-aura"></div>';
+    if(fx>=4)html+='<div class="pc2-rays"></div>';
+    else if(fx>=1)html+='<div class="pc2-glow"></div>';
+    if(FX_PN[fx]>0){
+      html+='<div class="pc2-parts">';
+      var pn=FX_PN[fx];
+      for(var pi=0;pi<pn;pi++){
+        var lf=(pn>1?(12+pi*(76/(pn-1))):50).toFixed(0);
+        var pdl=((pi/pn)*3.8+(idx%7)*0.3).toFixed(2);
+        html+='<i style="left:'+lf+'%;animation-delay:'+pdl+'s"></i>';
+      }
+      html+='</div>';
+    }
+    if(fx>=2)html+='<div class="pc2-skim"></div>';
+    html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
+    html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
+    if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
+    html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
+    html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
+    var artHtml;
+    if(pet.world){
+      artHtml='<span class="pc2-emoji">'+emoji+'</span><img class="pc2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">';
+    } else {
+      artHtml='<span class="pc2-emoji">'+emoji+'</span>';
+    }
+    html+='<div class="pc2-art">'+artHtml+'</div>';
+    html+='<div class="pc2-abils">';
+    pet.abilities.forEach(function(ab){
+      var m=ABILITY_META[ab.id];if(!m)return;
+      html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+TIER_VALUES[ab.tier]+'%</span></span>';
+    });
+    html+='</div>';
+    var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
+    html+='<div class="pc2-xp"><div class="pc2-xp-fill" id="pcxpf-'+pet.uid+'" style="width:'+lp.pct+'%"></div><div class="pc2-xp-txt" id="pcxpt-'+pet.uid+'">'+xpTxt+'</div></div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  host.innerHTML=html;
+}
+function setPetSort(mode){petSortMode=mode;renderPetGrid();}
 // Live-uppdatera XP-mätaren + level-etiketten på pet-korten för pets som sitter aktivt
 // (uppdaterar bara på plats, bygger inte om korten → inget flimmer).
 function softUpdatePetXp(){
@@ -5868,7 +6072,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.66<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.70<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -5911,6 +6115,7 @@ function resetFromSettings(){
     G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
     G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
     G.equippedPets=[null,null,null,null,null];
+    G.loadouts=[];
     G.owned=new Array(20).fill(0);
     G.buildingDoublings=new Array(20).fill(0);
     G.clickUpgrades={};
@@ -9706,6 +9911,7 @@ if(savedData){
   ['click','luck','offline'].forEach(function(k){if(G.ulvl[k]!==undefined)delete G.ulvl[k];});
   if(G.ulvl.craft==null)G.ulvl.craft=0;if(G.ulvl.hatch==null)G.ulvl.hatch=0;
   G.equippedPets=savedData.equippedPets||[null,null,null,null,null];
+  G.loadouts=Array.isArray(savedData.loadouts)?savedData.loadouts:[];
   G.shells=savedData.shells||{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
   // Sanera null-värden till 0
   SHELL_RARITIES.forEach(function(r){if(G.shells[r.id]===null||G.shells[r.id]===undefined)G.shells[r.id]=0;});
