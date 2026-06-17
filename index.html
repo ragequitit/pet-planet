@@ -30,7 +30,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btn .sb-img{width:42px;height:42px;object-fit:contain;display:inline-block;}
 .side-btn .sb-label{font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
-#pet-positions{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:5;}
+#pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
 .pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
 .pet-pos .ppi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.3);border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.3);overflow:hidden;}
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
@@ -38,7 +38,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos.locked .ppi{opacity:0.2;}
 /* Equipped pets står fritt på scenen (ingen ring), större + skugga (v6.82) */
 .pet-pos.has-pet .ppi{background:none;border:none;overflow:visible;cursor:pointer;}
-.pp-pet{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);font-size:3.9rem;line-height:1;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));pointer-events:none;}
+.pp-pet{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);transform-origin:bottom center;font-size:4.3rem;line-height:1;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));pointer-events:none;animation:ppSway 4.7s ease-in-out infinite;}
+@keyframes ppSway{0%,100%{transform:translateX(-50%) rotate(-2deg)}50%{transform:translateX(-50%) rotate(2deg)}}
+.pet-pos:nth-child(1) .pp-pet{animation-duration:4.3s;animation-delay:-0.6s;}
+.pet-pos:nth-child(2) .pp-pet{animation-duration:5.2s;animation-delay:-2.1s;}
+.pet-pos:nth-child(3) .pp-pet{animation-duration:4.8s;animation-delay:-3.4s;}
+.pet-pos:nth-child(4) .pp-pet{animation-duration:5.5s;animation-delay:-1.2s;}
+.pet-pos:nth-child(5) .pp-pet{animation-duration:4.5s;animation-delay:-2.8s;}
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
 #egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
@@ -2337,7 +2343,7 @@ var ADVENTURES=[
     shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
     bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002}]}
 ];
-var PET_POS=[{left:0,top:0},{left:52,top:15},{left:118,top:22},{left:184,top:15},{left:236,top:0}]; // U/båge: kanterna högst, mitten lägst (följer äggets rundade undersida). top = nedåt.
+var PET_POS=[{left:0,top:0},{left:52,top:20},{left:118,top:34},{left:184,top:20},{left:236,top:0}]; // U/båge (v6.87 djupare): kanterna högst, mitten lägst. top = nedåt.
 
 // ============================================================
 // DATA: SHELL RARITIES
@@ -4860,7 +4866,7 @@ var MORE_ITEMS=[
   {label:'Petdex',icon:uiIco('stats/petdex','📖',30),tab:'petdex'},
   {label:'Achievements',icon:uiIco('menu/achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('menu/inventory','🎒',30),action:'bag'},
-  {label:'Friends',icon:uiIco('menu/friends','👥',30),action:'friends'},
+  {label:'Friends',icon:uiIco('more/friends','👥',30),action:'friends'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
@@ -5373,7 +5379,7 @@ function renderFriends(){
   else if(!FRIENDS.data.friends.length)h+='<div class="fr2-empty">No friends yet. Tap Add Friend below!</div>';
   else friendSortedList().forEach(function(p){h+=frCard(p);});
   h+='</div>';
-  h+='<button class="fr2-addbtn" onclick="openFriendAdd()"><span class="fr2-add-ic">\ud83d\udc64\u2795</span><span class="fr2-add-tx"><b>ADD FRIEND</b><span>Search and add new friends!</span></span><span class="fr2-add-ch">\u203a</span></button>';
+  h+='<button class="fr2-addbtn" onclick="openFriendAdd()"><span class="fr2-add-ic">'+uiIco('more/add-friend','\ud83d\udc64\u2795',26)+'</span><span class="fr2-add-tx"><b>ADD FRIEND</b><span>Search and add new friends!</span></span><span class="fr2-add-ch">\u203a</span></button>';
   body.innerHTML=h;
   var am=document.getElementById('fradd-modal');if(am&&am.classList.contains('open'))renderFriendAdd();
   var nm=document.getElementById('frnotif-modal');if(nm&&nm.classList.contains('open'))renderFriendNotifs();
@@ -6102,7 +6108,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.86<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.88<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
