@@ -38,9 +38,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos.locked .ppi{opacity:0.2;}
 /* Equipped pets står fritt på scenen (ingen ring), större + skugga (v6.82) */
 .pet-pos.has-pet .ppi{background:none;border:none;overflow:visible;cursor:pointer;}
-.pp-pet{position:absolute;left:50%;bottom:7px;transform:translateX(-50%);font-size:3.4rem;line-height:1;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));pointer-events:none;}
+.pp-pet{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);font-size:3.9rem;line-height:1;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));pointer-events:none;}
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
-.pp-shadow{position:absolute;left:50%;bottom:3px;transform:translateX(-50%);width:32px;height:9px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
+.pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
 #egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
 #egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
@@ -3475,7 +3475,7 @@ function addTestCharms(){G.rerollCharms=(G.rerollCharms||0)+10;if(typeof updateH
 // ===== DEV-MENY (flytande DEV-knapp) — tas bort innan release =====
 function applyPedestalVisibility(){
   var p=document.getElementById('pedestal-img');
-  if(p)p.style.display=(G.settings&&G.settings.hidePedestal)?'none':'block';
+  if(p)p.style.display='none';
 }
 function togglePedestal(){
   if(!G.settings)G.settings={};
@@ -6102,7 +6102,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.82<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.83<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
