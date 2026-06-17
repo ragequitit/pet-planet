@@ -2913,6 +2913,10 @@ function getShellBonus(){
 // ============================================================
 // Spårar Sparks per källa (v6.92, steg 2). Lazy-init så gamla sparfiler inte kraschar.
 function trackCoins(src,amt){if(!G||!G.stats||!amt)return;if(!G.stats.coinsBySource)G.stats.coinsBySource={click:0,idle:0,offline:0,adventure:0,rewards:0};G.stats.coinsBySource[src]=(G.stats.coinsBySource[src]||0)+amt;}
+// Spårar Pets per källa (v6.92, steg 3). Lazy-init.
+function trackPets(src,n){if(!G||!G.stats||!n)return;if(!G.stats.petsBySource)G.stats.petsBySource={egg:0,adventure:0,trade:0,rewards:0};G.stats.petsBySource[src]=(G.stats.petsBySource[src]||0)+n;}
+// Spårar fusion-utfall per rarity (v6.92, steg 4). Lazy-init.
+function trackFusion(rarity){if(!G||!G.stats||!rarity)return;if(!G.stats.fusionsByRarity)G.stats.fusionsByRarity={};G.stats.fusionsByRarity[rarity]=(G.stats.fusionsByRarity[rarity]||0)+1;}
 function freshStats(){
   return {
     // ECONOMY
@@ -2931,10 +2935,12 @@ function freshStats(){
     mostHatchedWorld:null,tier5AbilitiesHatched:0,duplicatePetsHatched:0,
     // PETS
     totalPetsCollected:0,uniquePetsDiscovered:0,highestRarityOwned:'common',rarestPetEverHatched:null,
+    petsBySource:{egg:0,adventure:0,trade:0,rewards:0},
     totalPetsFused:0,totalPetsMutated:0,totalPetsSentOnAdventures:0,abilitiesExtracted:0,
     mutationCoresCreated:0,mutationCoresUsed:0,petsSacrificed:0,perfectPetsCreated:0,favoriteAbility:null,
     // FUSION
     totalFusions:0,highestFusionRarity:null,perfectFusions:0,petsConsumedInFusion:0,cosmicPetsCreated:0,
+    fusionsByRarity:{},
     // ADVENTURES
     adventuresCompleted:0,adventureHoursLogged:0,adventurePetsFound:0,discoveryItemsFound:0,specialAdventures:0,totalAdventureXp:0,totalActivePetXp:0,
     // ACHIEVEMENTS
@@ -5838,7 +5844,7 @@ function tradeAccept(){
   tradeMsg('Trading\u2026','');
   sb.rpc('pp_trade_accept',{p_code:TRADE.code,p_pet_ids:ids}).then(function(res){
     var d=res&&res.data;
-    if(d&&d.ok){TRADE.view=null;TRADE.take={};TRADE.code='';tradeReconcile(function(){tradeMsg('Trade complete! Your pets have been updated.','ok');});}
+    if(d&&d.ok){var gotN=(TRADE.view&&TRADE.view.from_pets&&TRADE.view.from_pets.length)||0;trackPets('trade',gotN);TRADE.view=null;TRADE.take={};TRADE.code='';tradeReconcile(function(){tradeMsg('Trade complete! Your pets have been updated.','ok');});}
     else tradeMsg(tradeReason(d),'err');
   },function(){tradeMsg('Could not reach the server. Try again.','err');});
 }
@@ -6486,6 +6492,27 @@ function openStatBreakdown(type){
     total=Math.floor(total);
     empty='No Sparks earned yet. Tap the egg or let your buildings work, and it will show up here.';
   }
+  if(type==='pets'){
+    title='Pets Collected';iconHtml=uiIco('stats/pets-collected','🐾',18);
+    var ps=G.stats.petsBySource||{};
+    var petDefs=[['egg','Hatched from Eggs','🥚'],['adventure','Adventures','🗺️'],['trade','Trades','🤝'],['rewards','Rewards & Events','🎁']];
+    petDefs.forEach(function(d){total+=(ps[d[0]]||0);});
+    var parr=petDefs.map(function(d){return {label:d[1],icon:d[2],count:ps[d[0]]||0};});
+    parr.sort(function(a,b){return b.count-a.count;});
+    parr.forEach(function(a){if(a.count>0)rows.push(statBreakRow(a.icon,a.label,a.count,total));});
+    empty='No pets yet. Hatch an egg and your pets will be tracked here by where they came from.';
+  }
+  if(type==='fusions'){
+    title='Fusions';iconHtml='⚗️';
+    var fb=G.stats.fusionsByRarity||{};
+    var fkeys=Object.keys(fb);
+    fkeys.forEach(function(k){total+=(fb[k]||0);});
+    var farr=fkeys.map(function(k){var rc=RARITY_CONFIG[k]||{label:k,color:'#fff'};return {label:'<span style="color:'+rc.color+'">'+(rc.label||k)+'</span>',icon:'<span style="color:'+rc.color+';font-size:1.15rem">\u25cf</span>',count:fb[k]||0};});
+    farr.sort(function(a,b){return b.count-a.count;});
+    farr.forEach(function(a){if(a.count>0)rows.push(statBreakRow(a.icon,a.label,a.count,total));});
+    note='Counts the rarity of each pet you created through fusion.';
+    empty='No fusions yet. Fuse 5 pets of the same rarity to create a higher one \u2014 results show up here.';
+  }
   if(type==='eggs'){
     title='Eggs Hatched';iconHtml='🍳';
     var by=G.stats.eggsHatchedByWorld||{};
@@ -6704,10 +6731,10 @@ function renderProfile(){
     h+='<div class="prof-section-title">Lifetime Overview</div>';
     h+='<div class="prof-ov-grid">';
     h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0),'sparks');
-    h+=profOvCard(uiIco('stats/pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0));
+    h+=profOvCard(uiIco('stats/pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0),'pets');
     h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0),'eggs');
     h+=profOvCard(uiIco('stats/total-clicks','👆',26),'Total Clicks',fmtShort(G.stats.totalClicks||0));
-    h+=profOvCard('⚗️','Fusions',fmtShort(G.stats.totalFusions||0));
+    h+=profOvCard('⚗️','Fusions',fmtShort(G.stats.totalFusions||0),'fusions');
     h+=profOvCard(uiIco('stats/playtime','⏱️',26),'Playtime',profPlaytime());
     h+='</div>';
     h+='<div class="prof-compl"><div class="prof-compl-top"><span class="prof-compl-lbl">Account Completion</span><span class="prof-compl-pct">'+completion+'%</span></div>';
@@ -8599,7 +8626,7 @@ function collectHatch(idx){
   // Most hatched world
   var maxW=0;Object.keys(G.stats.eggsHatchedByWorld).forEach(function(w){if(G.stats.eggsHatchedByWorld[w]>maxW){maxW=G.stats.eggsHatchedByWorld[w];G.stats.mostHatchedWorld=w;}});
   // Pet stats
-  G.stats.totalPetsCollected++;
+  G.stats.totalPetsCollected++;trackPets('egg',1);
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   if(rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.highestRarityOwned))G.stats.highestRarityOwned=pet.rarity;
   if(!G.stats.rarestPetEverHatched||rarityOrder.indexOf(pet.rarity)>rarityOrder.indexOf(G.stats.rarestPetEverHatched.rarity))G.stats.rarestPetEverHatched={name:pet.name,e:pet.e,world:pet.world,rarity:pet.rarity};
@@ -8833,6 +8860,7 @@ function doFusion(){
   registerPet(newPet);
 
   // Update stats
+  G.stats.totalFusions=(G.stats.totalFusions||0)+1;trackFusion(newPet.rarity);
   G.stats.totalPetsFused=(G.stats.totalPetsFused||0)+1;
   addPlayerXp(PLAYER_XP.fusion);
   G.stats.petsConsumedInFusion=(G.stats.petsConsumedInFusion||0)+5;
@@ -9560,7 +9588,7 @@ function grantPetReward(rarity){
   var abilities=[];
   for(var i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
   registerPet({uid:Date.now()+Math.random(),name:pick.name,e:pick.e,rarity:rarity,world:pick.world,abilities:abilities,equippedSlot:-1,level:1,xp:0});
-  G.stats.totalPetsCollected=(G.stats.totalPetsCollected||0)+1;
+  G.stats.totalPetsCollected=(G.stats.totalPetsCollected||0)+1;trackPets('rewards',1);
   if(typeof syncDiscoveredFromInventory==='function')syncDiscoveredFromInventory();
 }
 function applyPermReward(stat,pct){
