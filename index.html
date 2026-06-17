@@ -2361,7 +2361,7 @@ function shellIcon(id,cls){
 // DATA: EGG SHOP
 // ============================================================
 var EGG_SHOP=[
-  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:0,  buildReq:null,        hatchReq:null, coinReq:100},
+  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:50, buildReq:null,        hatchReq:null, coinReq:100},
   {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'common',   shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
   {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'uncommon', shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
   {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'rare',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
@@ -6092,7 +6092,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.80<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.81<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8276,7 +8276,7 @@ function renderShop(){
     // Kostnad (coins + shells med ikoner)
     if(unlocked){
       html+='<div class="sec-cost">';
-      html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
+      if(cc>0)html+='<span class="sec-cost-chip'+(coinOk?'':' bad')+'"><img class="sec-coin" src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🪙\'))">'+fmtShort(cc)+'</span>';
       if(sc>0)html+='<span class="sec-cost-chip sec-shell-chip" style="--erc:'+(shellR?shellR.color:'#aaa')+'"><span class="sec-shell-rar">'+(shellR?shellR.name.replace(' Shell',''):'')+'</span><span class="sec-shell-line'+(shellOk?' good':' bad')+'"><span class="sec-cshell">'+shellIcon(egg.shellType)+'</span>'+haveShell+'/'+sc+'</span></span>';
       html+='</div>';
     }
@@ -8301,7 +8301,7 @@ function getEggCost(egg){
 }
 // Coin-kostnad: 100 × 10^tier (starter 100 → cosmic 1 biljon). Påverkas EJ av craft-rabatten.
 function getEggTier(egg){var i=EGG_SHOP.indexOf(egg);return i<0?0:i;}
-function getEggCoinCost(egg){return 100*Math.pow(10,getEggTier(egg));}
+function getEggCoinCost(egg){if(egg.id==='starter')return 0;return 100*Math.pow(10,getEggTier(egg));}
 function buyEgg(id){
   var egg=EGG_SHOP.find(function(e){return e.id===id;});if(!egg)return;
   if(getEggState(egg)!=='unlocked')return;
@@ -8369,7 +8369,7 @@ function showEggInfo(eggId){
     reqs.push({icon:shellIcon(egg.shellType),label:shellR2.name,val:have2+' / '+cost,met:shellOk2});
   }
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
-  reqs.push({icon:COIN_IMG,label:'Sparks (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
+  if(coinCost>0)reqs.push({icon:COIN_IMG,label:'Sparks (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:COIN_IMG,label:'Earn '+egg.coinReq+' Sparks',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
   if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':''+LOCK_IMG+' Required',met:bOk});}
   if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':''+LOCK_IMG+' Required',met:hOk});}
