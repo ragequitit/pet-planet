@@ -4013,14 +4013,13 @@ function openPetSlotModal(idx){
   activeSlot=idx;
   var curUid=G.equippedPets[idx];
   var curPet=curUid?G.hatchedPets.find(function(p){return String(p.uid)===String(curUid);}):null;
-  var list=document.getElementById('pet-modal-list');list.innerHTML=petSortBarHtml(slotPickSort,'setSlotPickSort');
-  // Currently equipped pet: show its info (level, XP, abilities) + a Remove button.
+  var h='';
+  // Currently equipped pet: info (level, XP, abilities) + Remove button.
   if(curPet){
     var crc=RARITY_CONFIG[curPet.rarity]||RARITY_CONFIG.common;
     var lp=petXpProgress(curPet);
     var cab=curPet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?(m.icon+' '+m.name+' T'+a.tier):'';}).filter(Boolean).join(' · ');
-    var cur=document.createElement('div');cur.className='slot-current';
-    cur.innerHTML=
+    h+='<div class="slot-current">'+
       '<div class="slot-current-head">'+
         '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+petIco(curPet)+'</div>'+
         '<div class="pet-option-info"><div class="pet-option-name">'+curPet.name+'</div>'+
@@ -4030,46 +4029,72 @@ function openPetSlotModal(idx){
       '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" id="slot-cur-xpfill" style="width:'+lp.pct+'%"></div></div>'+
       '<div class="slot-current-xptxt">'+uiIco('stats/pet-xp','⭐',12)+' <span id="slot-cur-xpnum">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</span></div>'+
       (cab?('<div class="slot-current-ab">'+cab+'</div>'):'')+
-      '<button class="slot-remove-btn" id="slot-remove-btn">❌ Remove Pet</button>';
-    list.appendChild(cur);
-    document.getElementById('slot-remove-btn').onclick=function(){
-      if(G.equippedPets[activeSlot]){
-        var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
-        if(oldPet)oldPet.equippedSlot=-1;
-      }
-      G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();
-    };
-    var hd=document.createElement('div');hd.className='slot-swap-head';hd.textContent='Swap to another pet';list.appendChild(hd);
+      '<button class="slot-remove-btn" onclick="slotRemovePet()">❌ Remove Pet</button>'+
+    '</div>';
+    h+='<div class="slot-swap-head">Swap to another pet</div>';
   }
-  // List all pets som INTE redan sitter i en slot (utrustade pets = onödig utfyllnad här)
-  var slotSelectable=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
-  slotSelectable.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
-  slotSelectable.forEach(function(pet){
-    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    var d=document.createElement('div');d.className='pet-option';
-    var abStr=pet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?m.icon+' T'+a.tier:'';}).join(' ');
-    d.innerHTML='<div class="pet-option-icon">'+petIco(pet)+'</div><div class="pet-option-info"><div class="pet-option-name">'+pet.name+'</div><div class="pet-option-rarity" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div><div class="pet-option-abilities">'+abStr+'</div></div>';
-    d.onclick=function(){
-      // unequip whatever was in this slot
-      if(G.equippedPets[activeSlot]){
-        var oldP=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});
-        if(oldP)oldP.equippedSlot=-1;
-      }
-      G.equippedPets[activeSlot]=pet.uid;
-      pet.equippedSlot=activeSlot;
-      renderSlotRow();closePetModal();updateHUD();renderPets();
-    };
-    list.appendChild(d);
-  });
-  if(G.hatchedPets.length===0){
-    var empty=document.createElement('div');empty.style.cssText='text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;';empty.textContent='No pets yet — hatch some eggs!';list.appendChild(empty);
-  } else if(slotSelectable.length===0){
-    var allEq=document.createElement('div');allEq.style.cssText='text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;';allEq.textContent='All your pets are already in slots.';list.appendChild(allEq);
+  // Verktygsrad: Sort · Filter · Search (egen state — påverkar inte Pets-fliken)
+  var fcount=petActiveFilterCountOf(slotPickFilter);
+  h+='<div class="pet-tools">';
+  h+=petSortBarHtml(slotPickSort,'setSlotPickSort');
+  h+='<button class="pet-filter-btn'+(fcount?' on':'')+(slotPickFilterOpen?' open':'')+'" onclick="toggleSlotFilterPanel()">⚙ Filter'+(fcount?(' ('+fcount+')'):'')+'</button>';
+  h+='<div class="pet-search"><span class="pet-search-ic">🔍</span><input id="slot-search-input" class="pet-search-in" type="text" placeholder="Search…" value="'+(slotPickSearch.replace(/"/g,'&quot;'))+'" oninput="onSlotPickSearch(this.value)">'+(slotPickSearch?'<span class="pet-search-x" onclick="clearSlotPickSearch()">✕</span>':'')+'</div>';
+  h+='</div>';
+  // Filterpanel (uppfälld)
+  if(slotPickFilterOpen){
+    var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+    h+='<div class="pet-filter-panel">';
+    h+='<div class="pf-group-lbl">Show</div><div class="pf-chips"><button class="pf-chip pf-fav'+(slotPickFilter.favOnly?' active':'')+'" onclick="toggleSlotFavFilter()">★ Favorites only</button></div>';
+    h+='<div class="pf-group-lbl">Rarity</div><div class="pf-chips">';
+    rarityOrder.forEach(function(r){var rc=RARITY_CONFIG[r]||{};var on=!!slotPickFilter.rarity[r];h+='<button class="pf-chip pf-rar'+(on?' active':'')+'" style="--cc:'+(rc.color||'#888')+'" onclick="toggleSlotFilterChip(\'rarity\',\''+r+'\')">'+(rc.label||r)+'</button>';});
+    h+='</div>';
+    h+='<div class="pf-group-lbl">Ability</div><div class="pf-chips">';
+    Object.keys(ABILITY_META).forEach(function(aid){var m=ABILITY_META[aid];var on=!!slotPickFilter.ability[aid];h+='<button class="pf-chip'+(on?' active':'')+'" onclick="toggleSlotFilterChip(\'ability\',\''+aid+'\')">'+abilityIconImg(aid)+' '+m.name+'</button>';});
+    h+='</div>';
+    if(fcount>0)h+='<button class="pf-clear" onclick="clearSlotFilters()">Clear all filters</button>';
+    h+='</div>';
   }
+  h+='<div id="slot-pick-grid-host"></div>';
+  document.getElementById('pet-modal-list').innerHTML=h;
+  renderSlotPickGrid();
   document.getElementById('pet-modal').classList.add('open');
 }
+function renderSlotPickGrid(){
+  var host=document.getElementById('slot-pick-grid-host');if(!host)return;
+  if(G.hatchedPets.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>No pets yet — hatch some eggs!</p></div>';return;}
+  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
+  if(pool.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">⚡</div><p>All your pets are already in slots.</p></div>';return;}
+  var sel=pool.filter(function(p){return petMatchesFilterCore(p,slotPickFilter,slotPickSearch);});
+  sel.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
+  var html='';
+  var filtering=(slotPickSearch||petActiveFilterCountOf(slotPickFilter)>0);
+  if(filtering)html+='<div class="pet-result-line">Showing '+sel.length+' of '+pool.length+'</div>';
+  if(sel.length===0){host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearSlotFilters();clearSlotPickSearch();">Clear search &amp; filters</button></div>';return;}
+  html+='<div class="pet-grid">';
+  sel.forEach(function(pet,idx){ html+=petCardHtml(pet,idx,{onClick:"equipPetToActiveSlot('"+pet.uid+"')"}); });
+  html+='</div>';
+  host.innerHTML=html;
+}
+function equipPetToActiveSlot(uid){
+  if(activeSlot<0)return;
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
+  if(G.equippedPets[activeSlot]){var oldP=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});if(oldP)oldP.equippedSlot=-1;}
+  G.equippedPets[activeSlot]=pet.uid;pet.equippedSlot=activeSlot;
+  renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
+}
+function slotRemovePet(){
+  if(activeSlot<0)return;
+  if(G.equippedPets[activeSlot]){var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});if(oldPet)oldPet.equippedSlot=-1;}
+  G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
+}
 function closePetModal(){document.getElementById('pet-modal').classList.remove('open');activeSlot=-1;}
-function setSlotPickSort(v){slotPickSort=v;if(activeSlot>=0)openPetSlotModal(activeSlot);}
+function setSlotPickSort(v){slotPickSort=v;renderSlotPickGrid();}
+function onSlotPickSearch(v){slotPickSearch=v;renderSlotPickGrid();}
+function clearSlotPickSearch(){slotPickSearch='';if(activeSlot>=0)openPetSlotModal(activeSlot);}
+function toggleSlotFilterPanel(){slotPickFilterOpen=!slotPickFilterOpen;if(activeSlot>=0)openPetSlotModal(activeSlot);}
+function toggleSlotFilterChip(group,key){slotPickFilter[group][key]=!slotPickFilter[group][key];if(activeSlot>=0)openPetSlotModal(activeSlot);}
+function clearSlotFilters(){slotPickFilter={rarity:{},ability:{},favOnly:false};if(activeSlot>=0)openPetSlotModal(activeSlot);}
+function toggleSlotFavFilter(){slotPickFilter.favOnly=!slotPickFilter.favOnly;if(activeSlot>=0)openPetSlotModal(activeSlot);}
 document.getElementById('pet-modal-close').onclick=closePetModal;
 document.getElementById('pet-modal').onclick=function(e){if(e.target===this)closePetModal();};
 
@@ -4078,6 +4103,8 @@ document.getElementById('pet-modal').onclick=function(e){if(e.target===this)clos
 // ============================================================
 var petSortMode='newest';
 var slotPickSort='rarity_desc', advPickSort='rarity_desc';
+// Pet-väljarens egen sök/filter-state (separat från Pets-fliken) — v6.92 Step 2
+var slotPickSearch='', slotPickFilter={rarity:{},ability:{},favOnly:false}, slotPickFilterOpen=false;
 var PET_SORT_OPTS=[['newest','🕐 Newest'],['oldest','🕰️ Oldest'],['rarity_desc','⭐ Rarity: High → Low'],['rarity_asc','⭐ Rarity: Low → High'],['level_desc','📈 Level: High → Low'],['level_asc','📉 Level: Low → High'],['name','🔤 Name (A–Z)']];
 function petSortCompare(a,b,mode){
   var ro=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
@@ -4105,17 +4132,18 @@ var PET_IMG_NUDGE={
 };
 var petFilter={rarity:{},ability:{},favOnly:false};
 var petFilterOpen=false;
-function petActiveFilterCount(){
+function petActiveFilterCountOf(flt){
   var n=0;
-  Object.keys(petFilter.rarity).forEach(function(k){if(petFilter.rarity[k])n++;});
-  Object.keys(petFilter.ability).forEach(function(k){if(petFilter.ability[k])n++;});
-  if(petFilter.favOnly)n++;
+  Object.keys(flt.rarity).forEach(function(k){if(flt.rarity[k])n++;});
+  Object.keys(flt.ability).forEach(function(k){if(flt.ability[k])n++;});
+  if(flt.favOnly)n++;
   return n;
 }
-function petMatchesFilter(pet){
-  if(petFilter.favOnly&&!pet.fav)return false;
-  if(petSearchQuery){
-    var q=petSearchQuery.toLowerCase();
+function petActiveFilterCount(){return petActiveFilterCountOf(petFilter);}
+function petMatchesFilterCore(pet,flt,query){
+  if(flt.favOnly&&!pet.fav)return false;
+  if(query){
+    var q=query.toLowerCase();
     var nameHit=(pet.name||'').toLowerCase().indexOf(q)>=0;
     var abilHit=pet.abilities.some(function(ab){
       var m=ABILITY_META[ab.id];
@@ -4123,15 +4151,16 @@ function petMatchesFilter(pet){
     });
     if(!nameHit&&!abilHit)return false;
   }
-  var rk=Object.keys(petFilter.rarity).filter(function(k){return petFilter.rarity[k];});
+  var rk=Object.keys(flt.rarity).filter(function(k){return flt.rarity[k];});
   if(rk.length&&rk.indexOf(pet.rarity)<0)return false;
-  var ak=Object.keys(petFilter.ability).filter(function(k){return petFilter.ability[k];});
+  var ak=Object.keys(flt.ability).filter(function(k){return flt.ability[k];});
   if(ak.length){
     var has=pet.abilities.some(function(ab){return ak.indexOf(ab.id)>=0;});
     if(!has)return false;
   }
   return true;
 }
+function petMatchesFilter(pet){return petMatchesFilterCore(pet,petFilter,petSearchQuery);}
 function renderPets(){
   var wrap=document.getElementById('pets-wrap');if(!wrap)return;
   var total=G.hatchedPets.length;
@@ -4199,6 +4228,8 @@ function togglePetFav(uid){
   pet.fav=!pet.fav;
   saveGame();
   renderPetGrid();
+  var _pm=document.getElementById('pet-modal');
+  if(_pm&&_pm.classList.contains('open')&&typeof renderSlotPickGrid==='function')renderSlotPickGrid();
 }
 // FX-data per raritets-index (delas av Pets-fliken och pet-väljaren) — v6.92
 var FX_GL=[0,8,10,12,14,17,19,22,26,32];
