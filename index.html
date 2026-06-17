@@ -1871,6 +1871,52 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="inbox-body" class="inbox-list"></div>
   </div>
 </div>
+<style>
+/* HOW TO PLAY / INFO (v6.92) */
+#howto-modal .modal-box{max-width:430px;}
+.howto-intro{font-size:0.78rem;line-height:1.45;color:rgba(255,255,255,0.78);margin:2px 2px 12px;}
+.howto-sec{font-family:'Fredoka One',cursive;font-size:0.72rem;letter-spacing:1.2px;text-transform:uppercase;color:#b488ff;margin:14px 2px 8px;border-bottom:1px solid rgba(122,90,208,0.28);padding-bottom:5px;}
+.howto-steps{margin:0;padding-left:20px;}
+.howto-steps li{font-size:0.8rem;line-height:1.5;color:rgba(255,255,255,0.85);margin-bottom:7px;}
+.howto-row{display:flex;gap:11px;align-items:flex-start;background:rgba(255,255,255,0.04);border:1px solid rgba(58,92,184,0.35);border-radius:12px;padding:10px 11px;margin-bottom:8px;}
+.howto-ic{flex:0 0 34px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;background:rgba(11,21,48,0.6);border:1px solid rgba(58,92,184,0.45);border-radius:9px;}
+.howto-ic img{width:1.4em;height:1.4em;object-fit:contain;display:block;}
+.howto-txt{flex:1;min-width:0;}
+.howto-nm{font-weight:800;font-size:0.84rem;color:#fff;margin-bottom:2px;}
+.howto-desc{font-size:0.74rem;line-height:1.42;color:rgba(255,255,255,0.72);}
+.howto-foot{margin-top:14px;font-size:0.66rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.4;}
+</style>
+<div id="howto-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="more-head">
+      <div class="more-head-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/howto.png" alt="" onerror="this.replaceWith(document.createTextNode('\u2753'))"> How to Play</div>
+      <button class="prof-x" onclick="closeHowTo()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
+    <div class="howto-intro">Pet Planet is an idle pet-collection game: earn resources, craft eggs, hatch and collect pets, and make them stronger over time.</div>
+
+    <div class="howto-sec">Getting Started</div>
+    <ol class="howto-steps">
+      <li>Tap the egg on the home screen to earn <b>Sparks</b> and <b>Shells</b>. You keep earning while you're away (idle income).</li>
+      <li>In the <b>Shop</b>, craft an Egg using Sparks + Shells. Rarer eggs need rarer Shells.</li>
+      <li>Put the egg in the <b>Hatchery</b> and wait for it to hatch into a Pet.</li>
+      <li>Equip your best pets in your <b>active slots</b> — their abilities boost your income and luck.</li>
+      <li>Send pets on <b>Adventures</b> to earn rewards and pet XP over time.</li>
+      <li>Use <b>Fusion</b>, <b>Mutation</b> and <b>Reroll</b> to improve your pets, and fill your <b>Petdex</b>.</li>
+    </ol>
+
+    <div class="howto-sec">Things You'll Find</div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode('\u2728'))"></div><div class="howto-txt"><div class="howto-nm">Sparks</div><div class="howto-desc">The main currency. Earned by tapping &amp; idling. Spent on crafting eggs, buildings, upgrades and slots.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x1F41A;</div><div class="howto-txt"><div class="howto-nm">Shells</div><div class="howto-desc">Egg-crafting material in 10 rarities (Common &#x2192; Cosmic). Rarer eggs need rarer Shells. Combine 5 lower into 1 higher with Quick-fuse.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))"></div><div class="howto-txt"><div class="howto-nm">Gems</div><div class="howto-desc">Premium currency. Used for speed-ups and cosmetics.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x1F95A;</div><div class="howto-txt"><div class="howto-nm">Eggs</div><div class="howto-desc">Crafted from Sparks + Shells, then hatched into pets. Each world has its own eggs.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x1F43E;</div><div class="howto-txt"><div class="howto-nm">Pets</div><div class="howto-desc">Hatched from eggs. Each pet has abilities &#x2014; equip them for bonuses, send them on adventures, or fuse and mutate them.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x2B50;</div><div class="howto-txt"><div class="howto-nm">Abilities</div><div class="howto-desc">Every pet ability has a tier &#x2014; a higher tier means a bigger bonus (e.g. Spark Gain, Shell Gain, Luck).</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x1F9EB;</div><div class="howto-txt"><div class="howto-nm">Mutation Core</div><div class="howto-desc">Made by Extracting an ability from a pet (that pet is destroyed). Apply it in the Mutation Chamber to place that ability on another pet &#x2014; the pet survives.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x1F3B2;</div><div class="howto-txt"><div class="howto-nm">Reroll Charm</div><div class="howto-desc">Re-rolls the tier of one ability on a pet &#x2014; it can go up or down. The rerolled ability becomes locked. Charms drop from gameplay.</div></div></div>
+
+    <div class="howto-foot">This is a quick guide &#x2014; more tips coming soon.</div>
+  </div>
+</div>
 <div id="leaderboard-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -4867,6 +4913,7 @@ var MORE_ITEMS=[
   {label:'Achievements',icon:uiIco('menu/achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('menu/inventory','🎒',30),action:'bag'},
   {label:'Friends',icon:uiIco('more/friends','👥',30),action:'friends'},
+  {label:'How to Play',icon:uiIco('menu/howto','❓',30),action:'howto'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
@@ -4877,7 +4924,7 @@ function openMore(){
     else if(it.action==='friends'){bn=friendsUnread;bid='mi-friends-badge';}
     var ibadge=bid?'<span class="mi-badge" id="'+bid+'" style="'+(bn>0?'':'display:none')+'">'+(bn>99?'99+':bn)+'</span>':'';
     d.innerHTML='<span class="mi-icon" style="position:relative">'+it.icon+ibadge+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='leaderboard'){openLeaderboard();}else if(it.action==='bag'){openBag();}else{switchTab(it.tab);}};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='leaderboard'){openLeaderboard();}else if(it.action==='bag'){openBag();}else if(it.action==='howto'){openHowTo();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -4929,6 +4976,10 @@ function openInbox(){
 }
 function closeInbox(){var m=document.getElementById('inbox-modal');if(m)m.classList.remove('open');}
 document.getElementById('inbox-modal').onclick=function(e){if(e.target===this)closeInbox();};
+// HOW TO PLAY / INFO (v6.92) — innehållet är statiskt i HTML:en, här bara öppna/stäng.
+function openHowTo(){var m=document.getElementById('howto-modal');if(m)m.classList.add('open');}
+function closeHowTo(){var m=document.getElementById('howto-modal');if(m)m.classList.remove('open');}
+document.getElementById('howto-modal').onclick=function(e){if(e.target===this)closeHowTo();};
 function mailRewardPreview(rw){
   if(!rw)return '';
   var ps=[];
@@ -6108,7 +6159,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.91<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.92<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
