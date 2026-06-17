@@ -700,6 +700,29 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .slot-remove-btn{width:100%;margin-top:11px;padding:9px;border:none;border-radius:10px;background:linear-gradient(180deg,#c0392b,#922b21);color:#fff;font-family:'Fredoka One',cursive;font-size:0.8rem;cursor:pointer;box-shadow:0 3px 0 #5e1a14;}
 .slot-remove-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #5e1a14;}
 .slot-swap-head{font-size:0.62rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;margin:2px 0 9px;text-align:center;}
+/* Pet-väljarens HERO-kort (nuvarande pet) — rarity-färgat, mer info (v6.92) */
+.slot-hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#1a2f57,#0d1a38);border:2px solid var(--rc,#f5c842);border-radius:16px;padding:13px;margin-bottom:12px;box-shadow:0 0 18px -3px var(--rc,#f5c842),inset 0 0 34px -14px var(--rc,#f5c842);}
+.slot-hero-top{display:flex;gap:12px;align-items:center;}
+.slot-hero-art{flex:0 0 78px;width:78px;height:78px;border-radius:15px;border:2px solid var(--rc,#f5c842);background:radial-gradient(circle at 50% 38%,rgba(255,255,255,0.10),rgba(11,21,48,0.65) 70%);display:flex;align-items:center;justify-content:center;font-size:3rem;box-shadow:inset 0 0 20px -5px var(--rc,#f5c842);overflow:hidden;}
+.slot-hero-art img{width:1em;height:1em;object-fit:contain;display:block;}
+.slot-hero-info{flex:1;min-width:0;}
+.slot-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.slot-hero-name{font-family:'Fredoka One',cursive;font-size:1.18rem;color:#fff;line-height:1.05;}
+.slot-hero-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.72rem;color:#ffe08a;background:#0b1530;border:1.5px solid #2a3c6c;border-radius:8px;padding:3px 8px;white-space:nowrap;}
+.slot-hero-rar{font-size:0.78rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;}
+.slot-hero-xp{margin-top:9px;}
+.shx-bar{height:9px;background:rgba(0,0,0,0.35);border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);}
+.shx-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#7a5ad0,#b488ff);}
+.shx-txt{font-size:0.64rem;color:rgba(255,255,255,0.6);margin-top:4px;display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+.shx-txt img{width:1em;height:1em;object-fit:contain;vertical-align:middle;}
+.slot-hero-abils{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px;}
+.sh-ab{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.05);border:1px solid rgba(58,92,184,0.4);border-radius:9px;padding:4px 8px;font-size:0.7rem;color:rgba(255,255,255,0.85);}
+.sh-ab img{width:1.05em;height:1.05em;object-fit:contain;}
+.sh-ab-nm{font-weight:700;}
+.sh-ab-t{color:#ffd36b;font-weight:800;font-size:0.64rem;}
+.sh-ab-v{color:#8fe3a0;font-weight:800;font-size:0.66rem;}
+.slot-hero .slot-remove-btn{margin-top:12px;display:flex;align-items:center;justify-content:center;gap:7px;}
+.slot-hero .slot-remove-btn img{width:1.05em;height:1.05em;object-fit:contain;}
 .ob-icon{font-size:2.5rem;margin-bottom:8px;}
 .ob-time{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:16px;}
 #offline-rewards{background:#122446;border-radius:12px;padding:12px;margin-bottom:16px;display:flex;flex-direction:column;gap:8px;}
@@ -1769,8 +1792,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 </div>
 <div id="pet-modal" class="modal-overlay">
   <div class="modal-box">
-    <button class="modal-close" id="pet-modal-close"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
-    <div class="modal-title">Choose Active Pet</div>
+    <div class="more-head">
+      <div class="more-head-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-pets.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc3e'))"> Choose Active Pet</div>
+      <button class="prof-x" id="pet-modal-close"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    </div>
     <div id="pet-modal-list"></div>
   </div>
 </div>
@@ -4021,18 +4046,24 @@ function openPetSlotModal(idx){
   if(curPet){
     var crc=RARITY_CONFIG[curPet.rarity]||RARITY_CONFIG.common;
     var lp=petXpProgress(curPet);
-    var cab=curPet.abilities.map(function(a){var m=ABILITY_META[a.id];return m?(m.icon+' '+m.name+' T'+a.tier):'';}).filter(Boolean).join(' · ');
-    h+='<div class="slot-current">'+
-      '<div class="slot-current-head">'+
-        '<div class="pet-option-icon" style="background:'+crc.color+'22;border-color:'+crc.color+'">'+petIco(curPet)+'</div>'+
-        '<div class="pet-option-info"><div class="pet-option-name">'+curPet.name+'</div>'+
-          '<div class="pet-option-rarity" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div></div>'+
-        '<div class="slot-current-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>'+
+    var abChips='';
+    if(curPet.abilities&&curPet.abilities.length){
+      abChips='<div class="slot-hero-abils">';
+      curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">+'+TIER_VALUES[a.tier]+'%</span></span>';});
+      abChips+='</div>';
+    }
+    h+='<div class="slot-hero" style="--rc:'+crc.color+'">'+
+      '<div class="slot-hero-top">'+
+        '<div class="slot-hero-art">'+petIco(curPet)+'</div>'+
+        '<div class="slot-hero-info">'+
+          '<div class="slot-hero-row"><div class="slot-hero-name">'+curPet.name+'</div><div class="slot-hero-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div></div>'+
+          '<div class="slot-hero-rar" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div>'+
+          '<div class="slot-hero-xp"><div class="shx-bar"><div class="shx-fill" id="slot-cur-xpfill" style="width:'+lp.pct+'%"></div></div>'+
+            '<div class="shx-txt">'+uiIco('stats/pet-xp','⭐',11)+' <span id="slot-cur-xpnum">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</span></div></div>'+
+        '</div>'+
       '</div>'+
-      '<div class="pd-xp" style="margin-top:8px;"><div class="pd-xp-fill" id="slot-cur-xpfill" style="width:'+lp.pct+'%"></div></div>'+
-      '<div class="slot-current-xptxt">'+uiIco('stats/pet-xp','⭐',12)+' <span id="slot-cur-xpnum">'+(lp.max?'Max level':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</span></div>'+
-      (cab?('<div class="slot-current-ab">'+cab+'</div>'):'')+
-      '<button class="slot-remove-btn" onclick="slotRemovePet()">❌ Remove Pet</button>'+
+      abChips+
+      '<button class="slot-remove-btn" onclick="slotRemovePet()"><img src="'+ASSET_BASE+'/assets/ui/common/cross.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\u274c\'))"> Remove Pet</button>'+
     '</div>';
     h+='<div class="slot-swap-head">Swap to another pet</div>';
   }
