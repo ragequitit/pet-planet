@@ -765,7 +765,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .lo-over{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.18);border-radius:8px;font-weight:700;font-size:0.74rem;padding:7px 10px;cursor:pointer;font-family:'Baloo 2',sans-serif;}
 .lo-del{background:rgba(220,70,70,0.18);color:#ff8a8a;border:1px solid rgba(220,70,70,0.4);border-radius:8px;font-weight:800;font-size:0.78rem;padding:7px 11px;cursor:pointer;}
 /* Pets: Search + Filter toolbar (v6.69) */
-.pet-tools{display:flex;gap:7px;margin-bottom:8px;}
+.pet-tools{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.pet-tools .pet-sort-bar{flex-shrink:0;margin-bottom:0;gap:4px;}
+.pet-tools .pet-sort-lbl{font-size:0.66rem;}
+.pet-tools .pet-sort-select{flex:none;width:auto;min-width:70px;padding:8px 8px;font-size:0.72rem;}
 .pet-search{flex:1;position:relative;display:flex;align-items:center;background:rgba(0,0,0,0.32);border:1px solid rgba(122,90,208,0.4);border-radius:10px;padding:0 8px;}
 .pet-search-ic{font-size:0.8rem;opacity:0.6;margin-right:5px;}
 .pet-search-in{flex:1;min-width:0;background:transparent;border:none;outline:none;color:#fff;font-size:0.82rem;padding:8px 0;font-family:'Baloo 2',sans-serif;}
@@ -818,7 +821,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pa-icon .abil-img{width:16px;height:16px;}
 .pra-icon .abil-img{width:21px;height:21px;}
 .ma-icon .abil-img{width:23px;height:23px;}
-.bchip-ico .abil-img{width:1.35em;height:1.35em;}
+.bchip-ico .abil-img{width:1.1em;height:1.1em;}
 .pa-name{color:rgba(255,255,255,0.6);flex:1;}
 .pa-tier{font-weight:900;font-size:0.6rem;}
 .pa-val{color:rgba(255,255,255,0.4);font-size:0.55rem;}
@@ -1026,8 +1029,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-sort-select option{background:#15264e;color:#fff;}
 
 /* Active bonuses strip */
-.bonus-strip{background:rgba(0,0,0,0.25);border-radius:8px;padding:4px 10px;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;}
-.bonus-chip{font-size:0.62rem;font-weight:800;color:rgba(180,136,255,0.9);white-space:nowrap;}
+.bonus-strip{background:rgba(0,0,0,0.25);border-radius:8px;padding:5px 10px;margin-bottom:8px;display:flex;flex-wrap:nowrap;gap:5px;overflow-x:auto;white-space:nowrap;-ms-overflow-style:none;scrollbar-width:none;}
+.bonus-strip::-webkit-scrollbar{display:none;}
+.bonus-chip{font-size:0.58rem;font-weight:800;color:rgba(180,136,255,0.9);white-space:nowrap;flex-shrink:0;}
 
 /* Petdex */
 .pdx-prog-card{background:linear-gradient(160deg,#1d3164,#13224a);border:1px solid rgba(58,92,184,0.7);border-radius:14px;padding:13px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px;}
@@ -4038,13 +4042,13 @@ function renderPets(){
     html+='</div>';
   }
 
-  // Verktygsrad: sök + filter-knapp + sortering
+  // Verktygsrad på EN rad: Sort (vänster) · Search (mitten) · Filter (höger)
   var fcount=petActiveFilterCount();
   html+='<div class="pet-tools">';
-  html+='<div class="pet-search"><span class="pet-search-ic">🔍</span><input id="pet-search-input" class="pet-search-in" type="text" placeholder="Search name or ability…" value="'+(petSearchQuery.replace(/"/g,'&quot;'))+'" oninput="onPetSearch(this.value)">'+(petSearchQuery?'<span class="pet-search-x" onclick="clearPetSearch()">✕</span>':'')+'</div>';
+  html+=petSortBarHtml(petSortMode,'setPetSort');
+  html+='<div class="pet-search"><span class="pet-search-ic">🔍</span><input id="pet-search-input" class="pet-search-in" type="text" placeholder="Search…" value="'+(petSearchQuery.replace(/"/g,'&quot;'))+'" oninput="onPetSearch(this.value)">'+(petSearchQuery?'<span class="pet-search-x" onclick="clearPetSearch()">✕</span>':'')+'</div>';
   html+='<button class="pet-filter-btn'+(fcount?' on':'')+(petFilterOpen?' open':'')+'" onclick="togglePetFilterPanel()">⚙ Filter'+(fcount?(' ('+fcount+')'):'')+'</button>';
   html+='</div>';
-  html+=petSortBarHtml(petSortMode,'setPetSort');
 
   // Filterpanel (uppfälld)
   if(petFilterOpen){
@@ -6088,7 +6092,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.77<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.78<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
