@@ -4112,7 +4112,7 @@ function openPetSlotModal(idx){
 function renderSlotPickGrid(){
   var host=document.getElementById('slot-pick-grid-host');if(!host)return;
   if(G.hatchedPets.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>No pets yet — hatch some eggs!</p></div>';return;}
-  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0;});
+  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0&&!isPetBusy(p.uid);});
   if(pool.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">⚡</div><p>All your pets are already in slots.</p></div>';return;}
   var sel=pool.filter(function(p){return petMatchesFilterCore(p,slotPickFilter,slotPickSearch);});
   sel.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
@@ -4128,6 +4128,7 @@ function renderSlotPickGrid(){
 function equipPetToActiveSlot(uid){
   if(activeSlot<0)return;
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
+  if(isPetBusy(pet.uid))return; // ute på äventyr → kan ej equippas förrän uppdraget hämtats
   if(G.equippedPets[activeSlot]){var oldP=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});if(oldP)oldP.equippedSlot=-1;}
   G.equippedPets[activeSlot]=pet.uid;pet.equippedSlot=activeSlot;
   renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
@@ -4466,6 +4467,8 @@ function openPetDetail(uid){
   if(isEquipped){
     var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(pet.uid);});
     html+='<button onclick="unequipPet(\''+pet.uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:#c0392b;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">Remove from Slot '+(slotIdx+1)+'</button>';
+  } else if(isPetBusy(pet.uid)){
+    html+='<div style="width:100%;padding:10px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.25);color:rgba(255,255,255,0.6);font-family:\'Fredoka One\',cursive;font-size:0.82rem;text-align:center;margin-top:4px;">\ud83d\uddfa\ufe0f On an Adventure</div>';
   } else {
     html+='<button onclick="quickEquipPet(\''+pet.uid+'\')" style="width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.9rem;cursor:pointer;margin-top:4px;">⚡ Equip Pet</button>';
   }
@@ -4482,6 +4485,7 @@ function unequipPet(uid){
 }
 function quickEquipPet(uid){
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
+  if(isPetBusy(pet.uid))return; // ute på äventyr → kan ej equippas förrän uppdraget hämtats
   // Find first empty slot
   var emptySlot=-1;
   for(var i=0;i<G.petSlots;i++){if(!G.equippedPets[i]){emptySlot=i;break;}}
@@ -6312,7 +6316,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.94<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.95<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
