@@ -2207,7 +2207,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;line-height:1.1;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
 .pdx2-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.74rem;color:#ffe08a;background:rgba(11,21,48,0.85);border:1.5px solid #2a3c6c;border-radius:9px;padding:4px 9px;white-space:nowrap;}
 .pdx2-rar{font-size:0.84rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 3px rgba(0,0,0,0.7);}
-.pdx2-rar.active-tag::after{content:'\u26a1 ACTIVE';margin-left:7px;font-size:0.58rem;font-weight:900;color:#0b1530;background:var(--gold);border-radius:6px;padding:2px 7px;}
+.pdx2-rar.active-tag::after{content:'⚡ ACTIVE';margin-left:7px;font-size:0.58rem;font-weight:900;color:#0b1530;background:var(--gold);border-radius:6px;padding:2px 7px;}
 .pdx2-from{font-size:0.7rem;color:rgba(255,255,255,0.74);margin-top:6px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
 .pdx2-motto{font-style:italic;font-size:0.78rem;color:#cdd9ff;margin:11px 0 2px;line-height:1.42;text-shadow:0 1px 3px rgba(0,0,0,0.6);padding-left:10px;border-left:2px solid var(--rc,#f5c842);}
 .pdx2-motto-by{display:block;font-style:normal;font-size:0.66rem;color:rgba(255,255,255,0.55);margin-top:3px;font-weight:700;}
@@ -3449,7 +3449,7 @@ function claimAdventure(index){
   if(typeof softUpdateInventory==='function')softUpdateInventory();
   saveGame();renderAdventure();
   parts.push(uiIco('stats/pet-xp','⭐',14)+' +'+rw.xp+' Pet XP');
-  if(advLvUp)parts.push('⭐ '+(pet?pet.name:'Pet')+' reached Lv '+pet.level+'!');
+  if(advLvUp)parts.push('⭐ '+(pet?petDisplayName(pet):'Pet')+' reached Lv '+pet.level+'!');
   if(typeof showRewardPopup==='function')showRewardPopup(parts,true);
 }
 function openAdvPicker(advId){
@@ -4163,7 +4163,7 @@ function openPetSlotModal(idx){
       favStar+
       '<div class="slot-hero-art2">'+artBig+'</div>'+
       '<div class="slot-hero-side">'+
-        '<div class="slot-hero-row"><div class="slot-hero-name">'+curPet.name+'</div><div class="slot-hero-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div></div>'+
+        '<div class="slot-hero-row"><div class="slot-hero-name">'+petDisplayName(curPet)+'</div><div class="slot-hero-lv" id="slot-cur-lv">Lv '+lp.level+(lp.max?' · MAX':'')+'</div></div>'+
         '<div class="slot-hero-rar" style="color:'+crc.color+'">'+crc.icon+' '+crc.label+'</div>'+
         fromLine+
         abChips+
@@ -4428,7 +4428,7 @@ function petCardHtml(pet,idx,opts){
   html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
   html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
   if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
-  html+='<div class="pc2-head"><div class="pc2-name">'+pet.name+'</div>';
+  html+='<div class="pc2-head"><div class="pc2-name">'+petDisplayName(pet)+'</div>';
   html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
   var artHtml;
   if(pet.world){
@@ -4933,7 +4933,7 @@ function renderRerollSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="rerollPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Reroll</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
       h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
@@ -5132,7 +5132,7 @@ function renderExtractSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="extractPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;var lk=ab.locked;
       h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
@@ -5247,7 +5247,7 @@ function renderMutateSetup(){
   if(!pet){h+='<div class="setup-platform" onclick="mutatePickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
   else{
     var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
-    h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+pet.name+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;var lk=ab.locked;
       h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
@@ -6652,7 +6652,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.18<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.19<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9121,7 +9121,7 @@ function showPetResult(pet){
   document.getElementById('pet-result-title').textContent='HATCH SUCCESSFUL!';
   document.getElementById('pet-result-sub').textContent="You've hatched a";
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
-  document.getElementById('pet-result-name').textContent=pet.name;
+  document.getElementById('pet-result-name').textContent=petDisplayName(pet);
   document.getElementById('pet-result-rarity').textContent=rc.label;
   var w=document.getElementById('pet-result-world');if(w){w.textContent='';w.style.display='none';}
   var abHtml='';
@@ -9341,7 +9341,7 @@ function showFusionResult(pet,perfect){
   document.getElementById('pet-result-title').textContent=perfect?'PERFECT FUSION!':'FUSION COMPLETE!';
   document.getElementById('pet-result-sub').textContent='You created a';
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
-  document.getElementById('pet-result-name').textContent=pet.name;
+  document.getElementById('pet-result-name').textContent=petDisplayName(pet);
   document.getElementById('pet-result-rarity').textContent=rc.label;
   var w=document.getElementById('pet-result-world');if(w){w.style.display='';w.textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));}
   var abHtml='';
