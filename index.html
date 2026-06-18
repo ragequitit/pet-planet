@@ -2210,6 +2210,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-rar.active-tag::after{content:'\u26a1 ACTIVE';margin-left:7px;font-size:0.58rem;font-weight:900;color:#0b1530;background:var(--gold);border-radius:6px;padding:2px 7px;}
 .pdx2-from{font-size:0.7rem;color:rgba(255,255,255,0.74);margin-top:6px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
 .pdx2-motto{font-style:italic;font-size:0.78rem;color:#cdd9ff;margin:11px 0 2px;line-height:1.42;text-shadow:0 1px 3px rgba(0,0,0,0.6);padding-left:10px;border-left:2px solid var(--rc,#f5c842);}
+.pdx2-motto-by{display:block;font-style:normal;font-size:0.66rem;color:rgba(255,255,255,0.55);margin-top:3px;font-weight:700;}
 .pdx2-xp{margin:12px 0 4px;}
 .pdx2-xp-bar{height:8px;background:rgba(0,0,0,0.45);border-radius:5px;overflow:hidden;border:1px solid rgba(122,90,208,0.4);}
 .pdx2-xp-fill{height:100%;background:linear-gradient(90deg,#7c4dff,#b388ff);border-radius:5px;}
@@ -4569,9 +4570,126 @@ function petSourceInfo(pet){
   }
   return {icon:'🥚',text:'Hatched from an egg'};
 }
-// PET-MOTTON: fylls på när Joakim laddar upp sitt 120-pet-dokument. Nyckel = pet-namn i gemener.
-var PET_MOTTO={};
-function petMotto(pet){return (pet&&PET_MOTTO[(pet.name||'').toLowerCase()])||'';}
+// PET-FLAVOR (fran Karaktarslistan): proper-namn + livsmotto + 3 citat per art (nyckel = art i gemener).
+var PET_FLAVOR={
+"anaconda":{title:"Sylas the Anaconda",motto:"Say little, see everything, miss nothing.",quotes:["I've been watching longer than you think.", "Control is quiet. Loud is for the nervous.", "The jungle tells me its secrets. I keep them."]},
+"anglerfish":{title:"Glub the Anglerfish",motto:"A little creepy, a lot lovable.",quotes:["I light up! See? Not so scary.", "Down here in the dark, I'm the friendliest face.", "Big teeth, bigger heart, trust me."]},
+"arcane panther":{title:"Nyx the Arcane Panther",motto:"Magic moves best through shadow and grace.",quotes:["Watch the dark bend at my paw.", "Elegance is just power that learned restraint.", "I weave spells the way others breathe."]},
+"arctic hare":{title:"Flick the Arctic Hare",motto:"First to spot it, first to the safe place.",quotes:["Trouble at two o'clock \u2014 follow me, quick!", "Fast feet, faster thinking.", "I've already scouted the way. Trust me."]},
+"ash bat":{title:"Soot the Ash Bat",motto:"Causing trouble after dark is an art form.",quotes:["Wasn't me. Was probably me. Definitely me.", "The night's more fun when you're up to no good.", "Squeak squeak \u2014 that's bat for \"gotcha."]},
+"astro bunny":{title:"Zippy the Astro Bunny",motto:"Zero gravity, infinite zoomies!",quotes:["WHEEE no gravity means INFINITE hops!", "Catch me\u2014 oh wait, you can't, I'm in SPACE!", "Happiest bunny in the WHOLE galaxy, official record!"]},
+"aurora fox":{title:"Lumi the Aurora Fox",motto:"Follow the light, even when no one else can see it.",quotes:["Look up. The sky is telling a story tonight.", "I don't get lost. I just go where the lights go.", "Some things you don't chase \u2014 you just walk toward them, quietly."]},
+"baby dragon":{title:"Sparky the Baby Dragon",motto:"I'm small now \u2014 but legends always start that way.",quotes:["Did you see that?! I made a SPARK!", "One day I'll be huge. For now, I'll be brave.", "Stand back, I've got this \u2014 probably!"]},
+"badger":{title:"Bruiser the Badger",motto:"It's not the size of the badger in the fight.",quotes:["Try me. Go on.", "Small? I prefer \"concentrated.", "I don't start trouble. I finish it."]},
+"basilisk":{title:"Orin the Basilisk",motto:"I ruled these realms before they had a name.",quotes:["Kneel, or simply remember who I am.", "Ancient power needs no announcement.", "I have outlasted every throne but my own."]},
+"beaver":{title:"Chip the Beaver",motto:"Measure twice, gnaw once.",quotes:["Give me an afternoon and some logs \u2014 I'll fix it.", "A good dam holds because it's built with care.", "Don't worry, I drew up plans."]},
+"blizzard stag":{title:"Bjorn the Blizzard Stag",motto:"Stand steady, and the storm passes through you.",quotes:["Stay behind me. The wind doesn't get past these antlers.", "Cold builds nothing soft. It builds something that lasts.", "I do not fear the blizzard. I was named for it."]},
+"blue whale":{title:"Bay the Blue Whale",motto:"The sea is old, and I remember all of it.",quotes:["I have songs older than these waters' names.", "Patience, small ones. I move slow because I see far.", "Listen \u2014 the deep has stories to tell."]},
+"brown bear":{title:"Maple the Brown Bear",motto:"Nothing gets past me \u2014 and nothing needs to.",quotes:["Rest easy. I'm watching the woods tonight.", "You're safe here. I made sure of it.", "Trouble knows better than to visit my forest."]},
+"camel":{title:"Mosi the Camel",motto:"The journey is long; pace yourself and you'll see it all.",quotes:["I've crossed sands you've never dreamed of.", "No hurry. The horizon will wait.", "Carry less worry; it's the heaviest load."]},
+"caracal":{title:"Kova the Caracal",motto:"I don't chase greatness. I simply am it.",quotes:["Watch. This is how it's done.", "Doubt me? Adorable.", "I land every jump because losing isn't in my schedule."]},
+"cat":{title:"Pixel the Cat",motto:"If it's on the edge of the table, it was practically asking to fall.",quotes:["I meant to do that.", "Rules are for dogs.", "I'll come when I'm called\u2026 just not the first time."]},
+"celestial moth":{title:"Aria the Celestial Moth",motto:"Quiet beauty asks for nothing and gives everything.",quotes:["I drift toward the light. Don't we all?", "Peace is the prettiest thing I know.", "Say nothing. Just watch the glow with me."]},
+"celestial stag":{title:"Eldwyn the Celestial Stag",motto:"Timeless and rooted, I watch the ages turn.",quotes:["The forest and I have grown old together.", "Nobility is measured in seasons kept.", "Walk gently; these woods remember everything."]},
+"chameleon":{title:"Kit the Chameleon",motto:"Now you see me, now you're confused.",quotes:["I was right there the whole time! Gotcha.", "Pick a color, any color \u2014 I already did.", "Comedy is just camouflage with better timing."]},
+"chicken":{title:"Nugget the Chicken",motto:"Why walk when you can flap, trip, and panic gloriously?",quotes:["BWAK\u2014 sorry, sorry, that was me, I'm fine!", "I forgot what I was doing but I'm doing it FAST.", "Was that scary? That was scary. Let's do it again!"]},
+"chimera":{title:"Khaos the Chimera",motto:"Three natures, one legend \u2014 me.",quotes:["Lion, goat, serpent \u2014 and all of them are winning.", "I'm not one myth. I'm several.", "The ultimate creature doesn't need a humble motto."]},
+"clownfish":{title:"Coral the Clownfish",motto:"Everyone's a friend you haven't waved at yet.",quotes:["Hi! Hi! Oh, hi to you too!", "Come meet everyone, you'll LOVE them.", "A reef without friends is just rocks."]},
+"cobra":{title:"Naja the Cobra",motto:"Bow or beware \u2014 I rule the sands either way.",quotes:["Approach with respect, or don't approach.", "Elegance is my warning; danger is my promise.", "The desert has a crown. I'm wearing it."]},
+"cocoa cub":{title:"Bumble the Cocoa Cub",motto:"Take it slow and keep it sweet.",quotes:["Mmm\u2026 is it cocoa time? It's always cocoa time.", "Big feelings, warm tummy, happy nap. That's the whole recipe.", "I'm not the fastest, but I give the best hugs."]},
+"comet hawk":{title:"Vega the Comet Hawk",motto:"Chase the brightest thing in the sky and never look back.",quotes:["There's a comet to catch \u2014 try to keep up!", "Freedom tastes like cold starlight.", "The sky has no edges, and neither do I."]},
+"condor":{title:"Vento the Condor",motto:"The sky has no fences \u2014 why should I?",quotes:["I ride the wind wherever it wants to go.", "From up here, every peak is a friend.", "Freedom isn't earned. It's spread like wings."]},
+"cougar":{title:"Sable the Cougar",motto:"Move quiet, land sure, miss nothing.",quotes:["You won't hear me coming. That's the point.", "Patience is the sharpest claw.", "Elegance and danger are the same thing, done well."]},
+"crocodile":{title:"Duke the Crocodile",motto:"Why rush? The river comes to me.",quotes:["I'll move when I feel like it. I won't feel like it.", "Effortless is just confidence at rest.", "Wake me if it's important. It won't be."]},
+"deer":{title:"Fern the Deer",motto:"Be soft in a world that forgets to be.",quotes:["It's okay. Take my spot, I don't mind.", "I saw you were sad, so I came to sit close.", "Gentle hearts are brave hearts too."]},
+"dog":{title:"Buddy the Dog",motto:"A friend by your side makes any day the best day.",quotes:["You're home! You're home! This is the greatest moment of my life!", "Wherever you're going, I'm coming too.", "I saved you the best spot \u2014 right next to me."]},
+"dolphin":{title:"Echo the Dolphin",motto:"Leap higher, swim faster, laugh louder.",quotes:["Race you to the buoy \u2014 last one's a barnacle!", "Did you see that flip? I'm just warming up.", "The ocean's my playground and I never get tired."]},
+"eclipse cat":{title:"Zen the Eclipse Cat",motto:"Effortlessly cosmic, impossibly cool.",quotes:["Eclipses happen when I blink. Probably.", "Cool isn't a look. It's a gravitational field.", "Yeah, I'm the rarest. Try to act natural."]},
+"ember chick":{title:"Cinder the Ember Chick",motto:"Small flame, MASSIVE energy!",quotes:["I'm on FIRE\u2014 in a good way! In a fun way!", "Bounce bounce bounce SPARKLE bounce!", "Can't catch me, I'm too HOT to handle!"]},
+"fennec fox":{title:"Zip the Fennec Fox",motto:"Big ears, bigger feelings, zero chill!",quotes:["I heard that from a MILE away and I have OPINIONS!", "Can't sleep, too cute, too excited!", "Did someone say snack? Adventure? Both?!"]},
+"festive reindeer":{title:"Noelle the Festive Reindeer",motto:"Light the dark, warm the cold, and no one celebrates alone.",quotes:["Gather close, everyone. The longest night is the best one to share.", "I don't shine for myself \u2014 I shine so you can find your way home.", "Wherever there's warmth and friends, that's where winter truly begins."]},
+"fire serpent":{title:"Ignis the Fire Serpent",motto:"Power is most beautiful when it moves like a dance.",quotes:["Watch the flames follow me. They always do.", "Grace and fire are the same art.", "I don't slither. I flow."]},
+"flame spirit":{title:"Pyra the Flame Spirit",motto:"I'm not just made of fire \u2014 I'm made of joy.",quotes:["Feel that warmth? That's me being happy!", "I glow brighter when my friends are near.", "Sad? Impossible. I'm literally sunshine."]},
+"fox":{title:"Rusty the Fox",motto:"Always be one clever step ahead \u2014 and never get caught.",quotes:["Who, me? I've been here the whole time.", "It's not a trick if it works. Then it's a plan.", "Blame Nugget. Everyone always believes it was Nugget."]},
+"frost lynx":{title:"Shimmer the Frost Lynx",motto:"Rare as frost flowers, gone like breath on the wind.",quotes:["You saw me? Then magic was on your side.", "I leave only paw prints, and not for long.", "The cold and I keep each other's secrets."]},
+"frostpup":{title:"Milo the Frostpup",motto:"Every snowflake is a reason to play.",quotes:["It snowed?! Okay okay okay \u2014 come ON, let's GO!", "I don't know where we're going, but I'm already so happy about it.", "Best friends plus snow equals the best day ever. Every single time."]},
+"giant squid":{title:"Verne the Giant Squid",motto:"The deeper the dark, the greater the wonder.",quotes:["Down there? I've been deeper.", "Mystery isn't scary. It's an invitation.", "Eight arms, one curiosity, infinite depths."]},
+"glacier bear":{title:"Tundra the Glacier Bear",motto:"The strongest thing you can be is gentle.",quotes:["Easy now. I've got you. I always do.", "Big paws, soft heart \u2014 there's room for everyone here.", "Strength isn't for breaking things. It's for holding them up."]},
+"golden eagle":{title:"Regulus the Golden Eagle",motto:"These peaks are mine to watch over \u2014 and I watch them well.",quotes:["From the highest crag, nothing escapes my eye.", "A true king serves the mountain, not himself.", "Rise. The summit is waiting."]},
+"gorilla":{title:"Kibo the Gorilla",motto:"Strong enough to protect, soft enough to care.",quotes:["Behind me. Always behind me.", "Strength means nothing without gentleness.", "Nobody touches my troop. Nobody."]},
+"great white shark":{title:"Bruce the Great White Shark",motto:"Top of the food chain, bottom of the drama.",quotes:["Relax. If I were hunting, you'd know.", "Power doesn't need to prove itself.", "Respect the apex; he's calmer than you'd think."]},
+"griffin":{title:"Aurelius the Griffin",motto:"Honor binds me; strength lets me keep my word.",quotes:["I guard what matters with beak, claw, and oath.", "Strength without honor is just menace.", "Stand tall. I stand with you."]},
+"grizzly bear":{title:"Granite the Grizzly Bear",motto:"Cross me and you'll learn. Need me and you'll never doubt.",quotes:["Stand behind me. We'll be fine.", "Respect goes both ways up here.", "Big paws are for shielding, not just swinging."]},
+"gyrfalcon":{title:"Sterling the Gyrfalcon",motto:"Swift, sure, and second to none.",quotes:["I strike once, and once is enough.", "Nobility is in the dive, not the boast.", "The arctic sky answers to me."]},
+"hedgehog":{title:"Prim the Hedgehog",motto:"Soft on the inside, even when the world feels prickly.",quotes:["Oh\u2014 hello. Sorry, I didn't mean to hide.", "You can come closer. I don't really mind.", "I'm braver than I look. A little."]},
+"hellhound":{title:"Cerberus the Hellhound",motto:"Fang to my foes, family to my friends.",quotes:["Threaten my pack and meet the fire.", "I look terrifying so you don't have to be.", "Loyalty runs hotter in me than any flame."]},
+"horned lizard":{title:"Spike the Horned Lizard",motto:"Tiny body, enormous nerve.",quotes:["Step closer. I dare you.", "Small and spiky beats big and slow.", "I've never backed down in my life. All eight weeks of it."]},
+"icicle sparrow":{title:"Tilly the Icicle Sparrow",motto:"Sing loud \u2014 the cold can't catch a happy song.",quotes:["Good morning, good morning, GOOD morning! Did everyone hear me? Good.", "Tiny bird, enormous opinions, excellent songs.", "Can't fly south? Then I'll just make winter sing instead."]},
+"inferno bull":{title:"Forge the Inferno Bull",motto:"Nothing stops what's already charging.",quotes:["Brace yourself. Or don't. Won't matter.", "I am the avalanche with horns.", "Stop me? People have tried. People have learned."]},
+"jackal":{title:"Faron the Jackal",motto:"Adapt, outthink, endure \u2014 that's how you cross a desert.",quotes:["There's always a way through. I just find it first.", "The dunes don't beat the clever.", "Watch and learn \u2014 the desert teaches those who listen."]},
+"jaguar":{title:"Vale the Jaguar",motto:"Flawless by instinct, deadly by design.",quotes:["One leap. That's all it ever takes.", "Perfection isn't practiced. It's born.", "I don't miss. The jungle can confirm."]},
+"king lobster":{title:"Reginald the King Lobster",motto:"Mind the claws \u2014 you're in the presence of royalty.",quotes:["One does not simply scuttle past the king.", "These claws are ceremonial. And functional.", "The seafloor is my throne room."]},
+"lava lizard":{title:"Blaze the Lava Lizard",motto:"Short fuse, big flame, no regrets.",quotes:["Say that again. I DARE you.", "I'm not angry, I'm just\u2014 okay, I'm a little angry.", "Small lizard, large temper, handle with care."]},
+"llama":{title:"Gus the Llama",motto:"Normal is boring. Be the weird one they remember.",quotes:["I don't know what I'm doing but I'm doing it with flair.", "Was that weird? Good.", "Spit? I would never. \u2026Probably."]},
+"lunar lynx":{title:"Selene the Lunar Lynx",motto:"Rare as a blue moon, watchful as its light.",quotes:["I guard the moonlight so your dreams stay safe.", "Magic this rare is worth protecting.", "You'll only meet me when the moon allows it."]},
+"magma golem":{title:"Basalt the Magma Golem",motto:"Enormous power, even bigger gentleness.",quotes:["I crush mountains. I will not crush you. Promise.", "Slow steps. Careful hands. Warm heart.", "Big and burning, but never to my friends."]},
+"mammoth":{title:"Magnus the Mammoth",motto:"I am older than the ice itself \u2014 and I guard it still.",quotes:["I have walked since before these glaciers froze.", "Legends don't fade. They keep watch.", "Lean on me; I have held up worlds."]},
+"manta ray":{title:"Mara the Manta Ray",motto:"Glide gently and the whole sea moves with you.",quotes:["Be still. Feel the current carry you.", "I don't swim. I drift like a thought.", "Serenity is the ocean's deepest power."]},
+"marmot":{title:"Whistle the Marmot",motto:"I see the whole world from up here \u2014 come look!",quotes:["Whistle if you see me waving \u2014 I'm always waving!", "Best view on the mountain, and I'm sharing it.", "Eyes up, friends, I'll spot trouble first."]},
+"mitten cat":{title:"Olive the Mitten Cat",motto:"Stay warm, stay cute, stay one step ahead.",quotes:["I found the warmest spot in the house. No, I won't tell you where.", "My paws look like mittens, and I know exactly how charming that is.", "Chaos is fun \u2014 but warm chaos is better."]},
+"molten kitty":{title:"Scarlett the Molten Kitty",motto:"Darling, I don't do ordinary.",quotes:["Is that a smudge of ash on me? The HORROR.", "I'm not arrogant, I'm just usually right.", "Make way \u2014 fabulous coming through."]},
+"moon dragon":{title:"Lunaris the Moon Dragon",motto:"The cosmos has an emperor \u2014 and I wear no smaller crown.",quotes:["Galaxies turn at my command.", "Prestige isn't given. It orbits me.", "Bow if you wish; the stars already have."]},
+"moon hare":{title:"Mochi the Moon Hare",motto:"Follow me into the soft, starry between-places.",quotes:["I hop where dreams are made \u2014 come along.", "The moon's just a stepping stone, really.", "Close your eyes; I'll show you somewhere lovely."]},
+"moon raven":{title:"Corvus the Moon Raven",motto:"I say nothing, and I know everything.",quotes:["I watched it happen. I always do.", "Silence hears more than any voice.", "The moon and I keep the realm's secrets."]},
+"moose":{title:"Bramble the Moose",motto:"Big enough to carry everyone, gentle enough to want to.",quotes:["Hop on \u2014 plenty of room up here.", "I may be huge, but I step carefully.", "No rush, little ones. I've got you."]},
+"musk ox":{title:"Odin the Musk Ox",motto:"Let the storm come. I am the wall it breaks on.",quotes:["Stand close. The blizzard ends at my shoulders.", "I do not move. The cold learned that long ago.", "Resilience is just refusing to fall."]},
+"narwhal":{title:"Merlin the Narwhal",motto:"There's magic under the ice \u2014 I'm the proof.",quotes:["Behold! The unicorn of the sea!", "A little wonder makes the cold worth it.", "My tusk? Pure enchantment. Probably."]},
+"nebula jellyfish":{title:"Glim the Nebula Jellyfish",motto:"Every drift is a discovery waiting to happen.",quotes:["Ooh \u2014 what's THAT glowing over there?", "I don't steer. I wonder, and the cosmos carries me.", "Discovery's just curiosity that floated far enough."]},
+"nebula turtle":{title:"Atlas the Nebula Turtle",motto:"Slow as starlight, steady as the cosmos.",quotes:["I carry galaxies on my back; I can carry your worries too.", "The universe is patient. Learn from it.", "Rest here, little stars. You're safe on my shell."]},
+"nine-tailed fox":{title:"Kiyo the Nine-Tailed Fox",motto:"Charm opens the door; mystery keeps them guessing.",quotes:["Was that magic, or just me? You'll never know.", "I have nine tails and ninety secrets.", "Trust me \u2014 it's far more fun than figuring me out."]},
+"nova hawk":{title:"Apollo the Nova Hawk",motto:"The next horizon is always the one worth chasing.",quotes:["There's a whole universe out there \u2014 let's go claim it.", "Heroes aren't fearless. They just fly anyway.", "Aim past the stars; that's where the adventure is."]},
+"nova puff":{title:"Pom the Nova Puff",motto:"One look and your whole day gets better.",quotes:["I'm small, I'm glowy, I'm IRRESISTIBLE.", "Awww yes, that reaction? That's the Puff effect.", "Pure joy, cosmic edition!"]},
+"orangutan":{title:"Sage the Orangutan",motto:"A clever mind and a kind heart solve almost anything.",quotes:["Hmm. Give me a moment \u2014 I'll work it out.", "Smart is only good if it's also kind.", "Come, sit. Let's think this through together."]},
+"orca":{title:"Kai the Orca",motto:"Lead the pod, master the sea.",quotes:["Move as one and nothing in the ocean can stop us.", "I command because the pod trusts me to.", "Apex isn't a title. It's a responsibility."]},
+"oryx":{title:"Sahel the Oryx",motto:"Walk tall, wander far, answer to the horizon.",quotes:["These straight horns point only forward.", "I cross the emptiness like it's an honor.", "Majesty is just dignity that kept walking."]},
+"otter":{title:"Splash the Otter",motto:"Every river's a playground if you're brave enough to dive.",quotes:["Race you to the bottom and back!", "Did you SEE that flip? Tens across the board.", "Why be bored when you can be wet?"]},
+"owl":{title:"Professor Otto the Owl",motto:"Every question is a door \u2014 let's open a few tonight.",quotes:["Ah, excellent question. Sit, and I'll explain.", "Knowledge weighs nothing, yet it carries you far.", "The night is for thinking; the day is for trying."]},
+"panther":{title:"Onyx the Panther",motto:"I am the dark the jungle whispers about.",quotes:["You felt me before you saw me. Good.", "The shadows aren't where I hide. They're where I rule.", "Elite isn't earned by being loud."]},
+"penguin":{title:"Waddles the Penguin",motto:"Slip, slide, faceplant, repeat \u2014 laughing the whole way.",quotes:["Watch this\u2014 WHOA\u2014 \u2026I'm okay!", "I'm not clumsy, I'm committed to the bit.", "If you're not laughing, I'll fall over again."]},
+"phoenix":{title:"Vesper the Phoenix",motto:"However dark it gets, I always rise again.",quotes:["From every ending, I begin once more.", "Hope is the fire that never truly dies.", "Watch the ashes \u2014 that's where I'm born."]},
+"pine marten":{title:"Dash the Pine Marten",motto:"If it moves, I'm faster. If it's hidden, I'll find it.",quotes:["Bet I get there first. \u2026Already did.", "I wasn't snooping. I was conducting research. At high speed.", "Rules are more like\u2026 gentle suggestions, right?"]},
+"poison dart frog":{title:"Bolt the Poison Dart Frog",motto:"Small, bright, and absolutely fearless.",quotes:["Bet I can leap that. Watch.", "Tiny? Sure. Stoppable? Never.", "Bright colors mean \"don't underestimate me."]},
+"polar bear":{title:"Nanook the Polar Bear",motto:"Nothing crosses the ice I haven't allowed.",quotes:["Sleep easy. The night is mine to watch.", "Power is for protecting, never frightening.", "You're safe on my ice. All of you."]},
+"rabbit":{title:"Clover the Rabbit",motto:"Around every corner is something new to sniff.",quotes:["What's that? What's THAT? Ooh, what's that?!", "I can't sit still, there's too much world.", "Let's go just a little further \u2014 promise it's worth it."]},
+"ram":{title:"Boulder the Ram",motto:"I don't back down. I head-butt forward.",quotes:["Move the mountain? No. I'll go through it.", "Stubborn is just determined with better aim.", "I've never lost a staring contest with a cliff."]},
+"sand cat":{title:"Pebble the Sand Cat",motto:"Small, sandy, and absolutely up to something.",quotes:["I didn't take it. \u2026Okay, I took it. It's mine now.", "Cute is the perfect disguise.", "You'll never catch me. I'm camouflaged AND fast."]},
+"scorpion":{title:"Sting the Scorpion",motto:"Small operation, big reputation.",quotes:["Nothing happens in this desert without me knowing.", "Underestimate me. It's the last mistake people make.", "Cool under pressure \u2014 literally, I live under a rock."]},
+"seal":{title:"Pudge the Seal",motto:"Life's better belly-up and snuggled close.",quotes:["Come here, you. Cuddle quota isn't met.", "I flopped all this way just to be near you.", "Happiness is a sunny rock and a friend."]},
+"skunk":{title:"Vex the Skunk",motto:"Make 'em give you space \u2014 then own it.",quotes:["Yeah, I'm trouble. You're welcome.", "Back up. I won't ask twice.", "Cool isn't loud. It just walks in."]},
+"snow bun":{title:"Pip the Snow Bun",motto:"Warm hearts melt the coldest days.",quotes:["Five more minutes\u2026 and a blanket\u2026 and a hug, please.", "I'm not lazy, I'm conserving cuddle energy.", "If you're cold, come closer. I run very warm for a small bun."]},
+"snow leopard":{title:"Ghost the Snow Leopard",motto:"Rare by nature, flawless by choice.",quotes:["You glimpsed me? Then I let you.", "Perfection isn't loud. It's seldom seen.", "I walk where others wouldn't dare to climb."]},
+"snow yeti":{title:"Mike the Snow Yeti",motto:"Monsters can be the gentlest friends you'll ever make.",quotes:["RAAAH\u2014 oh no, did I scare you? I'm so sorry!", "I look scary so you don't have to be.", "Big hugs are kind of my whole thing."]},
+"snowy owl":{title:"Eira the Snowy Owl",motto:"The cold keeps its wisdom \u2014 and shares it with the patient.",quotes:["Ask, and the long night will answer.", "I've watched a thousand winters think.", "Knowledge, like frost, settles on the still."]},
+"spirit dragon":{title:"Shen the Spirit Dragon",motto:"Wisdom is the only magic that never fades.",quotes:["Patience, young one. The answer will come.", "I have taught a hundred heroes. You may be the next.", "Power is easy. Wisdom is the real spell."]},
+"squirrel":{title:"Nutkin the Squirrel",motto:"More acorns. Always more acorns.",quotes:["Mine. Also mine. That one too. Definitely mine.", "I'll remember where I buried it. \u2026I won't.", "No time to talk, gotta hoard!"]},
+"star lion":{title:"Leo the Star Lion",motto:"I reign where the constellations were born.",quotes:["My roar lights the constellations.", "A king of stars bows to no horizon.", "Power wears a mane up here."]},
+"stardust manta":{title:"Sirius the Stardust Manta",motto:"Drift far enough and the whole universe glows.",quotes:["I've sailed past stars you've only wished on.", "Serenity is the speed of the cosmos.", "Come glide; the galaxy's quieter than you'd think."]},
+"tiger":{title:"Raja the Tiger",motto:"These lands know my name \u2014 and my law.",quotes:["I do not roar to be heard. I roar to remind.", "Authority is carried, not claimed.", "The jungle bends; the emperor stands."]},
+"toucan":{title:"Rio the Toucan",motto:"If you've got it, flaunt it \u2014 beak and all.",quotes:["Darling, you simply MUST see my best side.", "The jungle's a stage and I'm the headliner.", "Bright feathers, brighter personality."]},
+"turtle":{title:"Walter the Turtle",motto:"Slow down, little one. The good things wait for those who do.",quotes:["I've seen a hundred seasons; this one's still worth savoring.", "No need to rush. We'll get there together.", "Sit with me a while \u2014 I'll tell you how it used to be."]},
+"unicorn":{title:"Celeste the Unicorn",motto:"Lead with kindness and the world turns gentle.",quotes:["Even the smallest kindness leaves a little light.", "Beauty fades; a good heart only grows.", "Let me help \u2014 that's what my magic is for."]},
+"void serpent":{title:"Erebus the Void Serpent",motto:"From the void I came, and the void keeps my secrets.",quotes:["I am the dark between the stars.", "Power and mystery are my two coils.", "You cannot know me. Few have tried and stayed."]},
+"volcano dragon":{title:"Vulcan the Volcano Dragon",motto:"From the ash of legends, I rise again.",quotes:["I have burned and been reborn. Try that.", "The mountain wakes when I do.", "Champions aren't made. They're forged in fire."]},
+"vulture":{title:"Bram the Vulture",motto:"I've outlasted every storm \u2014 and I'll outlast this one.",quotes:["Seen it all, survived it all, perched through most of it.", "The desert keeps its secrets. I keep more.", "Patience, kid. Everything passes if you wait."]},
+"walrus":{title:"Wally the Walrus",motto:"Big belly laughs and bigger bear hugs.",quotes:["Har har! Come sit by your old pal Wally.", "Plenty of room on this ice floe, friend.", "Life's too short not to laugh from the gut."]},
+"wild boar":{title:"Tusk the Wild Boar",motto:"Head down, charge forward, figure it out later.",quotes:["Out of the way \u2014 coming through!", "Fear? Don't know her.", "If there's a wall, I'll just make a door."]},
+"wolf":{title:"Asher the Wolf",motto:"Lead from the front, but never leave the pack behind.",quotes:["Stay close. I'll get us through this.", "We're stronger together \u2014 always have been.", "One day this pack is mine to protect. I'm ready."]},
+"woodpecker":{title:"Tappy the Woodpecker",motto:"Knock, knock \u2014 that's the sound of getting things done.",quotes:["Can't stop, big day, lots of bark!", "Rat-a-tat-tat is the rhythm of progress.", "Idle? Me? Never met her."]},
+"yak":{title:"Tor the Yak",motto:"Steady as the stone, warm as the herd.",quotes:["Lean on me. I won't budge.", "The cold doesn't move me, and neither will trouble.", "Stay close to the herd; I'll handle the wind."]}
+};
+// Visningsnamn: smeknamn > proper-namn (title) > art-namn. pet.name (arten) lamnas orord (bild/petdex/spar).
+function petDisplayName(pet){if(pet&&pet.nick)return pet.nick;var f=PET_FLAVOR[((pet&&pet.name)||'').toLowerCase()];return (f&&f.title)||(pet&&pet.name)||'';}
+function petFlavorLine(pet){var f=PET_FLAVOR[((pet&&pet.name)||'').toLowerCase()];if(!f)return null;var L=[];if(f.motto)L.push(f.motto);(f.quotes||[]).forEach(function(q){if(q)L.push(q);});if(!L.length)return null;return {text:L[Math.floor(Math.random()*L.length)],who:f.title||petDisplayName(pet)};}
 function petDetailToggleFav(uid){
   var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
   p.fav=!p.fav;saveGame();
@@ -4588,9 +4706,9 @@ function openPetDetail(uid){
   var artBig=pet.world
     ? '<span class="pdx2-emoji">'+emoji+'</span><img class="pdx2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="var e=this.previousElementSibling;if(e)e.style.display=\'none\'" onerror="this.remove()">'
     : '<span class="pdx2-emoji">'+emoji+'</span>';
-  var motto=petMotto(pet);
-  var mottoHtml=motto
-    ? '<div class="pdx2-motto">\u201c'+motto+'\u201d</div>'
+  var fl=petFlavorLine(pet);
+  var mottoHtml=fl
+    ? '<div class="pdx2-motto">\u201c'+fl.text+'\u201d<span class="pdx2-motto-by">\u2014 '+fl.who+'</span></div>'
     : '<div class="pdx2-motto" style="opacity:0.7">\u201cA story still waiting to be told\u2026\u201d</div>';
   var html='<div class="pdx2" style="--rc:'+rc.color+'">';
   html+=(pet.world?'<img class="pdx2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">':'');
@@ -4598,7 +4716,7 @@ function openPetDetail(uid){
   html+='<div class="pdx2-fav'+(pet.fav?' on':'')+'" onclick="petDetailToggleFav(\''+pet.uid+'\')">\u2605</div>';
   html+='<div class="pdx2-art">'+artBig+'</div>';
   html+='<div class="pdx2-body">';
-  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+pet.name+'</div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
+  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'</div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
   html+='<div class="pdx2-rar'+(isEquipped?' active-tag':'')+'" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
   html+='<div class="pdx2-from">'+si.icon+' '+si.text+'</div>';
   html+=mottoHtml;
@@ -6534,7 +6652,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.17<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.18<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
