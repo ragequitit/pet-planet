@@ -58,11 +58,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
 #egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
-#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
-#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
+#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
 @keyframes pulse2{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:0.9;transform:scale(1.12);}}
-#egg-img{width:115px;height:135px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;}
+#egg-img{width:115px;height:135px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 @keyframes eggPop{0%{transform:scale(1,1);}20%{transform:scale(1.07,0.94);}50%{transform:scale(0.96,1.06);}100%{transform:scale(1,1);}}
 /* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
@@ -70,8 +70,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .home-slide-in{animation:homeSlideUp 0.34s cubic-bezier(0.22,0.61,0.36,1);}
 @keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.74);}60%{transform:translateX(-50%) scale(1.46);}100%{transform:translateX(-50%) scale(1.5);}}
 .egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
-#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;}
-@keyframes shadowAnim{0%,100%{width:80px;height:16px;opacity:0.9;}50%{width:54px;height:10px;opacity:0.4;}}
+#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+@keyframes shadowAnim{0%,100%{transform:translateX(-50%) scale(1);opacity:0.9;}50%{transform:translateX(-50%) scale(0.67,0.62);opacity:0.4;}}
 #particles,#particles-front{position:absolute;width:100%;height:100%;pointer-events:none;}
 #particles{z-index:1;}
 #particles-front{z-index:3;}
@@ -784,7 +784,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
 .pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
-.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 7.5s ease-in-out infinite;animation-delay:var(--d,0s);}
+.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 7.5s ease-in-out infinite;animation-delay:var(--d,0s);will-change:transform;}
 @keyframes pc2breathe{0%,100%{transform:scale(0.99)}50%{transform:scale(1.03)}}
 /* Lite-kort (pet-väljaren): ingen andning/aura-puls — billigt att rita (v6.92) */
 .pc2-lite .pc2-img{animation:none;}
@@ -6331,7 +6331,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.99<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.00<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
