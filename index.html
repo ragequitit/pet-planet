@@ -4689,6 +4689,7 @@ var PET_FLAVOR={
 };
 // Visningsnamn: smeknamn > proper-namn (title) > art-namn. pet.name (arten) lamnas orord (bild/petdex/spar).
 function petDisplayName(pet){if(pet&&pet.nick)return pet.nick;var f=PET_FLAVOR[((pet&&pet.name)||'').toLowerCase()];return (f&&f.title)||(pet&&pet.name)||'';}
+function speciesDisplayName(name){var f=PET_FLAVOR[((name)||'').toLowerCase()];return (f&&f.title)||name||'';}
 function petFlavorLine(pet){var f=PET_FLAVOR[((pet&&pet.name)||'').toLowerCase()];if(!f)return null;var L=[];if(f.motto)L.push(f.motto);(f.quotes||[]).forEach(function(q){if(q)L.push(q);});if(!L.length)return null;return {text:L[Math.floor(Math.random()*L.length)],who:f.title||petDisplayName(pet)};}
 function petDetailToggleFav(uid){
   var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
@@ -6652,7 +6653,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.19<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.20<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10242,7 +10243,7 @@ function renderPetdexSpecies(){
   var body=document.getElementById('pdsp-body');if(!body)return;
   var meta=findSpeciesMeta(pdexSpName,pdexSpWorld);
   if(!meta){body.innerHTML='';return;}
-  var titleEl=document.getElementById('pdsp-title');if(titleEl)titleEl.textContent=meta.name;
+  var titleEl=document.getElementById('pdsp-title');if(titleEl)titleEl.textContent=speciesDisplayName(meta.name);
   var ob=speciesObtainableRarities(meta.native);
   var found=ob.filter(function(r){return isPetDiscovered(meta.name,r);});
   var missing=ob.filter(function(r){return !isPetDiscovered(meta.name,r);});
@@ -10423,7 +10424,7 @@ function renderPetdex(){
     html+='<div class="pdx-card '+(found?'found':'undiscovered')+'"'+(found?' onclick="openPetdexSpecies(\''+sp.name+'\',\''+petdexActiveWorld+'\')"':' style="cursor:default"')+'>';
     if(found)html+='<div class="pdx-card-badge">✓</div>';
     html+='<div class="pdx-card-art">'+petIco(sp)+'</div>';
-    html+='<div class="pdx-card-name">'+(found?sp.name:'?????')+'</div>';
+    html+='<div class="pdx-card-name">'+(found?speciesDisplayName(sp.name):'?????')+'</div>';
     html+='<div class="pdx-card-pct">'+comp+'%</div>';
     html+='</div>';
   });
