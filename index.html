@@ -39,6 +39,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Equipped pets står fritt på scenen (ingen ring), större + skugga (v6.82) */
 .pet-pos.has-pet .ppi{background:none;border:none;overflow:visible;cursor:pointer;}
 .pp-pet{position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);transform-origin:bottom center;font-size:4.3rem;line-height:1;z-index:2;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.45));pointer-events:none;animation:ppSway 4.7s ease-in-out infinite;}
+.pp-tip{position:absolute;left:50%;bottom:calc(100% + 27px);transform:translateX(-50%);z-index:30;display:none;flex-direction:column;gap:5px;width:max-content;min-width:122px;max-width:210px;padding:8px 10px;border-radius:13px;background:linear-gradient(180deg,rgba(30,40,70,0.98),rgba(20,28,50,0.98));border:1px solid rgba(255,255,255,0.13);box-shadow:0 10px 26px rgba(0,0,0,0.55);pointer-events:none;}
+.pp-tip::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(22,30,54,0.98);}
+.pet-pos.has-pet:hover .pp-tip{display:flex;}
+.pet-pos.has-pet:hover{z-index:40;}
+.pp-tip-row{display:flex;align-items:center;gap:6px;font-size:0.74rem;white-space:nowrap;line-height:1.2;}
+.pp-tip-ico{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:16px;height:16px;font-size:13px;}
+.pp-tip-ico .abil-img{width:16px;height:16px;object-fit:contain;}
+.pp-tip-nm{color:#fff;font-weight:600;}
+.pp-tip-t{color:rgba(255,255,255,0.45);font-size:0.64rem;font-weight:800;}
+.pp-tip-v{margin-left:auto;color:#4fd6b8;font-weight:800;padding-left:8px;}
 @keyframes ppSway{0%,100%{transform:translateX(-50%) rotate(-2deg)}50%{transform:translateX(-50%) rotate(2deg)}}
 .pet-pos:nth-child(1) .pp-pet{animation-duration:4.3s;animation-delay:-0.6s;}
 .pet-pos:nth-child(2) .pp-pet{animation-duration:5.2s;animation-delay:-2.1s;}
@@ -3943,6 +3953,13 @@ function renderSlotRow(){
       if(pet){
         d.classList.add('has-pet');
         inner.innerHTML='<div class="pp-shadow"></div><span class="pp-pet">'+petIco(pet)+'</span>';
+        if(pet.abilities&&pet.abilities.length){
+          var tipRows=pet.abilities.map(function(a){
+            var m=ABILITY_META[a.id];if(!m)return '';
+            return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">+'+TIER_VALUES[a.tier]+'%</span></span>';
+          }).join('');
+          if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML=tipRows;d.appendChild(tip);}
+        }
       } else {
         inner.innerHTML='<span style="font-size:0.7rem;opacity:0.4">+</span>';
       }
@@ -6314,7 +6331,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.98<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.99<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
