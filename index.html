@@ -57,20 +57,20 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos:nth-child(5) .pp-pet{animation-duration:4.5s;animation-delay:-2.8s;}
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
-#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
-#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
-#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#egg-glow{position:absolute;width:173px;height:203px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-glow2{position:absolute;width:240px;height:270px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
 @keyframes pulse2{0%,100%{opacity:0.4;}50%{opacity:0.9;}}
-#egg-img{width:115px;height:135px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
-@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+#egg-img{width:173px;height:203px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
 @keyframes eggPop{0%{transform:scale(1,1);}20%{transform:scale(1.07,0.94);}50%{transform:scale(0.96,1.06);}100%{transform:scale(1,1);}}
 /* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
 @keyframes homeSlideUp{0%{transform:translateY(44px);opacity:0;}100%{transform:translateY(0);opacity:1;}}
 .home-slide-in{animation:homeSlideUp 0.34s cubic-bezier(0.22,0.61,0.36,1);}
-@keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.74);}60%{transform:translateX(-50%) scale(1.46);}100%{transform:translateX(-50%) scale(1.5);}}
+@keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.16);}60%{transform:translateX(-50%) scale(0.97);}100%{transform:translateX(-50%) scale(1);}}
 .egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
-#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-shadow{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);width:120px;height:24px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes shadowAnim{0%,100%{opacity:0.9;}50%{opacity:0.4;}}
 #particles,#particles-front{position:absolute;width:100%;height:100%;pointer-events:none;}
 #particles{z-index:1;}
@@ -3201,7 +3201,7 @@ function dropShell(){
 function showShellPop(r,idx){
   var stage=document.getElementById('egg-stage');if(!stage)return;
   // Oskalade mått (egg-stage är CSS-skalat) så shellsen sprids runt mitten, inte åt höger
-  var w=stage.offsetWidth||140,h=stage.offsetHeight||160;
+  var w=stage.offsetWidth||210,h=stage.offsetHeight||240;
   // Epic+ ~3,5s, rare 2s, uncommon 1,5s, common 1s
   var dur=idx>=3?3500:idx===2?2000:idx===1?1500:1000;
   var pop=document.createElement('div');
@@ -3847,10 +3847,10 @@ var WORLD_PARTICLES={
 function genWorldParticles(theme){
   function rnd(a,b){return a+Math.random()*(b-a);}
   var out=[];
-  var cx=70, cy=82, rx=48, ry=58; // ägg-centrum + ungefärlig radie i rutan
+  var cx=105, cy=123, rx=72, ry=87; // ägg-centrum + ungefärlig radie i rutan (×1.5 efter att scenens scale togs bort)
   var backN=Math.floor(theme.count/2);
   for(var i=0;i<theme.count;i++){
-    var amt=theme.driftAmt;
+    var amt=theme.driftAmt*1.5;
     var size=rnd(theme.sizeMin,theme.sizeMax);
     var col=theme.colors[Math.floor(Math.random()*theme.colors.length)];
     var dur=rnd(theme.durMin,theme.durMax);
@@ -3870,7 +3870,7 @@ function genWorldParticles(theme){
       else if(theme.drift==='down')ty=rnd(amt*0.6,amt);
       else ty=rnd(-amt*0.6,amt*0.6);
       out.push({
-        x:rnd(6,132), y:rnd(12,150),
+        x:rnd(9,198), y:rnd(18,225),
         w:size, h:size, col:col, dur:dur,
         tx:rnd(-amt*0.5,amt*0.5), ty:ty, d:delay, layer:'front'
       });
@@ -3905,13 +3905,13 @@ function eggTap(clientX,clientY){
   if(!G.settings||G.settings.damageNumbers!==false){
     // OBS: #egg-stage är skalat (CSS transform scale 1.5). Absolut-positionering sker i
     // OSKALADE koordinater → använd offsetWidth/offsetHeight, inte getBoundingClientRect (skalad).
-    var w=stage.offsetWidth||140,hh=stage.offsetHeight||160;
+    var w=stage.offsetWidth||210,hh=stage.offsetHeight||240;
     var pop=document.createElement('div');pop.className='click-pop';
     pop.textContent='+'+fmt(clickVal);
     // Sprid runt hela ägget (sidled + höjd) så siffrorna inte staplar på samma ställe
-    var ox=(Math.random()*2-1)*52;
+    var ox=(Math.random()*2-1)*78;
     var oy=hh*(0.12+Math.random()*0.55);
-    pop.style.left=(w/2+ox-14)+'px';
+    pop.style.left=(w/2+ox-21)+'px';
     pop.style.top=oy+'px';
     stage.appendChild(pop);
     setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},800);
@@ -6354,7 +6354,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.03<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.04<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
