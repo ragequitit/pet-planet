@@ -784,7 +784,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
 .pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
-.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));}
+.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 7.5s ease-in-out infinite;animation-delay:var(--d,0s);will-change:transform;}
 @keyframes pc2breathe{0%,100%{transform:scale(0.99)}50%{transform:scale(1.03)}}
 /* Lite-kort (pet-väljaren): ingen andning/aura-puls — billigt att rita (v6.92) */
 .pc2-lite .pc2-img{animation:none;}
@@ -4237,6 +4237,7 @@ function petMatchesFilterCore(pet,flt,query){
 function petMatchesFilter(pet){return petMatchesFilterCore(pet,petFilter,petSearchQuery);}
 function renderPets(){
   var wrap=document.getElementById('pets-wrap');if(!wrap)return;
+  petGridShown=PETS_PAGE; // börja om på sida 1 vid full omritning (tab-byte, filter, m.m.)
   var total=G.hatchedPets.length;
   var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
 
@@ -4290,7 +4291,7 @@ function renderPets(){
   wrap.innerHTML=html;
   renderPetGrid();
 }
-function onPetSearch(v){petSearchQuery=v;renderPetGrid();}
+function onPetSearch(v){petSearchQuery=v;petGridShown=PETS_PAGE;renderPetGrid();}
 function clearPetSearch(){petSearchQuery='';renderPets();}
 function togglePetFilterPanel(){petFilterOpen=!petFilterOpen;renderPets();}
 function togglePetFilterChip(group,key){petFilter[group][key]=!petFilter[group][key];renderPets();}
@@ -4373,32 +4374,69 @@ function petCardHtml(pet,idx,opts){
   html+='</div>';
   return html;
 }
+var PETS_PAGE=18;          // antal pet-kort per laddning
+var petGridShown=PETS_PAGE; // hur många som renderas just nu
+var _petGridSorted=null;    // cachad filtrerad/sorterad lista (för load-more)
+var _petScrollObs=null;     // IntersectionObserver för infinite scroll
 function renderPetGrid(){
   var host=document.getElementById('pet-grid-host');if(!host)return;
-  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   var total=G.hatchedPets.length;
 
   if(total===0){
+    if(_petScrollObs){_petScrollObs.disconnect();_petScrollObs=null;}
     host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
     return;
   }
   var sorted=G.hatchedPets.filter(petMatchesFilter);
   sorted.sort(function(a,b){return petSortCompare(a,b,petSortMode);});
+  _petGridSorted=sorted;
 
   var html='';
   var filtering=(petSearchQuery||petActiveFilterCount()>0);
   if(filtering)html+='<div class="pet-result-line">Showing '+sorted.length+' of '+total+'</div>';
 
   if(sorted.length===0){
+    if(_petScrollObs){_petScrollObs.disconnect();_petScrollObs=null;}
     host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearPetFilters();clearPetSearch();">Clear search &amp; filters</button></div>';
     return;
   }
+  if(petGridShown<PETS_PAGE)petGridShown=PETS_PAGE;
+  if(petGridShown>sorted.length)petGridShown=sorted.length;
   html+='<div class="pet-grid">';
-  sorted.forEach(function(pet,idx){ html+=petCardHtml(pet,idx); });
+  for(var i=0;i<petGridShown;i++){ html+=petCardHtml(sorted[i],i); }
   html+='</div>';
   host.innerHTML=html;
+  updatePetSentinel();
 }
-function setPetSort(mode){petSortMode=mode;renderPetGrid();}
+// Infinite scroll: en osynlig markör i botten; när den närmar sig vyn laddas nästa sida.
+function updatePetSentinel(){
+  var host=document.getElementById('pet-grid-host');if(!host)return;
+  if(_petScrollObs){_petScrollObs.disconnect();_petScrollObs=null;}
+  var old=document.getElementById('pet-grid-sentinel');if(old)old.remove();
+  if(!_petGridSorted||petGridShown>=_petGridSorted.length)return; // allt visat
+  var s=document.createElement('div');s.id='pet-grid-sentinel';
+  host.appendChild(s);
+  if('IntersectionObserver' in window){
+    s.style.height='1px';
+    _petScrollObs=new IntersectionObserver(function(es){if(es[0]&&es[0].isIntersecting)loadMorePets();},{rootMargin:'350px 0px'});
+    _petScrollObs.observe(s);
+  } else {
+    s.style.cssText='text-align:center;padding:10px;';
+    s.innerHTML='<button class="pf-clear" onclick="loadMorePets()">Load more pets</button>';
+  }
+}
+function loadMorePets(){
+  if(!_petGridSorted)return;
+  var grid=document.querySelector('#pet-grid-host .pet-grid');if(!grid)return;
+  var start=petGridShown, end=Math.min(petGridShown+PETS_PAGE,_petGridSorted.length);
+  if(end<=start)return;
+  var add='';
+  for(var i=start;i<end;i++){ add+=petCardHtml(_petGridSorted[i],i); }
+  grid.insertAdjacentHTML('beforeend',add);
+  petGridShown=end;
+  updatePetSentinel();
+}
+function setPetSort(mode){petSortMode=mode;petGridShown=PETS_PAGE;renderPetGrid();}
 // Live-uppdatera XP-mätaren + level-etiketten på pet-korten för pets som sitter aktivt
 // (uppdaterar bara på plats, bygger inte om korten → inget flimmer).
 function softUpdatePetXp(){
@@ -6354,7 +6392,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.04<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.05<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
