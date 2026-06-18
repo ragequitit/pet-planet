@@ -44,6 +44,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos.has-pet:hover .pp-tip{display:flex;}
 .pet-pos.has-pet:hover{z-index:40;}
 .pp-tip-row{display:flex;align-items:center;gap:6px;font-size:0.74rem;white-space:nowrap;line-height:1.2;}
+.pp-tip-name{font-family:'Fredoka One',cursive;font-size:0.82rem;color:#fff;text-align:center;padding-bottom:5px;margin-bottom:1px;border-bottom:1px solid rgba(255,255,255,0.14);}
 .pp-tip-ico{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:16px;height:16px;font-size:13px;}
 .pp-tip-ico .abil-img{width:16px;height:16px;object-fit:contain;}
 .pp-tip-nm{color:#fff;font-weight:600;}
@@ -1450,13 +1451,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #sheet-body{overflow:hidden;transition:max-height 0.38s ease,opacity 0.28s ease;max-height:4000px;opacity:1;}
 #scene-wrap{transition:height 0.38s ease;}
 /* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
-#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:6;transition:transform 0.4s ease,bottom 0.4s ease;}
+#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:11;transition:transform 0.4s ease,bottom 0.4s ease;}
 /* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
 #app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 52px);}
 #app.home-collapsed #coin-display{display:none;}
 #app.home-collapsed #sheet-body{max-height:0;opacity:0;}
 #app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
 #app.home-collapsed #stage-group{bottom:4dvh;transform:scale(1.4);transform-origin:center bottom;}
+#app.home-collapsed #pet-positions{transform:translateX(-50%) scale(0.72);transform-origin:50% 100%;}
 /* ===== PROFILE HUB ===== */
 #profile-modal .prof-panel{background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px 20px 0 0;width:var(--w);max-width:100vw;height:92dvh;max-height:92dvh;overflow-y:auto;display:flex;flex-direction:column;}
 .prof-topbar{position:sticky;top:0;background:linear-gradient(180deg,#15264e,#13224a);display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(58,92,184,0.4);z-index:5;}
@@ -2223,6 +2225,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-act.remove{background:linear-gradient(180deg,#c0392b,#922b21);box-shadow:0 3px 0 #5e1a14;}
 .pdx2-act:active{transform:translateY(2px);}
 .pdx2-busy{width:100%;padding:11px;border-radius:12px;margin-top:13px;background:rgba(255,255,255,0.06);border:1px dashed rgba(255,255,255,0.25);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.82rem;text-align:center;}
+.pdx2-shortcuts{display:flex;gap:7px;margin-top:13px;}
+.pdx2-sc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 4px;border:1px solid rgba(58,92,184,0.55);border-radius:11px;background:rgba(16,28,55,0.72);color:#cfe0ff;font-family:'Fredoka One',cursive;font-size:0.62rem;cursor:pointer;}
+.pdx2-sc:active{transform:translateY(1px);}
 </style>
 <div id="friends-modal" class="modal-overlay">
   <div class="prof-panel">
@@ -4037,7 +4042,7 @@ function renderSlotRow(){
             var m=ABILITY_META[a.id];if(!m)return '';
             return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">+'+TIER_VALUES[a.tier]+'%</span></span>';
           }).join('');
-          if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML=tipRows;d.appendChild(tip);}
+          if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML='<div class="pp-tip-name">'+petDisplayName(pet)+'</div>'+tipRows;d.appendChild(tip);}
         }
       } else {
         inner.innerHTML='<span style="font-size:0.7rem;opacity:0.4">+</span>';
@@ -4700,6 +4705,12 @@ function petDetailToggleFav(uid){
   openPetDetail(uid);
 }
 function petRenameAfter(uid){if(typeof renderPets==='function')renderPets();openPetDetail(uid);}
+function petDetailGoto(action){
+  var m=document.getElementById('pet-detail-modal');if(m)m.classList.remove('open');
+  if(action==='adventure'){if(typeof switchTab==='function')switchTab('adventure');}
+  else if(action==='fusion'){if(typeof switchTab==='function')switchTab('pets');if(typeof petsSub==='function')petsSub('fusion');}
+  else if(action==='mutate'){if(typeof switchTab==='function')switchTab('pets');if(typeof petsSub==='function')petsSub('mutate');}
+}
 function petRenamePrompt(uid){
   var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
   var properName=((PET_FLAVOR[((p.name)||'').toLowerCase()]||{}).title)||p.name||'Pet';
@@ -4748,6 +4759,13 @@ function openPetDetail(uid){
     html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
   });
   html+='</div>';
+  if(!isPetBusy(pet.uid)){
+    html+='<div class="pdx2-shortcuts">'
+      +'<button class="pdx2-sc" onclick="petDetailGoto(\'adventure\')">'+uiIco('nav/nav-adventures','\ud83d\uddfa\ufe0f',22)+'Adventure</button>'
+      +'<button class="pdx2-sc" onclick="petDetailGoto(\'fusion\')">'+uiIco('lab/fusion','\u2697\ufe0f',22)+'Fusion</button>'
+      +'<button class="pdx2-sc" onclick="petDetailGoto(\'mutate\')">'+uiIco('lab/mutate','\ud83e\uddec',22)+'Mutate</button>'
+      +'</div>';
+  }
   // Equip / unequip / busy
   if(isEquipped){
     var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(pet.uid);});
@@ -6672,7 +6690,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.21<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.24<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -6820,7 +6838,7 @@ function ppNorm(s,lVariant){
 }
 // exact = maskar bara helt namn (korta/kollisionsbenägna ord). sub = delsträng (längre, säkra ord).
 var BLOCK_EXACT=['fan','cp','sex','kuk','bög','röv','slut','rape','pedo','kike','spic','coon','kkk','hora','skit','piss','porr','äckel','äcklig','äckliga','äckligt','trög','pantad','pucko','nolla','loser','tönt','töntig','fjant','sopig','sopa','pajas','clown','klant','odåga','pack','kräk','avfall','störd','störda','rötägg','ohyra','råtta','usel','fegis','mes','snusk','pervo','slisk','dummer','fåne','stolle','nöt','nötter','skruvad','tokig','fånig','fjomp','fjolla','lallare','mupp'];
-var BLOCK_SUB=['helvete','satan','idiot','mongo','fitta','kuksug','lesbo','rövhål','arsle','slyna','slampa','knull','porn','pedofil','nazi','hitler','terrorist','döda','mörda','jävla','dumfan','horunge','skithuv','pissung','fuck','shit','bitch','asshole','cunt','bastard','motherfucker','nigger','nigga','faggot','retard','whore','rapist','pedophile','chink','tranny','äckelunge','idiotjävel','dumjävel','skitstövel','skitunge','skitkärring','skitgubbe','skitapa','skitmänniska','skitperson','skitskalle','trögjävel','efterbliven','efterblivet','efterblivna','stolpskott','förlorare','fjantunge','klantarsel','värdelös','värdelösa','värdelöst','missfoster','avskum','slödder','äckelpäckel','patetisk','patetiska','patetiskt','sjukhuvud','psykfall','galning','tokjävel','sinnessjuk','sjukjävel','störda jävel','stördhuvud','parasit','golare','förrädare','svikare','skamlig','skämmig','usel människa','ynkrygg','mespropp','slyngel','bråkstake','mobbare','trakasserare','snuskig','snuskgubbe','snuskhummer','pervers','äckelgubbe','äckelkärring','sliskig','slemmig','slemboll','äckeltyp','äckelperson','äckelpelle','dumskalle','fåntratt','tramsare','tramskalle','tokstolle','stolpskalle','hjärndöd','hjärnsläpp','knäppgök'];
+var BLOCK_SUB=['helvete','satan','idiot','mongo','fitta','kuksug','lesbo','rövhål','arsle','slyna','slampa','knull','porn','pedofil','nazi','hitler','terrorist','döda','mörda','jävla','dumfan','horunge','skithuv','pissung','fuck','shit','bitch','asshole','cunt','bastard','motherfucker','nigger','nigga','faggot','retard','whore','rapist','pedophile','chink','tranny','äckelunge','idiotjävel','dumjävel','skitstövel','skitunge','skitkärring','skitgubbe','skitapa','skitmänniska','skitperson','skitskalle','trögjävel','efterbliven','efterblivet','efterblivna','stolpskott','förlorare','fjantunge','klantarsel','värdelös','värdelösa','värdelöst','missfoster','avskum','slödder','äckelpäckel','patetisk','patetiska','patetiskt','sjukhuvud','psykfall','galning','tokjävel','sinnessjuk','sjukjävel','störda jävel','stördhuvud','parasit','golare','förrädare','svikare','skamlig','skämmig','usel människa','ynkrygg','mespropp','slyngel','bråkstake','mobbare','trakasserare','snuskig','snuskgubbe','snuskhummer','pervers','äckelgubbe','äckelkärring','sliskig','slemmig','slemboll','äckeltyp','äckelperson','äckelpelle','dumskalle','fåntratt','tramsare','tramskalle','tokstolle','stolpskalle','hjärndöd','hjärnsläpp','knäppgök','kuken','neger','horan','fittunge','luder'];
 function nameIsBlocked(name){
   var n1=ppNorm(name,false),n2=ppNorm(name,true),i,w;
   for(i=0;i<BLOCK_EXACT.length;i++){w=ppNorm(BLOCK_EXACT[i],false);if(n1===w||n2===w)return true;}
