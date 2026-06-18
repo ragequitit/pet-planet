@@ -84,6 +84,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Firefox: stäng av de transform-animationer som hackar där (ägg-svävning + pets in/ut-puls). Glöd/effekter som bara tonar i opacity behålls — de är mjuka även i Firefox. */
 .is-firefox #egg-img{animation:none!important;}
 .is-firefox .pc2-img{animation:none!important;}
+.is-firefox .pp-pet{animation:none!important;}
 .reduce-motion .spark{display:none!important;}
 .reduce-motion .click-pop{animation-duration:0.4s!important;}
 /* Bakgrunds-liv (Sky Life): moln (CSS-loop) + spawnade fåglar & markdjur (slumpat, sällan).
@@ -6407,7 +6408,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.07<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.08<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
