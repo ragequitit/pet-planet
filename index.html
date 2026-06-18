@@ -6254,7 +6254,17 @@ function playSfx(type){
     o.connect(g);g.connect(ctx.destination);
     var t=ctx.currentTime;
     if(type==='hatch'){o.type='triangle';o.frequency.setValueAtTime(523,t);o.frequency.exponentialRampToValueAtTime(1046,t+0.18);g.gain.setValueAtTime(0.18*vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.3);o.start(t);o.stop(t+0.3);}
-    else{o.type='sine';o.frequency.setValueAtTime(660,t);o.frequency.exponentialRampToValueAtTime(880,t+0.05);g.gain.setValueAtTime(0.1*vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.09);o.start(t);o.stop(t+0.1);}
+    else{
+      // Mjukt, mysigt "boop" istället för klick: MJUK attack (ingen hård transient = inget "klick"),
+      // varm triangel-ton som tonar svagt nedåt, och en len kort utklingning.
+      o.type='triangle';
+      o.frequency.setValueAtTime(415,t);
+      o.frequency.exponentialRampToValueAtTime(330,t+0.13);
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.linearRampToValueAtTime(0.11*vol,t+0.02); // mjuk uppgång → ingen klick-känsla
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.22);
+      o.start(t);o.stop(t+0.24);
+    }
   }catch(e){}
 }
 function buzz(ms){if(G.settings&&G.settings.vibrate&&navigator.vibrate){try{navigator.vibrate(ms||10);}catch(e){}}}
@@ -6397,7 +6407,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.06<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.07<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
