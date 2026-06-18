@@ -1882,6 +1882,13 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   </div>
 </div>
 
+<div id="petskin-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+  <div class="modal-box centered" style="max-width:340px;">
+    <button class="modal-close" onclick="closePetSkin()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    <div id="petskin-body"></div>
+  </div>
+</div>
+
 <div id="mutation-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
     <div id="mutation-modal-body"></div>
@@ -2212,6 +2219,17 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;line-height:1.1;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
 .pdx2-edit{font-size:0.82rem;color:rgba(255,255,255,0.55);cursor:pointer;margin-left:7px;vertical-align:middle;}
 .pdx2-edit:active{transform:scale(0.88);}
+.pdx2-skin{display:inline-flex;align-items:center;margin-left:6px;cursor:pointer;vertical-align:middle;}
+.pdx2-skin img{width:21px;height:21px;object-fit:contain;vertical-align:middle;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.5));}
+.pdx2-skin:active{transform:scale(0.88);}
+.skinp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:4px;}
+.skinp-cell{background:linear-gradient(160deg,#17294f,#0e1c3c);border:2px solid rgba(58,92,184,0.5);border-radius:13px;padding:9px 5px 7px;text-align:center;cursor:pointer;transition:transform 0.1s ease,border-color 0.15s ease;}
+.skinp-cell:active{transform:scale(0.94);}
+.skinp-cell.sel{border-color:var(--gold,#f5c842);box-shadow:0 0 9px rgba(245,200,66,0.45);}
+.skinp-prev{height:62px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+.skinp-prev img{max-width:100%;max-height:62px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.skinp-name{font-family:'Fredoka One',cursive;font-size:0.64rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.skinp-empty{text-align:center;color:rgba(255,255,255,0.5);font-size:0.74rem;padding:14px 6px;line-height:1.4;}
 .pdx2-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.74rem;color:#ffe08a;background:rgba(11,21,48,0.85);border:1.5px solid #2a3c6c;border-radius:9px;padding:4px 9px;white-space:nowrap;}
 .pdx2-rar{font-size:0.84rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 3px rgba(0,0,0,0.7);}
 .pdx2-rar.active-tag::after{content:'⚡ ACTIVE';margin-left:7px;font-size:0.58rem;font-weight:900;color:#0b1530;background:var(--gold);border-radius:6px;padding:2px 7px;}
@@ -2943,12 +2961,27 @@ function generatePet(eggId){
 function petSlug(name){return String(name||'').toLowerCase().trim().replace(/\s+/g,'-');}
 function petImgUrl(world,name){return ASSET_BASE+'/assets/pets/'+world+'/'+petSlug(name)+'.png';}
 function petBgUrl(world){return ASSET_BASE+'/assets/pets/'+world+'/card-bg.png';}
+// === PER-PET SKINS ===
+// En skin valjs per INDIVIDUELL pet (pet.skin), precis som smeknamn. En skin hor till en art (species).
+// 'test:true' = upplast for test tills Battle Pass kopplar in akta agande via G.skinsOwned[skinId]=true.
+var PET_SKINS={
+  'dog-fire':{species:'dog',name:'Fire',img:'battlepass/season-1/dog-fire',test:true},
+  'dog-ice':{species:'dog',name:'Ice',img:'battlepass/season-1/dog-ice',test:true}
+};
+function skinImgUrl(skinId){var s=PET_SKINS[skinId];return s?ASSET_BASE+'/assets/'+s.img+'.png':'';}
+function playerOwnsSkin(skinId){if(typeof G!=='undefined'&&G&&G.skinsOwned&&G.skinsOwned[skinId])return true;var s=PET_SKINS[skinId];return !!(s&&s.test);}
+function petArtUrl(pet){
+  if(pet&&pet.skin&&PET_SKINS[pet.skin]&&PET_SKINS[pet.skin].species===(pet.name||'').toLowerCase()&&playerOwnsSkin(pet.skin)){return skinImgUrl(pet.skin);}
+  return petImgUrl(pet?pet.world:'',pet?pet.name:'');
+}
+function speciesSkins(species){species=(species||'').toLowerCase();return Object.keys(PET_SKINS).filter(function(id){return PET_SKINS[id].species===species&&playerOwnsSkin(id);});}
 function petIco(pet,worldOverride){
   if(!pet)return '\ud83d\udc3e';
   var world=worldOverride||pet.world||'';
   var emoji=pet.e||'\ud83d\udc3e';
   if(!world)return emoji; // ingen varld kand -> bara emoji
-  return '<img src="'+petImgUrl(world,pet.name)+'" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';
+  var _src=worldOverride?petImgUrl(world,pet.name):petArtUrl(pet);
+  return '<img src="'+_src+'" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:middle" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';
 }
 // Stor pet-bild for hatch/fusion-rutan: visar emoji DIREKT som platshallare och byter till PNG nar den laddats (ingen blank lucka).
 function petIcoBig(pet){
@@ -4156,7 +4189,7 @@ function openPetSlotModal(idx){
     var hnd=PET_IMG_NUDGE[(curPet.name||'').toLowerCase()];
     var hndStyle=hnd?(' style="left:'+hnd.x+'px;margin-top:'+hnd.y+'px"'):'';
     var artBig=curPet.world
-      ? '<span class="shh-emoji" style="display:none">'+hemoji+'</span><img class="shh-img"'+hndStyle+' src="'+petImgUrl(curPet.world,curPet.name)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">'
+      ? '<span class="shh-emoji" style="display:none">'+hemoji+'</span><img class="shh-img"'+hndStyle+' src="'+petArtUrl(curPet)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">'
       : '<span class="shh-emoji">'+hemoji+'</span>';
     var abChips='';
     if(curPet.abilities&&curPet.abilities.length){
@@ -4444,7 +4477,7 @@ function petCardHtml(pet,idx,opts){
   if(pet.world){
     var nd=PET_IMG_NUDGE[(pet.name||'').toLowerCase()];
     var ndStyle=nd?(' style="left:'+nd.x+'px;margin-top:'+nd.y+'px"'):'';
-    artHtml='<span class="pc2-emoji" style="display:none">'+emoji+'</span><img class="pc2-img"'+ndStyle+' src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">';
+    artHtml='<span class="pc2-emoji" style="display:none">'+emoji+'</span><img class="pc2-img"'+ndStyle+' src="'+petArtUrl(pet)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">';
   } else {
     artHtml='<span class="pc2-emoji">'+emoji+'</span>';
   }
@@ -4708,6 +4741,40 @@ function petDetailToggleFav(uid){
   openPetDetail(uid);
 }
 function petRenameAfter(uid){if(typeof renderPets==='function')renderPets();openPetDetail(uid);}
+
+function openPetSkinPicker(uid){
+  var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
+  var owned=speciesSkins(p.name);
+  var defImg=petImgUrl(p.world,p.name);
+  var emoji=p.e||'\ud83d\udc3e';
+  var h='<div style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:#fff;margin-bottom:3px;">Choose Skin</div>'
+    +'<div style="font-size:0.66rem;color:rgba(255,255,255,0.5);margin-bottom:12px;line-height:1.4;">Only this pet changes \u2014 your other pets keep their own look.</div>'
+    +'<div class="skinp-grid">';
+  h+='<div class="skinp-cell'+(!p.skin?' sel':'')+'" onclick="applyPetSkin(\''+p.uid+'\',\'\')">'
+    +'<div class="skinp-prev"><img src="'+defImg+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))"></div>'
+    +'<div class="skinp-name">Default</div></div>';
+  owned.forEach(function(id){
+    var s=PET_SKINS[id];
+    h+='<div class="skinp-cell'+(p.skin===id?' sel':'')+'" onclick="applyPetSkin(\''+p.uid+'\',\''+id+'\')">'
+      +'<div class="skinp-prev"><img src="'+skinImgUrl(id)+'" alt="" onerror="this.style.opacity=0.25"></div>'
+      +'<div class="skinp-name">'+s.name+'</div></div>';
+  });
+  h+='</div>';
+  if(!owned.length){h+='<div class="skinp-empty">No skins for this pet yet.<br>Unlock skins from the Battle Pass and events.</div>';}
+  var body=document.getElementById('petskin-body');if(body)body.innerHTML=h;
+  var m=document.getElementById('petskin-modal');if(m)m.classList.add('open');
+}
+function applyPetSkin(uid,skinId){
+  var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
+  if(skinId&&PET_SKINS[skinId]&&PET_SKINS[skinId].species===((p.name)||'').toLowerCase()&&playerOwnsSkin(skinId)){p.skin=skinId;}
+  else{delete p.skin;}
+  saveGame();
+  if(typeof renderPets==='function')renderPets();
+  closePetSkin();
+  openPetDetail(uid);
+}
+function closePetSkin(){var m=document.getElementById('petskin-modal');if(m)m.classList.remove('open');}
+
 function petDetailGoto(action){
   var m=document.getElementById('pet-detail-modal');if(m)m.classList.remove('open');
   if(action==='adventure'){if(typeof switchTab==='function')switchTab('adventure');}
@@ -4738,7 +4805,7 @@ function openPetDetail(uid){
   var si=petSourceInfo(pet);
   var emoji=pet.e||'\ud83d\udc3e';
   var artBig=pet.world
-    ? '<span class="pdx2-emoji" style="display:none">'+emoji+'</span><img class="pdx2-img" src="'+petImgUrl(pet.world,pet.name)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">'
+    ? '<span class="pdx2-emoji" style="display:none">'+emoji+'</span><img class="pdx2-img" src="'+petArtUrl(pet)+'" alt="" onload="this.classList.add(\'loaded\')" onerror="var e=this.previousElementSibling;if(e)e.style.display=\'\';this.remove()">'
     : '<span class="pdx2-emoji">'+emoji+'</span>';
   var fl=petFlavorLine(pet);
   var mottoHtml=fl
@@ -4750,7 +4817,7 @@ function openPetDetail(uid){
   html+='<div class="pdx2-fav'+(pet.fav?' on':'')+'" onclick="petDetailToggleFav(\''+pet.uid+'\')">\u2605</div>';
   html+='<div class="pdx2-art">'+artBig+'</div>';
   html+='<div class="pdx2-body">';
-  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'<span class="pdx2-edit" onclick="petRenamePrompt(\''+pet.uid+'\')" title="Rename">\u270f\ufe0f</span></div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
+  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'<span class="pdx2-edit" onclick="petRenamePrompt(\''+pet.uid+'\')" title="Rename">\u270f\ufe0f</span><span class="pdx2-skin" onclick="openPetSkinPicker(\''+pet.uid+'\')" title="Skins"><img src="'+ASSET_BASE+'/assets/ui/profiles/skin-pet.png" alt="Skins" onerror="this.replaceWith(document.createTextNode(\'👕\'))"></span></div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
   html+='<div class="pdx2-rar'+(isEquipped?' active-tag':'')+'" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
   html+='<div class="pdx2-from">'+si.icon+' '+si.text+'</div>';
   html+=mottoHtml;
@@ -6689,7 +6756,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.29<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.30<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
