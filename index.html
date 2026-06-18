@@ -2205,6 +2205,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-body{position:relative;z-index:2;padding:4px 16px 16px;}
 .pdx2-namerow{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .pdx2-name{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;line-height:1.1;text-shadow:0 1px 4px rgba(0,0,0,0.7);}
+.pdx2-edit{font-size:0.82rem;color:rgba(255,255,255,0.55);cursor:pointer;margin-left:7px;vertical-align:middle;}
+.pdx2-edit:active{transform:scale(0.88);}
 .pdx2-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.74rem;color:#ffe08a;background:rgba(11,21,48,0.85);border:1.5px solid #2a3c6c;border-radius:9px;padding:4px 9px;white-space:nowrap;}
 .pdx2-rar{font-size:0.84rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 3px rgba(0,0,0,0.7);}
 .pdx2-rar.active-tag::after{content:'⚡ ACTIVE';margin-left:7px;font-size:0.58rem;font-weight:900;color:#0b1530;background:var(--gold);border-radius:6px;padding:2px 7px;}
@@ -4697,6 +4699,23 @@ function petDetailToggleFav(uid){
   if(typeof renderPets==='function')renderPets();
   openPetDetail(uid);
 }
+function petRenameAfter(uid){if(typeof renderPets==='function')renderPets();openPetDetail(uid);}
+function petRenamePrompt(uid){
+  var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
+  var properName=((PET_FLAVOR[((p.name)||'').toLowerCase()]||{}).title)||p.name||'Pet';
+  var cur=(p.nick||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  var ph=properName.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+  var body='<input id="pet-nick-input" maxlength="16" value="'+cur+'" placeholder="'+ph+'" '
+    +'style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(122,90,208,0.5);border-radius:9px;color:#fff;font-size:0.95rem;padding:10px 12px;font-family:\'Baloo 2\',sans-serif;text-align:center;">'
+    +'<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);margin-top:9px;line-height:1.4;">Give this pet a custom name. Leave empty to reset to <b style="color:rgba(255,255,255,0.7)">'+ph+'</b>.</div>';
+  showConfirm('Rename Pet',body,'Save',function(){
+    var el=document.getElementById('pet-nick-input');var v=el?el.value.trim():'';
+    if(v===''){if(p.nick){delete p.nick;saveGame();}petRenameAfter(uid);return;}
+    if(v.length<2){alert('Please use at least 2 characters.');petRenamePrompt(uid);return;}
+    if(typeof nameIsBlocked==='function'&&nameIsBlocked(v)){alert('That name isn\u2019t allowed. Please choose another.');petRenamePrompt(uid);return;}
+    p.nick=v;saveGame();petRenameAfter(uid);
+  });
+}
 function openPetDetail(uid){
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
@@ -4717,7 +4736,7 @@ function openPetDetail(uid){
   html+='<div class="pdx2-fav'+(pet.fav?' on':'')+'" onclick="petDetailToggleFav(\''+pet.uid+'\')">\u2605</div>';
   html+='<div class="pdx2-art">'+artBig+'</div>';
   html+='<div class="pdx2-body">';
-  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'</div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
+  html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'<span class="pdx2-edit" onclick="petRenamePrompt(\''+pet.uid+'\')" title="Rename">\u270f\ufe0f</span></div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
   html+='<div class="pdx2-rar'+(isEquipped?' active-tag':'')+'" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div>';
   html+='<div class="pdx2-from">'+si.icon+' '+si.text+'</div>';
   html+=mottoHtml;
@@ -6653,7 +6672,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.20<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.21<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
