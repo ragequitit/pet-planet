@@ -58,8 +58,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
 #egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%) scale(1.5);transform-origin:bottom center;width:140px;height:160px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
-#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
-#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-glow{position:absolute;width:115px;height:135px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;}
+#egg-glow2{position:absolute;width:160px;height:180px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes pulse{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.85;transform:scale(1.07);}}
 @keyframes pulse2{0%,100%{opacity:0.4;transform:scale(1);}50%{opacity:0.9;transform:scale(1.12);}}
 #egg-img{width:115px;height:135px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
@@ -70,7 +70,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .home-slide-in{animation:homeSlideUp 0.34s cubic-bezier(0.22,0.61,0.36,1);}
 @keyframes eggShrinkIn{0%{transform:translateX(-50%) scale(1.74);}60%{transform:translateX(-50%) scale(1.46);}100%{transform:translateX(-50%) scale(1.5);}}
 .egg-shrink-in{animation:eggShrinkIn 0.4s cubic-bezier(0.22,0.61,0.36,1);}
-#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
+#egg-shadow{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:80px;height:16px;background:radial-gradient(ellipse,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.4) 40%,transparent 70%);border-radius:50%;animation:shadowAnim 3s ease-in-out infinite;pointer-events:none;z-index:1;}
 @keyframes shadowAnim{0%,100%{transform:translateX(-50%) scale(1);opacity:0.9;}50%{transform:translateX(-50%) scale(0.67,0.62);opacity:0.4;}}
 #particles,#particles-front{position:absolute;width:100%;height:100%;pointer-events:none;}
 #particles{z-index:1;}
@@ -88,10 +88,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #sky-life{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:2;}
 .no-skylife #sky-life,.reduce-motion #sky-life{display:none!important;}
 /* MOLN (kontinuerlig drift) */
-.sky-cloud{position:absolute;left:110%;width:var(--cw,140px);height:var(--ch,48px);background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,0.95),rgba(255,255,255,0.55) 45%,rgba(255,255,255,0) 76%);border-radius:50%;filter:blur(2px);opacity:0;animation:skyDrift var(--cd,60s) linear infinite;animation-delay:var(--cdl,0s);}
+.sky-cloud{position:absolute;left:0;width:var(--cw,140px);height:var(--ch,48px);background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,0.95),rgba(255,255,255,0.55) 45%,rgba(255,255,255,0) 76%);border-radius:50%;filter:blur(2px);opacity:0;will-change:transform;}
 @keyframes skyDrift{0%{left:110%;opacity:0;}10%{opacity:var(--cop,0.7);}90%{opacity:var(--cop,0.7);}100%{left:-50%;opacity:0;}}
 /* FÅGLAR (spawnas som engångs-element; djup + riktning via custom props) */
-.sky-bird{position:absolute;opacity:0;will-change:left,top,transform;}
+.sky-bird{position:absolute;opacity:0;will-change:transform;}
 .sky-bird .art{display:block;width:var(--bw,26px);transform:scaleX(var(--dir,1)) scale(var(--depth,1));transform-origin:center;}
 .sky-bird svg{display:block;width:100%;height:auto;animation:birdFlap var(--flap,0.45s) ease-in-out infinite;}
 @keyframes birdFlap{0%,100%{transform:scaleY(1);}50%{transform:scaleY(0.45);}}
@@ -784,7 +784,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
 .pc2-art{position:relative;z-index:3;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:center;height:104px;margin:2px -6px 2px;overflow:hidden;border-radius:10px;}
-.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));animation:pc2breathe 7.5s ease-in-out infinite;animation-delay:var(--d,0s);will-change:transform;}
+.pc2-img{position:relative;top:-10%;flex-shrink:0;align-self:flex-start;width:162%;height:auto;max-width:none;max-height:none;object-fit:contain;filter:drop-shadow(0 0 5px var(--rc));}
 @keyframes pc2breathe{0%,100%{transform:scale(0.99)}50%{transform:scale(1.03)}}
 /* Lite-kort (pet-väljaren): ingen andning/aura-puls — billigt att rita (v6.92) */
 .pc2-lite .pc2-img{animation:none;}
@@ -6116,12 +6116,24 @@ var SKY_BIRDS=[
 function buildClouds(){
   if(_cloudsBuilt)return;var sky=document.getElementById('sky-life');if(!sky)return;
   var clouds=[
-    {top:'8%', cw:'150px',ch:'50px',cd:'70s',cdl:'-30s',cop:0.75},
-    {top:'20%',cw:'115px',ch:'40px',cd:'56s',cdl:'-48s',cop:0.6},
-    {top:'4%', cw:'190px',ch:'60px',cd:'88s',cdl:'-12s',cop:0.7}
+    {top:'8%', cw:'150px',ch:'50px',cd:70,cdl:-30,cop:0.75},
+    {top:'20%',cw:'115px',ch:'40px',cd:56,cdl:-48,cop:0.6},
+    {top:'4%', cw:'190px',ch:'60px',cd:88,cdl:-12,cop:0.7}
   ];
-  var h='';clouds.forEach(function(c){h+='<div class="sky-cloud" style="top:'+c.top+';--cw:'+c.cw+';--ch:'+c.ch+';--cd:'+c.cd+';--cdl:'+c.cdl+';--cop:'+c.cop+';"></div>';});
-  sky.insertAdjacentHTML('afterbegin',h);_cloudsBuilt=true;
+  var W=sky.offsetWidth||400;
+  clouds.forEach(function(c){
+    var el=document.createElement('div');el.className='sky-cloud';
+    el.style.top=c.top;el.style.setProperty('--cw',c.cw);el.style.setProperty('--ch',c.ch);
+    sky.insertBefore(el,sky.firstChild);
+    // Driver med transform istället för left → komposit, ingen layout per frame
+    if(el.animate){el.animate([
+      {transform:'translateX('+(W*1.1)+'px)',opacity:0,offset:0},
+      {opacity:c.cop,offset:0.1},
+      {opacity:c.cop,offset:0.9},
+      {transform:'translateX('+(-W*0.6)+'px)',opacity:0,offset:1}
+    ],{duration:c.cd*1000,delay:c.cdl*1000,iterations:Infinity,easing:'linear'});}
+  });
+  _cloudsBuilt=true;
 }
 function spawnBird(){
   var sky=document.getElementById('sky-life');if(!sky)return;
@@ -6141,10 +6153,21 @@ function spawnBird(){
     x0=dirRight?'-12%':'112%';x1=dirRight?'112%':'-12%';
     t1=(top0+_rnd(-6,6)).toFixed(0)+'%';
   }
-  el.style.cssText='--bw:'+sp.bw+'px;--depth:'+depth.toFixed(2)+';--depth2:'+depth2.toFixed(2)+';--dir:'+(dirRight?1:-1)+';--op:'+_rnd(0.6,0.9).toFixed(2)+';--flap:'+sp.flap+';--fd:'+dur.toFixed(1)+'s;--x0:'+x0+';--x1:'+x1+';--t0:'+top0.toFixed(0)+'%;--t1:'+t1+';left:'+x0+';top:'+top0.toFixed(0)+'%;animation:birdFly '+dur.toFixed(1)+'s linear forwards;';
+  var op=_rnd(0.6,0.9);
+  el.style.cssText='--bw:'+sp.bw+'px;--depth:'+depth.toFixed(2)+';--depth2:'+depth2.toFixed(2)+';--dir:'+(dirRight?1:-1)+';--op:'+op.toFixed(2)+';--flap:'+sp.flap+';--fd:'+dur.toFixed(1)+'s;left:'+x0+';top:'+top0.toFixed(0)+'%;';
   if(shift)el.classList.add('depthshift');
   el.innerHTML='<div class="art">'+sp.svg.split('COL').join(col)+'</div>';
   sky.appendChild(el);
+  // Rörelse via transform (komposit) i stället för left/top (layout per frame)
+  var skyW=sky.offsetWidth||400, skyH=sky.offsetHeight||300;
+  var dx=((parseFloat(x1)-parseFloat(x0))/100)*skyW;
+  var dy=((parseFloat(t1)-top0)/100)*skyH;
+  if(el.animate){el.animate([
+    {transform:'translate(0,0)',opacity:0,offset:0},
+    {opacity:op,offset:0.08},
+    {opacity:op,offset:0.88},
+    {transform:'translate('+dx.toFixed(0)+'px,'+dy.toFixed(0)+'px)',opacity:0,offset:1}
+  ],{duration:dur*1000,easing:'linear',fill:'forwards'});}
   setTimeout(function(){el.remove();},dur*1000+250);
 }
 function _scheduleBird(){if(!_skyRunning)return;_skyTimers.push(setTimeout(function(){if(_skyRunning&&skyLifeActive())spawnBird();_scheduleBird();},_rnd(11000,29000)));}
@@ -6331,7 +6354,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.00<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.01<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10135,7 +10158,7 @@ function showOfflineModal(ms,coins){
 // ============================================================
 // GAME LOOP
 // ============================================================
-var lastT=performance.now(),idleAcc=0;
+var lastT=performance.now(),idleAcc=0,hudAcc=0;
 var clicksThisSecond=0,clickRateDisplay=0,clickRateTimer=0;
 var clickWindowAccum=0,smoothClickRate=0,CLICK_TAU=2.0,epsDispTimer=1,epsDispVal=0;
 function tick(now){
@@ -10165,7 +10188,10 @@ function tick(now){
   var totalB=G.owned.reduce(function(a,b){return a+b;},0);
   if(totalB>0){while(idleAcc>=1){idleAcc-=1;if(Math.random()<getDropChance(0.05)){dropShell();}}}
   else{idleAcc=0;}
-  updateHUD();requestAnimationFrame(tick);
+  // HUD skrivs bara ~10 ggr/sek (inte varje bildruta) — siffran tickar fortfarande men belastar huvudtråden 6× mindre
+  hudAcc+=dt;
+  if(hudAcc>=0.1){updateHUD();hudAcc=0;}
+  requestAnimationFrame(tick);
 }
 function softUpdateUpgrades(){
   UPGRADES.forEach(function(u){
