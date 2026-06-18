@@ -31,7 +31,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btn .sb-label{font-size:0.5rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
-.pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;pointer-events:auto;}
 .pet-pos .ppi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.3);border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.3);overflow:hidden;}
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
 .pet-pos.slot1 .ppi{border-color:#f5c84288;}
@@ -58,7 +58,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos:nth-child(5) .pp-pet{animation-duration:4.5s;animation-delay:-2.8s;}
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
-#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;pointer-events:auto;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #egg-glow{position:absolute;width:173px;height:203px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 #egg-glow2{position:absolute;width:240px;height:270px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
@@ -1451,7 +1451,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #sheet-body{overflow:hidden;transition:max-height 0.38s ease,opacity 0.28s ease;max-height:4000px;opacity:1;}
 #scene-wrap{transition:height 0.38s ease;}
 /* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
-#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:11;transition:transform 0.4s ease,bottom 0.4s ease;}
+#stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:11;pointer-events:none;transition:transform 0.4s ease,bottom 0.4s ease;}
 /* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
 #app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 52px);}
 #app.home-collapsed #coin-display{display:none;}
@@ -6640,10 +6640,6 @@ function renderSettings(){
     c+=setToggleRow('vibrate','Vibration','Gentle haptic feedback on taps (mobile only).');
     c+=numFormatRow();
     c+='</div>';
-    c+='<div class="set-sec"><div class="set-sec-title">💾 Save Data</div>';
-    c+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Backup Your Save</div><div class="set-row-desc">Copy a backup code to keep it safe or move to another device.</div></div><button class="set-btn purple" onclick="exportSave()">Export</button></div>';
-    c+='<div class="set-row"><div class="set-row-info"><div class="set-row-label">Restore a Save</div><div class="set-row-desc">Paste a backup code to load it. Replaces your current progress.</div></div><button class="set-btn purple" onclick="openImportSave()">Import</button></div>';
-    c+='<div id="set-save-io"></div></div>';
   } else if(settingsTab==='audio'){
     c+='<div class="set-sec"><div class="set-sec-title">🔊 Audio</div>';
     c+=volRow('masterVol','🔊','Master Volume','Overall volume for all sounds.');
@@ -6690,7 +6686,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.24<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.27<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10987,8 +10983,7 @@ function cloudAccountHtml(){
   if(cloudUser){
     var email=(typeof profEsc==='function')?profEsc(cloudUser.email||'Signed in'):(cloudUser.email||'Signed in');
     return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>'+
-      '<div class="set-row" style="margin-top:8px;"><div class="set-row-info"><div class="set-row-label">\ud83d\udcbe Cloud Save</div><div class="set-row-desc" id="cloud-save-status">'+cloudSavedAgoText()+'</div></div><button onclick="cloudSaveNow()" style="flex:0 0 auto;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(180deg,#5db0ff,#3d7dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;cursor:pointer;">Save now</button></div>'+
-      '<button class="set-btn" style="width:100%;background:rgba(120,30,40,0.65);margin-top:8px;" onclick="cloudDoLogOut()">Log Out</button>';
+      '<div class="set-row" style="margin-top:8px;"><div class="set-row-info"><div class="set-row-label">\ud83d\udcbe Cloud Save</div><div class="set-row-desc" id="cloud-save-status">'+cloudSavedAgoText()+'</div></div><button onclick="cloudSaveNow()" style="flex:0 0 auto;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(180deg,#5db0ff,#3d7dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;cursor:pointer;">Save now</button></div>';
   }
   return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Not signed in.</div></div></div>';
 }
