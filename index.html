@@ -6316,7 +6316,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.95<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.97<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10308,11 +10308,33 @@ var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 var sb=null;
 try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClient){var _ppAuth={storage:ppStore,persistSession:true,autoRefreshToken:true};if(!PP_PRIMARY)_ppAuth.storageKey='sb-pp-tab-'+PP_TABID;sb=window.supabase.createClient(SUPA_URL,SUPA_KEY,{auth:_ppAuth});}}catch(e){sb=null;}
 var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
+var cloudBusyAt=0; // tidsstämpel när cloudBusy senast sattes — används av vakthunden mot tysta frysningar
+var cloudLastSavedAt=0; // tidsstämpel för senaste LYCKADE molnsparning — driver "Last saved"-indikatorn
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 var OWNER_KEY='pp_cloud_owner';
 
 function cloudReady(){return !!sb;}
 function cloudMarkDirty(){cloudDirty=true;}
+function cloudSavedAgoText(){
+  if(!cloudUser)return 'Not signed in.';
+  if(!cloudLastSavedAt)return 'Last saved to cloud: not yet this session';
+  var s=Math.max(0,Math.round((Date.now()-cloudLastSavedAt)/1000));
+  var t=(s<3)?'just now':(s<60)?(s+'s ago'):(Math.floor(s/60)+'m '+(s%60)+'s ago');
+  return 'Last saved to cloud: '+t;
+}
+function cloudUpdateSaveStatus(){
+  var el=document.getElementById('cloud-save-status');
+  if(el)el.textContent=cloudSavedAgoText();
+}
+function cloudSaveNow(){
+  saveGame(); // skriver lokalt + markerar dirty
+  if(sb&&cloudUser&&!cloudBusy&&!cloudKickedFlag&&!_gateBlock){
+    var el=document.getElementById('cloud-save-status');if(el)el.textContent='Saving…';
+    cloudPushNow(function(){cloudUpdateSaveStatus();});
+  } else {
+    cloudUpdateSaveStatus(); // upptagen/utloggad → dirty står kvar, nästa flush tar den
+  }
+}
 function cloudLocalObj(){try{var r=ppStore.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function cloudGateMsg(t){var el=document.getElementById('cloud-gate-msg');if(el)el.textContent=t||'';}
 function cloudStatus(t){cloudGateMsg(t);var el2=document.getElementById('cloud-auth-msg');if(el2)el2.textContent=t||'';}
@@ -10507,16 +10529,21 @@ function cloudPushNow(cb){
   var _own=null;try{_own=ppStore.getItem(OWNER_KEY);}catch(e){}
   if(_own!==cloudUser.id){if(cb)cb();return;}
 
-  cloudBusy=true;
+  cloudBusy=true;cloudBusyAt=Date.now();
   sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
     if(st==='banned'){cloudBanned();}
     else if(st==='superseded'){cloudKicked();}
-    else if(st==='saved'||st==='created'){cloudDirty=false;try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();cloudSyncAvatar();}
+    else if(st==='saved'||st==='created'){cloudDirty=false;cloudLastSavedAt=Date.now();try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();cloudSyncAvatar();if(typeof cloudUpdateSaveStatus==='function')cloudUpdateSaveStatus();}
     if(cb)cb(st);
   },function(){cloudBusy=false;if(cb)cb();});
 }
-function cloudFlush(){if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudKickedFlag&&!_gateBlock)cloudPushNow();}
+function cloudFlush(){
+  // VAKTHUND: om en sparning fastnat (svar kom aldrig) i mer än 20s, släpp spärren så vi kan försöka igen.
+  // cloudDirty står kvar tills en sparning verkligen lyckas, så inget tappas — nästa flush gör ett nytt försök.
+  if(cloudBusy&&cloudBusyAt&&(Date.now()-cloudBusyAt>20000)){cloudBusy=false;}
+  if(sb&&cloudUser&&cloudDirty&&!cloudBusy&&!cloudKickedFlag&&!_gateBlock)cloudPushNow();
+}
 function cloudWipe(){
   if(!sb||!cloudUser)return;
   try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
@@ -10581,6 +10608,7 @@ function cloudAccountHtml(){
   if(cloudUser){
     var email=(typeof profEsc==='function')?profEsc(cloudUser.email||'Signed in'):(cloudUser.email||'Signed in');
     return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>'+
+      '<div class="set-row" style="margin-top:8px;"><div class="set-row-info"><div class="set-row-label">\ud83d\udcbe Cloud Save</div><div class="set-row-desc" id="cloud-save-status">'+cloudSavedAgoText()+'</div></div><button onclick="cloudSaveNow()" style="flex:0 0 auto;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(180deg,#5db0ff,#3d7dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;cursor:pointer;">Save now</button></div>'+
       '<button class="set-btn" style="width:100%;background:rgba(120,30,40,0.65);margin-top:8px;" onclick="cloudDoLogOut()">Log Out</button>';
   }
   return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Not signed in.</div></div></div>';
@@ -10598,6 +10626,7 @@ if(sb){
   }catch(e){cloudShowGate('login','Something went wrong. Reload to try again.');}
   setInterval(cloudFlush,8000);
   setInterval(cloudHeartbeat,8000);
+  setInterval(function(){if(typeof cloudUpdateSaveStatus==='function')cloudUpdateSaveStatus();},1000);
   setInterval(function(){if(typeof cloudMailRefreshBadge==='function')cloudMailRefreshBadge();},45000);
   setInterval(function(){if(typeof cloudSocialRefreshBadge==='function')cloudSocialRefreshBadge();},20000);
   try{document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){cloudHeartbeat();}else{cloudFlush();}});}catch(e){}
