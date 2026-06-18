@@ -786,6 +786,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes pc2skim{0%{transform:translateX(-180%) skewX(-13deg)}52%,100%{transform:translateX(340%) skewX(-13deg)}}
 .pc2-lvl{position:absolute;top:5px;right:5px;z-index:5;font-size:0.62rem;font-weight:900;background:linear-gradient(180deg,#5a3aa8,#3f2880);color:#fff;border:1px solid #7a5ad0;border-radius:7px;padding:2px 7px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a0f3a;}
 .pc2-act{position:absolute;top:5px;left:5px;z-index:5;font-size:0.66rem;background:var(--gold);color:#0b1530;border-radius:6px;padding:0 4px;font-weight:900;line-height:1.35;}
+.pc2-skin-badge{position:absolute;top:5px;left:5px;z-index:5;width:22px;height:22px;border-radius:7px;background:linear-gradient(180deg,#8a6ae0,#5a3aa8);border:1px solid #a587ea;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 0 #1a0f3a;}
+.pc2-skin-badge img{width:14px;height:14px;object-fit:contain;}
+.pc2-skin-badge.eq{top:28px;}
 .pc2-head{position:relative;z-index:3;padding-right:40px;min-height:26px;}
 .pc2-name{font-family:'Fredoka One',cursive;font-size:0.76rem;color:#fff;line-height:1.12;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 3px rgba(0,0,0,0.85);}
 .pc2-rarity{font-size:0.66rem;font-weight:900;margin-top:1px;text-shadow:0 1px 2px rgba(0,0,0,0.75);}
@@ -1978,6 +1981,15 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div class="howto-row"><div class="howto-ic">&#x2B50;</div><div class="howto-txt"><div class="howto-nm">Abilities</div><div class="howto-desc">Every pet ability has a tier &#x2014; a higher tier means a bigger bonus (e.g. Spark Gain, Shell Gain, Luck).</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/mutation/mutation-cores-rare.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83e\uddeb'))"></div><div class="howto-txt"><div class="howto-nm">Mutation Core</div><div class="howto-desc">Made by Extracting an ability from a pet (that pet is destroyed). Apply it in the Mutation Chamber to place that ability on another pet &#x2014; the pet survives.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x1F3B2;</div><div class="howto-txt"><div class="howto-nm">Reroll Charm</div><div class="howto-desc">Re-rolls the tier of one ability on a pet &#x2014; it can go up or down. The rerolled ability becomes locked. Charms drop from gameplay.</div></div></div>
+
+    <div class="howto-sec">Pet Abilities</div>
+    <div class="howto-row"><div class="howto-ic">&#x2B50;</div><div class="howto-txt"><div class="howto-nm">How abilities work</div><div class="howto-desc">Only your active (equipped) pets give their bonuses, and matching bonuses from all your active pets add together. Each ability has a tier &#x2014; a higher tier gives a bigger boost.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-coingain.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83e\ude99'))"></div><div class="howto-txt"><div class="howto-nm">Spark Gain</div><div class="howto-desc">Boosts how many Sparks you earn &#x2014; your income goes up both while you play and while you're away.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-idlegain.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83c\udf19'))"></div><div class="howto-txt"><div class="howto-nm">Offline Gain</div><div class="howto-desc">You keep earning Sparks while the game is closed. This raises how much you collect when you come back.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-clickpower.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc46'))"></div><div class="howto-txt"><div class="howto-nm">Click Power</div><div class="howto-desc">Makes every tap on the egg worth more Sparks.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-luck.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83c\udf40'))"></div><div class="howto-txt"><div class="howto-nm">Luck</div><div class="howto-desc">Raises the chance that a Shell drops when you tap and while you idle.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-shelldrop.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc1a'))"></div><div class="howto-txt"><div class="howto-nm">Shell Drop</div><div class="howto-desc">When a Shell drops, you get more Shells from it.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/pet-abilities/pet-ability-hatchspeed.png" alt="" onerror="this.replaceWith(document.createTextNode('\u23f1\ufe0f'))"></div><div class="howto-txt"><div class="howto-nm">Hatch Speed</div><div class="howto-desc">Eggs in the Hatchery finish hatching faster.</div></div></div>
 
     <div class="howto-foot">This is a quick guide &#x2014; more tips coming soon.</div>
   </div>
@@ -4471,6 +4483,7 @@ function petCardHtml(pet,idx,opts){
   html+='<div class="pc2-lvl" id="pclv-'+pet.uid+'">Lv '+lp.level+(lp.max?' · MAX':'')+'</div>';
   html+='<div class="pc2-fav'+(pet.fav?' on':'')+'" onclick="event.stopPropagation();togglePetFav(\''+pet.uid+'\')">\u2605</div>';
   if(isEquipped)html+='<div class="pc2-act">\u26a1</div>';
+  if(pet.skin&&PET_SKINS[pet.skin]&&PET_SKINS[pet.skin].species===(pet.name||'').toLowerCase()&&playerOwnsSkin(pet.skin)){html+='<div class="pc2-skin-badge'+(isEquipped?' eq':'')+'" title="'+PET_SKINS[pet.skin].name+' skin"><img src="'+ASSET_BASE+'/assets/ui/profiles/skin-pet.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83d\udc55\'))"></div>';}
   html+='<div class="pc2-head"><div class="pc2-name">'+petDisplayName(pet)+'</div>';
   html+='<div class="pc2-rarity" style="color:'+rc.color+'">'+rc.label+'</div></div>';
   var artHtml;
@@ -6710,6 +6723,7 @@ function renderSettings(){
     c+=setToggleRow('vibrate','Vibration','Gentle haptic feedback on taps (mobile only).');
     c+=numFormatRow();
     c+='</div>';
+    c+=cloudSaveRowHtml();
   } else if(settingsTab==='audio'){
     c+='<div class="set-sec"><div class="set-sec-title">🔊 Audio</div>';
     c+=volRow('masterVol','🔊','Master Volume','Overall volume for all sounds.');
@@ -6756,7 +6770,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.30<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.33<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11052,10 +11066,13 @@ function cloudAccountHtml(){
   }
   if(cloudUser){
     var email=(typeof profEsc==='function')?profEsc(cloudUser.email||'Signed in'):(cloudUser.email||'Signed in');
-    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>'+
-      '<div class="set-row" style="margin-top:8px;"><div class="set-row-info"><div class="set-row-label">\ud83d\udcbe Cloud Save</div><div class="set-row-desc" id="cloud-save-status">'+cloudSavedAgoText()+'</div></div><button onclick="cloudSaveNow()" style="flex:0 0 auto;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(180deg,#5db0ff,#3d7dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;cursor:pointer;">Save now</button></div>';
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>';
   }
   return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Not signed in.</div></div></div>';
+}
+function cloudSaveRowHtml(){
+  if(!cloudReady()||!cloudUser)return '';
+  return '<div class="set-sec"><div class="set-row" style="margin-top:0;"><div class="set-row-info"><div class="set-row-label">\ud83d\udcbe Cloud Save</div><div class="set-row-desc" id="cloud-save-status">'+cloudSavedAgoText()+'</div></div><button onclick="cloudSaveNow()" style="flex:0 0 auto;padding:8px 13px;border:none;border-radius:10px;background:linear-gradient(180deg,#5db0ff,#3d7dff);color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;cursor:pointer;">Save now</button></div></div>';
 }
 
 if(sb){
