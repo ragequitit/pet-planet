@@ -1707,7 +1707,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div class="tb-eps-row"><span class="tb-eps" id="tb-eps">SPS: 0</span><span class="tb-info" onclick="showEpsInfo()">i</span></div>
     </div>
     <div class="tb-right">
-      <div class="tb-gems" onclick="showComingSoon('💎 Gems','The premium currency Gems. Here you will be able to see how to earn Gems (achievements, dailies, battle pass) and buy more. Coming in a later update.')"><span style="font-size:0.95rem"><img class="gem-ic" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode('💎'))"></span><span class="tg-val" id="tb-gems-val">0</span></div>
+      <div class="tb-gems" onclick="openGemShop()"><span style="font-size:0.95rem"><img class="gem-ic" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="💎" onerror="this.replaceWith(document.createTextNode('💎'))"></span><span class="tg-val" id="tb-gems-val">0</span></div>
       <div class="tb-rbtn" id="bp-btn" onclick="openBattlePass()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/Battle-pass.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('🎟️'))"></div>
       <div class="tb-rbtn profile" onclick="showProfile()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/profile-icon.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('👤'))"></div>
       <div class="tb-rbtn" id="more-navbtn" style="position:relative" onclick="openMore()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/more.png" alt="" style="width:24px;height:24px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('⋯'))"><span class="nav-badge" id="more-badge" style="display:none"></span></div>
@@ -2030,6 +2030,13 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <button onclick="document.getElementById('generic-modal').classList.remove('open')" style="width:100%;padding:11px;border:none;border-radius:12px;margin-top:16px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;box-shadow:0 3px 0 #4a148c;">OK</button>
   </div>
 </div>
+<div id="gemshop-modal" class="modal-overlay">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeGemShop()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
+    <div class="modal-title" style="margin-bottom:14px;"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.18em;margin-right:4px;" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))">Gems</div>
+    <div id="gemshop-body"></div>
+  </div>
+</div>
 <div id="username-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div class="modal-box centered">
     <button class="modal-close" onclick="closeUsernameModal()" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
@@ -2150,6 +2157,29 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .fr2-add-tx span{font-size:0.74rem;color:#d6ccff;}
 .fr2-add-ch{font-size:1.3rem;color:#d6ccff;}
 .fr2-sub-sec{font-size:0.74rem;font-weight:800;letter-spacing:.5px;color:#a99cff;margin:14px 2px 7px;text-transform:uppercase;}
+/* ===== GEM STORE (v7.09) ===== */
+.gms-bal{display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;padding:9px 12px;margin-bottom:14px;font-family:'Fredoka One',cursive;color:#7fd4ff;font-size:0.95rem;}
+.gms-bal img{width:1.15em;height:1.15em;object-fit:contain;vertical-align:-0.18em;}
+.gms-bal .gms-bal-lbl{color:rgba(255,255,255,0.6);font-family:'Nunito',sans-serif;font-weight:700;font-size:0.8rem;}
+.gms-sec{font-size:0.66rem;font-weight:900;letter-spacing:1px;color:#7fd4ff;text-transform:uppercase;margin:4px 2px 8px;}
+.gms-sec.earn{color:#9be08b;margin-top:18px;}
+.gms-pack{position:relative;display:flex;align-items:center;gap:11px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.55);border-radius:14px;padding:10px 11px;margin-bottom:9px;}
+.gms-pack.best{border-color:#7fd4ff;box-shadow:0 0 14px -3px rgba(127,212,255,0.45);}
+.gms-pack-ic{width:52px;height:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:2rem;}
+.gms-pack-ic img{width:52px;height:52px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));}
+.gms-pack-mid{flex:1;min-width:0;}
+.gms-pack-name{font-family:'Fredoka One',cursive;font-size:0.86rem;color:#fff;}
+.gms-pack-amt{display:flex;align-items:center;gap:4px;font-size:0.78rem;font-weight:800;color:#7fd4ff;margin-top:2px;}
+.gms-pack-amt img{width:0.95em;height:0.95em;object-fit:contain;vertical-align:-0.12em;}
+.gms-tag{position:absolute;top:-8px;right:10px;font-size:0.5rem;font-weight:900;letter-spacing:0.5px;text-transform:uppercase;color:#0b1530;background:linear-gradient(180deg,#aee9ff,#7fd4ff);border-radius:7px;padding:2px 7px;box-shadow:0 2px 0 #2a6a8c;}
+.gms-soon-btn{flex-shrink:0;border:none;border-radius:10px;padding:9px 12px;font-family:'Fredoka One',cursive;font-size:0.66rem;line-height:1.1;text-align:center;cursor:pointer;background:linear-gradient(180deg,#3a5cb8,#23386e);color:#cfe0ff;box-shadow:0 3px 0 #15234a;}
+.gms-soon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #15234a;}
+.gms-earn{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(155,224,139,0.28);border-radius:11px;padding:9px 11px;margin-bottom:8px;}
+.gms-earn-ic{font-size:1.4rem;width:30px;text-align:center;flex-shrink:0;}
+.gms-earn-mid{flex:1;min-width:0;}
+.gms-earn-name{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;}
+.gms-earn-desc{font-size:0.66rem;color:rgba(255,255,255,0.55);margin-top:1px;line-height:1.35;}
+.gms-note{font-size:0.64rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.45;margin-top:14px;}
 </style>
 <div id="friends-modal" class="modal-overlay">
   <div class="prof-panel">
@@ -6124,6 +6154,42 @@ function showEpsInfo(){
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 
+// ===== GEM STORE (v7.09) — köp-paket är "Coming soon" (väntar på app-butik) =====
+function openGemShop(){var b=document.getElementById('gemshop-body');if(b)b.innerHTML=renderGemShop();document.getElementById('gemshop-modal').classList.add('open');}
+function closeGemShop(){document.getElementById('gemshop-modal').classList.remove('open');}
+function gemPackImg(file){return '<img src="'+ASSET_BASE+'/assets/ui/gems/'+file+'.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\ud83d\\udc8e\'))">';}
+function gemPackSoon(){showComingSoon('Gem Store','Buying Gems will arrive once Pet Planet launches in the app stores. Until then you can earn Gems for free \\u2014 from achievements, daily & weekly quests, the Battle Pass and events.');}
+function renderGemShop(){
+  var packs=[
+    {file:'chest-with-one-gem', name:'Gem Pouch', amt:80,   tag:''},
+    {file:'gems',               name:'Gem Chest', amt:500,  tag:'Popular'},
+    {file:'more-gems',          name:'Gem Vault', amt:1400, tag:'Best value'}
+  ];
+  var earn=[
+    {ic:'\ud83c\udfc6', name:'Achievements',         desc:'Unlock achievements for Gem rewards.'},
+    {ic:'\ud83d\udcc5', name:'Daily & Weekly Quests', desc:'Finish quests for a steady Gem trickle.'},
+    {ic:'\ud83c\udf9f\ufe0f', name:'Battle Pass',     desc:'Climb the season tracks for Gems.'},
+    {ic:'\ud83c\udf89', name:'Events',                desc:'Hit event milestones during seasons.'}
+  ];
+  var h='<div class="gms-bal"><span class="gms-bal-lbl">You have</span>'+GEM_IMG+' '+fmtShort(G.gems||0)+'</div>';
+  h+='<div class="gms-sec">Get Gems</div>';
+  packs.forEach(function(p){
+    var best=p.tag==='Best value';
+    h+='<div class="gms-pack'+(best?' best':'')+'">';
+    if(p.tag)h+='<div class="gms-tag">'+p.tag+'</div>';
+    h+='<div class="gms-pack-ic">'+gemPackImg(p.file)+'</div>';
+    h+='<div class="gms-pack-mid"><div class="gms-pack-name">'+p.name+'</div><div class="gms-pack-amt">'+GEM_IMG+' '+fmtShort(p.amt)+' Gems</div></div>';
+    h+='<button class="gms-soon-btn" onclick="gemPackSoon()">Coming<br>soon</button>';
+    h+='</div>';
+  });
+  h+='<div class="gms-sec earn">Earn Gems for free</div>';
+  earn.forEach(function(e){
+    h+='<div class="gms-earn"><div class="gms-earn-ic">'+e.ic+'</div><div class="gms-earn-mid"><div class="gms-earn-name">'+e.name+'</div><div class="gms-earn-desc">'+e.desc+'</div></div></div>';
+  });
+  h+='<div class="gms-note">Gems are never required to play. They only save time and unlock cosmetics \\u2014 never power.</div>';
+  return h;
+}
+
 // ===== CONFIRM-DIALOG (återanvändbar) =====
 var _confirmCb=null;
 function showConfirm(title,bodyHtml,okLabel,cb,skippable){
@@ -6408,7 +6474,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.08<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.09<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
