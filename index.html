@@ -2374,7 +2374,7 @@ var ASC_SHOP=[
 // Visuell info per ascension-bonus (färg på orb-ringen + kort effekt-etikett) — v6.49 node-grid.
 var ASC_VIS={
   coinGain:{c:'#f5c842',cat:'Spark'},
-  idleGain:{c:'#64b5f6',cat:'Idle'},
+  idleGain:{c:'#64b5f6',cat:'Offline'},
   clickPower:{c:'#ef9a9a',cat:'Click'},
   luck:{c:'#81c784',cat:'Luck'},
   shellGain:{c:'#ce93d8',cat:'Shell'},
@@ -2701,7 +2701,7 @@ var EGG_RARITY_WEIGHTS={
 var ABILITIES=['coinGain','idleGain','clickPower','luck','shellGain','hatchSpeed'];
 var ABILITY_META={
   coinGain:  {name:'Spark Gain',        icon:'🪙', color:'#f5c842', desc:function(v){return '+'+v+'% Spark generation';}},
-  idleGain:  {name:'Idle Gain',        icon:'💤', color:'#64b5f6', desc:function(v){return '+'+v+'% idle production';}},
+  idleGain:  {name:'Offline Gain',     icon:'🌙', color:'#64b5f6', desc:function(v){return '+'+v+'% offline earnings';}},
   clickPower:{name:'Click Power',      icon:'👆', color:'#ef9a9a', desc:function(v){return '+'+v+'% click strength';}},
   luck:      {name:'Luck',             icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% shell drop chance';}},
   shellGain: {name:'Shell Drop',       icon:'🐚', color:'#ce93d8', desc:function(v){return '+'+v+'% more Shells per drop';}},
@@ -2926,11 +2926,11 @@ function closeStatsPanel(){var m=document.getElementById('stats-modal');if(m)m.c
 
 function getEpsMultiplier(){
   var b=getActiveBonuses();
-  return (1+(b.coinGain/100)+(b.idleGain/100))*boostCoinMult();
+  return (1+(b.coinGain/100))*boostCoinMult();
 }
 function getClickMultiplier(){
   var b=getActiveBonuses();
-  return (1+(b.coinGain/100)+(b.clickPower/100))*boostCoinMult();
+  return (1+(b.clickPower/100))*boostCoinMult();
 }
 function getLuckBonus(){
   return getActiveBonuses().luck/100;
@@ -3278,13 +3278,12 @@ function rollAdvReward(adv,pet){
   var s=petAdvSum(pet);
   var roll=Math.random();
   roll=roll+(s.luck/100)*(1-roll);if(roll>1)roll=1; // Luck biasar GARANTI-belöningen uppåt
-  var eff=1+(s.idleGain/100);
   // AFFINITY: pet vars värld matchar uppdraget ger extra
   var aff=pet&&adv.affinity&&pet.world===adv.affinity;
   var aCoin=aff?1.35:1, aShell=aff?1.35:1, aBonus=aff?1.5:1;
   // COINS: förankrade i din EPS (pet:en jobbar i coinRate× din produktion) med golv för tidig game
   var base=Math.max(adv.coinFloor,eps()*(adv.dur/1000)*adv.coinRate);
-  var coins=Math.floor(base*(1+s.coinGain/100)*eff*aCoin);
+  var coins=Math.floor(base*(1+s.coinGain/100)*aCoin);
   // SHELLS: blandad loot, varje rad delas ut (lutar uppåt med luck + shellGain + affinity)
   var shells=[];
   adv.shellLoot.forEach(function(L){
@@ -3398,7 +3397,6 @@ function openAdvPicker(advId){
       if(s.coinGain)tags.push('🪙+'+s.coinGain+'%');
       if(s.shellGain)tags.push('🐚+'+s.shellGain+'%');
       if(s.luck)tags.push('🍀+'+s.luck+'%');
-      if(s.idleGain)tags.push('⚡+'+s.idleGain+'%');
       var ec=advEffChances(adv,p);
       var oddsHtml=ec.items.map(function(o){
         if(o.type==='gems')return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+GEM_IMG+' '+Math.round(o.pct*100)+'%</span>';
@@ -4232,7 +4230,7 @@ function renderPets(){
   var chips=[];
   var bIco=function(id){return '<span class="bchip-ico">'+abilityIconImg(id)+'</span> ';};
   if(b.coinGain>0)chips.push(bIco('coinGain')+'+'+b.coinGain+'% Sparks');
-  if(b.idleGain>0)chips.push(bIco('idleGain')+'+'+b.idleGain+'% Idle');
+  if(b.idleGain>0)chips.push(bIco('idleGain')+'+'+b.idleGain+'% Offline');
   if(b.clickPower>0)chips.push(bIco('clickPower')+'+'+b.clickPower+'% Click');
   if(b.luck>0)chips.push(bIco('luck')+'+'+b.luck+'% Luck');
   if(b.shellGain>0)chips.push(bIco('shellGain')+'+'+b.shellGain+'% Shells');
@@ -6061,7 +6059,7 @@ function showGenericModal(icon,title,body){
 }
 function showEpsInfo(){
   showGenericModal('🥚','Sparks Per Second',
-    'SPS is how many Sparks you earn passively every second. It comes from your Buildings and grows as you buy more or higher levels. Active pets with Spark Gain or Idle Gain increase it further. Tapping the egg gives Sparks directly on top of your SPS.');
+    'SPS is how many Sparks you earn passively every second. It comes from your Buildings and grows as you buy more or higher levels. Active pets with Spark Gain increase it further. Tapping the egg gives Sparks directly on top of your SPS.');
 }
 function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 
@@ -6316,7 +6314,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.97<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v6.98<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9686,7 +9684,7 @@ var ACH_REWARDS={
   tier5_jackpot:{gems:12,pet:'mythical'},
   pure_luck:{gems:15,pet:'mythical',perm:{luck:5}}
 };
-var PERM_LABELS={coinGain:'Spark Gain',idleGain:'Idle Gain',clickPower:'Click Power',luck:'Luck',shellGain:'Shell Gain',hatchSpeed:'Hatch Speed'};
+var PERM_LABELS={coinGain:'Spark Gain',idleGain:'Offline Gain',clickPower:'Click Power',luck:'Luck',shellGain:'Shell Gain',hatchSpeed:'Hatch Speed'};
 function rwCap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
 function grantShellsReward(rarity,n){
   G.shells[rarity]=(G.shells[rarity]||0)+n;
@@ -10281,7 +10279,9 @@ if(savedData){
   if(savedData.savedAt){
     offlineMs=Math.min(Date.now()-savedData.savedAt,8*60*60*1000);
     if(offlineMs>30000){
-      var offlineRate=eps()*G.offlineMult;
+      // Offline Gain (pets + bas-upgrade) höjer hur stor andel av din takt du behåller offline. Tak = 100% (aldrig bättre än online).
+      var offMult=Math.min(1,(G.offlineMult||0.5)+(getActiveBonuses().idleGain/100));
+      var offlineRate=eps()*offMult;
       offlineCoins=offlineRate*(offlineMs/1000);
       G.coins+=offlineCoins;G.total+=offlineCoins;
       G.stats.offlineRewardsClaimed++;
