@@ -2175,7 +2175,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .gms-soon-btn{flex-shrink:0;border:none;border-radius:10px;padding:9px 12px;font-family:'Fredoka One',cursive;font-size:0.66rem;line-height:1.1;text-align:center;cursor:pointer;background:linear-gradient(180deg,#3a5cb8,#23386e);color:#cfe0ff;box-shadow:0 3px 0 #15234a;}
 .gms-soon-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #15234a;}
 .gms-earn{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,0.03);border:1px solid rgba(155,224,139,0.28);border-radius:11px;padding:9px 11px;margin-bottom:8px;}
-.gms-earn-ic{font-size:1.4rem;width:30px;text-align:center;flex-shrink:0;}
+.gms-earn-ic{font-size:1.4rem;width:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gms-earn-ic img{width:28px;height:28px;object-fit:contain;}
 .gms-earn-mid{flex:1;min-width:0;}
 .gms-earn-name{font-family:'Fredoka One',cursive;font-size:0.78rem;color:#fff;}
 .gms-earn-desc{font-size:0.66rem;color:rgba(255,255,255,0.55);margin-top:1px;line-height:1.35;}
@@ -6157,7 +6158,7 @@ function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 // ===== GEM STORE (v7.09) — köp-paket är "Coming soon" (väntar på app-butik) =====
 function openGemShop(){var b=document.getElementById('gemshop-body');if(b)b.innerHTML=renderGemShop();document.getElementById('gemshop-modal').classList.add('open');}
 function closeGemShop(){document.getElementById('gemshop-modal').classList.remove('open');}
-function gemPackImg(file){return '<img src="'+ASSET_BASE+'/assets/ui/gems/'+file+'.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\ud83d\\udc8e\'))">';}
+function gemPackImg(file){return '<img src="'+ASSET_BASE+'/assets/ui/currency/pet-gem.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\ud83d\\udc8e\'))">';}
 function gemPackSoon(){showComingSoon('Gem Store','Buying Gems will arrive once Pet Planet launches in the app stores. Until then you can earn Gems for free \\u2014 from achievements, daily & weekly quests, the Battle Pass and events.');}
 function renderGemShop(){
   var packs=[
@@ -6165,11 +6166,12 @@ function renderGemShop(){
     {file:'gems',               name:'Gem Chest', amt:500,  tag:'Popular'},
     {file:'more-gems',          name:'Gem Vault', amt:1400, tag:'Best value'}
   ];
+  function gemEarnIc(path,fb){return '<img src="'+ASSET_BASE+'/'+path+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+fb+'\'))">';}
   var earn=[
-    {ic:'\ud83c\udfc6', name:'Achievements',         desc:'Unlock achievements for Gem rewards.'},
-    {ic:'\ud83d\udcc5', name:'Daily & Weekly Quests', desc:'Finish quests for a steady Gem trickle.'},
-    {ic:'\ud83c\udf9f\ufe0f', name:'Battle Pass',     desc:'Climb the season tracks for Gems.'},
-    {ic:'\ud83c\udf89', name:'Events',                desc:'Hit event milestones during seasons.'}
+    {ic:gemEarnIc('assets/ui/menu/achievements.png','\\ud83c\\udfc6'),       name:'Achievements',          desc:'Unlock achievements for Gem rewards.'},
+    {ic:gemEarnIc('assets/ui/nav/nav-quests.png','\\ud83d\\udcc5'),          name:'Daily & Weekly Quests', desc:'Finish quests for a steady Gem trickle.'},
+    {ic:gemEarnIc('assets/ui/menu/Battle-pass.png','\\ud83c\\udf9f\\ufe0f'), name:'Battle Pass',           desc:'Climb the season tracks for Gems.'},
+    {ic:gemEarnIc('assets/ui/menu/event.png','\\ud83c\\udf89'),              name:'Events',                desc:'Hit event milestones during seasons.'}
   ];
   var h='<div class="gms-bal"><span class="gms-bal-lbl">You have</span>'+GEM_IMG+' '+fmtShort(G.gems||0)+'</div>';
   h+='<div class="gms-sec">Get Gems</div>';
@@ -6474,7 +6476,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.09<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.11<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
