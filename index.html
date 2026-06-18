@@ -718,16 +718,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .slot-hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#1a2f57,#0d1a38);border:2px solid var(--rc,#f5c842);border-radius:16px;margin-bottom:10px;box-shadow:0 0 18px -3px var(--rc,#f5c842),inset 0 0 34px -14px var(--rc,#f5c842);display:flex;min-height:150px;}
 .slot-hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 .slot-hero-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(7,13,32,0.18),rgba(7,13,32,0.5) 46%,rgba(7,13,32,0.86));}
-.slot-hero-art2{position:relative;z-index:2;flex:0 0 42%;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;}
+.slot-hero-art2{position:relative;z-index:2;flex:0 0 42%;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:7px 2px;}
 .slot-hero-art2 .shh-emoji{font-size:4.3rem;line-height:1;align-self:center;}
-.slot-hero-art2 .shh-img{position:relative;width:155%;max-width:none;height:auto;object-fit:contain;align-self:flex-end;filter:drop-shadow(0 0 6px var(--rc,#f5c842));}
+.slot-hero-art2 .shh-img{position:relative;width:100%;height:100%;max-width:none;object-fit:contain;align-self:center;filter:drop-shadow(0 0 6px var(--rc,#f5c842));}
 .slot-hero-side{position:relative;z-index:2;flex:1;min-width:0;display:flex;flex-direction:column;padding:11px 12px;}
 .slot-hero-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
 .slot-hero-name{font-family:'Fredoka One',cursive;font-size:1.08rem;color:#fff;line-height:1.08;text-shadow:0 1px 3px rgba(0,0,0,0.65);}
 .slot-hero-lv{flex:none;font-family:'Fredoka One',cursive;font-size:0.7rem;color:#ffe08a;background:rgba(11,21,48,0.85);border:1.5px solid #2a3c6c;border-radius:8px;padding:3px 8px;white-space:nowrap;}
 .slot-hero-rar{font-size:0.76rem;font-weight:800;margin-top:3px;display:flex;align-items:center;gap:5px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
 .slot-hero-from{font-size:0.64rem;color:rgba(255,255,255,0.66);margin-top:4px;display:flex;align-items:center;gap:4px;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
-.slot-hero-fav{position:absolute;top:7px;left:9px;z-index:5;font-size:1.5rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.62);text-shadow:0 1px 3px rgba(0,0,0,0.85);transition:transform .1s ease,color .12s;}
+.slot-hero-fav{position:absolute;top:34px;right:12px;left:auto;z-index:5;font-size:1.5rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.62);text-shadow:0 1px 3px rgba(0,0,0,0.85);transition:transform .1s ease,color .12s;}
 .slot-hero-fav.on{color:var(--gold);text-shadow:0 0 7px rgba(245,200,66,0.8);}
 .slot-hero-fav:active{transform:scale(0.85);}
 .slot-hero-abils{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
@@ -6484,7 +6484,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.15<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.16<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
