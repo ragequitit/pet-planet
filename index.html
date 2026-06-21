@@ -2562,6 +2562,7 @@ var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Sparks för att lå
 var IDLE_SLOT_MAX=5;
 var IDLE_SLOT_COSTS=[10000,1e6,1e8,1e10]; // PLATSHÅLLARE: Sparks-kostnad för idle-slot 2..5
 // IDLE DISCRETE DROPS — PLATSHÅLLARE (per idle-pet per timme) → Balance Sheet. Tunn passiv ström.
+var IDLE_SHELL_BASE=0.05;   // 5%/s bas-chans att droppa en shell vid idling (kopierat 1:1 från äggsidan); FAST — antal pets ändrar den INTE. PLATSHÅLLARE → Balance Sheet
 var IDLE_RELIC_PER_HR=0.5;  // relic för vald Lost World (bara om man idlar på en upplåst Lost World)
 var IDLE_EGG_PER_HR=0.06;   // helt ägg för vald värld
 var IDLE_MAP_PER_HR=0.03;   // secret map (världs-agnostiskt "snubbla på en värld"); bara om låsta Lost Worlds finns
@@ -5255,43 +5256,52 @@ function renderHomeAdventures(){
   if(!G.idleWorld||worlds.indexOf(G.idleWorld)<0)G.idleWorld=worlds[0]||'starter';
   var pets=(G.idlePets||[]).map(function(uid){return G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});}).filter(Boolean);
   if(idleViewIdx>=pets.length)idleViewIdx=Math.max(0,pets.length-1);
-  var rate=idleTotalRate();
-  var shType=idleShellType();
-  var shR=SHELL_RARITIES.find(function(s){return s.id===shType;})||{name:shType,color:'#fff'};
+  var _ib=idleBonuses();
+  var estRate=pets.length?idleEstPerHr(_ib):0;
+  var dropPct=Math.round(idleDropChance(_ib)*100);
   var h='';
   h+='<div style="text-align:center;margin:8px 0 12px;"><div style="font-family:\'Fredoka One\',cursive;font-size:1.35rem;color:#cdb6ff;letter-spacing:0.5px;">PET ADVENTURES</div><div style="font-size:0.76rem;color:rgba(255,255,255,0.6);">Your pets idle and gather Shells</div></div>';
-  h+='<div style="margin-bottom:12px;"><div style="font-size:0.62rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Idle World</div>';
-  h+='<select onchange="setIdleWorld(this.value)" style="width:100%;padding:11px 12px;border-radius:12px;background:#16234c;color:#fff;border:1px solid rgba(111,138,224,0.5);font-size:0.95rem;font-weight:700;">';
+  // STAGE — world background + enlarged centered pet + edge arrows (floating world-dropdown + bag on top)
+  var bgUrl=idleWorldBg(G.idleWorld);
+  h+='<div style="position:relative;width:100%;height:300px;border-radius:16px;overflow:hidden;margin-bottom:10px;border:1px solid rgba(111,138,224,0.3);background:#101a38;">';
+  h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
+  h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.55));"></div>';
+  // floating bag (top-right) + floating world dropdown (right, just under the bag)
+  h+='<button onclick="openIdleBag()" style="position:absolute;top:8px;right:8px;z-index:4;background:rgba(8,12,30,0.72);border:1px solid rgba(150,170,230,0.45);border-radius:12px;color:#cdb6ff;font-size:1.25rem;padding:7px 10px;cursor:pointer;">🎒<span id="idle-bag-badge" style="position:absolute;top:-5px;right:-5px;background:#caa23a;color:#1a1305;font-size:0.6rem;font-weight:800;border-radius:8px;padding:1px 5px;'+(idleBagCount()?'':'display:none;')+'">'+idleBagCount()+'</span></button>';
+  h+='<select onchange="setIdleWorld(this.value)" style="position:absolute;top:56px;right:8px;z-index:4;max-width:150px;padding:7px 9px;border-radius:10px;background:rgba(8,12,30,0.72);color:#fff;border:1px solid rgba(150,170,230,0.45);font-size:0.78rem;font-weight:700;cursor:pointer;">';
   worlds.forEach(function(id){var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'❓'};h+='<option value="'+id+'"'+(id===G.idleWorld?' selected':'')+'>'+(isLostWorld(id)?'★ ':'')+e.name.replace(' Egg','')+'</option>';});
-  h+='</select></div>';
-  // STAGE — viewed idle pet (swipe) + gear stub
-  h+='<div style="background:linear-gradient(180deg,#1a2756,#101a38);border:1px solid rgba(111,138,224,0.3);border-radius:16px;padding:16px 12px 14px;text-align:center;margin-bottom:10px;">';
+  h+='</select>';
   if(!pets.length){
-    h+='<div style="font-size:2.4rem;opacity:0.5;">🐾</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:8px;line-height:1.6;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:'+shR.color+'">'+shR.name+' Shells</b>.</div>';
+    h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
-    var p=pets[idleViewIdx]; var lv=petLevelFromXp(p.xp||0); var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
-    h+='<div style="display:flex;align-items:center;justify-content:center;gap:6px;">';
-    if(pets.length>1)h+='<button onclick="idleSwipe(-1)" style="background:none;border:none;color:#cdb6ff;font-size:1.7rem;cursor:pointer;padding:0 6px;">‹</button>';
-    h+='<div style="font-size:3rem;line-height:1;">'+petIco(p)+'</div>';
-    if(pets.length>1)h+='<button onclick="idleSwipe(1)" style="background:none;border:none;color:#cdb6ff;font-size:1.7rem;cursor:pointer;padding:0 6px;">›</button>';
+    var p=pets[idleViewIdx]; var lv=petLevelFromXp(p.xp||0); var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''}; var ps=petAdvSum(p);
+    // big centered pet (~3x)
+    h+='<div style="position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-size:7rem;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,0.55));">'+petIco(p)+'</div>';
+    // edge arrows — far out at the stage (screen) edges
+    if(pets.length>1){
+      h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>';
+      h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>';
+    }
+    // bottom caption: name + level + abilities + gear + counter
+    h+='<div style="position:absolute;left:0;right:0;bottom:0;padding:10px 12px 12px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.85));text-align:center;">';
+    h+='<div style="font-weight:800;font-size:1rem;color:'+rc.color+';text-shadow:0 1px 3px #000;">'+petDisplayName(p)+'</div>';
+    h+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.85);text-shadow:0 1px 2px #000;">Lv '+lv+' · '+rc.label+'</div>';
+    h+='<div style="font-size:0.74rem;font-weight:700;color:#e8deff;margin-top:3px;text-shadow:0 1px 2px #000;">'+((ps.shellGain||ps.luck)?('🐚 +'+ps.shellGain+'% shells'+(ps.luck?' · 🍀 +'+ps.luck+'%':'')):'No shell abilities yet')+'</div>';
+    h+='<button onclick="idleGearTap()" style="margin-top:7px;background:rgba(22,35,76,0.85);border:1px dashed rgba(150,170,230,0.6);border-radius:10px;color:rgba(255,255,255,0.8);font-size:0.72rem;padding:5px 12px;cursor:pointer;">➕ Add Gear</button>';
+    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.65);margin-top:5px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
     h+='</div>';
-    h+='<div style="font-weight:800;font-size:1rem;color:'+rc.color+';margin-top:6px;">'+petDisplayName(p)+'</div>';
-    h+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.55);">Lv '+lv+' · '+rc.label+'</div>';
-    h+='<div style="font-size:0.85rem;font-weight:800;color:'+shR.color+';margin-top:4px;">'+shellIcon(shType)+' '+fmtRate(idlePetRate(p))+' / hr</div>';
-    h+='<button onclick="idleGearTap()" style="margin-top:8px;background:#16234c;border:1px dashed rgba(150,170,230,0.5);border-radius:10px;color:rgba(255,255,255,0.6);font-size:0.72rem;padding:6px 12px;cursor:pointer;">➕ Add Gear</button>';
-    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:6px;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
   }
   h+='</div>';
   // idling-since + total rate + Adventure Bag
-  h+='<div style="display:flex;align-items:center;gap:10px;background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;margin-bottom:10px;">';
-  h+='<div style="flex:1;"><div style="font-size:0.85rem;font-weight:800;color:'+shR.color+';">'+shellIcon(shType)+' '+fmtRate(rate)+' Shells / hr</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">⏱️ Idling for <span id="idle-since">'+idleSinceText()+'</span></div></div>';
-  h+='<button onclick="openIdleBag()" style="background:linear-gradient(180deg,#3a2a5e,#241840);border:1px solid #6a4fa0;border-radius:12px;color:#cdb6ff;font-size:1.2rem;padding:8px 11px;cursor:pointer;position:relative;">🎒<span id="idle-bag-badge" style="position:absolute;top:-4px;right:-4px;background:#caa23a;color:#1a1305;font-size:0.6rem;font-weight:800;border-radius:8px;padding:1px 5px;'+(idleBagCount()?'':'display:none;')+'">'+idleBagCount()+'</span></button>';
+  h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;margin-bottom:10px;">';
+  h+='<div style="font-size:0.85rem;font-weight:800;color:#e8deff;">🐚 ~'+fmtShort(estRate)+' Shells / hr</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">'+dropPct+'%/s base · ⏱️ Idling for <span id="idle-since">'+idleSinceText()+'</span></div>';
   h+='</div>';
   // potential rewards
   h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;">';
   h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Potential Rewards</div>';
   h+='<div style="display:flex;flex-direction:column;gap:6px;font-size:0.78rem;">';
-  h+='<div style="display:flex;align-items:center;gap:8px;">'+shellIcon(shType)+'<span style="flex:1;color:'+shR.color+';font-weight:700;">'+shR.name+' Shells</span><span style="color:rgba(255,255,255,0.7);">'+fmtRate(rate)+'/hr</span></div>';
+  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🐚</span><span style="flex:1;color:rgba(255,255,255,0.85);font-weight:700;">Shells — all rarities</span><span style="color:rgba(255,255,255,0.7);">~'+fmtShort(estRate)+'/hr</span></div>';
+  h+='<div style="font-size:0.64rem;color:rgba(255,255,255,0.4);padding-left:26px;margin-top:-2px;">Same in every world ('+dropPct+'%/s base, boosted by your pets\' 🍀 Luck &amp; 🐚 Shell abilities)</div>';
   if(isLostWorld(G.idleWorld)){var meta=LOST_WORLD_META[G.idleWorld]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:8px;"><span>'+meta.relicIcon+'</span><span style="flex:1;color:#cdb6ff;">'+meta.relic+'</span><span style="color:rgba(255,255,255,0.5);">thin stream</span></div>';}
   h+='<div style="display:flex;align-items:center;gap:8px;"><span>🥚</span><span style="flex:1;color:rgba(255,255,255,0.7);">Rare '+(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:''}).name.replace(' Egg','')+' egg</span><span style="color:rgba(255,255,255,0.5);">rare</span></div>';
   if(typeof pickAvailableMap==='function'&&pickAvailableMap())h+='<div style="display:flex;align-items:center;gap:8px;"><span>🗺️</span><span style="flex:1;color:rgba(255,255,255,0.7);">Secret Map</span><span style="color:rgba(255,255,255,0.5);">very rare</span></div>';
@@ -5304,7 +5314,8 @@ function renderHomeAdventures(){
       var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'};
       h+='<div style="background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:12px;padding:9px;display:flex;align-items:center;gap:8px;">';
       h+='<div style="font-size:1.5rem;">'+petIco(sp)+'</div>';
-      h+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.78rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(sp)+'</div><div style="font-size:0.64rem;color:rgba(255,255,255,0.5);">Lv '+slv+' · '+shellIcon(shType)+' '+fmtRate(idlePetRate(sp))+'/hr</div></div>';
+      var ssg=petAdvSum(sp);
+      h+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.78rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(sp)+'</div><div style="font-size:0.64rem;color:rgba(255,255,255,0.5);">Lv '+slv+(ssg.shellGain?' · 🐚 +'+ssg.shellGain+'%':'')+(ssg.luck?' · 🍀 +'+ssg.luck+'%':'')+'</div></div>';
       h+='<button onclick="removeIdlePet(\''+sp.uid+'\')" style="background:none;border:none;color:rgba(255,120,120,0.8);font-size:0.95rem;cursor:pointer;padding:2px 4px;">✕</button>';
       h+='</div>';
     }else if(i<G.idleSlots){
@@ -5320,9 +5331,40 @@ function renderHomeAdventures(){
   wrap.innerHTML=h;
 }
 // ── IDLE EARNING + HELPERS (step 2) ──
-var idleViewIdx=0, idleShellAcc=0;
+var idleViewIdx=0, idleSecAcc=0;
 function isPetIdling(uid){return G.idlePets&&G.idlePets.some(function(u){return String(u)===String(uid);});}
 function idleShellType(){var e=EGG_SHOP.find(function(x){return x.id===(G.idleWorld||'starter');});return e?e.shellType:'common';}
+// Världens bakgrundsbild (samma som äggsidan) för idle-scenen; faller tillbaka till starter-bg.
+function idleWorldBg(id){var w=EGG_WORLDS.find(function(x){return x.id===id;});return (w&&w.bg)||EGG_WORLDS[0].bg;}
+// Idle SHELLS are world-INDEPENDENT and identical to the egg page (global SHELL_RARITIES weights via
+// rollShell()). What differs per world = the special finds (relics / unique eggs), NOT the shells.
+// Bonuses = sum of the IDLING pets' shell/luck abilities; the BASE is FIXED regardless of pet count.
+// (Additive for now — a diminishing-return curve is an open balance question → Balance Sheet.)
+function idleBonuses(){
+  var b={shellGain:0,luck:0};
+  (G.idlePets||[]).forEach(function(uid){
+    var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});
+    if(!p)return;
+    var s=petAdvSum(p); b.shellGain+=s.shellGain||0; b.luck+=s.luck||0;
+  });
+  return b;
+}
+function idleDropChance(ib){ ib=ib||idleBonuses(); return Math.min(0.95, IDLE_SHELL_BASE+(ib.luck||0)*0.01); }
+function idleEstPerHr(ib){ ib=ib||idleBonuses(); return Math.round(idleDropChance(ib)*3600*(1+((ib.shellGain||0)/100))); }
+function idleDropShell(ib){
+  ib=ib||idleBonuses();
+  var r=rollShell();                       // global weights — same as egg page, world-independent
+  var bonus=(ib.shellGain||0)/100;         // shellGain → more shells per drop
+  var amt=1+Math.floor(bonus); if(Math.random()<(bonus%1))amt++;
+  G.shells[r.id]=(G.shells[r.id]||0)+amt;
+  if(G.stats){
+    G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+amt;
+    if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
+    G.stats.shellsCollectedByRarity[r.id]=(G.stats.shellsCollectedByRarity[r.id]||0)+amt;
+  }
+  G.idleBag=G.idleBag||{shells:{},finds:[]};
+  G.idleBag.shells[r.id]=(G.idleBag.shells[r.id]||0)+amt;
+}
 function fmtRate(n){n=n||0;return n>=1000?fmtShort(Math.round(n)):(Math.round(n*100)/100).toString();}
 function idlePetRate(pet){ // shells/hour — PLACEHOLDER → Balance Sheet
   if(!pet)return 0;
@@ -5350,19 +5392,11 @@ function idleAddFind(type,id){
 function tickIdlePets(dt){
   var n=(G.idlePets||[]).length; if(!n)return;
   if(!G.idleStartAt)G.idleStartAt=Date.now();
-  // steady shells (chosen world's type)
-  var rate=idleTotalRate();
-  if(rate>0){
-    idleShellAcc+=rate*(dt/3600);
-    if(idleShellAcc>=1){
-      var add=Math.floor(idleShellAcc); idleShellAcc-=add;
-      var t=idleShellType();
-      G.shells[t]=(G.shells[t]||0)+add;
-      if(G.stats){G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+add;if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};G.stats.shellsCollectedByRarity[t]=(G.stats.shellsCollectedByRarity[t]||0)+add;}
-      G.idleBag=G.idleBag||{shells:{},finds:[]};
-      G.idleBag.shells[t]=(G.idleBag.shells[t]||0)+add;
-    }
-  }
+  // SHELLS — ported 1:1 from the egg page: 5%/s base (+ idle pets' Luck), world-INDEPENDENT rarity.
+  // FIXED base — pet COUNT never changes it; only the idling pets' abilities do.
+  var ib=idleBonuses(), chance=idleDropChance(ib);
+  idleSecAcc+=dt;
+  while(idleSecAcc>=1){ idleSecAcc-=1; if(Math.random()<chance){ idleDropShell(ib); } }
   // discrete finds — thin passive stream (PLACEHOLDER rates)
   var hf=dt/3600, w=G.idleWorld||'starter';
   if(isLostWorld(w)&&G.lostUnlocked&&G.lostUnlocked[w]&&Math.random()<(IDLE_RELIC_PER_HR*n)*hf){ idleAddFind('relic',w); }
@@ -9408,7 +9442,7 @@ function showInvSection(name){
 // SHOP
 // ============================================================
 function hasBuildingUnlocked(name){var idx=BUILDINGS.findIndex(function(b){return b.n===name;});return idx>=0&&G.owned[idx]>0;}
-function getEggState(egg){if(isLostWorld(egg.id))return (G.lostUnlocked&&G.lostUnlocked[egg.id])?'unlocked':'locked';var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&buildOk&&hatchOk?'unlocked':'locked';}
+function getEggState(egg){if(isLostWorld(egg.id))return (G.lostUnlocked&&G.lostUnlocked[egg.id])?'unlocked':'locked';var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&hatchOk?'unlocked':'locked';}
 var shopTab='eggs';
 function setShopTab(t){shopTab=t;renderShop();}
 function shopJumpTo(id){
@@ -9435,7 +9469,6 @@ var EGG_DESC={
 function eggShopIconUrl(id){var f=SHOP_EGG_ICON_FILE[id]||id;return ASSET_BASE+'/assets/ui/shop/'+f+'-egg.png';}
 function shopLockReason(egg){
   if(egg.coinReq&&G.stats.totalCoinsEarned<egg.coinReq)return ''+LOCK_IMG+' Earn '+fmtShort(egg.coinReq)+' Sparks ('+fmtShort(G.stats.totalCoinsEarned)+' / '+fmtShort(egg.coinReq)+')';
-  if(egg.buildReq&&!hasBuildingUnlocked(egg.buildReq))return ''+LOCK_IMG+' Build a '+egg.buildReq+' first';
   if(egg.hatchReq&&!(G.eggsHatched&&G.eggsHatched[egg.hatchReq])){var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});return ''+LOCK_IMG+' Hatch a '+(prev?prev.name:egg.hatchReq)+' first';}
   return ''+LOCK_IMG+' Locked';
 }
@@ -9647,7 +9680,6 @@ function showEggInfo(eggId){
   var coinCost=getEggCoinCost(egg);var coinCostOk=G.coins>=coinCost;
   if(coinCost>0)reqs.push({icon:COIN_IMG,label:'Sparks (craft)',val:fmtShort(G.coins)+' / '+fmtShort(coinCost),met:coinCostOk});
   if(egg.coinReq){var cOk=G.stats.totalCoinsEarned>=egg.coinReq;reqs.push({icon:COIN_IMG,label:'Earn '+egg.coinReq+' Sparks',val:cOk?'✅':fmtShort(G.stats.totalCoinsEarned)+' / '+egg.coinReq,met:cOk});}
-  if(egg.buildReq){var bOk=hasBuildingUnlocked(egg.buildReq);reqs.push({icon:'🏗️',label:'Own a '+egg.buildReq,val:bOk?'✅':''+LOCK_IMG+' Required',met:bOk});}
   if(egg.hatchReq){var hOk=G.eggsHatched&&G.eggsHatched[egg.hatchReq];var prev=EGG_SHOP.find(function(e){return e.id===egg.hatchReq;});reqs.push({icon:'🐣',label:'Hatch a '+(prev?prev.name:egg.hatchReq),val:hOk?'✅':''+LOCK_IMG+' Required',met:hOk});}
   if(reqs.length>0){
     html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Requirements</div>';
