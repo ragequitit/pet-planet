@@ -5336,21 +5336,20 @@ function renderHomeAdventures(){
       h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:33%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">‹</button>';
       h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:33%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">›</button>';
     }
-    // bottom caption: name + level/rarity + ability boxes + wide XP bar + gear + counter
+    // bottom caption: XP bar → Lv/XP numbers → dark box (name + abilities) → gear → counter
     h+='<div style="position:absolute;left:0;right:0;bottom:0;padding:10px 12px 12px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.55) 28%,rgba(8,12,30,0.92));text-align:center;">';
-    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:'+rc.color+';text-shadow:0 2px 4px #000;line-height:1.1;">'+petDisplayName(p)+'</div>';
-    h+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.9);text-shadow:0 1px 2px #000;margin-bottom:7px;">Lv '+lv+' · <span style="color:'+rc.color+';font-weight:700;">'+rc.label+'</span></div>';
-    if(p.abilities&&p.abilities.length){
-      h+='<div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:8px;">';
-      p.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;h+='<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(8,12,30,0.72);border:1px solid '+rc.color+'88;border-radius:9px;padding:3px 8px;font-size:0.66rem;box-shadow:0 1px 3px rgba(0,0,0,0.45);">'+abilityIconImg(a.id)+'<span style="color:#fff;font-weight:600;">'+m.name+'</span><span style="color:'+rc.color+';font-weight:800;">'+abShow(a)+'</span></span>';});
-      h+='</div>';
-    }else{
-      h+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.6);margin-bottom:8px;">No abilities yet</div>';
-    }
     var lp=petXpProgress(p);
-    h+='<div style="max-width:300px;margin:0 auto 9px;">';
+    h+='<div style="max-width:300px;margin:0 auto 8px;">';
     h+='<div style="height:14px;border-radius:8px;background:rgba(8,12,30,0.8);border:1px solid '+rc.color+'66;overflow:hidden;"><div id="idle-xp-fill" style="height:100%;width:'+lp.pct+'%;background:linear-gradient(90deg,'+rc.color+',#fff);opacity:0.9;transition:width .4s ease;"></div></div>';
     h+='<div id="idle-xp-txt" style="font-size:0.62rem;color:rgba(255,255,255,0.92);text-shadow:0 1px 2px #000;margin-top:3px;">'+uiIco('stats/pet-xp','⭐',10)+' Lv '+lp.level+' · '+(lp.max?'MAX':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>';
+    h+='</div>';
+    h+='<div style="background:rgba(8,12,30,0.82);border:1px solid '+rc.color+'66;border-radius:12px;padding:8px 11px;max-width:300px;margin:0 auto 9px;box-shadow:0 2px 8px rgba(0,0,0,0.45);">';
+    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.02rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;margin-bottom:5px;">'+petDisplayName(p)+'</div>';
+    if(p.abilities&&p.abilities.length){
+      p.abilities.forEach(function(a,ai){var m=ABILITY_META[a.id];if(!m)return;h+='<div style="display:flex;align-items:center;gap:8px;padding:4px 2px;font-size:0.76rem;'+(ai>0?'border-top:1px solid rgba(255,255,255,0.07);':'')+'">'+abilityIconImg(a.id)+'<span style="flex:1;color:#fff;font-weight:600;text-align:left;">'+m.name+'</span><span style="color:#7fe0b0;font-weight:800;">'+abShow(a)+'</span></div>';});
+    }else{
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.6);padding:3px 0;">No abilities yet</div>';
+    }
     h+='</div>';
     h+='<button onclick="idleGearTap()" style="background:rgba(22,35,76,0.85);border:1px dashed rgba(150,170,230,0.6);border-radius:10px;color:rgba(255,255,255,0.85);font-size:0.72rem;padding:5px 14px;cursor:pointer;">➕ Add Gear</button>';
     if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
