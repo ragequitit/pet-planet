@@ -2568,19 +2568,19 @@ var ADVENTURES=[
   {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:120*60*1000, coinRate:0.2, coinFloor:1000, xp:70, reqLevel:6,
     desc:'Cross the dunes under a blazing sun. Long, hot, and surprisingly rewarding.',
     shellLoot:[{type:'uncommon',min:6,max:14},{type:'rare',min:1,max:4}],
-    bonusLoot:[{type:'gems',min:2,max:4,chance:0.12},{type:'egg',id:'desert',chance:0.05},{type:'egg',id:'ocean',chance:0.04},{type:'egg',id:'jungle',chance:0.03}]},
+    bonusLoot:[{type:'gems',min:2,max:4,chance:0.12},{type:'egg',id:'desert',chance:0.05},{type:'egg',id:'ocean',chance:0.04},{type:'egg',id:'jungle',chance:0.03},{type:'map',chance:0.04}]},
   {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:360*60*1000, coinRate:0.2, coinFloor:2500, xp:110, reqLevel:10,
     desc:'Brave the frozen north. Few make it far, but the spoils are worth the chill.',
     shellLoot:[{type:'uncommon',min:5,max:12},{type:'rare',min:4,max:10},{type:'epic',min:0,max:2}],
-    bonusLoot:[{type:'gems',min:2,max:6,chance:0.14},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'volcano',chance:0.02}]},
+    bonusLoot:[{type:'gems',min:2,max:6,chance:0.14},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'volcano',chance:0.02},{type:'map',chance:0.05}]},
   {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:720*60*1000, coinRate:0.2, coinFloor:6000, xp:180, reqLevel:15,
     desc:'Descend into molten depths. Dangerous, but the rarest shards smoulder here.',
     shellLoot:[{type:'rare',min:8,max:18},{type:'epic',min:1,max:4}],
-    bonusLoot:[{type:'gems',min:3,max:7,chance:0.16},{type:'egg',id:'volcano',chance:0.04},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'mystic',chance:0.02}]},
+    bonusLoot:[{type:'gems',min:3,max:7,chance:0.16},{type:'egg',id:'volcano',chance:0.04},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'mystic',chance:0.02},{type:'map',chance:0.06}]},
   {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:1440*60*1000, coinRate:0.2, coinFloor:15000, xp:350, reqLevel:20,
     desc:'A long, rewarding dig through forgotten ruins. The ultimate prize hunt.',
     shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
-    bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002}]}
+    bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002},{type:'map',chance:0.08}]}
 ];
 var PET_POS=[{left:0,top:0},{left:52,top:20},{left:118,top:34},{left:184,top:20},{left:236,top:0}]; // U/båge (v6.87 djupare): kanterna högst, mitten lägst. top = nedåt.
 
@@ -2618,11 +2618,16 @@ var EGG_SHOP=[
   {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'epic',     shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
   {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'legendary',shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
   {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'mythical', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
-  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'artifact', shellAmt:18, buildReq:'Resort',     hatchReq:'arctic'},
+  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'artifact', shellAmt:18, buildReq:'Resort',     hatchReq:'ocean'},
   {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'heavenly', shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
   {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'eternal',  shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
   {id:'cosmic',   name:'Cosmic Egg',   icon:'🌌',shellType:'cosmic',   shellAmt:5,  buildReq:'Breeding Center',hatchReq:'celestial'},
 ];
+// LOST WORLDS — moved OUT of the home shop ladder (overhaul step 2). Hidden in the shop until
+// their secret map is found (G.lostUnlocked[id]); once unlocked the egg appears as a carrot
+// (visible + craftable when you have the Shells). Internal ids unchanged.
+var LOST_WORLDS=['jungle','arctic','mystic','celestial','cosmic'];
+function isLostWorld(id){return LOST_WORLDS.indexOf(id)>=0;}
 
 // ============================================================
 // DATA: HATCH TIMES (from Balance Sheet)
@@ -2854,6 +2859,45 @@ function rollAbilityValue(tier){
 }
 // Live value of a pet ability: rolled value if present, else flat tier value (legacy pets / cores).
 function abilityVal(ab){ return (ab&&typeof ab.v==='number') ? ab.v : (TIER_VALUES[(ab&&ab.tier)||1]||0); }
+// Display string for an ability value. Mega rolls show ORANGE + a ★ (V2 god-roll styling).
+function abShow(ab){
+  var v=abilityVal(ab);
+  if(ab&&ab.mega){return '<span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+v+'% ★</span>';}
+  return '+'+v+'%';
+}
+// ── EXPLORER ROW (V2 §6): every pet gets 1 guaranteed Explorer row; Eternal/Cosmic get 2.
+// Separate pool from the build abilities; strength rolls fairly freely (NOT rarity-scaled), so
+// even a Common can god-roll its 'adventure soul'. Effects wired into adventures in a later pass.
+var EXPLORER_ABILITIES=['expeditionPower','forager','pathfinder','keenEye','affinityMaster'];
+var EXPLORER_META={
+  expeditionPower:{name:'Expedition Power',icon:'🧭',desc:function(v){return '+'+v+'% coins from adventures';}},
+  forager:        {name:'Forager',         icon:'🎒',desc:function(v){return '+'+v+'% shells from adventures';}},
+  pathfinder:     {name:'Pathfinder',      icon:'🥾',desc:function(v){return '-'+v+'% adventure time';}},
+  keenEye:        {name:'Keen Eye',        icon:'👁️',desc:function(v){return '+'+v+'% bonus-loot chance';}},
+  affinityMaster: {name:'Affinity Master', icon:'💞',desc:function(v){return '+'+v+'% right-world affinity';}},
+};
+var EXPLORER_RANGE={min:2,max:20,megaMin:21,megaMax:30}; // placeholder → Balance Sheet
+function rollExplorer(){
+  var id=EXPLORER_ABILITIES[Math.floor(Math.random()*EXPLORER_ABILITIES.length)];
+  var mega=Math.random()<MEGA_CHANCE, r=EXPLORER_RANGE;
+  var v=mega?(r.megaMin+Math.floor(Math.random()*(r.megaMax-r.megaMin+1))):(r.min+Math.floor(Math.random()*(r.max-r.min+1)));
+  return {id:id,v:v,mega:mega};
+}
+function rollExplorerRows(rarity){
+  var n=(rarity==='eternal'||rarity==='cosmic')?2:1, rows=[];
+  for(var i=0;i<n;i++)rows.push(rollExplorer());
+  return rows;
+}
+function explorerRowsHtml(pet){
+  if(!pet||!pet.explorer||!pet.explorer.length)return '';
+  var h='<div style="height:1px;background:rgba(255,255,255,0.12);margin:7px 2px 5px;"></div>';
+  pet.explorer.forEach(function(ex){
+    var m=EXPLORER_META[ex.id]||{name:ex.id,icon:'🧭'};
+    var val=ex.mega?'<span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+ex.v+'% ★</span>':'+'+ex.v+'%';
+    h+='<div class="pra-row"><span class="pra-icon">'+(m.icon||'🧭')+'</span><span class="pra-name" style="color:#7fd1c4;font-style:italic">'+m.name+' <span style="opacity:.55;font-style:normal;font-size:0.68em;letter-spacing:0.5px">· ADVENTURE</span></span><span class="pra-val">'+val+'</span></div>';
+  });
+  return h;
+}
 // Ability-ikon = custom-PNG (id→filnamn-slug; shellGain heter shelldrop), emoji-fallback
 var ABILITY_IMG={coinGain:'coingain',idleGain:'idlegain',clickPower:'clickpower',luck:'luck',shellGain:'shelldrop',hatchSpeed:'hatchspeed'};
 function abilityIconImg(id){
@@ -2959,7 +3003,7 @@ function generateEventPet(){
   var rarity=cfg.rarity||'common';
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var abilities=[],i;for(i=0;i<rc.slots;i++){var _t=rc.tiers[i],_rv=rollAbilityValue(_t);abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_t,v:_rv.v,mega:_rv.mega});}
-  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0};
+  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,explorer:rollExplorerRows(rarity),equippedSlot:-1,level:1,xp:0};
 }
 function generatePet(eggId){
   if(eggId===EVENT_EGG_ID)return generateEventPet();
@@ -2980,6 +3024,7 @@ function generatePet(eggId){
     rarity:rarity,
     world:eggId,
     abilities:abilities,
+    explorer:rollExplorerRows(rarity),
     equippedSlot:-1,
     level:1,
     xp:0,
@@ -3156,7 +3201,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -3459,6 +3504,7 @@ function rollAdvReward(adv,pet){
     if(Math.random()<B.chance*luckMult){
       if(B.type==='gems'){bonus.push({type:'gems',amt:B.min+Math.floor(Math.random()*(B.max-B.min+1))});}
       else if(B.type==='egg'){bonus.push({type:'egg',id:B.id});}
+      else if(B.type==='map'){var _mid=B.id||pickAvailableMap();if(_mid)bonus.push({type:'map',id:_mid});}
     }
   });
   return {coins:coins,shells:shells,xp:adv.xp,bonus:bonus,affinity:aff};
@@ -3516,6 +3562,7 @@ function claimAdventure(index){
   (rw.bonus||[]).forEach(function(b){
     if(b.type==='gems'){G.gems=(G.gems||0)+b.amt;parts.push(GEM_IMG+' +'+b.amt+' Gems');}
     else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
+    else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
   if(typeof updateHUD==='function')updateHUD();
@@ -3578,6 +3625,49 @@ function openAdvPicker(advId){
 }
 function closeAdvModal(){var m=document.getElementById('adv-modal');if(m)m.classList.remove('open');}
 function setAdvPickSort(v){advPickSort=v;if(pendingAdvId)openAdvPicker(pendingAdvId);}
+// ── LOST WORLD MAPS (overhaul step 3a): find Secret Maps on adventures → place to unlock a Lost World.
+function grantMap(id){ if(!isLostWorld(id))return; G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; if(G.lostUnlocked[id])return; G.mapsOwned[id]=(G.mapsOwned[id]||0)+1; }
+function pickAvailableMap(){ G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; var avail=LOST_WORLDS.filter(function(id){return !G.lostUnlocked[id] && !(G.mapsOwned[id]>0);}); return avail.length?avail[Math.floor(Math.random()*avail.length)]:null; }
+function placeLostMap(id){
+  G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
+  if(!(G.mapsOwned[id]>0)||G.lostUnlocked[id])return;
+  G.mapsOwned[id]-=1; G.lostUnlocked[id]=true;
+  if(typeof saveGame==='function')saveGame();
+  var egg=EGG_SHOP.find(function(e){return e.id===id;});
+  if(typeof showRewardPopup==='function')showRewardPopup(['🗺️ Lost World unlocked: '+(egg?egg.name.replace(' Egg',''):id)+'!','Its egg is now in the shop.'],true);
+  renderAdventure(); if(typeof renderShop==='function')renderShop();
+}
+function devGrantMap(){
+  G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
+  var avail=LOST_WORLDS.filter(function(id){return !G.lostUnlocked[id] && !(G.mapsOwned[id]>0);});
+  if(!avail.length){ if(typeof showRewardPopup==='function')showRewardPopup(['All Lost World maps already found or unlocked.'],false); return; }
+  var id=avail[Math.floor(Math.random()*avail.length)];
+  grantMap(id);
+  if(typeof saveGame==='function')saveGame();
+  if(typeof showRewardPopup==='function')showRewardPopup(['🗺️ Found a Secret Map: '+id+'!'],true);
+  renderAdventure();
+}
+function secretMapsPanelHtml(){
+  G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
+  var h='<div class="adv-sech">🗺️ Lost World Maps</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Find <b>Secret Maps</b> on adventures to unlock hidden Lost Worlds. Place a found map to open its world — its egg then appears in the shop (craftable once you have its Shells).</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+  LOST_WORLDS.forEach(function(id){
+    var egg=EGG_SHOP.find(function(e){return e.id===id;})||{name:id,icon:'❓'};
+    var unlocked=!!G.lostUnlocked[id];
+    var hasMap=(G.mapsOwned[id]||0)>0;
+    var ico=unlocked?egg.icon:'❓';
+    var name=unlocked?egg.name.replace(' Egg',''):'? ? ?';
+    var right;
+    if(unlocked) right='<span style="color:#5fd47a;font-weight:800;font-size:0.74rem;">✓ Unlocked</span>';
+    else if(hasMap) right='<button onclick="placeLostMap(\''+id+'\')" style="background:#caa23a;border:none;border-radius:8px;color:#1a1305;font-weight:800;font-size:0.72rem;padding:6px 10px;cursor:pointer;">🗺️ Place &amp; Unlock</button>';
+    else right='<span style="color:rgba(255,255,255,0.4);font-size:0.74rem;">🔒 Map not found</span>';
+    h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><div style="font-size:1.5rem;width:30px;text-align:center;">'+ico+'</div><div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+name+'</div></div>'+right+'</div>';
+  });
+  h+='</div>';
+  h+='<button onclick="devGrantMap()" style="margin-top:8px;width:100%;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.72rem;padding:7px;cursor:pointer;">🐞 (dev) Grant a random map</button>';
+  return h;
+}
 function renderAdventure(){
   var wrap=document.getElementById('adv-wrap');if(!wrap)return;
   var now=Date.now();
@@ -3660,6 +3750,7 @@ function renderAdventure(){
   var canSend=freeSlots>0&&!selBusy;
   html+='<button class="adv-detail-send'+(canSend?'':' no')+'"'+(canSend?' onclick="openAdvPicker(\''+sel.id+'\')"':' disabled')+'>'+(selBusy?'⏳ Already on this Adventure':(freeSlots>0?'🚀 Send a Pet':'All Slots Busy'))+'</button>';
   html+='</div></div>';
+  html+=secretMapsPanelHtml();
   wrap.innerHTML=html;
   advReadyState=advStateSig();
 }
@@ -4106,7 +4197,7 @@ function renderSlotRow(){
         if(pet.abilities&&pet.abilities.length){
           var tipRows=pet.abilities.map(function(a){
             var m=ABILITY_META[a.id];if(!m)return '';
-            return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">+'+abilityVal(a)+'%</span></span>';
+            return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">'+abShow(a)+'</span></span>';
           }).join('');
           if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML='<div class="pp-tip-name">'+petDisplayName(pet)+'</div>'+tipRows;d.appendChild(tip);}
         }
@@ -4224,7 +4315,7 @@ function openPetSlotModal(idx){
     var abChips='';
     if(curPet.abilities&&curPet.abilities.length){
       abChips='<div class="slot-hero-abils">';
-      curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">+'+abilityVal(a)+'%</span></span>';});
+      curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">'+abShow(a)+'</span></span>';});
       abChips+='</div>';
     }
     var favStar='<div class="slot-hero-fav'+(curPet.fav?' on':'')+'" onclick="event.stopPropagation();slotToggleHeroFav(\''+curPet.uid+'\')">\u2605</div>';
@@ -4516,7 +4607,7 @@ function petCardHtml(pet,idx,opts){
   html+='<div class="pc2-abils">';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+abilityVal(ab)+'%</span></span>';
+    html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">'+abShow(ab)+'</span></span>';
   });
   html+='</div>';
   var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
@@ -4857,8 +4948,9 @@ function openPetDetail(uid){
   html+='<div class="pet-result-abilities">';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
+    html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">'+abShow(ab)+'</span></div>';
   });
+  html+=explorerRowsHtml(pet);
   html+='</div>';
   if(!isPetBusy(pet.uid)){
     html+='<div class="pdx2-shortcuts">'
@@ -5075,7 +5167,7 @@ function renderRerollSetup(){
     h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Reroll</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' '+abShow(ab)+'</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var m3=ABILITY_META[ab.id];
@@ -5274,7 +5366,7 @@ function renderExtractSetup(){
     h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;var lk=ab.locked;
-      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' '+abShow(ab)+'</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var crc=coreRarityConf(ab.tier);var m2=ABILITY_META[ab.id];
@@ -5295,7 +5387,7 @@ function confirmExtractStart(){
   var m=ABILITY_META[ab.id];var crc=coreRarityConf(ab.tier);
   var h='<div class="mut-warn-i">⚠️</div><div class="mut-warn-t">Destroy '+pet.name+'?</div>';
   h+='<div class="mut-warn-b">'+pet.name+' will be <b>permanently destroyed</b> in the extraction. In return you receive:</div>';
-  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">+'+abilityVal(ab)+'%</span></div>';
+  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">'+abShow(ab)+'</span></div>';
   h+='<div class="mut-warn-b" style="font-size:0.72rem;">This action cannot be undone.</div>';
   h+='<div class="mut-btns"><button class="mut-cancel2" onclick="renderExtractSetup()">Cancel</button><button class="mut-go red" onclick="doExtractStart()">⚗️ Extract</button></div>';
   document.getElementById('mutation-modal-body').innerHTML=h;
@@ -5389,7 +5481,7 @@ function renderMutateSetup(){
     h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;var lk=ab.locked;
-      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' '+abShow(ab)+'</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.slot!=null){
       h+='<div class="setup-step">3 · Choose Core</div>';
@@ -8336,7 +8428,7 @@ function hatchEventEgg(){
   var cfg=rollEventPet();if(!cfg)return ['No event pets configured.'];
   var rc=RARITY_CONFIG[cfg.rarity]||RARITY_CONFIG.common;
   var abilities=[],j;for(j=0;j<rc.slots;j++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[j]});}
-  registerPet({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0});
+  registerPet({uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:cfg.rarity,world:'winter',evid:cfg.id,abilities:abilities,explorer:rollExplorerRows(cfg.rarity),equippedSlot:-1,level:1,xp:0});
   if(typeof discoverPet==='function')discoverPet(cfg.name,cfg.rarity);
   var isNew=!(G.event.petsOwned&&G.event.petsOwned[cfg.id]);
   if(isNew){if(!G.event.petsOwned)G.event.petsOwned={};G.event.petsOwned[cfg.id]=true;G.event.eggMisses=0;}
@@ -8886,7 +8978,7 @@ function showInvSection(name){
 // SHOP
 // ============================================================
 function hasBuildingUnlocked(name){var idx=BUILDINGS.findIndex(function(b){return b.n===name;});return idx>=0&&G.owned[idx]>0;}
-function getEggState(egg){var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&buildOk&&hatchOk?'unlocked':'locked';}
+function getEggState(egg){if(isLostWorld(egg.id))return (G.lostUnlocked&&G.lostUnlocked[egg.id])?'unlocked':'locked';var coinOk=!egg.coinReq||(G.stats.totalCoinsEarned>=egg.coinReq);var buildOk=!egg.buildReq||hasBuildingUnlocked(egg.buildReq);var hatchOk=!egg.hatchReq||(G.eggsHatched&&G.eggsHatched[egg.hatchReq]);return coinOk&&buildOk&&hatchOk?'unlocked':'locked';}
 var shopTab='eggs';
 function setShopTab(t){shopTab=t;renderShop();}
 function shopJumpTo(id){
@@ -9009,6 +9101,7 @@ function renderShop(){
   var occupied=G.hatchSlots.length;
   var slotFree=occupied<G.hatchSlotCount;
   EGG_SHOP.forEach(function(egg){
+    if(isLostWorld(egg.id)&&!(G.lostUnlocked&&G.lostUnlocked[egg.id]))return; // Lost World hidden until its secret map is found
     var state=getEggState(egg);
     var unlocked=state==='unlocked';
     var shellR=SHELL_RARITIES.find(function(s){return s.id===egg.shellType;});
@@ -9253,8 +9346,9 @@ function showPetResult(pet){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">'+abShow(ab)+'</span></div>';
   });
+  abHtml+=explorerRowsHtml(pet);
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your inventory.';inv.style.display='';}
@@ -9418,6 +9512,7 @@ function doFusion(){
     world:firstPet.world,
     src:'fusion',
     abilities:abilities,
+    explorer:rollExplorerRows(nextRarity),
     equippedSlot:-1,
     level:fusedLevel,
     xp:petXpToReach(fusedLevel),
@@ -9473,8 +9568,9 @@ function showFusionResult(pet,perfect){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">'+abShow(ab)+'</span></div>';
   });
+  abHtml+=explorerRowsHtml(pet);
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your collection.';inv.style.display='';}
