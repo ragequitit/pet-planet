@@ -1724,6 +1724,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     </div>
   </div>
   <div id="main">
+    <div id="home-flip" style="display:none;padding:8px 12px 2px;">
+      <div style="display:flex;background:linear-gradient(180deg,#161f44,#0f1730);border:1px solid rgba(120,150,230,0.4);border-radius:30px;padding:4px;gap:4px;box-shadow:0 2px 10px rgba(0,0,0,0.3);">
+        <button id="flip-build" onclick="setHomeMode('build')" style="flex:1;border:none;border-radius:26px;padding:9px 6px;font-weight:800;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:rgba(255,255,255,0.55);">🥚 BUILD MODE</button>
+        <button id="flip-adv" onclick="setHomeMode('adventures')" style="flex:1;border:none;border-radius:26px;padding:9px 6px;font-weight:800;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;background:transparent;color:rgba(255,255,255,0.55);">⛺ PET ADVENTURES</button>
+      </div>
+    </div>
     <div id="scene-wrap">
       <img id="scene-bg" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggworlds/scene-background.png" alt="">
       <div id="sky-life" aria-hidden="true"></div>
@@ -1770,6 +1776,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
         </div>
       </div>
     </div>
+    <div id="home-adventures" style="display:none;"><div id="homeadv-wrap" style="padding:6px 13px 90px;"></div></div>
     <div id="tab-pets" class="tab-content">
       <div class="pets-subnav">
         <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
@@ -2628,6 +2635,20 @@ var EGG_SHOP=[
 // (visible + craftable when you have the Shells). Internal ids unchanged.
 var LOST_WORLDS=['jungle','arctic','mystic','celestial','cosmic'];
 function isLostWorld(id){return LOST_WORLDS.indexOf(id)>=0;}
+// ── LOST WORLD AREAS (overhaul step 3c-1: DATA + STATE only; UI=3c-2, missions=3d) ──
+// Each unlocked Lost World has AREAS_PER_WORLD areas. Area 1 is always open (no hard gate —
+// it can already drop that world's shells). Each PER-WORLD relic unlocks the next area.
+// PLACEHOLDERS (→ Balance Sheet / Joakim): area count, relic-per-area cost, relic names/icons.
+var AREAS_PER_WORLD=6;       // leaning 6 (design open knob)
+var RELIC_PER_AREA=1;        // 1 relic = next area (design open knob; may become escalating)
+// Per-world relic theming — display name + relic label + icon. Names are PLACEHOLDERS Joakim can rename.
+var LOST_WORLD_META={
+  jungle:   {world:'Lost Jungle',     relic:'Jungle Relic',    relicIcon:'🗿'},
+  arctic:   {world:'Everwinter',      relic:'Frost Token',     relicIcon:'🧊'},
+  mystic:   {world:'Mystic Vale',     relic:'Mystic Sigil',    relicIcon:'🔮'},
+  celestial:{world:'Celestial Reach', relic:'Celestial Star',  relicIcon:'⭐'},
+  cosmic:   {world:'The Cosmos',      relic:'Cosmic Rune',     relicIcon:'🌀'}
+};
 
 // ============================================================
 // DATA: HATCH TIMES (from Balance Sheet)
@@ -3201,7 +3222,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -3211,6 +3232,7 @@ var G={
   ascensionUpgrades:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   ascensionBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   worldClaims:{},
+  homeMode:'build', idleWorld:'starter',
   titlesEarned:{},
   adventureSlots:1,
   adventures:[],
@@ -3504,6 +3526,7 @@ function rollAdvReward(adv,pet){
     if(Math.random()<B.chance*luckMult){
       if(B.type==='gems'){bonus.push({type:'gems',amt:B.min+Math.floor(Math.random()*(B.max-B.min+1))});}
       else if(B.type==='egg'){bonus.push({type:'egg',id:B.id});}
+      else if(B.type==='relic'){bonus.push({type:'relic',id:B.id});}
       else if(B.type==='map'){var _mid=B.id||pickAvailableMap();if(_mid)bonus.push({type:'map',id:_mid});}
     }
   });
@@ -3521,7 +3544,7 @@ function advReqLevel(adv){return (adv&&adv.reqLevel)||1;}
 function advCombinedLevel(petUids){var sum=0;petUids.forEach(function(u){var p=G.hatchedPets.find(function(x){return String(x.uid)===String(u);});if(p)sum+=petLevelFromXp(p.xp||0);});return sum;}
 function advMeetsLevel(adv,petUids){return advCombinedLevel(petUids)>=advReqLevel(adv);}
 function startAdventure(advId,petUid){
-  var adv=ADVENTURES.find(function(a){return a.id===advId;});if(!adv)return;
+  var adv=resolveAdv(advId);if(!adv)return;
   if(isAdvActive(advId))return;                         // samma uppdragstyp redan igång → blockera
   if(G.adventures.length>=G.adventureSlots)return;     // ingen ledig slot
   if(isPetBusy(petUid))return;                          // redan ute
@@ -3538,7 +3561,7 @@ function startAdventure(advId,petUid){
 }
 function claimAdventure(index){
   var a=G.adventures[index];if(!a||Date.now()<a.endAt)return;
-  var adv=ADVENTURES.find(function(x){return x.id===a.advId;});
+  var adv=resolveAdv(a.advId);
   if(!adv){G.adventures.splice(index,1);renderAdventure();return;}
   var pet=G.hatchedPets.find(function(p){return p.uid===a.petUid;});
   var rw=rollAdvReward(adv,pet);
@@ -3562,6 +3585,7 @@ function claimAdventure(index){
   (rw.bonus||[]).forEach(function(b){
     if(b.type==='gems'){G.gems=(G.gems||0)+b.amt;parts.push(GEM_IMG+' +'+b.amt+' Gems');}
     else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
+    else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
@@ -3575,7 +3599,7 @@ function claimAdventure(index){
 function openAdvPicker(advId){
   if(G.adventures.length>=G.adventureSlots)return;
   pendingAdvId=advId;
-  var adv=ADVENTURES.find(function(a){return a.id===advId;});if(!adv)return;
+  var adv=resolveAdv(advId);if(!adv)return;
   if(isAdvActive(advId)){
     document.getElementById('adv-modal-body').innerHTML='<div class="adv-pick-title">'+adv.icon+' '+adv.name+'</div><div class="adv-pick-empty">⏳ This adventure is already in progress. It\'ll be available again when your pet returns — pick a different adventure from the map.</div>';
     document.getElementById('adv-modal').classList.add('open');return;
@@ -3607,6 +3631,7 @@ function openAdvPicker(advId){
       var ec=advEffChances(adv,p);
       var oddsHtml=ec.items.map(function(o){
         if(o.type==='gems')return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+GEM_IMG+' '+Math.round(o.pct*100)+'%</span>';
+        if(o.type==='relic'){var rm=LOST_WORLD_META[o.id]||{relic:'Relic',relicIcon:'🗝️'};return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+rm.relicIcon+' '+rm.relic+' '+Math.round(o.pct*100)+'%</span>';}
         var e=EGG_SHOP.find(function(x){return x.id===o.id;});
         var ico='<img class="app-odd-egg" src="'+eggShopIconUrl(o.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';
         return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+ico+(e?e.name.replace(' Egg',''):o.id)+' '+Math.round(o.pct*100)+'%</span>';
@@ -3627,6 +3652,16 @@ function closeAdvModal(){var m=document.getElementById('adv-modal');if(m)m.class
 function setAdvPickSort(v){advPickSort=v;if(pendingAdvId)openAdvPicker(pendingAdvId);}
 // ── LOST WORLD MAPS (overhaul step 3a): find Secret Maps on adventures → place to unlock a Lost World.
 function grantMap(id){ if(!isLostWorld(id))return; G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; if(G.lostUnlocked[id])return; G.mapsOwned[id]=(G.mapsOwned[id]||0)+1; }
+// ── RELICS + AREAS state helpers (step 3c-1: data only; consumed by 3c-2 UI + 3d missions) ──
+function relicCount(world){ G.relics=G.relics||{}; return G.relics[world]||0; }
+function grantRelic(world,n){ if(!isLostWorld(world))return; G.relics=G.relics||{}; G.relics[world]=(G.relics[world]||0)+(n||1); }
+// How many areas are OPEN for a world (area 1 always open). Lazy default = 1.
+function areasOpen(world){ G.areasUnlocked=G.areasUnlocked||{}; var n=G.areasUnlocked[world]||0; return Math.max(1,n); }
+function areasLeft(world){ return AREAS_PER_WORLD-areasOpen(world); }
+// Can the player open the next area? Needs enough relics AND an area still locked.
+function canUnlockArea(world){ if(!isLostWorld(world))return false; if(!(G.lostUnlocked&&G.lostUnlocked[world]))return false; return areasLeft(world)>0 && relicCount(world)>=RELIC_PER_AREA; }
+// Spend RELIC_PER_AREA relics to open the next area (returns true on success).
+function unlockNextArea(world){ if(!canUnlockArea(world))return false; G.relics[world]-=RELIC_PER_AREA; G.areasUnlocked=G.areasUnlocked||{}; G.areasUnlocked[world]=areasOpen(world)+1; if(typeof saveGame==='function')saveGame(); return true; }
 function pickAvailableMap(){ G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; var avail=LOST_WORLDS.filter(function(id){return !G.lostUnlocked[id] && !(G.mapsOwned[id]>0);}); return avail.length?avail[Math.floor(Math.random()*avail.length)]:null; }
 function placeLostMap(id){
   G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
@@ -3635,8 +3670,10 @@ function placeLostMap(id){
   if(typeof saveGame==='function')saveGame();
   var egg=EGG_SHOP.find(function(e){return e.id===id;});
   if(typeof showRewardPopup==='function')showRewardPopup(['🗺️ Lost World unlocked: '+(egg?egg.name.replace(' Egg',''):id)+'!','Its egg is now in the shop.'],true);
-  renderAdventure(); if(typeof renderShop==='function')renderShop();
+  renderAdventure(); if(typeof renderShop==='function')renderShop(); if(typeof renderInventory==='function')renderInventory();
 }
+// Called from the bag's Loot tab — same as placeLostMap (kept as a clear name for the inventory button).
+function useMapFromBag(id){ placeLostMap(id); }
 function devGrantMap(){
   G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
   var avail=LOST_WORLDS.filter(function(id){return !G.lostUnlocked[id] && !(G.mapsOwned[id]>0);});
@@ -3645,12 +3682,24 @@ function devGrantMap(){
   grantMap(id);
   if(typeof saveGame==='function')saveGame();
   if(typeof showRewardPopup==='function')showRewardPopup(['🗺️ Found a Secret Map: '+id+'!'],true);
-  renderAdventure();
+  renderAdventure(); if(typeof renderInventory==='function')renderInventory();
+}
+// Dev: grant 1 relic for a random ALREADY-UNLOCKED Lost World (relics are per-world). TEMP — remove before launch.
+function devGrantRelic(){
+  G.lostUnlocked=G.lostUnlocked||{};
+  var avail=LOST_WORLDS.filter(function(id){return !!G.lostUnlocked[id];});
+  if(!avail.length){ if(typeof showRewardPopup==='function')showRewardPopup(['Unlock a Lost World first — relics are per-world.'],false); return; }
+  var id=avail[Math.floor(Math.random()*avail.length)];
+  grantRelic(id,1);
+  if(typeof saveGame==='function')saveGame();
+  var meta=LOST_WORLD_META[id]||{relic:id+' Relic'};
+  if(typeof showRewardPopup==='function')showRewardPopup(['🗝️ Found a '+meta.relic+'!'],true);
+  if(typeof renderInventory==='function')renderInventory();
 }
 function secretMapsPanelHtml(){
   G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{};
   var h='<div class="adv-sech">🗺️ Lost World Maps</div>';
-  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Find <b>Secret Maps</b> on adventures to unlock hidden Lost Worlds. Place a found map to open its world — its egg then appears in the shop (craftable once you have its Shells).</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Find <b>Secret Maps</b> on adventures to unlock hidden Lost Worlds. A found map lands in your <b>bag</b> (Inventory → Loot) — open it there to use the map and open its world.</div>';
   h+='<div style="display:flex;flex-direction:column;gap:6px;">';
   LOST_WORLDS.forEach(function(id){
     var egg=EGG_SHOP.find(function(e){return e.id===id;})||{name:id,icon:'❓'};
@@ -3658,14 +3707,152 @@ function secretMapsPanelHtml(){
     var hasMap=(G.mapsOwned[id]||0)>0;
     var ico=unlocked?egg.icon:'❓';
     var name=unlocked?egg.name.replace(' Egg',''):'? ? ?';
-    var right;
-    if(unlocked) right='<span style="color:#5fd47a;font-weight:800;font-size:0.74rem;">✓ Unlocked</span>';
-    else if(hasMap) right='<button onclick="placeLostMap(\''+id+'\')" style="background:#caa23a;border:none;border-radius:8px;color:#1a1305;font-weight:800;font-size:0.72rem;padding:6px 10px;cursor:pointer;">🗺️ Place &amp; Unlock</button>';
+    var right,click='',sub='';
+    if(unlocked){ right='<span style="color:#9fe6b0;font-weight:800;font-size:0.74rem;">'+areasOpen(id)+'/'+AREAS_PER_WORLD+' areas ▸</span>'; click=' onclick="openLostWorldAreas(\''+id+'\')" style="cursor:pointer;'; sub='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);">Tap to explore areas</div>'; }
+    else if(hasMap) right='<span style="color:#caa23a;font-weight:800;font-size:0.72rem;">🎒 Map in your bag</span>';
     else right='<span style="color:rgba(255,255,255,0.4);font-size:0.74rem;">🔒 Map not found</span>';
-    h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><div style="font-size:1.5rem;width:30px;text-align:center;">'+ico+'</div><div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+name+'</div></div>'+right+'</div>';
+    var cardStyle='display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;';
+    h+='<div'+(click?click+cardStyle+'"':' style="'+cardStyle+'"')+'><div style="font-size:1.5rem;width:30px;text-align:center;">'+ico+'</div><div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+name+'</div>'+sub+'</div>'+right+'</div>';
   });
   h+='</div>';
-  h+='<button onclick="devGrantMap()" style="margin-top:8px;width:100%;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.72rem;padding:7px;cursor:pointer;">🐞 (dev) Grant a random map</button>';
+  return h;
+}
+// ── LOST WORLD AREA CARD (overhaul step 3c-2): click an unlocked world → 6 area circles. ──
+// Area 1 always open; each PER-WORLD relic opens the next area. Running areas (expeditions) = step 3d.
+// ── AREA EXPEDITIONS (step 3d): an open area becomes a runnable mission, reusing the adventure engine. ──
+// A synthetic adventure id 'area:<world>:<n>' lets startAdventure/claimAdventure/tick all work unchanged.
+function areaAdvId(world,n){return 'area:'+world+':'+n;}
+function parseAreaAdvId(id){ if(typeof id!=='string'||id.indexOf('area:')!==0)return null; var p=id.split(':'); return {world:p[1],n:parseInt(p[2],10)}; }
+function makeAreaAdv(world,n){
+  var meta=LOST_WORLD_META[world]||{world:world,relic:world+' Relic',relicIcon:'🗝️'};
+  var egg=EGG_SHOP.find(function(e){return e.id===world;})||{icon:'❓',shellType:'common'};
+  var shellType=egg.shellType||'common';
+  var depth=Math.max(1,n||1);
+  // PLACEHOLDERS → Balance Sheet. Deeper area = a bit longer + richer odds.
+  return {
+    id:areaAdvId(world,depth),
+    name:meta.world+' · Area '+depth,
+    icon:egg.icon||'❓',
+    desc:'Dig into '+meta.world+' — the deeper the area, the richer the find.',
+    col:'#5b3f8c',
+    affinity:world,
+    dur:(8+depth*2)*60*1000,
+    coinRate:0.05, coinFloor:Math.max(500,200*depth),
+    xp:40+depth*20,
+    reqLevel:1,
+    shellLoot:[{type:shellType,min:1+depth,max:3+depth*2}],
+    bonusLoot:[
+      {type:'egg',  id:world, chance:Math.min(0.5,0.04*depth)},
+      {type:'relic',id:world, chance:Math.min(0.6,0.08*depth)}
+    ],
+    isArea:true, world:world, area:depth
+  };
+}
+// Resolve any advId to its definition — real ADVENTURES entry OR a synthesized area expedition.
+function resolveAdv(id){ var pa=parseAreaAdvId(id); if(pa&&pa.world&&pa.n)return makeAreaAdv(pa.world,pa.n); return advById(id); }
+// Open the pet-picker for an area expedition (reuses openAdvPicker via the synthetic id).
+function openAreaExpedition(world,n){
+  if(!(G.lostUnlocked&&G.lostUnlocked[world]))return;
+  if(n>areasOpen(world))return;                                  // area not open yet
+  var id=areaAdvId(world,n);
+  if(isAdvActive(id)){ if(typeof showRewardPopup==='function')showRewardPopup(['That area expedition is already in progress.'],false); return; }
+  if(G.adventures.length>=G.adventureSlots){ if(typeof showRewardPopup==='function')showRewardPopup(['All adventure slots are busy — free one up first.'],false); return; }
+  openAdvPicker(id);
+}
+function openLostWorldAreas(id){
+  if(!(G.lostUnlocked&&G.lostUnlocked[id]))return;
+  var body=document.getElementById('adv-modal-body'); if(!body)return;
+  body.innerHTML=renderLostWorldAreas(id);
+  var m=document.getElementById('adv-modal'); if(m)m.classList.add('open');
+}
+function renderLostWorldAreas(id){
+  var meta=LOST_WORLD_META[id]||{world:id,relic:id+' Relic',relicIcon:'🗝️'};
+  var egg=EGG_SHOP.find(function(e){return e.id===id;})||{icon:'❓'};
+  var open=areasOpen(id), have=relicCount(id);
+  var h='';
+  h+='<div style="text-align:center;margin-bottom:6px;"><div style="font-size:1.9rem;">'+(egg.icon||'❓')+'</div>';
+  h+='<div style="font-weight:800;font-size:1.05rem;color:#f5c842;">'+meta.world+'</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Areas — the deeper you go, the richer the rewards</div></div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:14px 0;">';
+  for(var i=1;i<=AREAS_PER_WORLD;i++){
+    var isOpen=i<=open, isNext=(i===open+1);
+    var areaId=areaAdvId(id,i), act=null;
+    for(var k=0;k<G.adventures.length;k++){ if(G.adventures[k].advId===areaId){act=G.adventures[k];break;} }
+    var active=!!act, ready=active&&Date.now()>=act.endAt;
+    var bd,bg,col,label,statusHtml='',clickAttr='';
+    if(isOpen){
+      bg='radial-gradient(circle at 50% 35%,#3a4f9e,#1b2752)'; col='#ffe9a8'; label=String(i); bd='#caa23a';
+      if(active&&ready){ statusHtml='<div style="font-size:0.5rem;color:#5fd47a;font-weight:800;margin-top:1px;">✓ Ready</div>'; }
+      else if(active){ statusHtml='<div style="font-size:0.5rem;color:#9fb6ff;margin-top:1px;">⏳ Out</div>'; }
+      else { statusHtml='<div style="font-size:0.5rem;color:#ffd76a;font-weight:800;margin-top:1px;">▶ Run</div>'; clickAttr=' onclick="openAreaExpedition(\''+id+'\','+i+')" '; bd='#ffd76a'; }
+    }else if(isNext){ bd='#8a6fd0'; bg='radial-gradient(circle at 50% 35%,#2a2350,#141029)'; col='#cdb6ff'; label='🔒'; }
+    else { bd='rgba(120,120,150,0.3)'; bg='#141a33'; col='rgba(255,255,255,0.3)'; label='🔒'; }
+    h+='<div'+clickAttr+'style="width:62px;height:62px;border-radius:50%;border:2px solid '+bd+';background:'+bg+';display:flex;flex-direction:column;align-items:center;justify-content:center;'+(clickAttr?'cursor:pointer;':'')+(isNext?'box-shadow:0 0 10px rgba(150,120,220,0.6);':'')+'">'
+      +'<div style="font-weight:800;font-size:'+(isOpen?'1.05rem':'0.9rem')+';color:'+col+';line-height:1;">'+label+'</div>'
+      +'<div style="font-size:0.5rem;color:'+col+';opacity:0.85;margin-top:1px;">Area '+i+'</div>'+statusHtml+'</div>';
+  }
+  h+='</div>';
+  h+='<div style="background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;">';
+  h+='<div style="font-size:1.4rem;">'+meta.relicIcon+'</div>';
+  h+='<div style="flex:1;"><div style="font-weight:800;font-size:0.84rem;">'+meta.relic+'</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">You have ×'+have+'</div></div>';
+  if(open>=AREAS_PER_WORLD){
+    h+='<span style="color:#5fd47a;font-weight:800;font-size:0.74rem;">✓ All areas open</span>';
+  }else if(have>=RELIC_PER_AREA){
+    h+='<button onclick="doUnlockArea(\''+id+'\')" style="background:#caa23a;border:none;border-radius:8px;color:#1a1305;font-weight:800;font-size:0.72rem;padding:8px 12px;cursor:pointer;">Unlock Area '+(open+1)+'</button>';
+  }else{
+    h+='<span style="color:rgba(255,255,255,0.45);font-size:0.7rem;text-align:right;line-height:1.4;">Need '+(RELIC_PER_AREA-have)+' more<br>for Area '+(open+1)+'</span>';
+  }
+  h+='</div>';
+  h+='<div style="margin-top:10px;font-size:0.7rem;color:rgba(255,255,255,0.45);text-align:center;line-height:1.5;">Tap an open area (<b style="color:#ffd76a;">▶ Run</b>) to send a pet digging for this world\'s shells, eggs &amp; relics. Deeper area = better odds. The expedition then runs in your Adventure slots.</div>';
+  return h;
+}
+function doUnlockArea(id){
+  unlockNextArea(id); // consumes 1 relic, opens next area (saves)
+  var body=document.getElementById('adv-modal-body'); if(body)body.innerHTML=renderLostWorldAreas(id);
+  if(typeof renderAdventure==='function')renderAdventure();
+  if(typeof renderInventory==='function')renderInventory();
+}
+function lootInvHtml(){
+  G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; G.relics=G.relics||{};
+  var maps=LOST_WORLDS.filter(function(id){return (G.mapsOwned[id]||0)>0 && !G.lostUnlocked[id];});
+  var rel=LOST_WORLDS.filter(function(id){return relicCount(id)>0;});
+  var h='';
+  if(!maps.length && !rel.length){
+    h+='<div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here. Find <b>Secret Maps</b> and <b>Relics</b> on adventures — they land in your bag, ready to use.</p></div>';
+  }else{
+    if(maps.length){
+      h+='<div class="adv-sech">🗺️ Secret Maps</div>';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">A map to a hidden Lost World. <b>Use</b> it to unlock that world for good — its egg then appears in the shop.</div>';
+      h+='<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">';
+      maps.forEach(function(id){
+        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;">'
+          +'<div style="font-size:1.5rem;width:30px;text-align:center;">🗺️</div>'
+          +'<div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">Secret Map</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">Unknown Lost World</div></div>'
+          +'<button onclick="useMapFromBag(\''+id+'\')" style="background:#caa23a;border:none;border-radius:8px;color:#1a1305;font-weight:800;font-size:0.72rem;padding:7px 11px;cursor:pointer;">Use &amp; Unlock</button>'
+          +'</div>';
+      });
+      h+='</div>';
+    }
+    if(rel.length){
+      h+='<div class="adv-sech">🗝️ Relics</div>';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Keys to deeper <b>areas</b> inside a Lost World. Open an unlocked world in <b>Adventures</b> to spend them.</div>';
+      h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+      rel.forEach(function(id){
+        var meta=LOST_WORLD_META[id]||{relic:id+' Relic',relicIcon:'🗝️',world:id};
+        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:8px 11px;">'
+          +'<div style="font-size:1.5rem;width:30px;text-align:center;">'+meta.relicIcon+'</div>'
+          +'<div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+meta.relic+'</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">'+meta.world+'</div></div>'
+          +'<div style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+relicCount(id)+'</div>'
+          +'</div>';
+      });
+      h+='</div>';
+    }
+  }
+  // TEMP dev tools (remove before launch)
+  h+='<div style="margin-top:14px;display:flex;gap:6px;">';
+  h+='<button onclick="devGrantMap()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 map</button>';
+  h+='<button onclick="devGrantRelic()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 relic</button>';
+  h+='</div>';
   return h;
 }
 function renderAdventure(){
@@ -3695,7 +3882,7 @@ function renderAdventure(){
   html+='<div class="adv-slots">';
   for(var i=0;i<ADVENTURE_SLOT_MAX;i++){
     if(i<G.adventures.length){
-      var a=G.adventures[i];var adv=advById(a.advId);var pet=G.hatchedPets.find(function(p){return p.uid===a.petUid;});
+      var a=G.adventures[i];var adv=resolveAdv(a.advId);var pet=G.hatchedPets.find(function(p){return p.uid===a.petUid;});
       var ready=now>=a.endAt;var remain=Math.max(0,Math.ceil((a.endAt-now)/1000));
       var span=a.endAt-a.startAt;var pct=span>0?Math.min(100,Math.floor((now-a.startAt)/span*100)):100;
       html+='<div class="adv-slot active'+(ready?' ready':'')+'" style="background-color:'+(adv?adv.col:'#2a3c6c')+';background-image:url('+advAsset(a.advId,'slot')+')" onclick="selectAdv(\''+a.advId+'\')">';
@@ -3716,7 +3903,7 @@ function renderAdventure(){
   }
   html+='</div>';
   // ZON 3: detaljpanel
-  var sel=advById(advSelected)||ADVENTURES[0];
+  var sel=resolveAdv(advSelected)||ADVENTURES[0];
   var coinsNow=Math.max(sel.coinFloor,Math.floor(eps()*(sel.dur/1000)*sel.coinRate));
   html+='<div class="adv-detail" style="background-color:'+sel.col+';background-image:url('+advAsset(sel.id,'card')+')">';
   html+='<div class="adv-dscrim">';
@@ -3733,6 +3920,7 @@ function renderAdventure(){
   (sel.bonusLoot||[]).forEach(function(B){
     if(B.type==='gems'){html+=advRewItem(GEM_IMG,'Gems',Math.round(B.chance*100)+'%',true);}
     else if(B.type==='egg'){var e=EGG_SHOP.find(function(x){return x.id===B.id;});var eico='<img src="'+eggShopIconUrl(B.id)+'" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';html+=advRewItem(eico,(e?e.name.replace(' Egg',''):B.id),Math.round(B.chance*100)+'%',true);}
+    else if(B.type==='relic'){var rm=LOST_WORLD_META[B.id]||{relic:'Relic',relicIcon:'🗝️'};html+=advRewItem(rm.relicIcon,rm.relic,Math.round(B.chance*100)+'%',true);}
   });
   html+=advRewItem('🧬','Cores','soon',false);
   html+=advRewItem(uiIco('stats/discoveries','🗺️',22),'Discoveries','soon',false);
@@ -5013,6 +5201,65 @@ document.getElementById('pet-result-modal').onclick=function(e){if(e.target===th
 // ============================================================
 var SCENE_TABS=['buildings','upgrades','inventory'];
 var currentTab='buildings';
+// ── HOME FLIP: Build Mode ⇄ Pet Adventures (idle) — two views of the home screen. ──
+function flipSide(btn,active,c1,c2){ if(!btn)return; btn.style.background=active?('linear-gradient(180deg,'+c1+','+c2+')'):'transparent'; btn.style.color=active?'#fff':'rgba(255,255,255,0.55)'; btn.style.boxShadow=active?'0 1px 6px rgba(0,0,0,0.35)':'none'; }
+function setHomeMode(mode){
+  if(mode!=='build'&&mode!=='adventures')return;
+  G.homeMode=mode;
+  if(typeof saveGame==='function')saveGame();
+  if(SCENE_TABS.indexOf(currentTab)<0)switchTab('buildings'); // jump to home scene if elsewhere
+  else applyHomeMode();
+}
+function applyHomeMode(){
+  var onHome=SCENE_TABS.indexOf(currentTab)>=0;
+  var inv=(currentTab==='inventory');
+  var adv=(G.homeMode==='adventures');
+  var flip=document.getElementById('home-flip');
+  if(flip)flip.style.display=(onHome&&!inv)?'block':'none';
+  var sw=document.getElementById('scene-wrap');
+  var sh=document.getElementById('home-sheet');
+  var ha=document.getElementById('home-adventures');
+  if(!onHome){ if(ha)ha.style.display='none'; return; }
+  if(inv){ if(ha)ha.style.display='none'; return; }   // inventory keeps the build scene
+  if(adv){
+    if(sw)sw.style.display='none';
+    if(sh)sh.style.display='none';
+    if(ha)ha.style.display='block';
+    renderHomeAdventures();
+  }else{
+    if(sw)sw.style.display='block';
+    if(sh)sh.style.display='block';
+    if(ha)ha.style.display='none';
+  }
+  flipSide(document.getElementById('flip-build'),!adv,'#3a4f9e','#2a3c80');
+  flipSide(document.getElementById('flip-adv'),  adv, '#6a4fb0','#4a3590');
+}
+// Worlds the player can idle on = home worlds reached + unlocked Lost Worlds (getEggState handles both).
+function unlockedIdleWorlds(){
+  var list=[];
+  EGG_SHOP.forEach(function(e){ if(getEggState(e)==='unlocked')list.push(e.id); });
+  if(list.indexOf('starter')<0)list.unshift('starter');
+  return list;
+}
+function setIdleWorld(id){ G.idleWorld=id; if(typeof saveGame==='function')saveGame(); renderHomeAdventures(); }
+function renderHomeAdventures(){
+  var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
+  var worlds=unlockedIdleWorlds();
+  if(!G.idleWorld||worlds.indexOf(G.idleWorld)<0)G.idleWorld=worlds[0]||'starter';
+  var cur=EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:G.idleWorld,icon:'❓'};
+  var h='';
+  h+='<div style="text-align:center;margin:10px 0 12px;"><div style="font-family:\'Fredoka One\',cursive;font-size:1.4rem;color:#cdb6ff;letter-spacing:0.5px;">PET ADVENTURES</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Your pets idle and gather Shells</div></div>';
+  h+='<div style="margin-bottom:12px;"><div style="font-size:0.64rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Idle World</div>';
+  h+='<select onchange="setIdleWorld(this.value)" style="width:100%;padding:11px 12px;border-radius:12px;background:#16234c;color:#fff;border:1px solid rgba(111,138,224,0.5);font-size:0.95rem;font-weight:700;">';
+  worlds.forEach(function(id){var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'❓'};var nm=e.name.replace(' Egg','');h+='<option value="'+id+'"'+(id===G.idleWorld?' selected':'')+'>'+(isLostWorld(id)?'★ ':'')+nm+'</option>';});
+  h+='</select></div>';
+  h+='<div style="background:linear-gradient(180deg,#1a2756,#101a38);border:1px solid rgba(111,138,224,0.3);border-radius:16px;padding:24px 16px;text-align:center;">';
+  h+='<div style="font-size:2.6rem;">'+(cur.icon||'❓')+'</div>';
+  h+='<div style="font-weight:800;font-size:1.05rem;color:#f5c842;margin-top:4px;">'+cur.name.replace(' Egg','')+(isLostWorld(G.idleWorld)?' <span style="font-size:0.7rem;color:#cdb6ff;">★ Lost World</span>':'')+'</div>';
+  h+='<div style="font-size:0.75rem;color:rgba(255,255,255,0.55);margin-top:12px;line-height:1.6;">Your idling pets, their live rewards and the shared <b>Adventure Bag</b> are being built here next. Pick the world above where your pets will gather loot.</div>';
+  h+='</div>';
+  wrap.innerHTML=h;
+}
 function switchTab(name){
   var wasHome=SCENE_TABS.indexOf(currentTab)>=0;
   document.querySelectorAll('.tab-content').forEach(function(t){t.style.display='none';});
@@ -5046,6 +5293,7 @@ function switchTab(name){
   // Slide-up-animation (nav rebuild — steg 3): spelas bara när man LANDAR på
   // hemskärmen från en annan flik, och bara i utfällt läge.
   if(isHome&&!wasHome&&!homeCollapsed)playHomeEntrance();
+  applyHomeMode();
 }
 
 // Replays a CSS keyframe-animation klass på ett element
@@ -5094,6 +5342,7 @@ function navTab(name){
 //  - inte hemma / bladet nere / på upgrades → gå hem med bygg-bladet UPPE
 //  - redan hemma med bygg-bladet uppe → fäll NER bladet (som handtaget)
 function goHome(){
+  if(G.homeMode==='adventures'){ switchTab('buildings'); return; }
   var onBuildingsUp=(currentTab==='buildings')&&!homeCollapsed;
   if(onBuildingsUp){
     toggleHomeSheet();
@@ -8942,7 +9191,7 @@ function renderInventory(){
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-cores" style="display:none;">'+coresInvHtml()+'</div>';
-  html+='<div id="isec-loot" style="display:none;"><div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here when pets return from missions.</p></div></div>';
+  html+='<div id="isec-loot" style="display:none;">'+lootInvHtml()+'</div>';
   wrap.innerHTML=html;
   showInvSection(activeInvSection);
 }
