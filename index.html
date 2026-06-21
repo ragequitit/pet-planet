@@ -2561,6 +2561,10 @@ var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Sparks för att låsa upp slot 2,3,4,5
 var IDLE_SLOT_MAX=5;
 var IDLE_SLOT_COSTS=[10000,1e6,1e8,1e10]; // PLATSHÅLLARE: Sparks-kostnad för idle-slot 2..5
+// IDLE DISCRETE DROPS — PLATSHÅLLARE (per idle-pet per timme) → Balance Sheet. Tunn passiv ström.
+var IDLE_RELIC_PER_HR=0.5;  // relic för vald Lost World (bara om man idlar på en upplåst Lost World)
+var IDLE_EGG_PER_HR=0.06;   // helt ägg för vald värld
+var IDLE_MAP_PER_HR=0.03;   // secret map (världs-agnostiskt "snubbla på en värld"); bara om låsta Lost Worlds finns
 var GEM_SPEEDUP_MIN_PER_GEM=4; // varje gem kortar äventyret med 4 min (= 15 gems/timme). Partiellt tillåtet.
 // coinRate = andel av EPS pet:en jobbar i (0.2 = LÅGT med flit, så äventyr ger en liten coin-bonus, inte en faucet som slår idle/klick). coinFloor = golv för tidig game (EPS≈0).
 // >>> TUNING (känns äventyr för givmilt/för spammigt?): sänk coinRate/coinFloor. Vill du längre/kortare uppdrag: ändra dur (minuter).
@@ -5288,8 +5292,9 @@ function renderHomeAdventures(){
   h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Potential Rewards</div>';
   h+='<div style="display:flex;flex-direction:column;gap:6px;font-size:0.78rem;">';
   h+='<div style="display:flex;align-items:center;gap:8px;">'+shellIcon(shType)+'<span style="flex:1;color:'+shR.color+';font-weight:700;">'+shR.name+' Shells</span><span style="color:rgba(255,255,255,0.7);">'+fmtRate(rate)+'/hr</span></div>';
-  if(isLostWorld(G.idleWorld)){var meta=LOST_WORLD_META[G.idleWorld]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:8px;"><span>'+meta.relicIcon+'</span><span style="flex:1;color:#cdb6ff;">'+meta.relic+'</span><span style="color:rgba(255,255,255,0.45);">soon</span></div>';}
-  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🥚</span><span style="flex:1;color:rgba(255,255,255,0.7);">Rare '+(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:''}).name.replace(' Egg','')+' egg</span><span style="color:rgba(255,255,255,0.45);">soon</span></div>';
+  if(isLostWorld(G.idleWorld)){var meta=LOST_WORLD_META[G.idleWorld]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:8px;"><span>'+meta.relicIcon+'</span><span style="flex:1;color:#cdb6ff;">'+meta.relic+'</span><span style="color:rgba(255,255,255,0.5);">thin stream</span></div>';}
+  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🥚</span><span style="flex:1;color:rgba(255,255,255,0.7);">Rare '+(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:''}).name.replace(' Egg','')+' egg</span><span style="color:rgba(255,255,255,0.5);">rare</span></div>';
+  if(typeof pickAvailableMap==='function'&&pickAvailableMap())h+='<div style="display:flex;align-items:center;gap:8px;"><span>🗺️</span><span style="flex:1;color:rgba(255,255,255,0.7);">Secret Map</span><span style="color:rgba(255,255,255,0.5);">very rare</span></div>';
   h+='</div></div>';
   // idle slots
   h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
@@ -5333,19 +5338,36 @@ function idleSinceText(){
   function z(n){return (n<10?'0':'')+n;}
   return z(Math.floor(s/3600))+':'+z(Math.floor((s%3600)/60))+':'+z(s%60);
 }
-function idleBagCount(){var b=(G.idleBag&&G.idleBag.shells)||{};var t=0;Object.keys(b).forEach(function(k){t+=b[k];});return t;}
+function idleBagCount(){return (G.idleBag&&G.idleBag.finds)?G.idleBag.finds.length:0;}
+// A discrete idle find → grant it (into the real Inventory bag) + log it in the session bag.
+function idleAddFind(type,id){
+  G.idleBag=G.idleBag||{shells:{},finds:[]};
+  if(type==='relic'){ grantRelic(id,1); var m=LOST_WORLD_META[id]||{relic:'Relic',relicIcon:'🗝️'}; G.idleBag.finds.push({type:'relic',id:id,label:m.relicIcon+' '+m.relic}); }
+  else if(type==='egg'){ G.eggsOwned[id]=(G.eggsOwned[id]||0)+1; var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'🥚'}; G.idleBag.finds.push({type:'egg',id:id,label:e.icon+' '+e.name.replace(' Egg','')+' Egg'}); }
+  else if(type==='map'){ grantMap(id); if(G.stats)G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1; G.idleBag.finds.push({type:'map',id:id,label:'🗺️ Secret Map'}); }
+  if(typeof saveGame==='function')saveGame();
+}
 function tickIdlePets(dt){
-  var rate=idleTotalRate(); if(rate<=0)return;
+  var n=(G.idlePets||[]).length; if(!n)return;
   if(!G.idleStartAt)G.idleStartAt=Date.now();
-  idleShellAcc+=rate*(dt/3600);
-  if(idleShellAcc>=1){
-    var add=Math.floor(idleShellAcc); idleShellAcc-=add;
-    var t=idleShellType();
-    G.shells[t]=(G.shells[t]||0)+add;
-    if(G.stats){G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+add;if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};G.stats.shellsCollectedByRarity[t]=(G.stats.shellsCollectedByRarity[t]||0)+add;}
-    G.idleBag=G.idleBag||{shells:{},finds:[]};
-    G.idleBag.shells[t]=(G.idleBag.shells[t]||0)+add;
+  // steady shells (chosen world's type)
+  var rate=idleTotalRate();
+  if(rate>0){
+    idleShellAcc+=rate*(dt/3600);
+    if(idleShellAcc>=1){
+      var add=Math.floor(idleShellAcc); idleShellAcc-=add;
+      var t=idleShellType();
+      G.shells[t]=(G.shells[t]||0)+add;
+      if(G.stats){G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+add;if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};G.stats.shellsCollectedByRarity[t]=(G.stats.shellsCollectedByRarity[t]||0)+add;}
+      G.idleBag=G.idleBag||{shells:{},finds:[]};
+      G.idleBag.shells[t]=(G.idleBag.shells[t]||0)+add;
+    }
   }
+  // discrete finds — thin passive stream (PLACEHOLDER rates)
+  var hf=dt/3600, w=G.idleWorld||'starter';
+  if(isLostWorld(w)&&G.lostUnlocked&&G.lostUnlocked[w]&&Math.random()<(IDLE_RELIC_PER_HR*n)*hf){ idleAddFind('relic',w); }
+  if(Math.random()<(IDLE_EGG_PER_HR*n)*hf){ idleAddFind('egg',w); }
+  if(Math.random()<(IDLE_MAP_PER_HR*n)*hf){ var mid=pickAvailableMap(); if(mid)idleAddFind('map',mid); }
 }
 function softUpdateIdle(){
   var el=document.getElementById('idle-since'); if(el)el.textContent=idleSinceText();
@@ -5406,11 +5428,17 @@ function buyIdleSlot(i){
   renderHomeAdventures();
 }
 function openIdleBag(){
-  var b=(G.idleBag&&G.idleBag.shells)||{};
+  var bag=G.idleBag||{shells:{},finds:[]};
   var lines=[];
-  Object.keys(b).forEach(function(t){var r=SHELL_RARITIES.find(function(s){return s.id===t;});if(b[t]>0)lines.push((r?shellIcon(t)+' '+r.name:t)+' Shells: +'+b[t]);});
+  if(bag.finds&&bag.finds.length){
+    lines.push('✨ Special finds this session:');
+    bag.finds.slice(-12).forEach(function(f){lines.push(f.label);});
+    lines.push('(also placed in your Inventory bag)');
+  }
+  var sh=bag.shells||{}; var shLines=[];
+  Object.keys(sh).forEach(function(t){var r=SHELL_RARITIES.find(function(s){return s.id===t;});if(sh[t]>0)shLines.push((r?shellIcon(t)+' '+r.name:t)+' Shells: +'+sh[t]);});
+  if(shLines.length){ lines.push('🐚 Shells gathered:'); lines=lines.concat(shLines); }
   if(!lines.length){ if(typeof showRewardPopup==='function')showRewardPopup(['Nothing gathered yet this session.','Your idling pets will fill this up over time.'],false); return; }
-  lines.unshift('🎒 This idle session so far:');
   if(typeof showRewardPopup==='function')showRewardPopup(lines,true);
 }
 function switchTab(name){
