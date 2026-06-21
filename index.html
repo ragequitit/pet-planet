@@ -2809,14 +2809,14 @@ var RARITY_CONFIG={
 // Rarity drop weights for each egg world
 // Each world's rarity pool (only what's available in that world)
 var EGG_RARITY_WEIGHTS={
-  starter:   {common:65,uncommon:28,rare:6,epic:1},
-  forest:    {common:50,uncommon:35,rare:13,epic:2},
-  mountain:  {common:20,uncommon:25,rare:45,epic:10},
-  desert:    {common:10,uncommon:20,rare:35,epic:25,legendary:10},
-  ocean:     {uncommon:10,rare:30,epic:40,legendary:20},
+  starter:   {common:70,uncommon:25,rare:5},        // R1 Meadow (overhaul pass 1A; placeholder weights → Balance Sheet)
+  forest:    {uncommon:70,rare:25,epic:5},          // R2 Forest
+  mountain:  {rare:70,epic:25,legendary:5},         // R3 Mountain
+  desert:    {epic:70,legendary:25,mythical:5},     // R4 Desert
+  ocean:     {legendary:70,mythical:25,artifact:5}, // R5 Ocean
   jungle:    {rare:20,epic:35,legendary:30,mythical:15},
   arctic:    {rare:15,epic:30,legendary:35,mythical:20},
-  volcano:   {epic:20,legendary:35,mythical:30,artifact:15},
+  volcano:   {mythical:70,artifact:25,heavenly:5},  // R6 Volcano (home tops at Heavenly)
   mystic:    {epic:10,legendary:25,mythical:40,artifact:20,heavenly:5},
   celestial: {artifact:40,heavenly:40,eternal:20},
   cosmic:    {cosmic:100},
@@ -2835,6 +2835,25 @@ var ABILITY_META={
   hatchSpeed:{name:'Hatch Speed',      icon:'⏱️', color:'#ffcc80', desc:function(v){return '-'+v+'% hatch time';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
+// ── V2 §4: ABILITY VALUES ARE ROLLED RANGES (stored per pet as ab.v) ──────────────
+// Each ability rolls a value within its tier's range at hatch; ~1% Mega lands ABOVE the
+// normal max (the god-roll). Bands overlap (a lucky T4 can beat an unlucky T5).
+// All numbers are PLACEHOLDERS → final values live in the Balance Sheet.
+var TIER_RANGES={
+  1:{min:1, max:3,  megaMin:4,  megaMax:5},
+  2:{min:2, max:6,  megaMin:7,  megaMax:9},
+  3:{min:4, max:9,  megaMin:10, megaMax:13},
+  4:{min:7, max:13, megaMin:14, megaMax:18},
+  5:{min:10,max:18, megaMin:19, megaMax:25},
+};
+var MEGA_CHANCE=0.01; // ~1% (placeholder → Balance Sheet)
+function rollAbilityValue(tier){
+  var r=TIER_RANGES[tier]||TIER_RANGES[1];
+  if(Math.random()<MEGA_CHANCE) return {v:r.megaMin+Math.floor(Math.random()*(r.megaMax-r.megaMin+1)), mega:true};
+  return {v:r.min+Math.floor(Math.random()*(r.max-r.min+1)), mega:false};
+}
+// Live value of a pet ability: rolled value if present, else flat tier value (legacy pets / cores).
+function abilityVal(ab){ return (ab&&typeof ab.v==='number') ? ab.v : (TIER_VALUES[(ab&&ab.tier)||1]||0); }
 // Ability-ikon = custom-PNG (id→filnamn-slug; shellGain heter shelldrop), emoji-fallback
 var ABILITY_IMG={coinGain:'coingain',idleGain:'idlegain',clickPower:'clickpower',luck:'luck',shellGain:'shelldrop',hatchSpeed:'hatchspeed'};
 function abilityIconImg(id){
@@ -2859,14 +2878,12 @@ function rollRarity(eggId){
 function rollSpecies(eggId,rarity){
   var pool=PET_POOL[eggId];
   if(!pool)return {name:'Unknown',e:'❓'};
-  var rarPool=pool[rarity];
-  if(!rarPool||rarPool.length===0){
-    // fall back to any available rarity
-    var keys=Object.keys(pool);
-    if(keys.length===0)return {name:'Unknown',e:'❓'};
-    rarPool=pool[keys[Math.floor(Math.random()*keys.length)]];
-  }
-  return rarPool[Math.floor(Math.random()*rarPool.length)];
+  // BAND MODEL (overhaul pass 1A): any species in this world can come out at ANY rarity in
+  // the world's band. Pick uniformly from ALL the world's species, ignoring old fixed rarity.
+  var all=[];
+  Object.keys(pool).forEach(function(k){var arr=pool[k];if(arr&&arr.length){for(var i=0;i<arr.length;i++)all.push(arr[i]);}});
+  if(all.length===0)return {name:'Unknown',e:'❓'};
+  return all[Math.floor(Math.random()*all.length)];
 }
 
 var EVENT_EGG_ID='event_egg';
@@ -2941,7 +2958,7 @@ function generateEventPet(){
   var cfg=rollEventPet()||{};
   var rarity=cfg.rarity||'common';
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
-  var abilities=[],i;for(i=0;i<rc.slots;i++){abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:rc.tiers[i]});}
+  var abilities=[],i;for(i=0;i<rc.slots;i++){var _t=rc.tiers[i],_rv=rollAbilityValue(_t);abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_t,v:_rv.v,mega:_rv.mega});}
   return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,equippedSlot:-1,level:1,xp:0};
 }
 function generatePet(eggId){
@@ -2952,8 +2969,9 @@ function generatePet(eggId){
   var abilities=[];
   for(var i=0;i<rc.slots;i++){
     var abilityId=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
-    var tier=rc.tiers[i]; // FIXED tier per slot — no randomness
-    abilities.push({id:abilityId,tier:tier});
+    var tier=rc.tiers[i]; // FIXED tier per slot (rarity decides tiers)
+    var rv=rollAbilityValue(tier); // V2: roll the VALUE within the tier range (+~1% Mega)
+    abilities.push({id:abilityId,tier:tier,v:rv.v,mega:rv.mega});
   }
   return {
     uid:Date.now()+Math.random(),
@@ -3010,7 +3028,7 @@ function getActiveBonuses(){
     var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});
     if(!pet)return;
     pet.abilities.forEach(function(ab){
-      bonuses[ab.id]=(bonuses[ab.id]||0)+TIER_VALUES[ab.tier];
+      bonuses[ab.id]=(bonuses[ab.id]||0)+abilityVal(ab);
     });
   });
   // Permanenta belöningsbonusar (från achievements/World Completion)
@@ -3032,7 +3050,7 @@ function getBonusBreakdown(){
     if(!petUid)return;
     var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});
     if(!pet)return;
-    pet.abilities.forEach(function(ab){if(out[ab.id])out[ab.id].pets+=TIER_VALUES[ab.tier];});
+    pet.abilities.forEach(function(ab){if(out[ab.id])out[ab.id].pets+=abilityVal(ab);});
   });
   ABILITIES.forEach(function(k){
     out[k].ach=(G.permBonus&&G.permBonus[k])||0;
@@ -3400,7 +3418,7 @@ function advRewItem(icon,label,val,active){
 function isPetBusy(uid){return G.adventures.some(function(a){return a.petUid===uid;});}
 function petAdvSum(pet){
   var s={coinGain:0,shellGain:0,luck:0,idleGain:0};
-  if(pet&&pet.abilities)pet.abilities.forEach(function(ab){if(s[ab.id]!=null)s[ab.id]+=TIER_VALUES[ab.tier];});
+  if(pet&&pet.abilities)pet.abilities.forEach(function(ab){if(s[ab.id]!=null)s[ab.id]+=abilityVal(ab);});
   return s;
 }
 // Effektiv bonus-loot-chans för en SPECIFIK pet på ett SPECIFIKT äventyr — speglar formeln i
@@ -4088,7 +4106,7 @@ function renderSlotRow(){
         if(pet.abilities&&pet.abilities.length){
           var tipRows=pet.abilities.map(function(a){
             var m=ABILITY_META[a.id];if(!m)return '';
-            return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">+'+TIER_VALUES[a.tier]+'%</span></span>';
+            return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-t">T'+a.tier+'</span><span class="pp-tip-v">+'+abilityVal(a)+'%</span></span>';
           }).join('');
           if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML='<div class="pp-tip-name">'+petDisplayName(pet)+'</div>'+tipRows;d.appendChild(tip);}
         }
@@ -4206,7 +4224,7 @@ function openPetSlotModal(idx){
     var abChips='';
     if(curPet.abilities&&curPet.abilities.length){
       abChips='<div class="slot-hero-abils">';
-      curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">+'+TIER_VALUES[a.tier]+'%</span></span>';});
+      curPet.abilities.forEach(function(a){var m=ABILITY_META[a.id];if(!m)return;abChips+='<span class="sh-ab">'+abilityIconImg(a.id)+'<span class="sh-ab-nm">'+m.name+'</span><span class="sh-ab-t">T'+a.tier+'</span><span class="sh-ab-v">+'+abilityVal(a)+'%</span></span>';});
       abChips+='</div>';
     }
     var favStar='<div class="slot-hero-fav'+(curPet.fav?' on':'')+'" onclick="event.stopPropagation();slotToggleHeroFav(\''+curPet.uid+'\')">\u2605</div>';
@@ -4498,7 +4516,7 @@ function petCardHtml(pet,idx,opts){
   html+='<div class="pc2-abils">';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+TIER_VALUES[ab.tier]+'%</span></span>';
+    html+='<span class="pc2-ab">'+abilityIconImg(ab.id)+'<span class="pc2-ab-nm">'+m.name+'</span><span class="pc2-ab-v">+'+abilityVal(ab)+'%</span></span>';
   });
   html+='</div>';
   var xpTxt=lp.max?'MAX':(lp.into+'/'+lp.need+' XP');
@@ -4839,7 +4857,7 @@ function openPetDetail(uid){
   html+='<div class="pet-result-abilities">';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    html+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
   });
   html+='</div>';
   if(!isPetBusy(pet.uid)){
@@ -5057,7 +5075,7 @@ function renderRerollSetup(){
     h+='<div class="setup-platform filled" onclick="rerollPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Reroll</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;
-      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="rerollPickAbility('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(ab.locked?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var m3=ABILITY_META[ab.id];
@@ -5087,7 +5105,7 @@ function doReroll(){
   var m=ABILITY_META[ab.id];var oldTier=ab.tier;
   var newTier=rollRerollTier();
   G.rerollCharms-=1;
-  ab.tier=newTier;ab.locked=true;
+  var _rv=rollAbilityValue(newTier);ab.tier=newTier;ab.v=_rv.v;ab.mega=_rv.mega;ab.locked=true;
   G.stats.abilitiesRerolled=(G.stats.abilitiesRerolled||0)+1;
   if(typeof buzz==='function')buzz([10,30,12]);
   var dir=newTier>oldTier?'up':(newTier<oldTier?'down':'same');
@@ -5256,7 +5274,7 @@ function renderExtractSetup(){
     h+='<div class="setup-platform filled" onclick="extractPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Extract</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.abilityIdx===idx;var lk=ab.locked;
-      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="extractPickAbility('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.abilityIdx!=null&&pet.abilities[s.abilityIdx]){
       var ab=pet.abilities[s.abilityIdx];var crc=coreRarityConf(ab.tier);var m2=ABILITY_META[ab.id];
@@ -5277,7 +5295,7 @@ function confirmExtractStart(){
   var m=ABILITY_META[ab.id];var crc=coreRarityConf(ab.tier);
   var h='<div class="mut-warn-i">⚠️</div><div class="mut-warn-t">Destroy '+pet.name+'?</div>';
   h+='<div class="mut-warn-b">'+pet.name+' will be <b>permanently destroyed</b> in the extraction. In return you receive:</div>';
-  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+  h+='<div class="mut-corebox" style="border-color:'+crc.color+'66;background:'+crc.color+'15;"><span class="mc-icon">'+m.icon+'</span><span class="mc-name" style="color:'+crc.color+'">'+coreLabel(ab.id,ab.tier)+'</span><span class="mc-val">+'+abilityVal(ab)+'%</span></div>';
   h+='<div class="mut-warn-b" style="font-size:0.72rem;">This action cannot be undone.</div>';
   h+='<div class="mut-btns"><button class="mut-cancel2" onclick="renderExtractSetup()">Cancel</button><button class="mut-go red" onclick="doExtractStart()">⚗️ Extract</button></div>';
   document.getElementById('mutation-modal-body').innerHTML=h;
@@ -5371,7 +5389,7 @@ function renderMutateSetup(){
     h+='<div class="setup-platform filled" onclick="mutatePickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
     h+='<div class="setup-step">2 · Select Ability to Replace</div>';
     pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];var sel=s.slot===idx;var lk=ab.locked;
-      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+TIER_VALUES[ab.tier]+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
+      h+='<button class="setup-ability'+(sel?' sel':'')+(lk?' locked':'')+'"'+(lk?' disabled':' onclick="mutatePickSlot('+idx+')"')+'><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+(lk?' 🔒':'')+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' +'+abilityVal(ab)+'%</span><span class="setup-check">'+(lk?'🔒':(sel?'✓':''))+'</span></button>';
     });
     if(s.slot!=null){
       h+='<div class="setup-step">3 · Choose Core</div>';
@@ -9133,20 +9151,10 @@ function showEggInfo(eggId){
     html+='</div>';
   });
 
-  // Pets in this world
-  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Possible Pets</div>';
-  html+='<div class="egg-info-pets">';
-  var pool=PET_POOL[eggId]||{};
-  Object.keys(pool).forEach(function(rarity){
-    var rc=RARITY_CONFIG[rarity];if(!rc)return;
-    pool[rarity].forEach(function(pet){
-      html+='<div class="egg-info-pet" style="border:1px solid '+rc.color+'44;">';
-      html+='<span>'+petIco(pet,eggId)+'</span>';
-      html+='<span style="color:rgba(255,255,255,0.7);">'+pet.name+'</span>';
-      html+='</div>';
-    });
-  });
-  html+='</div>';
+  // Pets in this world — kept a MYSTERY on purpose (more hatch dopamine).
+  // Odds are shown above, but NOT which species — discovery is the reward. Collection lives in Achievements.
+  html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Pets</div>';
+  html+='<div class="egg-info-mystery" style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:2px;">❓ The pets inside are a surprise — hatch to discover them. Track your collection in Achievements.</div>';
 
   // (Hatch-knappen borttagen — info-rutan visar bara information. Snabbhatch sker från äggkortet i shoppen.)
 
@@ -9245,7 +9253,7 @@ function showPetResult(pet){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
   });
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
@@ -9465,7 +9473,7 @@ function showFusionResult(pet,perfect){
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
-    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+TIER_VALUES[ab.tier]+'%</span></div>';
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">+'+abilityVal(ab)+'%</span></div>';
   });
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
   document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
