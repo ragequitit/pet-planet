@@ -5330,25 +5330,29 @@ function renderHomeAdventures(){
   h+='</div>';
   h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:9px;line-height:1.5;">Base '+Math.round(IDLE_SHELL_BASE*100)+'%/s, same in every world. Only your pets\' abilities raise this — adding more pets doesn\'t.</div>';
   h+='</div>';
-  // idle slots
+  // idle slots — compact horizontal row of 5 (tap a pet to see more)
   h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
-  h+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">';
+  h+='<div style="display:flex;gap:5px;align-items:stretch;">';
   for(var i=0;i<IDLE_SLOT_MAX;i++){
     if(i<pets.length){
-      var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'};
-      h+='<div style="background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:12px;padding:9px;display:flex;align-items:center;gap:8px;">';
-      h+='<div style="font-size:1.5rem;">'+petIco(sp)+'</div>';
-      var ssg=petAdvSum(sp);
-      h+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.78rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(sp)+'</div><div style="font-size:0.64rem;color:rgba(255,255,255,0.5);">Lv '+slv+(ssg.shellGain?' · 🐚 +'+ssg.shellGain+'%':'')+(ssg.luck?' · 🍀 +'+ssg.luck+'%':'')+'</div></div>';
-      h+='<button onclick="removeIdlePet(\''+sp.uid+'\')" style="background:none;border:none;color:rgba(255,120,120,0.8);font-size:0.95rem;cursor:pointer;padding:2px 4px;">✕</button>';
+      var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'}; var ssg=petAdvSum(sp);
+      h+='<div onclick="openPetDetail(\''+sp.uid+'\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;padding:7px 3px 6px;text-align:center;cursor:pointer;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
+      h+='<button onclick="event.stopPropagation();removeIdlePet(\''+sp.uid+'\')" style="position:absolute;top:0;right:1px;background:none;border:none;color:rgba(255,120,120,0.85);font-size:0.7rem;cursor:pointer;padding:2px 3px;line-height:1;">✕</button>';
+      h+='<div style="font-size:1.7rem;line-height:1;">'+petIco(sp)+'</div>';
+      h+='<div style="font-weight:800;font-size:0.58rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:3px;">'+petDisplayName(sp)+'</div>';
+      h+='<div style="font-size:0.52rem;color:rgba(255,255,255,0.5);">Lv '+slv+(ssg.shellGain?' · 🐚'+ssg.shellGain:'')+'</div>';
       h+='</div>';
     }else if(i<G.idleSlots){
-      h+='<div onclick="openIdlePicker('+i+')" style="background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;color:#8fb0ff;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.7rem;">Assign a pet</div></div>';
+      h+='<div onclick="openIdlePicker('+i+')" style="flex:1;min-width:0;background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
     }else if(i===G.idleSlots){
       var ucost=IDLE_SLOT_COSTS[i-1]; var ok=G.coins>=ucost;
-      h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:12px;padding:10px 8px;text-align:center;"><div style="font-size:1.1rem;opacity:0.6;">'+LOCK_IMG+'</div><div style="font-size:0.66rem;color:rgba(255,255,255,0.5);margin:2px 0 6px;">Slot '+(i+1)+'</div><button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:8px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.66rem;padding:6px;cursor:'+(ok?'pointer':'default')+';">'+COIN_IMG+' '+fmtShort(ucost)+'</button></div>';
+      h+='<div style="flex:1;min-width:0;background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
+      h+='<div style="font-size:0.95rem;opacity:0.6;line-height:1.3;">'+LOCK_IMG+'</div>';
+      h+='<div style="font-size:0.5rem;color:rgba(255,255,255,0.5);">Slot '+(i+1)+'</div>';
+      h+='<button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:7px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.52rem;padding:4px 1px;cursor:'+(ok?'pointer':'default')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+COIN_IMG+' '+fmtShort(ucost)+'</button>';
+      h+='</div>';
     }else{
-      h+='<div style="background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:12px;padding:14px 8px;text-align:center;opacity:0.55;"><div style="font-size:1.1rem;">'+LOCK_IMG+'</div><div style="font-size:0.62rem;color:rgba(255,255,255,0.4);">Slot '+(i+1)+'</div></div>';
+      h+='<div style="flex:1;min-width:0;background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
     }
   }
   h+='</div>';
