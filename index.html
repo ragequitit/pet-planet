@@ -1653,6 +1653,21 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
    :active ärvdes upp till behållaren → hela raden av knappar flyttades ner.
    Nollställ transform på just behållarna (knapparna själva trycks fortf. ner). */
 .side-btns:active, .sec-btns:active, .qf-btns:active, .mut-btns:active{transform:none !important;}
+/* Sido-knappar (main + adventures): den transparenta rutan ligger kvar, men INGEN hård
+   3D-offset-skugga under den (den såg ut som en andra ruta). Vid tryck sjunker BARA ikonen. */
+.side-btn, .side-btn:active{box-shadow:none !important;}
+.side-btn:active{transform:none !important;}
+.side-btn:active .sb-icon{transform:translateY(2px);}
+
+/* ===== HOME-FLIP SWITCH — laser-glow pill med glidande kula ===== */
+.flip-pill{position:relative;display:inline-flex;align-items:center;gap:7px;padding:3px 9px;border-radius:20px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;}
+.flip-pill::before{content:'';position:absolute;inset:0;border-radius:20px;padding:1.5px;background:linear-gradient(90deg,#36a8ff,#6f5bff,#a64bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+.flip-lbl{background:transparent;border:none;font-family:inherit;font-weight:800;font-size:0.6rem;letter-spacing:0.3px;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;align-items:center;gap:4px;padding:3px 2px;white-space:nowrap;transition:color .2s,text-shadow .2s;}
+.flip-knob{position:relative;width:34px;height:16px;flex:0 0 auto;border-radius:10px;background:rgba(8,12,30,0.9);border:1px solid rgba(150,170,230,0.45);cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);}
+.flip-knob i{position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bcd6ff 70%);box-shadow:0 0 7px rgba(90,160,255,0.9);transition:left .25s ease,background .25s ease,box-shadow .25s ease;}
+.flip-pill.build-on .flip-lbl.l{color:#cfe6ff;text-shadow:0 0 8px rgba(80,160,255,0.85);}
+.flip-pill.adv-on .flip-lbl.r{color:#ecd4ff;text-shadow:0 0 8px rgba(170,90,255,0.9);}
+.flip-pill.adv-on .flip-knob i{left:calc(100% - 13px);background:radial-gradient(circle at 35% 30%,#fff,#d8b6ff 70%);box-shadow:0 0 8px rgba(175,95,255,0.95);}
 
 /* (2)+(3) Add Friend-popupen och Notifications/View All-popupen saknade
    panel-bakgrund (var inte med i någon .prof-panel-regel) → genomskinliga/"wonky".
@@ -1724,10 +1739,11 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     </div>
   </div>
   <div id="main">
-    <div id="home-flip" style="display:none;position:absolute;top:5px;left:0;right:0;z-index:20;padding:0;pointer-events:none;">
-      <div style="display:flex;background:linear-gradient(180deg,#161f44,#0f1730);border:1px solid rgba(120,150,230,0.4);border-radius:22px;padding:2px;gap:2px;box-shadow:0 2px 10px rgba(0,0,0,0.4);max-width:230px;margin:0 auto;pointer-events:auto;">
-        <button id="flip-build" onclick="setHomeMode('build')" style="flex:1;border:none;border-radius:18px;padding:4px 6px;font-weight:800;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;background:transparent;color:rgba(255,255,255,0.55);">🥚 BUILD</button>
-        <button id="flip-adv" onclick="setHomeMode('adventures')" style="flex:1;border:none;border-radius:18px;padding:4px 6px;font-weight:800;font-size:0.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;background:transparent;color:rgba(255,255,255,0.55);">⛺ ADVENTURES</button>
+    <div id="home-flip" style="display:none;position:absolute;top:5px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
+      <div id="flip-pill" class="flip-pill build-on">
+        <button class="flip-lbl l" onclick="setHomeMode('build')">🥚 BUILD</button>
+        <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
+        <button class="flip-lbl r" onclick="setHomeMode('adventures')">⛺ ADVENTURES</button>
       </div>
     </div>
     <div id="scene-wrap">
@@ -5239,8 +5255,7 @@ function applyHomeMode(){
     if(sh)sh.style.display='block';
     if(ha)ha.style.display='none';
   }
-  flipSide(document.getElementById('flip-build'),!adv,'#3a4f9e','#2a3c80');
-  flipSide(document.getElementById('flip-adv'),  adv, '#6a4fb0','#4a3590');
+  var fp=document.getElementById('flip-pill'); if(fp)fp.className='flip-pill '+(adv?'adv-on':'build-on');
 }
 // Worlds the player can idle on = home worlds reached + unlocked Lost Worlds (getEggState handles both).
 function unlockedIdleWorlds(){
