@@ -1741,9 +1741,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   <div id="main">
     <div id="home-flip" style="display:none;position:absolute;top:5px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
       <div id="flip-pill" class="flip-pill build-on">
-        <button class="flip-lbl l" onclick="setHomeMode('build')">🥚 BUILD</button>
+        <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="" style="width:15px;height:15px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
         <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
-        <button class="flip-lbl r" onclick="setHomeMode('adventures')">⛺ ADVENTURES</button>
+        <button class="flip-lbl r" onclick="setHomeMode('adventures')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" style="width:15px;height:15px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode('🗺️'))"> PET ADVENTURES</button>
       </div>
     </div>
     <div id="scene-wrap">
