@@ -4412,7 +4412,7 @@ function renderSlotRow(){
             var m=ABILITY_META[a.id];if(!m)return '';
             return '<span class="pp-tip-row"><span class="pp-tip-ico">'+abilityIconImg(a.id)+'</span><span class="pp-tip-nm">'+m.name+'</span><span class="pp-tip-v">'+abShow(a)+'</span></span>';
           }).join('');
-          if(tipRows){var tip=document.createElement('div');tip.className='pp-tip';tip.innerHTML='<div class="pp-tip-name">'+petDisplayName(pet)+'</div>'+tipRows;d.appendChild(tip);}
+          if(tipRows){var _rtc=(RARITY_CONFIG[pet.rarity]||{color:'#fff'}).color;var tip=document.createElement('div');tip.className='pp-tip';tip.style.borderColor=_rtc;tip.innerHTML='<div class="pp-tip-name" style="color:'+_rtc+'">'+petDisplayName(pet)+'</div>'+tipRows;d.appendChild(tip);}
         }
       } else {
         inner.innerHTML='<span style="font-size:0.7rem;opacity:0.4">+</span>';
