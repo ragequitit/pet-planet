@@ -9502,7 +9502,7 @@ function showShellInfo(id){
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(life)+'</div><div class="sinfo-l">Lifetime</div></div>';
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+shellPctFmt(pct)+'%</div><div class="sinfo-l">Chance</div></div>';
   html+='</div>';
-  html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">Drop 15%/click · 5%/s idle · higher with 🍀 Luck</div>';
+  html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">Drop 15%/click · higher with 🍀 Luck</div>';
   html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Crafts these eggs &middot; cost shown</div>';
   if(crafts.length===0){html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;padding:4px 0;">— not used to craft any egg —</div>';}
   else{
@@ -11162,7 +11162,6 @@ function tick(now){
   G.stats.totalTimePlayed+=dt;
   var sessionLen=(Date.now()-G.stats.currentSessionStart)/1000;
   if(sessionLen>G.stats.longestSession)G.stats.longestSession=sessionLen;
-  idleAcc+=dt;
   // Klick-takt: glidande medel över ~CLICK_TAU sek (mjukt, håller stilla, faller långsamt)
   clickWindowAccum*=Math.exp(-dt/CLICK_TAU);
   smoothClickRate=clickWindowAccum/CLICK_TAU;
@@ -11176,10 +11175,8 @@ function tick(now){
     clicksThisSecond=0;
     clickRateTimer=0;
   }
-  var totalB=G.owned.reduce(function(a,b){return a+b;},0);
-  if(totalB>0){while(idleAcc>=1){idleAcc-=1;if(Math.random()<getDropChance(0.05)){dropShell();}}}
-  else{idleAcc=0;}
-  tickIdlePets(dt); // adventure-idle: assigned pets gather the chosen world's shells (open-only)
+  // Äggsidans idle-shell-generering BORTTAGEN — shells idlas nu ENBART via pets i Pet Adventures (tickIdlePets nedan).
+  tickIdlePets(dt); // adventure-idle: assigned pets gather shells (open-only)
   // HUD skrivs bara ~10 ggr/sek (inte varje bildruta) — siffran tickar fortfarande men belastar huvudtråden 6× mindre
   hudAcc+=dt;
   if(hudAcc>=0.1){updateHUD();hudAcc=0;}
