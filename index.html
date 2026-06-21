@@ -2559,6 +2559,8 @@ function buyClickUpgrade(id){
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Sparks för att låsa upp slot 2,3,4,5
+var IDLE_SLOT_MAX=5;
+var IDLE_SLOT_COSTS=[10000,1e6,1e8,1e10]; // PLATSHÅLLARE: Sparks-kostnad för idle-slot 2..5
 var GEM_SPEEDUP_MIN_PER_GEM=4; // varje gem kortar äventyret med 4 min (= 15 gems/timme). Partiellt tillåtet.
 // coinRate = andel av EPS pet:en jobbar i (0.2 = LÅGT med flit, så äventyr ger en liten coin-bonus, inte en faucet som slår idle/klick). coinFloor = golv för tidig game (EPS≈0).
 // >>> TUNING (känns äventyr för givmilt/för spammigt?): sänk coinRate/coinFloor. Vill du längre/kortare uppdrag: ändra dur (minuter).
@@ -3233,6 +3235,7 @@ var G={
   ascensionBonus:{coinGain:0,idleGain:0,clickPower:0,luck:0,shellGain:0,hatchSpeed:0},
   worldClaims:{},
   homeMode:'build', idleWorld:'starter',
+  idleSlots:1, idlePets:[], idleStartAt:0, idleBag:{shells:{},finds:[]},
   titlesEarned:{},
   adventureSlots:1,
   adventures:[],
@@ -3604,7 +3607,7 @@ function openAdvPicker(advId){
     document.getElementById('adv-modal-body').innerHTML='<div class="adv-pick-title">'+adv.icon+' '+adv.name+'</div><div class="adv-pick-empty">⏳ This adventure is already in progress. It\'ll be available again when your pet returns — pick a different adventure from the map.</div>';
     document.getElementById('adv-modal').classList.add('open');return;
   }
-  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&G.equippedPets.indexOf(p.uid)<0;});
+  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&G.equippedPets.indexOf(p.uid)<0&&!(typeof isPetIdling==='function'&&isPetIdling(p.uid));});
   var req=advReqLevel(adv);
   // Behöriga (når kravet) först, sedan enligt vald sortering
   avail.sort(function(a,b){
@@ -3978,7 +3981,7 @@ function saveGame(){
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -4555,7 +4558,7 @@ function openPetSlotModal(idx){
 function renderSlotPickGrid(){
   var host=document.getElementById('slot-pick-grid-host');if(!host)return;
   if(G.hatchedPets.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>No pets yet — hatch some eggs!</p></div>';return;}
-  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0&&!isPetBusy(p.uid);});
+  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0&&!isPetBusy(p.uid)&&!(typeof isPetIdling==='function'&&isPetIdling(p.uid));});
   if(pool.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">⚡</div><p>All your pets are already in slots.</p></div>';return;}
   var sel=pool.filter(function(p){return petMatchesFilterCore(p,slotPickFilter,slotPickSearch);});
   sel.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
@@ -5246,19 +5249,169 @@ function renderHomeAdventures(){
   var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
   var worlds=unlockedIdleWorlds();
   if(!G.idleWorld||worlds.indexOf(G.idleWorld)<0)G.idleWorld=worlds[0]||'starter';
-  var cur=EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:G.idleWorld,icon:'❓'};
+  var pets=(G.idlePets||[]).map(function(uid){return G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});}).filter(Boolean);
+  if(idleViewIdx>=pets.length)idleViewIdx=Math.max(0,pets.length-1);
+  var rate=idleTotalRate();
+  var shType=idleShellType();
+  var shR=SHELL_RARITIES.find(function(s){return s.id===shType;})||{name:shType,color:'#fff'};
   var h='';
-  h+='<div style="text-align:center;margin:10px 0 12px;"><div style="font-family:\'Fredoka One\',cursive;font-size:1.4rem;color:#cdb6ff;letter-spacing:0.5px;">PET ADVENTURES</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Your pets idle and gather Shells</div></div>';
-  h+='<div style="margin-bottom:12px;"><div style="font-size:0.64rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Idle World</div>';
+  h+='<div style="text-align:center;margin:8px 0 12px;"><div style="font-family:\'Fredoka One\',cursive;font-size:1.35rem;color:#cdb6ff;letter-spacing:0.5px;">PET ADVENTURES</div><div style="font-size:0.76rem;color:rgba(255,255,255,0.6);">Your pets idle and gather Shells</div></div>';
+  h+='<div style="margin-bottom:12px;"><div style="font-size:0.62rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Idle World</div>';
   h+='<select onchange="setIdleWorld(this.value)" style="width:100%;padding:11px 12px;border-radius:12px;background:#16234c;color:#fff;border:1px solid rgba(111,138,224,0.5);font-size:0.95rem;font-weight:700;">';
-  worlds.forEach(function(id){var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'❓'};var nm=e.name.replace(' Egg','');h+='<option value="'+id+'"'+(id===G.idleWorld?' selected':'')+'>'+(isLostWorld(id)?'★ ':'')+nm+'</option>';});
+  worlds.forEach(function(id){var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'❓'};h+='<option value="'+id+'"'+(id===G.idleWorld?' selected':'')+'>'+(isLostWorld(id)?'★ ':'')+e.name.replace(' Egg','')+'</option>';});
   h+='</select></div>';
-  h+='<div style="background:linear-gradient(180deg,#1a2756,#101a38);border:1px solid rgba(111,138,224,0.3);border-radius:16px;padding:24px 16px;text-align:center;">';
-  h+='<div style="font-size:2.6rem;">'+(cur.icon||'❓')+'</div>';
-  h+='<div style="font-weight:800;font-size:1.05rem;color:#f5c842;margin-top:4px;">'+cur.name.replace(' Egg','')+(isLostWorld(G.idleWorld)?' <span style="font-size:0.7rem;color:#cdb6ff;">★ Lost World</span>':'')+'</div>';
-  h+='<div style="font-size:0.75rem;color:rgba(255,255,255,0.55);margin-top:12px;line-height:1.6;">Your idling pets, their live rewards and the shared <b>Adventure Bag</b> are being built here next. Pick the world above where your pets will gather loot.</div>';
+  // STAGE — viewed idle pet (swipe) + gear stub
+  h+='<div style="background:linear-gradient(180deg,#1a2756,#101a38);border:1px solid rgba(111,138,224,0.3);border-radius:16px;padding:16px 12px 14px;text-align:center;margin-bottom:10px;">';
+  if(!pets.length){
+    h+='<div style="font-size:2.4rem;opacity:0.5;">🐾</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:8px;line-height:1.6;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:'+shR.color+'">'+shR.name+' Shells</b>.</div>';
+  }else{
+    var p=pets[idleViewIdx]; var lv=petLevelFromXp(p.xp||0); var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
+    h+='<div style="display:flex;align-items:center;justify-content:center;gap:6px;">';
+    if(pets.length>1)h+='<button onclick="idleSwipe(-1)" style="background:none;border:none;color:#cdb6ff;font-size:1.7rem;cursor:pointer;padding:0 6px;">‹</button>';
+    h+='<div style="font-size:3rem;line-height:1;">'+petIco(p)+'</div>';
+    if(pets.length>1)h+='<button onclick="idleSwipe(1)" style="background:none;border:none;color:#cdb6ff;font-size:1.7rem;cursor:pointer;padding:0 6px;">›</button>';
+    h+='</div>';
+    h+='<div style="font-weight:800;font-size:1rem;color:'+rc.color+';margin-top:6px;">'+petDisplayName(p)+'</div>';
+    h+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.55);">Lv '+lv+' · '+rc.label+'</div>';
+    h+='<div style="font-size:0.85rem;font-weight:800;color:'+shR.color+';margin-top:4px;">'+shellIcon(shType)+' '+fmtRate(idlePetRate(p))+' / hr</div>';
+    h+='<button onclick="idleGearTap()" style="margin-top:8px;background:#16234c;border:1px dashed rgba(150,170,230,0.5);border-radius:10px;color:rgba(255,255,255,0.6);font-size:0.72rem;padding:6px 12px;cursor:pointer;">➕ Add Gear</button>';
+    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:6px;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
+  }
+  h+='</div>';
+  // idling-since + total rate + Adventure Bag
+  h+='<div style="display:flex;align-items:center;gap:10px;background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;margin-bottom:10px;">';
+  h+='<div style="flex:1;"><div style="font-size:0.85rem;font-weight:800;color:'+shR.color+';">'+shellIcon(shType)+' '+fmtRate(rate)+' Shells / hr</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">⏱️ Idling for <span id="idle-since">'+idleSinceText()+'</span></div></div>';
+  h+='<button onclick="openIdleBag()" style="background:linear-gradient(180deg,#3a2a5e,#241840);border:1px solid #6a4fa0;border-radius:12px;color:#cdb6ff;font-size:1.2rem;padding:8px 11px;cursor:pointer;position:relative;">🎒<span id="idle-bag-badge" style="position:absolute;top:-4px;right:-4px;background:#caa23a;color:#1a1305;font-size:0.6rem;font-weight:800;border-radius:8px;padding:1px 5px;'+(idleBagCount()?'':'display:none;')+'">'+idleBagCount()+'</span></button>';
+  h+='</div>';
+  // potential rewards
+  h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;margin-bottom:12px;">';
+  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Potential Rewards</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:6px;font-size:0.78rem;">';
+  h+='<div style="display:flex;align-items:center;gap:8px;">'+shellIcon(shType)+'<span style="flex:1;color:'+shR.color+';font-weight:700;">'+shR.name+' Shells</span><span style="color:rgba(255,255,255,0.7);">'+fmtRate(rate)+'/hr</span></div>';
+  if(isLostWorld(G.idleWorld)){var meta=LOST_WORLD_META[G.idleWorld]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:8px;"><span>'+meta.relicIcon+'</span><span style="flex:1;color:#cdb6ff;">'+meta.relic+'</span><span style="color:rgba(255,255,255,0.45);">soon</span></div>';}
+  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🥚</span><span style="flex:1;color:rgba(255,255,255,0.7);">Rare '+(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:''}).name.replace(' Egg','')+' egg</span><span style="color:rgba(255,255,255,0.45);">soon</span></div>';
+  h+='</div></div>';
+  // idle slots
+  h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">';
+  for(var i=0;i<IDLE_SLOT_MAX;i++){
+    if(i<pets.length){
+      var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'};
+      h+='<div style="background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:12px;padding:9px;display:flex;align-items:center;gap:8px;">';
+      h+='<div style="font-size:1.5rem;">'+petIco(sp)+'</div>';
+      h+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.78rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(sp)+'</div><div style="font-size:0.64rem;color:rgba(255,255,255,0.5);">Lv '+slv+' · '+shellIcon(shType)+' '+fmtRate(idlePetRate(sp))+'/hr</div></div>';
+      h+='<button onclick="removeIdlePet(\''+sp.uid+'\')" style="background:none;border:none;color:rgba(255,120,120,0.8);font-size:0.95rem;cursor:pointer;padding:2px 4px;">✕</button>';
+      h+='</div>';
+    }else if(i<G.idleSlots){
+      h+='<div onclick="openIdlePicker('+i+')" style="background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;color:#8fb0ff;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.7rem;">Assign a pet</div></div>';
+    }else if(i===G.idleSlots){
+      var ucost=IDLE_SLOT_COSTS[i-1]; var ok=G.coins>=ucost;
+      h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:12px;padding:10px 8px;text-align:center;"><div style="font-size:1.1rem;opacity:0.6;">'+LOCK_IMG+'</div><div style="font-size:0.66rem;color:rgba(255,255,255,0.5);margin:2px 0 6px;">Slot '+(i+1)+'</div><button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:8px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.66rem;padding:6px;cursor:'+(ok?'pointer':'default')+';">'+COIN_IMG+' '+fmtShort(ucost)+'</button></div>';
+    }else{
+      h+='<div style="background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:12px;padding:14px 8px;text-align:center;opacity:0.55;"><div style="font-size:1.1rem;">'+LOCK_IMG+'</div><div style="font-size:0.62rem;color:rgba(255,255,255,0.4);">Slot '+(i+1)+'</div></div>';
+    }
+  }
   h+='</div>';
   wrap.innerHTML=h;
+}
+// ── IDLE EARNING + HELPERS (step 2) ──
+var idleViewIdx=0, idleShellAcc=0;
+function isPetIdling(uid){return G.idlePets&&G.idlePets.some(function(u){return String(u)===String(uid);});}
+function idleShellType(){var e=EGG_SHOP.find(function(x){return x.id===(G.idleWorld||'starter');});return e?e.shellType:'common';}
+function fmtRate(n){n=n||0;return n>=1000?fmtShort(Math.round(n)):(Math.round(n*100)/100).toString();}
+function idlePetRate(pet){ // shells/hour — PLACEHOLDER → Balance Sheet
+  if(!pet)return 0;
+  var lvl=petLevelFromXp(pet.xp||0);
+  var s=(typeof petAdvSum==='function')?petAdvSum(pet):{shellGain:0};
+  var rarIdx=RARITY_PROGRESSION.indexOf(pet.rarity); if(rarIdx<0)rarIdx=0;
+  return (12+lvl*3)*(1+((s.shellGain||0)/100))*(1+rarIdx*0.15);
+}
+function idleTotalRate(){var t=0;(G.idlePets||[]).forEach(function(uid){var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(p)t+=idlePetRate(p);});return t;}
+function idleSinceText(){
+  if(!G.idleStartAt||!(G.idlePets&&G.idlePets.length))return '00:00:00';
+  var s=Math.floor((Date.now()-G.idleStartAt)/1000);
+  function z(n){return (n<10?'0':'')+n;}
+  return z(Math.floor(s/3600))+':'+z(Math.floor((s%3600)/60))+':'+z(s%60);
+}
+function idleBagCount(){var b=(G.idleBag&&G.idleBag.shells)||{};var t=0;Object.keys(b).forEach(function(k){t+=b[k];});return t;}
+function tickIdlePets(dt){
+  var rate=idleTotalRate(); if(rate<=0)return;
+  if(!G.idleStartAt)G.idleStartAt=Date.now();
+  idleShellAcc+=rate*(dt/3600);
+  if(idleShellAcc>=1){
+    var add=Math.floor(idleShellAcc); idleShellAcc-=add;
+    var t=idleShellType();
+    G.shells[t]=(G.shells[t]||0)+add;
+    if(G.stats){G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+add;if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};G.stats.shellsCollectedByRarity[t]=(G.stats.shellsCollectedByRarity[t]||0)+add;}
+    G.idleBag=G.idleBag||{shells:{},finds:[]};
+    G.idleBag.shells[t]=(G.idleBag.shells[t]||0)+add;
+  }
+}
+function softUpdateIdle(){
+  var el=document.getElementById('idle-since'); if(el)el.textContent=idleSinceText();
+  var b=document.getElementById('idle-bag-badge'); if(b){var c=idleBagCount(); b.textContent=c; b.style.display=c?'':'none';}
+}
+function idleSwipe(dir){var n=(G.idlePets||[]).length;if(!n)return;idleViewIdx=(idleViewIdx+dir+n)%n;renderHomeAdventures();}
+function idleGearTap(){ if(typeof showRewardPopup==='function')showRewardPopup(['Gear slots are coming soon.','You\'ll equip adventure gear here to boost a pet\'s idle haul.'],false); }
+function assignIdlePet(uid){
+  if((G.idlePets||[]).length>=G.idleSlots)return;
+  if(isPetIdling(uid))return;
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);}); if(!pet)return;
+  if(isPetBusy(pet.uid))return;
+  var eqi=G.equippedPets.indexOf(pet.uid); if(eqi>=0){G.equippedPets[eqi]=null;pet.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}
+  G.idlePets.push(pet.uid);
+  if(!G.idleStartAt)G.idleStartAt=Date.now();
+  if(typeof closeAdvModal==='function')closeAdvModal();
+  if(typeof saveGame==='function')saveGame();
+  renderHomeAdventures();
+}
+function removeIdlePet(uid){
+  var i=G.idlePets.findIndex(function(u){return String(u)===String(uid);});
+  if(i<0)return;
+  G.idlePets.splice(i,1);
+  if(!G.idlePets.length)G.idleStartAt=0;
+  if(idleViewIdx>=G.idlePets.length)idleViewIdx=Math.max(0,G.idlePets.length-1);
+  if(typeof saveGame==='function')saveGame();
+  renderHomeAdventures();
+}
+function openIdlePicker(slot){
+  if((G.idlePets||[]).length>=G.idleSlots)return;
+  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&!isPetIdling(p.uid);});
+  avail.sort(function(a,b){return petLevelFromXp(b.xp||0)-petLevelFromXp(a.xp||0);});
+  var shType=idleShellType();
+  var wname=(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:G.idleWorld}).name.replace(' Egg','');
+  var h='<div class="adv-pick-title">Send a pet to idle on<br><b>⛺ '+wname+'</b></div>';
+  if(!avail.length){ h+='<div class="adv-pick-empty">No available pets. Hatch some, or free up pets from adventures or your home slots.</div>'; }
+  else{
+    h+='<div class="adv-pick-list">';
+    avail.forEach(function(p){
+      var rc=RARITY_CONFIG[p.rarity]||{color:'#aaa',label:''}; var lv=petLevelFromXp(p.xp||0);
+      h+='<div class="adv-pick-pet" onclick="assignIdlePet(\''+p.uid+'\')">';
+      h+='<div class="app-emoji">'+petIco(p)+'</div>';
+      h+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+petDisplayName(p)+'</div><div class="app-rar">'+rc.label+' · Lv '+lv+'</div><div class="app-odds"><span class="app-odds-lbl">IDLE</span><span class="app-odd">'+shellIcon(shType)+' '+fmtRate(idlePetRate(p))+'/hr</span></div></div>';
+      h+='<div class="app-go">Idle →</div></div>';
+    });
+    h+='</div>';
+  }
+  document.getElementById('adv-modal-body').innerHTML=h;
+  document.getElementById('adv-modal').classList.add('open');
+}
+function buyIdleSlot(i){
+  if(i!==G.idleSlots)return;
+  var cost=IDLE_SLOT_COSTS[i-1]; if(cost==null)return;
+  if(G.coins<cost)return;
+  G.coins-=cost; G.idleSlots=Math.min(IDLE_SLOT_MAX,G.idleSlots+1);
+  if(typeof updateHUD==='function')updateHUD();
+  if(typeof saveGame==='function')saveGame();
+  renderHomeAdventures();
+}
+function openIdleBag(){
+  var b=(G.idleBag&&G.idleBag.shells)||{};
+  var lines=[];
+  Object.keys(b).forEach(function(t){var r=SHELL_RARITIES.find(function(s){return s.id===t;});if(b[t]>0)lines.push((r?shellIcon(t)+' '+r.name:t)+' Shells: +'+b[t]);});
+  if(!lines.length){ if(typeof showRewardPopup==='function')showRewardPopup(['Nothing gathered yet this session.','Your idling pets will fill this up over time.'],false); return; }
+  lines.unshift('🎒 This idle session so far:');
+  if(typeof showRewardPopup==='function')showRewardPopup(lines,true);
 }
 function switchTab(name){
   var wasHome=SCENE_TABS.indexOf(currentTab)>=0;
@@ -10957,6 +11110,7 @@ function tick(now){
   var totalB=G.owned.reduce(function(a,b){return a+b;},0);
   if(totalB>0){while(idleAcc>=1){idleAcc-=1;if(Math.random()<getDropChance(0.05)){dropShell();}}}
   else{idleAcc=0;}
+  tickIdlePets(dt); // adventure-idle: assigned pets gather the chosen world's shells (open-only)
   // HUD skrivs bara ~10 ggr/sek (inte varje bildruta) — siffran tickar fortfarande men belastar huvudtråden 6× mindre
   hudAcc+=dt;
   if(hudAcc>=0.1){updateHUD();hudAcc=0;}
@@ -10999,6 +11153,7 @@ function softUpdateShop(){
 setInterval(function(){if(document.getElementById('tab-shop').style.display==='block')softUpdateShop();},700);
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
+setInterval(function(){if(G.homeMode==='adventures'){var ha=document.getElementById('home-adventures');if(ha&&ha.style.display!=='none')softUpdateIdle();}},1000);
 setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
 setInterval(saveGame,15000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveGame();});
@@ -11065,6 +11220,17 @@ if(savedData){
   ABILITIES.forEach(function(k){if(G.ascensionUpgrades[k]==null)G.ascensionUpgrades[k]=0;});
   recomputeAscensionBonus();
   G.worldClaims=savedData.worldClaims||{};
+  G.lostUnlocked=(savedData.lostUnlocked&&typeof savedData.lostUnlocked==='object')?savedData.lostUnlocked:{};
+  G.mapsOwned=(savedData.mapsOwned&&typeof savedData.mapsOwned==='object')?savedData.mapsOwned:{};
+  G.relics=(savedData.relics&&typeof savedData.relics==='object')?savedData.relics:{};
+  G.areasUnlocked=(savedData.areasUnlocked&&typeof savedData.areasUnlocked==='object')?savedData.areasUnlocked:{};
+  G.homeMode=(savedData.homeMode==='adventures')?'adventures':'build';
+  G.idleWorld=(typeof savedData.idleWorld==='string')?savedData.idleWorld:'starter';
+  G.idleSlots=(typeof savedData.idleSlots==='number'&&savedData.idleSlots>=1)?Math.min(IDLE_SLOT_MAX,savedData.idleSlots):1;
+  G.idlePets=Array.isArray(savedData.idlePets)?savedData.idlePets.filter(function(uid){return G.hatchedPets.some(function(p){return String(p.uid)===String(uid);});}).slice(0,G.idleSlots):[];
+  // Idle session is open-only (offline earns no shells): restart the session timer + bag on load.
+  G.idleStartAt=G.idlePets.length?Date.now():0;
+  G.idleBag={shells:{},finds:[]};
   G.titlesEarned=savedData.titlesEarned||{};
   G.adventureSlots=savedData.adventureSlots||1;
   G.adventures=Array.isArray(savedData.adventures)?savedData.adventures:[];
