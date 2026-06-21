@@ -4416,7 +4416,7 @@ function renderSlotRow(){
       } else {
         inner.innerHTML='<span style="font-size:0.7rem;opacity:0.4">+</span>';
       }
-      (function(idx){d.onclick=function(ev){ev.stopPropagation();openPetSlotModal(idx);};})(i);
+      (function(idx){d.onclick=function(ev){ev.stopPropagation();openPetSlotModal(idx,'equip');};})(i);
     } else if(i===G.petSlots){
       // Nästa slot i tur: klickbar för att låsas upp
       d.classList.add('unlockable');
@@ -4509,10 +4509,18 @@ function applyLoadout(i){
 // PET SLOT MODAL (choose which pet to equip in a slot)
 // ============================================================
 var activeSlot=-1;
-function openPetSlotModal(idx){
+var slotPickMode='equip'; // 'equip' = home egg-slots · 'idle' = Pet Adventures idle-slots (samma väljare, speglad)
+function openPetSlotModal(idx, mode){
+  if(typeof mode!=='undefined')slotPickMode=mode;
   activeSlot=idx;
-  var curUid=G.equippedPets[idx];
-  var curPet=curUid?G.hatchedPets.find(function(p){return String(p.uid)===String(curUid);}):null;
+  var curPet;
+  if(slotPickMode==='idle'){
+    var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
+    curPet=(idx<_il.length)?_il[idx]:null;
+  }else{
+    var curUid=G.equippedPets[idx];
+    curPet=curUid?G.hatchedPets.find(function(p){return String(p.uid)===String(curUid);}):null;
+  }
   var h='';
   // Currently equipped pet: info (level, XP, abilities) + Remove button.
   if(curPet){
@@ -4579,7 +4587,12 @@ function openPetSlotModal(idx){
 function renderSlotPickGrid(){
   var host=document.getElementById('slot-pick-grid-host');if(!host)return;
   if(G.hatchedPets.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>No pets yet — hatch some eggs!</p></div>';return;}
-  var pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0&&!isPetBusy(p.uid)&&!(typeof isPetIdling==='function'&&isPetIdling(p.uid));});
+  var pool;
+  if(slotPickMode==='idle'){
+    pool=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&!isPetIdling(p.uid);});
+  }else{
+    pool=G.hatchedPets.filter(function(p){return G.equippedPets.indexOf(p.uid)<0&&!isPetBusy(p.uid)&&!(typeof isPetIdling==='function'&&isPetIdling(p.uid));});
+  }
   if(pool.length===0){host.innerHTML='<div class="pet-empty"><div class="pe-icon">⚡</div><p>All your pets are already in slots.</p></div>';return;}
   var sel=pool.filter(function(p){return petMatchesFilterCore(p,slotPickFilter,slotPickSearch);});
   sel.sort(function(a,b){return petSortCompare(a,b,slotPickSort);});
@@ -4588,7 +4601,7 @@ function renderSlotPickGrid(){
   if(filtering)html+='<div class="pet-result-line">Showing '+sel.length+' of '+pool.length+'</div>';
   if(sel.length===0){host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">🔍</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearSlotFilters();clearSlotPickSearch();">Clear search &amp; filters</button></div>';return;}
   html+='<div class="pet-grid">';
-  sel.forEach(function(pet,idx){ html+=petCardHtml(pet,idx,{onClick:"equipPetToActiveSlot('"+pet.uid+"')",lite:true}); });
+  sel.forEach(function(pet,idx){ html+=petCardHtml(pet,idx,{onClick:(slotPickMode==='idle'?("assignIdleToActiveSlot('"+pet.uid+"')"):("equipPetToActiveSlot('"+pet.uid+"')")),lite:true}); });
   html+='</div>';
   host.innerHTML=html;
 }
@@ -4600,8 +4613,24 @@ function equipPetToActiveSlot(uid){
   G.equippedPets[activeSlot]=pet.uid;pet.equippedSlot=activeSlot;
   renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
 }
+function assignIdleToActiveSlot(uid){
+  if(activeSlot<0)return;
+  var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);}); if(!pet)return;
+  if(isPetBusy(pet.uid)||isPetIdling(pet.uid))return;
+  // Swap: om denna idle-position redan har en pet, frigör den först
+  var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
+  if(activeSlot<_il.length&&_il[activeSlot]){var cu=_il[activeSlot].uid;var ci=G.idlePets.findIndex(function(u){return String(u)===String(cu);});if(ci>=0)G.idlePets.splice(ci,1);}
+  assignIdlePet(uid);   // sköter slot-koll, av-equip, push, save + renderHomeAdventures
+  closePetModal();
+}
 function slotRemovePet(){
   if(activeSlot<0)return;
+  if(slotPickMode==='idle'){
+    var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
+    if(activeSlot<_il.length&&_il[activeSlot])removeIdlePet(_il[activeSlot].uid);
+    closePetModal();
+    return;
+  }
   if(G.equippedPets[activeSlot]){var oldPet=G.hatchedPets.find(function(p){return p.uid===G.equippedPets[activeSlot];});if(oldPet)oldPet.equippedSlot=-1;}
   G.equippedPets[activeSlot]=null;renderSlotRow();closePetModal();updateHUD();renderPets();saveGame();
 }
@@ -5336,14 +5365,14 @@ function renderHomeAdventures(){
   for(var i=0;i<IDLE_SLOT_MAX;i++){
     if(i<pets.length){
       var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'}; var ssg=petAdvSum(sp);
-      h+='<div onclick="openPetDetail(\''+sp.uid+'\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;padding:7px 3px 6px;text-align:center;cursor:pointer;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
+      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;padding:7px 3px 6px;text-align:center;cursor:pointer;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
       h+='<button onclick="event.stopPropagation();removeIdlePet(\''+sp.uid+'\')" style="position:absolute;top:0;right:1px;background:none;border:none;color:rgba(255,120,120,0.85);font-size:0.7rem;cursor:pointer;padding:2px 3px;line-height:1;">✕</button>';
       h+='<div style="font-size:1.7rem;line-height:1;">'+petIco(sp)+'</div>';
       h+='<div style="font-weight:800;font-size:0.58rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:3px;">'+petDisplayName(sp)+'</div>';
       h+='<div style="font-size:0.52rem;color:rgba(255,255,255,0.5);">Lv '+slv+(ssg.shellGain?' · 🐚'+ssg.shellGain:'')+'</div>';
       h+='</div>';
     }else if(i<G.idleSlots){
-      h+='<div onclick="openIdlePicker('+i+')" style="flex:1;min-width:0;background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
+      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
     }else if(i===G.idleSlots){
       var ucost=IDLE_SLOT_COSTS[i-1]; var ok=G.coins>=ucost;
       h+='<div style="flex:1;min-width:0;background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
