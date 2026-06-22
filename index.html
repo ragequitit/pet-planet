@@ -5354,20 +5354,6 @@ function renderHomeAdventures(){
     h+='</div>';
   }
   h+='</div>';
-  // COMBINED IDLE STATS — all idling pets together (total chances)
-  h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:12px;margin-bottom:12px;">';
-  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:9px;">Idle Stats — all pets combined</div>';
-  h+='<div style="display:flex;gap:8px;margin-bottom:10px;">';
-  h+='<div style="flex:1;text-align:center;background:#0b1226;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:9px 6px;"><div style="font-size:1.1rem;font-weight:800;color:#e8deff;">~'+fmtShort(estRate)+'</div><div style="font-size:0.56rem;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:0.5px;">🐚 SHELLS / HR</div></div>';
-  h+='<div style="flex:1;text-align:center;background:#0b1226;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:9px 6px;"><div style="font-size:1.1rem;font-weight:800;color:#cdb6ff;">'+dropPct+'%</div><div style="font-size:0.56rem;color:rgba(255,255,255,0.5);margin-top:2px;letter-spacing:0.5px;">DROP / SEC</div></div>';
-  h+='</div>';
-  h+='<div style="display:flex;flex-direction:column;gap:6px;font-size:0.76rem;">';
-  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🐚</span><span style="flex:1;color:rgba(255,255,255,0.8);">Total Shell bonus</span><span style="color:#e8deff;font-weight:700;">+'+_ib.shellGain+'%</span></div>';
-  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🍀</span><span style="flex:1;color:rgba(255,255,255,0.8);">Total Luck</span><span style="color:#e8deff;font-weight:700;">+'+_ib.luck+'%</span></div>';
-  h+='<div style="display:flex;align-items:center;gap:8px;"><span>🐾</span><span style="flex:1;color:rgba(255,255,255,0.8);">Idling pets</span><span style="color:#e8deff;font-weight:700;">'+pets.length+' / '+G.idleSlots+'</span></div>';
-  h+='</div>';
-  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);margin-top:9px;line-height:1.5;">Base '+Math.round(IDLE_SHELL_BASE*100)+'%/s, same in every world. Only your pets\' abilities raise this — adding more pets doesn\'t.</div>';
-  h+='</div>';
   // idle slots — compact horizontal row of 5 (tap a pet to see more)
   h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
   h+='<div style="display:flex;gap:5px;align-items:stretch;">';
@@ -7421,7 +7407,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.35<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.36<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
