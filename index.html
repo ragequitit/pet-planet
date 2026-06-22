@@ -5328,39 +5328,27 @@ function renderHomeAdventures(){
   if(!pets.length){
     h+='<div style="height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;position:relative;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
-    var p=pets[idleViewIdx]; var lv=petLevelFromXp(p.xp||0); var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''}; var lp=petXpProgress(p);
-    // Lv badge top-right (like the pet cards), just left of the bag
-    h+='<div style="position:absolute;top:30px;right:70px;z-index:4;background:linear-gradient(180deg,#6a4fb0,#4a3590);border:1px solid rgba(150,170,230,0.5);border-radius:9px;padding:3px 10px;font-weight:800;font-size:0.74rem;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.45);">Lv '+lp.level+'</div>';
-    // content column — pet area (fixed) then caption flows BELOW it (never overlaps)
+    var p=pets[idleViewIdx]; var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
+    // content column — pet area, then caption flows BELOW (background grows DOWN adaptively, pet stays put)
     h+='<div style="position:relative;z-index:2;display:flex;flex-direction:column;">';
-    // pet area
-    h+='<div style="position:relative;height:230px;">';
+    h+='<div style="position:relative;height:250px;">';
     h+='<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));">'+petIco(p)+'</div>';
     if(pets.length>1){
       h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">‹</button>';
       h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">›</button>';
     }
     h+='</div>';
-    // caption (flows below the pet)
-    h+='<div style="padding:4px 12px 12px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.82) 38%,rgba(8,12,30,0.95));text-align:center;">';
-    // wrapper: XP bar + box share the SAME width (hugs the longest line = the name)
-    h+='<div style="display:inline-block;width:max-content;max-width:94%;margin:0 auto;">';
-    // XP bar — thicker, numbers INSIDE (dark, readable on both)
-    h+='<div style="position:relative;height:18px;border-radius:9px;background:rgba(8,12,30,0.85);border:1px solid '+rc.color+'66;overflow:hidden;margin-bottom:7px;">';
-    h+='<div id="idle-xp-fill" style="position:absolute;left:0;top:0;bottom:0;width:'+lp.pct+'%;background:linear-gradient(90deg,'+rc.color+',#fff);opacity:0.92;transition:width .4s ease;"></div>';
-    h+='<div id="idle-xp-txt" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:800;color:#0b1020;text-shadow:0 0 3px rgba(255,255,255,0.65);">'+(lp.max?'MAX':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'))+'</div>';
-    h+='</div>';
-    // dark box — name (rarity) header + abilities as rows
-    h+='<div style="background:rgba(8,12,30,0.85);border:1px solid '+rc.color+'66;border-radius:12px;padding:8px 11px;box-shadow:0 2px 8px rgba(0,0,0,0.45);">';
-    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.02rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;margin-bottom:5px;white-space:nowrap;">'+petDisplayName(p)+'</div>';
+    // caption (centered, flows below the pet)
+    h+='<div style="padding:6px 12px 14px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.82) 35%,rgba(8,12,30,0.95));display:flex;flex-direction:column;align-items:center;">';
+    h+='<div style="background:rgba(8,12,30,0.85);border:1px solid '+rc.color+'66;border-radius:12px;padding:8px 12px;box-shadow:0 2px 8px rgba(0,0,0,0.45);max-width:94%;">';
+    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;margin-bottom:5px;white-space:nowrap;">'+petDisplayName(p)+'</div>';
     if(p.abilities&&p.abilities.length){
-      p.abilities.forEach(function(a,ai){var m=ABILITY_META[a.id];if(!m)return;h+='<div style="display:flex;align-items:center;gap:10px;padding:4px 2px;font-size:0.76rem;white-space:nowrap;'+(ai>0?'border-top:1px solid rgba(255,255,255,0.07);':'')+'">'+abilityIconImg(a.id)+'<span style="flex:1;color:#fff;font-weight:600;text-align:left;">'+m.name+'</span><span style="color:#7fe0b0;font-weight:800;">'+abShow(a)+'</span></div>';});
+      p.abilities.forEach(function(a,ai){var m=ABILITY_META[a.id];if(!m)return;h+='<div style="display:flex;align-items:center;gap:10px;padding:4px 2px;font-size:0.78rem;white-space:nowrap;'+(ai>0?'border-top:1px solid rgba(255,255,255,0.07);':'')+'">'+abilityIconImg(a.id)+'<span style="flex:1;color:#fff;font-weight:600;text-align:left;">'+m.name+'</span><span style="color:#7fe0b0;font-weight:800;">'+abShow(a)+'</span></div>';});
     }else{
       h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.6);padding:3px 0;white-space:nowrap;">No abilities yet</div>';
     }
     h+='</div>';
-    h+='</div>';
-    h+='<button onclick="idleGearTap()" style="margin-top:9px;background:rgba(22,35,76,0.85);border:1px dashed rgba(150,170,230,0.6);border-radius:10px;color:rgba(255,255,255,0.85);font-size:0.72rem;padding:5px 14px;cursor:pointer;">➕ Add Gear</button>';
+    h+='<button onclick="idleGearTap()" style="margin-top:10px;background:rgba(22,35,76,0.85);border:1px dashed rgba(150,170,230,0.6);border-radius:10px;color:rgba(255,255,255,0.85);font-size:0.72rem;padding:5px 14px;cursor:pointer;">➕ Add Gear</button>';
     if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
     h+='</div>';
     h+='</div>';
@@ -5385,24 +5373,24 @@ function renderHomeAdventures(){
   h+='<div style="display:flex;gap:5px;align-items:stretch;">';
   for(var i=0;i<IDLE_SLOT_MAX;i++){
     if(i<pets.length){
-      var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'}; var ssg=petAdvSum(sp);
-      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;padding:7px 3px 6px;text-align:center;cursor:pointer;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
-      h+='<button onclick="event.stopPropagation();removeIdlePet(\''+sp.uid+'\')" style="position:absolute;top:0;right:1px;background:none;border:none;color:rgba(255,120,120,0.85);font-size:0.7rem;cursor:pointer;padding:2px 3px;line-height:1;">✕</button>';
-      h+='<div style="font-size:1.7rem;line-height:1;">'+petIco(sp)+'</div>';
-      h+='<div style="font-weight:800;font-size:0.58rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:3px;">'+petDisplayName(sp)+'</div>';
-      h+='<div style="font-size:0.52rem;color:rgba(255,255,255,0.5);">Lv '+slv+(ssg.shellGain?' · 🐚'+ssg.shellGain:'')+'</div>';
+      var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'}; var clp=petXpProgress(sp);
+      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;padding:5px 4px;cursor:pointer;height:120px;overflow:hidden;display:flex;flex-direction:column;align-items:center;">';
+      h+='<div style="position:absolute;top:2px;right:2px;z-index:2;background:linear-gradient(180deg,#6a4fb0,#4a3590);border:1px solid rgba(150,170,230,0.5);border-radius:6px;padding:1px 5px;font-weight:800;font-size:0.5rem;color:#fff;">Lv '+slv+'</div>';
+      h+='<div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:3.4rem;line-height:1;overflow:hidden;max-width:100%;">'+petIco(sp)+'</div>';
+      h+='<div style="font-weight:800;font-size:0.56rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-bottom:3px;">'+petDisplayName(sp)+'</div>';
+      h+='<div style="width:100%;height:9px;border-radius:5px;background:rgba(8,12,30,0.85);border:1px solid rgba(255,255,255,0.12);overflow:hidden;position:relative;"><div id="idle-cxp-'+i+'" style="position:absolute;left:0;top:0;bottom:0;width:'+clp.pct+'%;background:linear-gradient(90deg,#5aab2e,#a3e635);transition:width .4s ease;"></div></div>';
       h+='</div>';
     }else if(i<G.idleSlots){
-      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
+      h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
     }else if(i===G.idleSlots){
       var ucost=IDLE_SLOT_COSTS[i-1]; var ok=G.coins>=ucost;
-      h+='<div style="flex:1;min-width:0;background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
+      h+='<div style="flex:1;min-width:0;background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
       h+='<div style="font-size:0.95rem;opacity:0.6;line-height:1.3;">'+LOCK_IMG+'</div>';
       h+='<div style="font-size:0.5rem;color:rgba(255,255,255,0.5);">Slot '+(i+1)+'</div>';
       h+='<button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:7px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.52rem;padding:4px 1px;cursor:'+(ok?'pointer':'default')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+COIN_IMG+' '+fmtShort(ucost)+'</button>';
       h+='</div>';
     }else{
-      h+='<div style="flex:1;min-width:0;background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
+      h+='<div style="flex:1;min-width:0;background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
     }
   }
   h+='</div>';
@@ -5493,12 +5481,8 @@ function tickIdlePets(dt){
 function softUpdateIdle(){
   var el=document.getElementById('idle-since'); if(el)el.textContent=idleSinceText();
   var b=document.getElementById('idle-bag-badge'); if(b){var c=idleBagCount(); b.textContent=c; b.style.display=c?'':'none';}
-  var pf=document.getElementById('idle-xp-fill');
-  if(pf){
-    var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
-    var _p=_il[idleViewIdx];
-    if(_p){var lp=petXpProgress(_p);pf.style.width=lp.pct+'%';var pt=document.getElementById('idle-xp-txt');if(pt)pt.innerHTML=(lp.max?'MAX':(fmtShort(lp.into)+' / '+fmtShort(lp.need)+' XP'));}
-  }
+  var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
+  _il.forEach(function(p,idx){var f=document.getElementById('idle-cxp-'+idx);if(f){var lp=petXpProgress(p);f.style.width=lp.pct+'%';}});
 }
 function idleSwipe(dir){var n=(G.idlePets||[]).length;if(!n)return;idleViewIdx=(idleViewIdx+dir+n)%n;renderHomeAdventures();}
 function idleGearTap(){ if(typeof showRewardPopup==='function')showRewardPopup(['Gear slots are coming soon.','You\'ll equip adventure gear here to boost a pet\'s idle haul.'],false); }
@@ -7437,7 +7421,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.33<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.35<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
