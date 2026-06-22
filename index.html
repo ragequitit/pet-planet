@@ -2623,18 +2623,21 @@ var PET_POS=[{left:0,top:0},{left:52,top:20},{left:118,top:34},{left:184,top:20}
 // Shells = REGION-namngivna, ett per ägg/värld. EGNA id:n (inte längre pet-rarity-orden).
 // Vikter = platshållare (samma droppkänsla som förr) → Balance Sheet. Ikoner: <id>-shell.png.
 var SHELL_RARITIES=[
-  {id:'meadow',   name:'Meadow Shell',   icon:'⚪',color:'#aaa',   weight:60},
-  {id:'forest',   name:'Forest Shell',   icon:'🟢',color:'#4caf50',weight:25},
-  {id:'mountain', name:'Mountain Shell', icon:'🔵',color:'#2196f3',weight:10},
-  {id:'desert',   name:'Desert Shell',   icon:'🟣',color:'#9c27b0',weight:3},
-  {id:'ocean',    name:'Ocean Shell',    icon:'🟠',color:'#ff9800',weight:1},
+  {id:'meadow',   name:'Meadow Shell',   icon:'⚪',color:'#9ccc5a',weight:60},
+  {id:'forest',   name:'Forest Shell',   icon:'🟢',color:'#43a047',weight:25},
+  {id:'mountain', name:'Mountain Shell', icon:'🔵',color:'#9aa3ad',weight:10},
+  {id:'desert',   name:'Desert Shell',   icon:'🟣',color:'#f2a01c',weight:3},
+  {id:'ocean',    name:'Ocean Shell',    icon:'🟠',color:'#1c9fe6',weight:1},
   {id:'volcano',  name:'Volcano Shell',  icon:'🔴',color:'#f44336',weight:0.5},
-  {id:'jungle',   name:'Jungle Shell',   icon:'🟡',color:'#ffd700',weight:0.1},
+  {id:'jungle',   name:'Jungle Shell',   icon:'🟡',color:'#1cc0a0',weight:0.1},
   {id:'arctic',   name:'Arctic Shell',   icon:'❄️',color:'#7fd4ff',weight:0.07},
-  {id:'mystic',   name:'Mystic Shell',   icon:'💎',color:'#00bcd4',weight:0.05},
-  {id:'celestial',name:'Celestial Shell',icon:'✨',color:'#fff',   weight:0.01},
+  {id:'mystic',   name:'Mystic Shell',   icon:'💎',color:'#a64dd0',weight:0.05},
+  {id:'celestial',name:'Celestial Shell',icon:'✨',color:'#e8d58a',weight:0.01},
   {id:'cosmic',   name:'Cosmic Shell',   icon:'🌌',color:'#e040fb',weight:0.001},
 ];
+// De 6 FÖRSTA shellsen (meadow→volcano) = HEMMA-shells: enda som droppar från tap/idle/vanliga adventures (viktade).
+// De 5 sista (jungle→cosmic) = LOST WORLD-shells, kommer bara via lost world-innehåll (separat historia).
+var HOME_SHELL_COUNT=6;
 // Shell-fusens ordning (5 lägre → 1 högre). EGEN lista, frikopplad från pet-rariteterna.
 var SHELL_ORDER=['meadow','forest','mountain','desert','ocean','volcano','jungle','arctic','mystic','celestial','cosmic'];
 function shellNext(id){var i=SHELL_ORDER.indexOf(id);return (i<0||i>=SHELL_ORDER.length-1)?null:SHELL_ORDER[i+1];}
@@ -3313,16 +3316,16 @@ var ACTIVE_EVENT={
   snowPerAdventure:120,
   questCycleHours:24,
   chests:[
-    {at:1000, reward:{shells:{uncommon:10}}},
+    {at:1000, reward:{shells:{forest:10}}},
     {at:2500, reward:{gems:50}},
-    {at:4000, reward:{shells:{rare:10}}},
+    {at:4000, reward:{shells:{mountain:10}}},
     {at:5000, reward:{gems:150}}
   ],
   quests:[
-    {id:'q_hatch', type:'hatch',     icon:'\ud83e\udd5a', name:'Hatch 15 Eggs',            target:15,   reward:{shells:{rare:5}}},
+    {id:'q_hatch', type:'hatch',     icon:'\ud83e\udd5a', name:'Hatch 15 Eggs',            target:15,   reward:{shells:{mountain:5}}},
     {id:'q_snow',  type:'snow',      icon:'\u2744\ufe0f', name:'Collect 1,000 Snowflakes', target:1000, reward:{gems:25}},
     {id:'q_adv',   type:'adventure', icon:'\ud83d\uddfa\ufe0f', name:'Complete 5 Adventures',    target:5,    reward:{gems:20}},
-    {id:'q_tap',   type:'tap',       icon:'\ud83d\udc46', name:'Tap the Egg 300 times',    target:300,  reward:{shells:{rare:5}}},
+    {id:'q_tap',   type:'tap',       icon:'\ud83d\udc46', name:'Tap the Egg 300 times',    target:300,  reward:{shells:{mountain:5}}},
     {id:'q_fuse',  type:'fusion',    icon:'\u2697\ufe0f', name:'Fuse 2 Pets',              target:2,    reward:{gems:40}}
   ],
   pet:{name:'Festive Reindeer', rarity:'mythical', emoji:'\ud83e\udd8c',
@@ -3343,7 +3346,7 @@ var ACTIVE_EVENT={
     {id:'festivereindeer',name:'Festive Reindeer', rarity:'mythical', weight:1,  emoji:'🦌'}
   ],
   collection:{total:10, milestones:[
-    {at:3,  reward:{shells:{rare:15}}},
+    {at:3,  reward:{shells:{mountain:15}}},
     {at:6,  reward:{gems:75}},
     {at:9,  reward:{cores:1, coreTier:3}},
     {at:10, reward:{gems:250, title:'Winter Champion', cosmetic:'frame_winter'}}
@@ -3352,7 +3355,7 @@ var ACTIVE_EVENT={
   // kind: egg(centerpiece, last tills petsen finns) | bundle(resurser, live) | boost(soon) | cosmetic(soon).
   shop:[
     {id:'egg_winter', kind:'egg',    status:'live', icon:'\ud83e\udd5a', name:'Winter Event Egg', desc:'A real egg \u2014 hatch it in your Hatchery for a limited Winter pet.', cost:250},
-    {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Rare Shell Pack', desc:'10 Rare Shells for crafting.',  cost:120, reward:{shells:{rare:10}}},
+    {id:'shells_r', kind:'bundle',   status:'live', icon:'\ud83d\udc1a', name:'Mountain Shell Pack', desc:'10 Mountain Shells for crafting.',  cost:120, reward:{shells:{mountain:10}}},
     {id:'core_1',   kind:'bundle',   status:'live', icon:'\u2b21',       name:'Mutation Core',   desc:'A random Uncommon ability core.', cost:180, reward:{cores:1, coreTier:2}},
     {id:'gems_s',   kind:'bundle',   status:'live', icon:'\ud83d\udc8e', name:'Gem Pouch',       desc:'A small pouch of Gems.',        cost:300, reward:{gems:25}},
     {id:'frenzy',   kind:'boost',    status:'live', icon:'\ud83d\udd25', name:'Winter Frenzy',   desc:'x2 Sparks for 30 minutes.',  cost:150, boostType:'coin', durationS:1800},
@@ -3428,7 +3431,7 @@ function boostLuckMult(){return boostActive('luck')?BOOST_MULT:1;}
 function boostLeftMs(kind){return (G.boosts&&G.boosts[kind])?Math.max(0,G.boosts[kind]-Date.now()):0;}
 function getDropChance(base){return base+(G.luck*0.01+getLuckBonus())*boostLuckMult();}
 function getRarityWeights(){var boost=Math.max(1,1+Math.log10(Math.max(1,eps()/1000)));return SHELL_RARITIES.map(function(r,i){return i>=3?r.weight*boost:r.weight;});}
-function rollShell(){var w=getRarityWeights();var total=w.reduce(function(a,b){return a+b;},0);var roll=Math.random()*total,acc=0;for(var i=0;i<SHELL_RARITIES.length;i++){acc+=w[i];if(roll<=acc)return SHELL_RARITIES[i];}return SHELL_RARITIES[0];}
+function rollShell(){var w=getRarityWeights();var n=HOME_SHELL_COUNT;var total=0;for(var k=0;k<n;k++)total+=w[k];var roll=Math.random()*total,acc=0;for(var i=0;i<n;i++){acc+=w[i];if(roll<=acc)return SHELL_RARITIES[i];}return SHELL_RARITIES[0];}
 function dropShell(){
   var r=rollShell();
   var amt=1+Math.floor(getShellBonus());
@@ -3547,10 +3550,20 @@ function rollAdvReward(adv,pet){
   var coins=Math.floor(base*(1+s.coinGain/100)*aCoin);
   // SHELLS: blandad loot, varje rad delas ut (lutar uppåt med luck + shellGain + affinity)
   var shells=[];
-  adv.shellLoot.forEach(function(L){
-    var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell);
-    if(amt>0)shells.push({type:L.type,amt:amt});
-  });
+  if(adv.isArea){
+    // LOST WORLD area-expedition: behåller sin EGEN (lost world-)shell — separat historia, oförändrad.
+    adv.shellLoot.forEach(function(L){
+      var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell);
+      if(amt>0)shells.push({type:L.type,amt:amt});
+    });
+  }else{
+    // HEMMA-adventures: behåll den tunade TOTAL-mängden, men rulla varje shell från den viktade 6-hemma-poolen.
+    var totShell=0;
+    adv.shellLoot.forEach(function(L){ totShell+=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell); });
+    var byType={};
+    for(var su=0;su<totShell;su++){ var sid=rollShell().id; byType[sid]=(byType[sid]||0)+1; }
+    Object.keys(byType).forEach(function(t){ if(byType[t]>0)shells.push({type:t,amt:byType[t]}); });
+  }
   // BONUS-LOOT: separata chans-rolls per rad (låg chans; Luck + affinity höjer chansen) — "oooh vad fick jag!"
   var lvl=pet?petLevelFromXp(pet.xp||0):1;
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS; // högre nivå → bättre chans på sällsynt loot
@@ -3948,7 +3961,7 @@ function renderAdventure(){
   html+='<div class="adv-dsec">Possible Rewards</div>';
   html+='<div class="adv-rewards">';
   html+=advRewItem('🪙','Sparks','~'+fmtShort(coinsNow),true);
-  var shTypes=sel.shellLoot.map(function(L){var r=SHELL_RARITIES.find(function(s){return s.id===L.type;});return shellIcon(L.type);}).join('');
+  var shTypes=sel.isArea?sel.shellLoot.map(function(L){return shellIcon(L.type);}).join(''):SHELL_RARITIES.slice(0,HOME_SHELL_COUNT).map(function(s){return shellIcon(s.id);}).join('');
   html+=advRewItem(shTypes||'🐚','Shells','',true);
   html+=advRewItem(uiIco('stats/pet-xp','⭐',22),'Pet XP','+'+sel.xp,true);
   (sel.bonusLoot||[]).forEach(function(B){
@@ -5400,7 +5413,7 @@ function renderHomeAdventures(){
       h+='<div onclick="idleGearTap()" style="height:46px;background:#121d3e;border:1px dashed rgba(150,170,230,0.45);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9fb6ef;"><div style="font-size:0.95rem;line-height:1;">⚙️</div><div style="font-size:1rem;font-weight:700;line-height:1;margin-top:2px;">Gear</div></div>';
     }else if(i<G.idleSlots){
       h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
-      h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
+      h+='<div onclick="idleGearTap()" style="height:46px;background:#121d3e;border:1px dashed rgba(150,170,230,0.45);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9fb6ef;opacity:0.75;"><div style="font-size:0.95rem;line-height:1;">⚙️</div><div style="font-size:1rem;font-weight:700;line-height:1;margin-top:2px;">Gear</div></div>';
     }else if(i===G.idleSlots){
       var ucost=idleSlotCost(i); var ok=idleSlotAfford(ucost);
       h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
@@ -7405,7 +7418,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.48<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.54<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8215,28 +8228,28 @@ var DAILY_QUEST_CYCLE_HOURS=24;
 // PLATSHÅLLARE (balanseras senare, precis som resten av spelet).
 var DAILY_QUEST_POOL={
   easy:[
-    {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{shells:{common:5}}},
-    {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{shells:{common:6}}},
-    {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{shells:{uncommon:3}}},
-    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{shells:{uncommon:4}}},
+    {type:'tap',name:'Warm Up',icon:'\ud83d\udc46',target:100,reward:{shells:{meadow:5}}},
+    {type:'hatch',name:'Morning Hatch',icon:'\ud83e\udd5a',target:3,reward:{shells:{meadow:6}}},
+    {type:'adventure',name:'Quick Trip',icon:'\ud83e\udded',target:1,reward:{shells:{forest:3}}},
+    {type:'fusion',name:'Combine',icon:'\u2697\ufe0f',target:2,reward:{shells:{forest:4}}},
     {type:'shells',name:'Shell Picker',icon:'\ud83d\udc1a',target:15,reward:{gems:2}},
-    {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{shells:{uncommon:4}}}
+    {type:'craft',name:'Egg Crafter',icon:'\ud83d\udee0\ufe0f',target:2,reward:{shells:{forest:4}}}
   ],
   med:[
-    {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{shells:{common:8}}},
-    {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{shells:{common:8}}},
-    {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{shells:{uncommon:5}}},
-    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{shells:{uncommon:5}}},
-    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{shells:{uncommon:5}}},
-    {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{shells:{uncommon:5}}},
-    {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{shells:{common:8}}}
+    {type:'tap',name:'Tap Streak',icon:'\ud83d\udc46',target:300,reward:{shells:{meadow:8}}},
+    {type:'hatch',name:'Busy Nest',icon:'\ud83e\udd5a',target:8,reward:{shells:{meadow:8}}},
+    {type:'adventure',name:'Explorer',icon:'\ud83e\udded',target:2,reward:{shells:{forest:5}}},
+    {type:'fusion',name:'Fusionist',icon:'\u2697\ufe0f',target:5,reward:{shells:{forest:5}}},
+    {type:'shells',name:'Shell Gatherer',icon:'\ud83d\udc1a',target:40,reward:{shells:{forest:5}}},
+    {type:'send',name:'Pet Dispatcher',icon:'\ud83d\ude80',target:3,reward:{shells:{forest:5}}},
+    {type:'craft',name:'Egg Producer',icon:'\ud83d\udee0\ufe0f',target:5,reward:{shells:{meadow:8}}}
   ],
   hard:[
-    {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{shells:{rare:3}}},
+    {type:'tap',name:'Tap Marathon',icon:'\ud83d\udc46',target:600,reward:{shells:{mountain:3}}},
     {type:'hatch',name:'Hatch Spree',icon:'\ud83e\udd5a',target:15,reward:{gems:6}},
     {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{gems:6}},
     {type:'fusion',name:'Grand Fusion',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
-    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{rare:3}}},
+    {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{mountain:3}}},
     {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
     {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{gems:6}},
     {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
@@ -8294,18 +8307,18 @@ function dailyQuestDone(q,Q){return dailyQuestProgress(q,Q)>=q.target;}
 var WEEKLY_QUEST_CYCLE_HOURS=168;
 var WEEKLY_QUEST_POOL={
   easy:[
-    {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{shells:{uncommon:12}}},
-    {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{shells:{rare:6}}},
+    {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{shells:{forest:12}}},
+    {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{shells:{mountain:6}}},
     {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',target:10,reward:{gems:15}},
     {type:'fusion',name:'Weekly Combiner',icon:'\u2697\ufe0f',target:20,reward:{gems:15}},
-    {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{shells:{rare:4}}},
-    {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{shells:{uncommon:10}}}
+    {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{shells:{mountain:4}}},
+    {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{shells:{forest:10}}}
   ],
   med:[
     {type:'tap',name:'Tap Champion',icon:'\ud83d\udc46',target:5000,reward:{gems:25}},
     {type:'hatch',name:'Hatch Master',icon:'\ud83e\udd5a',target:120,reward:{gems:25}},
-    {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{shells:{epic:3}}},
-    {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{shells:{epic:3}}},
+    {type:'adventure',name:'Trailblazer',icon:'\ud83e\udded',target:25,reward:{shells:{desert:3}}},
+    {type:'fusion',name:'Fusion Master',icon:'\u2697\ufe0f',target:50,reward:{shells:{desert:3}}},
     {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{gems:25}},
     {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{gems:25}},
     {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{gems:25}}
@@ -9461,7 +9474,7 @@ function renderInventory(){
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">'+uiIco('inventory/loot','🗝️',16)+' Loot</div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
-  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
+  SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;if(isLostWorld(r.id)&&!(G.lostUnlocked&&G.lostUnlocked[r.id])&&count===0)return;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
@@ -9540,9 +9553,10 @@ function showShellInfo(id){
   var owned=(G.shells&&G.shells[id])||0;
   var life=(s.shellsCollectedByRarity&&s.shellsCollectedByRarity[id])||0;
   var drops=(s.shellDropsByRarity&&s.shellDropsByRarity[id])||0;
-  var w=getRarityWeights();var tot=w.reduce(function(a,b){return a+b;},0)||1;
+  var w=getRarityWeights();var tot=0;for(var wi=0;wi<HOME_SHELL_COUNT;wi++)tot+=w[wi];if(!tot)tot=1;
   var idx=SHELL_RARITIES.findIndex(function(x){return x.id===id;});
-  var pct=idx>=0?w[idx]/tot*100:0;
+  var isHome=idx>=0&&idx<HOME_SHELL_COUNT; // lost world-shells droppar inte från tap/idle
+  var pct=isHome?w[idx]/tot*100:0;
   var crafts=shellCraftedBy(id);
   var html='<div style="text-align:center;margin-bottom:10px;">';
   html+='<div style="font-size:2.6rem;margin-bottom:4px;filter:drop-shadow(0 0 6px '+r.color+');">'+shellIcon(id)+'</div>';
@@ -9552,9 +9566,9 @@ function showShellInfo(id){
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(owned)+'</div><div class="sinfo-l">Owned</div></div>';
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(drops)+'</div><div class="sinfo-l">Drops</div></div>';
   html+='<div class="sinfo-stat"><div class="sinfo-v">'+fmtShort(life)+'</div><div class="sinfo-l">Lifetime</div></div>';
-  html+='<div class="sinfo-stat"><div class="sinfo-v">'+shellPctFmt(pct)+'%</div><div class="sinfo-l">Chance</div></div>';
+  html+='<div class="sinfo-stat"><div class="sinfo-v">'+(isHome?shellPctFmt(pct)+'%':'—')+'</div><div class="sinfo-l">'+(isHome?'Chance':'Lost World')+'</div></div>';
   html+='</div>';
-  html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">Drop 15%/click · higher with 🍀 Luck</div>';
+  html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);text-align:center;margin:8px 0 6px;">'+(isHome?'Drop 15%/click · higher with 🍀 Luck':'Found via its Lost World — not from regular drops')+'</div>';
   html+='<div style="font-size:0.65rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Crafts these eggs &middot; cost shown</div>';
   if(crafts.length===0){html+='<div style="font-size:0.7rem;color:rgba(255,255,255,0.4);text-align:center;padding:4px 0;">— not used to craft any egg —</div>';}
   else{
@@ -10451,14 +10465,28 @@ var ACHIEVEMENTS=[
   {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Shell Collector',desc:'Collect 1,000 Shells',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
   {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
   {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
-  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Mountain Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,1),max:1};}},
-  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Desert Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,1),max:1};}},
-  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Ocean Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,1),max:1};}},
-  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Volcano Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,1),max:1};}},
-  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Jungle Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,1),max:1};}},
-  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Mystic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,1),max:1};}},
-  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Celestial Shell',desc:'Obtain your first Celestial Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,1),max:1};}},
-  {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'first_meadow_shell',cat:'Gameplay',icon:'⚪',name:'First Meadow Shell',desc:'Obtain your first Meadow Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1),max:1};}},
+  {id:'first_forest_shell',cat:'Gameplay',icon:'🟢',name:'First Forest Shell',desc:'Obtain your first Forest Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,1),max:1};}},
+  {id:'first_mountain_shell',cat:'Gameplay',icon:'🔵',name:'First Mountain Shell',desc:'Obtain your first Mountain Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,1),max:1};}},
+  {id:'first_desert_shell',cat:'Gameplay',icon:'🟣',name:'First Desert Shell',desc:'Obtain your first Desert Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,1),max:1};}},
+  {id:'first_ocean_shell',cat:'Gameplay',icon:'🟠',name:'First Ocean Shell',desc:'Obtain your first Ocean Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,1),max:1};}},
+  {id:'first_volcano_shell',cat:'Gameplay',icon:'🔴',name:'First Volcano Shell',desc:'Obtain your first Volcano Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,1),max:1};}},
+  {id:'first_jungle_shell',cat:'Gameplay',icon:'🟡',name:'First Jungle Shell',desc:'Obtain your first Jungle Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,1),max:1};}},
+  {id:'first_arctic_shell',cat:'Gameplay',icon:'❄️',name:'First Arctic Shell',desc:'Obtain your first Arctic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,1),max:1};}},
+  {id:'first_mystic_shell',cat:'Gameplay',icon:'💎',name:'First Mystic Shell',desc:'Obtain your first Mystic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,1),max:1};}},
+  {id:'first_celestial_shell',cat:'Gameplay',icon:'✨',name:'First Celestial Shell',desc:'Obtain your first Celestial Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,1),max:1};}},
+  {id:'first_cosmic_shell',cat:'Gameplay',icon:'🌌',name:'First Cosmic Shell',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'meadow_collector',cat:'Gameplay',icon:'⚪',name:'Meadow Collector',desc:'Collect 1,000 Meadow Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1000;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1000),max:1000};}},
+  {id:'forest_collector',cat:'Gameplay',icon:'🟢',name:'Forest Collector',desc:'Collect 750 Forest Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=750;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,750),max:750};}},
+  {id:'mountain_collector',cat:'Gameplay',icon:'🔵',name:'Mountain Collector',desc:'Collect 500 Mountain Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=500;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,500),max:500};}},
+  {id:'desert_collector',cat:'Gameplay',icon:'🟣',name:'Desert Collector',desc:'Collect 300 Desert Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=300;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,300),max:300};}},
+  {id:'ocean_collector',cat:'Gameplay',icon:'🟠',name:'Ocean Collector',desc:'Collect 200 Ocean Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=200;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,200),max:200};}},
+  {id:'volcano_collector',cat:'Gameplay',icon:'🔴',name:'Volcano Collector',desc:'Collect 100 Volcano Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=100;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,100),max:100};}},
+  {id:'jungle_collector',cat:'Gameplay',icon:'🟡',name:'Jungle Collector',desc:'Collect 75 Jungle Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=75;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,75),max:75};}},
+  {id:'arctic_collector',cat:'Gameplay',icon:'❄️',name:'Arctic Collector',desc:'Collect 50 Arctic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=50;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,50),max:50};}},
+  {id:'mystic_collector',cat:'Gameplay',icon:'💎',name:'Mystic Collector',desc:'Collect 30 Mystic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=30;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,30),max:30};}},
+  {id:'celestial_collector',cat:'Gameplay',icon:'✨',name:'Celestial Collector',desc:'Collect 15 Celestial Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=15;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,15),max:15};}},
+  {id:'cosmic_collector',cat:'Gameplay',icon:'🌌',name:'Cosmic Collector',desc:'Collect 5 Cosmic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=5;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,5),max:5};}},
 
   // BUILDINGS
   {id:'entrepreneur',cat:'Progression',icon:'🏗️',name:'Entrepreneur',desc:'Buy your first Building',check:function(){return G.stats.totalBuildingsPurchased>=1;},progress:function(){return {cur:Math.min(G.stats.totalBuildingsPurchased,1),max:1};}},
@@ -10560,7 +10588,7 @@ var ACH_GROUPS=[
   {label:'🐾 Pet Collection',ids:['first_friend','small_collection','growing_zoo','pet_enthusiast','collector','pet_master']},
   {label:'🌈 Rarity Firsts',ids:['uncommon_find','rare_discovery','epic_encounter','legendary_moment','mythical_being','artifact_hunter','heavenly_creature','eternal_soul','cosmic_event']},
   {label:'🌍 Egg Worlds',ids:['welcome_home','into_the_woods','mountain_explorer','desert_wanderer','ocean_traveler','cosmic_explorer']},
-  {label:'🐚 Shells',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','lucky_drop','epic_fortune','legendary_treasure','mythical_discovery','artifact_find','heavenly_luck','eternal_shell','cosmic_miracle']},
+  {label:'🐚 Shells',ids:['first_shell','shell_collector','shell_hoarder','shell_empire','first_meadow_shell','first_forest_shell','first_mountain_shell','first_desert_shell','first_ocean_shell','first_volcano_shell','first_jungle_shell','first_arctic_shell','first_mystic_shell','first_celestial_shell','first_cosmic_shell','meadow_collector','forest_collector','mountain_collector','desert_collector','ocean_collector','volcano_collector','jungle_collector','arctic_collector','mystic_collector','celestial_collector','cosmic_collector']},
   {label:'🏗️ Buildings',ids:['entrepreneur','small_operation','growing_business','economic_powerhouse']},
   {label:'⚡ Production (SPS)',ids:['first_production','productive','industrial','mass_producer']},
   {label:'🪙 Sparks',ids:['millionaire','billionaire','trillionaire']},
@@ -10687,82 +10715,95 @@ function setAchFilter(f){achStatusFilter=f;renderAchievements();}
 // ============================================================
 var ACH_REWARDS={
   // HATCHING
-  first_hatch:{shells:{common:10}},
-  cracked_shell:{shells:{common:15}},
-  egg_addict:{shells:{uncommon:25}},
-  hatchling_expert:{shells:{uncommon:40}},
-  egg_machine:{shells:{rare:25},gems:3},
-  breeder:{shells:{rare:35},gems:3},
-  pet_factory:{shells:{epic:25},gems:5},
-  hatch_master:{shells:{epic:25},gems:6,perm:{hatchSpeed:3}},
-  egg_tycoon:{shells:{legendary:20},gems:8},
-  infinite_incubator:{shells:{legendary:10},gems:15,pet:'legendary',perm:{hatchSpeed:5}},
+  first_hatch:{shells:{meadow:10}},
+  cracked_shell:{shells:{meadow:15}},
+  egg_addict:{shells:{forest:25}},
+  hatchling_expert:{shells:{forest:40}},
+  egg_machine:{shells:{mountain:25},gems:3},
+  breeder:{shells:{mountain:35},gems:3},
+  pet_factory:{shells:{desert:25},gems:5},
+  hatch_master:{shells:{desert:25},gems:6,perm:{hatchSpeed:3}},
+  egg_tycoon:{shells:{ocean:20},gems:8},
+  infinite_incubator:{shells:{ocean:10},gems:15,pet:'legendary',perm:{hatchSpeed:5}},
   // PET COLLECTION
-  first_friend:{shells:{common:10}},
-  small_collection:{shells:{uncommon:25}},
-  growing_zoo:{shells:{rare:20},eggs:{mountain:1},gems:2},
-  pet_enthusiast:{shells:{rare:30},eggs:{mountain:1},gems:3,perm:{luck:2}},
-  collector:{shells:{epic:15},eggs:{ocean:2},gems:5},
-  pet_master:{shells:{legendary:15},eggs:{ocean:2},gems:12,perm:{coinGain:5}},
+  first_friend:{shells:{meadow:10}},
+  small_collection:{shells:{forest:25}},
+  growing_zoo:{shells:{mountain:20},eggs:{mountain:1},gems:2},
+  pet_enthusiast:{shells:{mountain:30},eggs:{mountain:1},gems:3,perm:{luck:2}},
+  collector:{shells:{desert:15},eggs:{ocean:2},gems:5},
+  pet_master:{shells:{ocean:15},eggs:{ocean:2},gems:12,perm:{coinGain:5}},
   // RARITY
-  uncommon_find:{shells:{uncommon:15}},
-  rare_discovery:{shells:{rare:20},gems:1},
-  epic_encounter:{shells:{epic:15},gems:2},
-  legendary_moment:{shells:{legendary:10},gems:3},
-  mythical_being:{shells:{mythical:8},gems:5},
+  uncommon_find:{shells:{forest:15}},
+  rare_discovery:{shells:{mountain:20},gems:1},
+  epic_encounter:{shells:{desert:15},gems:2},
+  legendary_moment:{shells:{ocean:10},gems:3},
+  mythical_being:{shells:{volcano:8},gems:5},
   cosmic_event:{shells:{cosmic:5},gems:12,perm:{luck:5}},
   // EGG WORLDS
-  welcome_home:{shells:{common:10}},
-  into_the_woods:{shells:{uncommon:25},perm:{hatchSpeed:2}},
-  mountain_explorer:{shells:{uncommon:25},perm:{clickPower:2}},
-  desert_wanderer:{shells:{rare:15},gems:2,perm:{shellGain:2}},
-  ocean_traveler:{shells:{rare:15},gems:3,perm:{idleGain:3}},
+  welcome_home:{shells:{meadow:10}},
+  into_the_woods:{shells:{forest:25},perm:{hatchSpeed:2}},
+  mountain_explorer:{shells:{forest:25},perm:{clickPower:2}},
+  desert_wanderer:{shells:{mountain:15},gems:2,perm:{shellGain:2}},
+  ocean_traveler:{shells:{mountain:15},gems:3,perm:{idleGain:3}},
   cosmic_explorer:{shells:{cosmic:5},gems:12,perm:{luck:5}},
   // SHELLS (inga shells!)
   first_shell:{eggs:{starter:1}},
   shell_collector:{gems:2},
   shell_hoarder:{eggs:{mountain:1},gems:4},
   shell_empire:{eggs:{ocean:2},gems:8,perm:{shellGain:5}},
-  lucky_drop:{gems:2},
-  legendary_treasure:{shells:{rare:5},gems:4},
-  cosmic_miracle:{gems:10,pet:'legendary',perm:{shellGain:3}},
-  // Nya shell-firsts (anti-cirkulär: inga shells)
-  epic_fortune:{gems:3},
-  mythical_discovery:{shells:{rare:8},gems:6},
-  artifact_find:{eggs:{ocean:1},gems:7},
-  heavenly_luck:{eggs:{ocean:1},gems:8},
-  eternal_shell:{eggs:{ocean:1},gems:9},
+  first_meadow_shell:{gems:1},
+  first_forest_shell:{gems:1},
+  first_mountain_shell:{gems:2},
+  first_desert_shell:{gems:2},
+  first_ocean_shell:{gems:3},
+  first_volcano_shell:{gems:4},
+  first_jungle_shell:{gems:5},
+  first_arctic_shell:{gems:6},
+  first_mystic_shell:{gems:8},
+  first_celestial_shell:{gems:10},
+  first_cosmic_shell:{gems:12},
+  meadow_collector:{gems:3},
+  forest_collector:{gems:4},
+  mountain_collector:{gems:5},
+  desert_collector:{gems:6},
+  ocean_collector:{gems:8},
+  volcano_collector:{gems:10},
+  jungle_collector:{gems:12},
+  arctic_collector:{gems:15},
+  mystic_collector:{gems:20},
+  celestial_collector:{gems:25},
+  cosmic_collector:{gems:30},
   // Nya pet-firsts (matchande shells + gems)
-  artifact_hunter:{shells:{artifact:6},gems:6},
-  heavenly_creature:{shells:{heavenly:5},gems:8},
-  eternal_soul:{shells:{eternal:4},gems:10},
+  artifact_hunter:{shells:{jungle:6},gems:6},
+  heavenly_creature:{shells:{mystic:5},gems:8},
+  eternal_soul:{shells:{celestial:4},gems:10},
   // BUILDINGS / EPS / COINS
-  entrepreneur:{shells:{common:10}},
-  small_operation:{shells:{uncommon:25}},
-  growing_business:{shells:{rare:20},eggs:{mountain:1},gems:3},
-  economic_powerhouse:{shells:{epic:15},gems:6,perm:{coinGain:5}},
-  first_production:{shells:{common:10}},
-  productive:{shells:{uncommon:25},gems:1},
-  industrial:{shells:{rare:20},gems:3},
-  mass_producer:{shells:{epic:15},gems:6,perm:{idleGain:5}},
-  millionaire:{shells:{uncommon:25},gems:1},
-  billionaire:{shells:{rare:20},gems:3},
-  trillionaire:{shells:{epic:15},gems:6,perm:{coinGain:5}},
+  entrepreneur:{shells:{meadow:10}},
+  small_operation:{shells:{forest:25}},
+  growing_business:{shells:{mountain:20},eggs:{mountain:1},gems:3},
+  economic_powerhouse:{shells:{desert:15},gems:6,perm:{coinGain:5}},
+  first_production:{shells:{meadow:10}},
+  productive:{shells:{forest:25},gems:1},
+  industrial:{shells:{mountain:20},gems:3},
+  mass_producer:{shells:{desert:15},gems:6,perm:{idleGain:5}},
+  millionaire:{shells:{forest:25},gems:1},
+  billionaire:{shells:{mountain:20},gems:3},
+  trillionaire:{shells:{desert:15},gems:6,perm:{coinGain:5}},
   // CLICK / UPGRADES / SLOTS
-  first_tap:{shells:{common:10}},
-  busy_finger:{shells:{common:15}},
-  click_apprentice:{shells:{uncommon:25}},
-  click_expert:{shells:{rare:20},gems:2,perm:{clickPower:2}},
-  click_master:{shells:{epic:15},gems:5,perm:{clickPower:5}},
-  click_monster:{shells:{legendary:8},gems:10,pet:'legendary',perm:{clickPower:5}},
-  first_upgrade:{shells:{common:10}},
-  fully_optimized:{shells:{legendary:10},gems:10,perm:{idleGain:5}},
-  second_companion:{shells:{uncommon:20}},
-  full_squad:{shells:{epic:15},gems:6,perm:{coinGain:3,idleGain:3}},
+  first_tap:{shells:{meadow:10}},
+  busy_finger:{shells:{meadow:15}},
+  click_apprentice:{shells:{forest:25}},
+  click_expert:{shells:{mountain:20},gems:2,perm:{clickPower:2}},
+  click_master:{shells:{desert:15},gems:5,perm:{clickPower:5}},
+  click_monster:{shells:{ocean:8},gems:10,pet:'legendary',perm:{clickPower:5}},
+  first_upgrade:{shells:{meadow:10}},
+  fully_optimized:{shells:{ocean:10},gems:10,perm:{idleGain:5}},
+  second_companion:{shells:{forest:20}},
+  full_squad:{shells:{desert:15},gems:6,perm:{coinGain:3,idleGain:3}},
   // TIME / SECRET
-  first_hour:{shells:{common:10}},
-  dedicated_player:{shells:{rare:20},gems:3},
-  long_nap:{shells:{uncommon:20},gems:2},
+  first_hour:{shells:{meadow:10}},
+  dedicated_player:{shells:{mountain:20},gems:3},
+  long_nap:{shells:{forest:20},gems:2},
   cosmic_destiny:{gems:15,pet:'mythical',perm:{luck:5}},
   tier5_jackpot:{gems:12,pet:'mythical'},
   pure_luck:{gems:15,pet:'mythical',perm:{luck:5}}
