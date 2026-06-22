@@ -5381,12 +5381,11 @@ function renderHomeAdventures(){
     }
   }
   h+='</div>';
-  // gear row — one small gear card aligned under each idle pet (stub for the upcoming gear system)
-  h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Gear</div>';
-  h+='<div style="display:flex;gap:5px;align-items:stretch;">';
+  // gear row — sits almost flush under each pet so it reads as "this gear belongs to this pet"
+  h+='<div style="display:flex;gap:5px;align-items:stretch;margin-top:2px;">';
   for(var gi=0;gi<IDLE_SLOT_MAX;gi++){
     if(gi<pets.length){
-      h+='<div onclick="idleGearTap()" style="flex:1;min-width:0;height:46px;background:#121d3e;border:1px dashed rgba(150,170,230,0.45);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9fb6ef;"><div style="font-size:1rem;line-height:1;">⚙️</div><div style="font-size:0.5rem;margin-top:1px;">Gear</div></div>';
+      h+='<div onclick="idleGearTap()" style="flex:1;min-width:0;height:46px;background:#121d3e;border:1px dashed rgba(150,170,230,0.45);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9fb6ef;"><div style="font-size:0.95rem;line-height:1;">⚙️</div><div style="font-size:1rem;font-weight:700;line-height:1;margin-top:2px;">Gear</div></div>';
     }else{
       h+='<div style="flex:1;min-width:0;height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
     }
@@ -7419,7 +7418,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.39<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.40<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
