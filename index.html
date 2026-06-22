@@ -5348,8 +5348,7 @@ function renderHomeAdventures(){
       h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.6);padding:3px 0;white-space:nowrap;">No abilities yet</div>';
     }
     h+='</div>';
-    h+='<button onclick="idleGearTap()" style="margin-top:10px;background:rgba(22,35,76,0.85);border:1px dashed rgba(150,170,230,0.6);border-radius:10px;color:rgba(255,255,255,0.85);font-size:0.72rem;padding:5px 14px;cursor:pointer;">➕ Add Gear</button>';
-    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
+    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:8px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe ‹ ›</div>';
     h+='</div>';
     h+='</div>';
   }
@@ -5379,6 +5378,17 @@ function renderHomeAdventures(){
       h+='</div>';
     }else{
       h+='<div style="flex:1;min-width:0;background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
+    }
+  }
+  h+='</div>';
+  // gear row — one small gear card aligned under each idle pet (stub for the upcoming gear system)
+  h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.4);letter-spacing:1px;text-transform:uppercase;margin:10px 0 6px;">Gear</div>';
+  h+='<div style="display:flex;gap:5px;align-items:stretch;">';
+  for(var gi=0;gi<IDLE_SLOT_MAX;gi++){
+    if(gi<pets.length){
+      h+='<div onclick="idleGearTap()" style="flex:1;min-width:0;height:46px;background:#121d3e;border:1px dashed rgba(150,170,230,0.45);border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;color:#9fb6ef;"><div style="font-size:1rem;line-height:1;">⚙️</div><div style="font-size:0.5rem;margin-top:1px;">Gear</div></div>';
+    }else{
+      h+='<div style="flex:1;min-width:0;height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
     }
   }
   h+='</div>';
@@ -7409,7 +7419,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.37<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.38<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
