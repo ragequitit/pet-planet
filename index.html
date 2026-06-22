@@ -2576,7 +2576,10 @@ function buyClickUpgrade(id){
 var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Sparks för att låsa upp slot 2,3,4,5
 var IDLE_SLOT_MAX=5;
-var IDLE_SLOT_COSTS=[10000,1e6,1e8,1e10]; // PLATSHÅLLARE: Sparks-kostnad för idle-slot 2..5
+var IDLE_SLOT_COSTS=[{cur:'coins',amt:10000},{cur:'coins',amt:100000},{cur:'gems',amt:50},{cur:'gems',amt:150}]; // PLATSHÅLLARE: kostnad för idle-slot 2..5 (Sparks/Gems) → Balance Sheet
+function idleSlotCost(i){var c=IDLE_SLOT_COSTS[i-1];return c||null;}
+function idleSlotAfford(c){if(!c)return false;return c.cur==='gems'?(G.gems||0)>=c.amt:(G.coins||0)>=c.amt;}
+function idleSlotCostHtml(c){if(!c)return '';return (c.cur==='gems'?GEM_IMG:COIN_IMG)+' '+fmtShort(c.amt);}
 // IDLE DISCRETE DROPS — PLATSHÅLLARE (per idle-pet per timme) → Balance Sheet. Tunn passiv ström.
 var IDLE_SHELL_BASE=0.05;   // 5%/s bas-chans att droppa en shell vid idling (kopierat 1:1 från äggsidan); FAST — antal pets ändrar den INTE. PLATSHÅLLARE → Balance Sheet
 var IDLE_RELIC_PER_HR=0.5;  // relic för vald Lost World (bara om man idlar på en upplåst Lost World)
@@ -5394,15 +5397,20 @@ function renderHomeAdventures(){
       h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="background:#121d3e;border:1px dashed rgba(120,150,230,0.5);border-radius:10px;padding:7px 3px;text-align:center;cursor:pointer;color:#8fb0ff;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:1.3rem;">＋</div><div style="font-size:0.54rem;line-height:1.2;">Assign</div></div>';
       h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
     }else if(i===G.idleSlots){
-      var ucost=IDLE_SLOT_COSTS[i-1]; var ok=G.coins>=ucost;
+      var ucost=idleSlotCost(i); var ok=idleSlotAfford(ucost);
       h+='<div style="background:#0e1730;border:1px solid rgba(111,138,224,0.2);border-radius:10px;padding:6px 3px;text-align:center;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
       h+='<div style="font-size:0.95rem;opacity:0.6;line-height:1.3;">'+LOCK_IMG+'</div>';
       h+='<div style="font-size:0.5rem;color:rgba(255,255,255,0.5);">Slot '+(i+1)+'</div>';
-      h+='<button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:7px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.52rem;padding:4px 1px;cursor:'+(ok?'pointer':'default')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+COIN_IMG+' '+fmtShort(ucost)+'</button>';
+      h+='<button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:7px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.52rem;padding:4px 1px;cursor:'+(ok?'pointer':'default')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+idleSlotCostHtml(ucost)+'</button>';
       h+='</div>';
       h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.18);border-radius:9px;display:flex;align-items:center;justify-content:center;opacity:0.5;font-size:1.05rem;">'+LOCK_IMG+'</div>';
     }else{
-      h+='<div style="background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
+      var lcost=idleSlotCost(i);
+      h+='<div style="background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:6px 3px;text-align:center;opacity:0.75;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;">';
+      h+='<div style="font-size:0.95rem;opacity:0.6;line-height:1.3;">'+LOCK_IMG+'</div>';
+      h+='<div style="font-size:0.5rem;color:rgba(255,255,255,0.4);">Slot '+(i+1)+'</div>';
+      h+='<div style="width:100%;background:#22304f;border-radius:7px;color:rgba(255,255,255,0.5);font-weight:800;font-size:0.52rem;padding:4px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+idleSlotCostHtml(lcost)+'</div>';
+      h+='</div>';
       h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.18);border-radius:9px;display:flex;align-items:center;justify-content:center;opacity:0.5;font-size:1.05rem;">'+LOCK_IMG+'</div>';
     }
     h+='</div>';
@@ -5545,9 +5553,10 @@ function openIdlePicker(slot){
 }
 function buyIdleSlot(i){
   if(i!==G.idleSlots)return;
-  var cost=IDLE_SLOT_COSTS[i-1]; if(cost==null)return;
-  if(G.coins<cost)return;
-  G.coins-=cost; G.idleSlots=Math.min(IDLE_SLOT_MAX,G.idleSlots+1);
+  var c=idleSlotCost(i); if(!c)return;
+  if(!idleSlotAfford(c))return;
+  if(c.cur==='gems')G.gems=(G.gems||0)-c.amt; else G.coins-=c.amt;
+  G.idleSlots=Math.min(IDLE_SLOT_MAX,G.idleSlots+1);
   if(typeof updateHUD==='function')updateHUD();
   if(typeof saveGame==='function')saveGame();
   renderHomeAdventures();
@@ -7435,7 +7444,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.44<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.45<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
