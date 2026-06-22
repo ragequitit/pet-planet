@@ -273,12 +273,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Quest-hero (header + daily bonus över en bakgrundsbild som fadear till panelfärgen) */
 #quest-hero{position:relative;flex-shrink:0;padding:13px 14px 12px;background:#15264e;background:url('https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/quests/quest-header-bg.png') top center/cover no-repeat,linear-gradient(180deg,#1d3566,#15264e);overflow:hidden;}
 #quest-hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg,rgba(21,38,78,0),#15264e 92%);pointer-events:none;z-index:0;}
+#quest-hero::before{content:'';position:absolute;top:0;left:0;width:78%;height:100%;background:linear-gradient(100deg,rgba(8,14,32,0.52) 0%,rgba(8,14,32,0.3) 42%,rgba(8,14,32,0) 82%);pointer-events:none;z-index:0;}
 #quest-hero>*{position:relative;z-index:1;}
 #quest-hero-x{position:absolute;top:8px;right:8px;z-index:3;background:transparent;border:none;border-radius:10px;width:36px;height:36px;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;}
 #quest-hero-x img{filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6));}
 #quest-hero-text{max-width:64%;margin-bottom:11px;}
-#quest-hero-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;line-height:1;letter-spacing:0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.55);}
-#quest-hero-sub{font-size:0.66rem;color:rgba(255,255,255,0.82);margin-top:5px;line-height:1.35;text-shadow:0 1px 3px rgba(0,0,0,0.6);}
+#quest-hero-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;line-height:1;letter-spacing:0.5px;text-shadow:0 2px 6px rgba(0,0,0,0.8),0 0 3px rgba(0,0,0,0.5);}
+#quest-hero-sub{font-size:0.66rem;color:#fff;margin-top:5px;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 6px rgba(0,0,0,0.55);}
 .q-bonus{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#241a3f,#19132e);border:1px solid rgba(150,110,230,0.45);border-radius:14px;padding:9px 11px;box-shadow:0 3px 10px rgba(0,0,0,0.35);}
 .q-bonus-gift{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.9rem;}
 .q-bonus-mid{flex:1;min-width:0;}
@@ -7515,7 +7516,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.59<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.60<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
