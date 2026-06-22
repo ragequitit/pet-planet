@@ -1859,6 +1859,15 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <button id="offline-claim">Collect!</button>
   </div>
 </div>
+<div id="news-modal" class="modal-overlay">
+  <div style="width:100%;max-width:430px;max-height:86vh;background:linear-gradient(180deg,#101d3e,#0b1530);border:1px solid #2b4d92;border-radius:18px 18px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -6px 24px rgba(0,0,0,0.5);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(180deg,#15264e,#13224a);border-bottom:1px solid rgba(58,92,184,0.4);flex-shrink:0;">
+      <div style="font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;display:flex;align-items:center;gap:7px;"><span style="font-size:1.2rem;">📰</span> News &amp; Updates</div>
+      <div onclick="closeNews()" style="cursor:pointer;font-size:1.25rem;color:#ff6b6b;font-weight:800;line-height:1;padding:2px 8px;">✕</div>
+    </div>
+    <div id="news-list" style="overflow-y:auto;padding:12px 12px 18px;flex:1;"></div>
+  </div>
+</div>
 <div id="pet-result-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
   <div id="pet-result-card" class="hatch-card">
     <div class="hatch-rays"></div>
@@ -3258,7 +3267,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -4025,7 +4034,7 @@ function saveGame(){
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -5268,7 +5277,7 @@ document.getElementById('shell-info-modal').onclick=function(e){if(e.target===th
 // ============================================================
 // MODALS: OFFLINE, PET RESULT
 // ============================================================
-document.getElementById('offline-claim').onclick=function(){document.getElementById('offline-modal').classList.remove('open');};
+document.getElementById('offline-claim').onclick=function(){document.getElementById('offline-modal').classList.remove('open');if(typeof maybeShowNewsPopup==='function')setTimeout(maybeShowNewsPopup,300);};
 document.getElementById('pet-result-close').onclick=function(){document.getElementById('pet-result-modal').classList.remove('open');};
 document.getElementById('pet-result-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
 
@@ -6098,6 +6107,7 @@ function coresInvHtml(){
 // Tillfällig More-meny — håller vyer som ännu inte fått sin permanenta plats
 // i bottom-navet. Trimmas i senare steg av navigationsombyggnaden.
 var MORE_ITEMS=[
+  {label:'News',icon:uiIco('more/news','📰',30),action:'news'},
   {label:'Inbox',icon:uiIco('more/inbox','📬',30),action:'inbox'},
   {label:'Ascension',icon:uiIco('menu/ascension','🔼',30),action:'ascension'},
   {label:'Leaderboard',icon:uiIco('menu/leaderboard','🥇',30),action:'leaderboard'},
@@ -6114,9 +6124,10 @@ function openMore(){
     var bn=0,bid='';
     if(it.action==='inbox'){bn=mailUnread;bid='mi-inbox-badge';}
     else if(it.action==='friends'){bn=friendsUnread;bid='mi-friends-badge';}
+    else if(it.action==='news'){bn=(typeof newsUnreadCount==='function'?newsUnreadCount():0);bid='mi-news-badge';}
     var ibadge=bid?'<span class="mi-badge" id="'+bid+'" style="'+(bn>0?'':'display:none')+'">'+(bn>99?'99+':bn)+'</span>':'';
     d.innerHTML='<span class="mi-icon" style="position:relative">'+it.icon+ibadge+'</span><span class="mi-label">'+it.label+'</span>';
-    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='leaderboard'){openLeaderboard();}else if(it.action==='bag'){openBag();}else if(it.action==='howto'){openHowTo();}else{switchTab(it.tab);}};
+    d.onclick=function(){closeMore();if(it.action==='ascension'){openAscension();}else if(it.action==='trading'){openTrading();}else if(it.action==='friends'){openFriends();}else if(it.action==='inbox'){openInbox();}else if(it.action==='news'){openNews();}else if(it.action==='leaderboard'){openLeaderboard();}else if(it.action==='bag'){openBag();}else if(it.action==='howto'){openHowTo();}else{switchTab(it.tab);}};
     g.appendChild(d);
   });
   var dev=document.getElementById('more-dev');
@@ -6125,6 +6136,59 @@ function openMore(){
 }
 function closeMore(){document.getElementById('more-drawer').classList.remove('open');}
 document.getElementById('more-drawer').onclick=function(e){if(e.target===this)closeMore();};
+
+// ============================================================
+// NEWS / UPDATES — in-game patch-/event-flöde. Nyaste ÖVERST i listan.
+// popup:true  = STOR nyhet (nytt event / ny Battle Pass) → auto-poppar vid start (efter offline-modalen) tills läst.
+// popup:false = LITEN (update/fix) → ingen popup, bara röd badge på ⋯-knappen tills man öppnat News.
+// tag styr färgad chip: 'event' | 'battlepass' | 'update' | 'fix'.
+// NÄR VI PUSHAR NYTT: lägg ett objekt med UNIKT id ÖVERST. (id används för "läst"-spårning, byt aldrig ett gammalt id.)
+// ============================================================
+var NEWS=[
+  {id:'2026-06-22-welcome', date:'Jun 22, 2026', tag:'event', popup:true,
+   title:'News & Updates is here!',
+   body:'Big news — new events and Battle Passes — will pop up right here when you open the game. Smaller fixes and tweaks just add a little red dot to the ⋯ menu. Tap News any time to catch up on what changed.'},
+  {id:'2026-06-22-shells', date:'Jun 22, 2026', tag:'update', popup:false,
+   title:'Shell System Revamp',
+   body:'Shells are now named by region — Meadow, Forest, Mountain, Desert, Ocean, Volcano. Tapping and idling drop the six home shells, weighted so common regions come easiest. Lost World shells stay reserved for their own worlds.'},
+  {id:'2026-06-22-gearfix', date:'Jun 22, 2026', tag:'fix', popup:false,
+   title:'Idle Gear Slot Fix',
+   body:'Every unlocked idle slot now shows its Gear slot, even before you assign a pet.'}
+];
+var NEWS_TAGS={
+  event:{label:'Event',color:'#ff5fa2',icon:'🎉'},
+  battlepass:{label:'Battle Pass',color:'#f5c842',icon:'🎟️'},
+  update:{label:'Update',color:'#5cb85c',icon:'✨'},
+  fix:{label:'Fix',color:'#6f8ae0',icon:'🔧'}
+};
+function newsUnseen(){G.newsSeen=G.newsSeen||{};return NEWS.filter(function(n){return !G.newsSeen[n.id];});}
+function newsUnreadCount(){return newsUnseen().length;}
+function newsPendingPopup(){return newsUnseen().filter(function(n){return n.popup;});}
+function markAllNewsSeen(){G.newsSeen=G.newsSeen||{};NEWS.forEach(function(n){G.newsSeen[n.id]=true;});if(typeof saveGame==='function')saveGame();if(typeof badgesUpdate==='function')badgesUpdate();}
+function renderNews(){
+  var wrap=document.getElementById('news-list');if(!wrap)return;
+  if(!NEWS.length){wrap.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.5);padding:30px 10px;">No news yet.</div>';return;}
+  var h='';
+  NEWS.forEach(function(n){
+    var t=NEWS_TAGS[n.tag]||{label:n.tag,color:'#6f8ae0',icon:'📰'};
+    var isNew=!(G.newsSeen&&G.newsSeen[n.id]);
+    h+='<div style="background:linear-gradient(180deg,#172a55,#10204a);border:1px solid '+(isNew?t.color+'99':'rgba(58,92,184,0.35)')+';border-radius:13px;padding:11px 12px;margin-bottom:10px;'+(isNew?'box-shadow:0 0 10px '+t.color+'33;':'')+'">';
+    h+='<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap;">';
+    h+='<span style="display:inline-flex;align-items:center;gap:4px;background:'+t.color+'22;border:1px solid '+t.color+'88;color:'+t.color+';font-size:0.6rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;padding:2px 7px;border-radius:20px;">'+t.icon+' '+t.label+'</span>';
+    if(isNew)h+='<span style="background:#ff3b3b;color:#fff;font-size:0.55rem;font-weight:800;padding:2px 6px;border-radius:20px;">NEW</span>';
+    h+='<span style="margin-left:auto;font-size:0.6rem;color:rgba(255,255,255,0.45);">'+n.date+'</span>';
+    h+='</div>';
+    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.95rem;color:#fff;margin-bottom:4px;">'+n.title+'</div>';
+    h+='<div style="font-size:0.74rem;color:rgba(255,255,255,0.75);line-height:1.5;">'+n.body+'</div>';
+    h+='</div>';
+  });
+  wrap.innerHTML=h;
+}
+function openNews(){renderNews();var m=document.getElementById('news-modal');if(m)m.classList.add('open');markAllNewsSeen();}
+function closeNews(){var m=document.getElementById('news-modal');if(m)m.classList.remove('open');}
+// STOR-nyhet-popup vid start — anropas EFTER offline-modalen (se start-sekvensen + offline-claim-handlern).
+function maybeShowNewsPopup(){ if(newsPendingPopup().length)openNews(); }
+(function(){var nm=document.getElementById('news-modal');if(nm)nm.onclick=function(e){if(e.target===this)closeNews();};})();
 
 // ============================================================
 // INBOX (mail / mass-meddelande) — claim-baserat. Server: pp_mail_list / pp_mail_claim.
@@ -6138,7 +6202,7 @@ var friendsUnread=0;
 // Uppdaterar alla röda siffror: More-knappen (summan av allt) + Inbox-raden (mail) + Friends-raden (vän/trade-inbjudningar).
 function badgesUpdate(){
   var set=function(id,n){var e=document.getElementById(id);if(e){if(n>0){e.textContent=(n>99?'99+':n);e.style.display='flex';}else{e.style.display='none';}}};
-  set('more-badge',(mailUnread||0)+(friendsUnread||0));
+  set('more-badge',(mailUnread||0)+(friendsUnread||0)+(typeof newsUnreadCount==='function'?newsUnreadCount():0));
   set('mi-inbox-badge',mailUnread||0);
   set('mi-friends-badge',friendsUnread||0);
 }
@@ -7418,7 +7482,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.54<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.55<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11383,6 +11447,7 @@ if(savedData){
   G.mapsOwned=(savedData.mapsOwned&&typeof savedData.mapsOwned==='object')?savedData.mapsOwned:{};
   G.relics=(savedData.relics&&typeof savedData.relics==='object')?savedData.relics:{};
   G.areasUnlocked=(savedData.areasUnlocked&&typeof savedData.areasUnlocked==='object')?savedData.areasUnlocked:{};
+  G.newsSeen=(savedData.newsSeen&&typeof savedData.newsSeen==='object')?savedData.newsSeen:{};
   G.homeMode=(savedData.homeMode==='adventures')?'adventures':'build';
   G.idleWorld=(typeof savedData.idleWorld==='string')?savedData.idleWorld:'starter';
   G.idleSlots=(typeof savedData.idleSlots==='number'&&savedData.idleSlots>=1)?Math.min(IDLE_SLOT_MAX,savedData.idleSlots):1;
@@ -11435,6 +11500,8 @@ refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 requestAnimationFrame(tick);
 if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
+else if(typeof maybeShowNewsPopup==='function')setTimeout(maybeShowNewsPopup,900); // ingen offline → visa ev. stor-nyhet direkt; med offline visas den efter Collect (se offline-claim)
+if(typeof badgesUpdate==='function')badgesUpdate(); // visa ev. röd olästa-nyheter-badge på ⋯
 
 // ============================================================
 // CLOUD SAVE (Supabase) — valfritt lager ovanpå localStorage.
