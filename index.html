@@ -5295,6 +5295,33 @@ function unlockedIdleWorlds(){
   return list;
 }
 function setIdleWorld(id){ G.idleWorld=id; if(typeof saveGame==='function')saveGame(); renderHomeAdventures(); }
+function openIdleWorldPicker(){
+  var body=document.getElementById('adv-modal-body'); if(!body)return;
+  var worlds=unlockedIdleWorlds(); var cur=G.idleWorld;
+  var h='<div class="adv-pick-title">🌍 Choose Idle World</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.6);margin-bottom:10px;line-height:1.5;">Pick where your pets idle. Shells drop the same everywhere — the world only changes the special finds.</div>';
+  h+='<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;">';
+  worlds.forEach(function(id){
+    var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id}; var sel=(id===cur);
+    h+='<div onclick="pickIdleWorld(\''+id+'\')" style="flex:0 0 84px;width:84px;cursor:pointer;border-radius:11px;overflow:hidden;border:2px solid '+(sel?'#a86fff':'rgba(120,150,230,0.3)')+';background:#101a38;box-shadow:'+(sel?'0 0 10px rgba(160,100,255,0.6)':'none')+';">';
+    h+='<div style="height:54px;position:relative;"><img src="'+idleWorldBg(id)+'" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">'+(isLostWorld(id)?'<span style="position:absolute;top:2px;left:3px;font-size:0.72rem;text-shadow:0 1px 2px #000;">★</span>':'')+(sel?'<span style="position:absolute;top:2px;right:3px;font-size:0.72rem;color:#cdb6ff;text-shadow:0 1px 2px #000;">✓</span>':'')+'</div>';
+    h+='<div style="padding:4px 3px;font-size:0.6rem;font-weight:700;color:#fff;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+e.name.replace(' Egg','')+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="margin-top:12px;background:#0e1730;border:1px solid rgba(111,138,224,0.25);border-radius:12px;padding:10px 12px;">';
+  h+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:7px;">You can find here</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:6px;font-size:0.8rem;">';
+  h+='<div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.85);"><span>🐚</span><span style="flex:1;">Shells <span style="color:rgba(255,255,255,0.4);font-size:0.7rem;">(all worlds)</span></span></div>';
+  if(isLostWorld(cur)){var meta=LOST_WORLD_META[cur]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:8px;color:#cdb6ff;"><span>'+meta.relicIcon+'</span><span style="flex:1;">'+meta.relic+'</span></div>';}
+  h+='<div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);"><span>🥚</span><span style="flex:1;">'+(EGG_SHOP.find(function(e){return e.id===cur;})||{name:''}).name.replace(' Egg','')+' egg</span></div>';
+  if(typeof pickAvailableMap==='function'&&pickAvailableMap())h+='<div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.8);"><span>🗺️</span><span style="flex:1;">Secret Map</span></div>';
+  h+='</div></div>';
+  h+='<button onclick="closeAdvModal()" style="width:100%;margin-top:12px;background:linear-gradient(180deg,#6a4fb0,#4a3590);border:1px solid rgba(150,170,230,0.5);border-radius:10px;color:#fff;font-weight:800;font-size:0.85rem;padding:10px;cursor:pointer;">Idle here ✓</button>';
+  body.innerHTML=h;
+  document.getElementById('adv-modal').classList.add('open');
+}
+function pickIdleWorld(id){ setIdleWorld(id); openIdleWorldPicker(); }
 function renderHomeAdventures(){
   var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
   var worlds=unlockedIdleWorlds();
@@ -5312,10 +5339,6 @@ function renderHomeAdventures(){
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.55));"></div>';
   // floating bag (top-right) = SAME as main page (inventory icon + opens the main inventory)
   h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:24px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
-  // floating world dropdown (top-left)
-  h+='<select onchange="setIdleWorld(this.value)" style="position:absolute;top:42px;left:8px;z-index:4;max-width:150px;padding:7px 9px;border-radius:10px;background:rgba(8,12,30,0.72);color:#fff;border:1px solid rgba(150,170,230,0.45);font-size:0.78rem;font-weight:700;cursor:pointer;">';
-  worlds.forEach(function(id){var e=EGG_SHOP.find(function(x){return x.id===id;})||{name:id,icon:'❓'};h+='<option value="'+id+'"'+(id===G.idleWorld?' selected':'')+'>'+(isLostWorld(id)?'★ ':'')+e.name.replace(' Egg','')+'</option>';});
-  h+='</select>';
   // floating world-specific "Drops Here" box (right side)
   h+='<div style="position:absolute;top:80px;right:8px;z-index:3;width:130px;background:rgba(8,12,30,0.72);border:1px solid rgba(150,170,230,0.35);border-radius:10px;padding:8px 9px;">';
   h+='<div style="font-size:0.54rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Drops Here</div>';
@@ -5352,6 +5375,13 @@ function renderHomeAdventures(){
     h+='</div>';
     h+='</div>';
   }
+  h+='</div>';
+  // choose idle world card (opens the world-picker popup)
+  var _cw=EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:'',icon:'🌍'};
+  h+='<div onclick="openIdleWorldPicker()" style="display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,#16234c,#101a38);border:1px solid rgba(120,150,230,0.4);border-radius:12px;padding:9px 12px;margin-bottom:12px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3);">';
+  h+='<div style="width:40px;height:40px;border-radius:9px;overflow:hidden;flex:0 0 auto;border:1px solid rgba(150,170,230,0.4);"><img src="'+idleWorldBg(G.idleWorld)+'" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.textContent=\'🌍\'"></div>';
+  h+='<div style="flex:1;min-width:0;"><div style="font-size:0.56rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;">Idle World</div><div style="font-weight:800;font-size:0.98rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(isLostWorld(G.idleWorld)?'★ ':'')+_cw.name.replace(' Egg','')+'</div></div>';
+  h+='<div style="font-size:0.74rem;color:#9fb6ef;font-weight:700;flex:0 0 auto;">Change ▸</div>';
   h+='</div>';
   // idle slots — compact horizontal row of 5 (tap a pet to see more)
   h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
@@ -7418,7 +7448,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.40<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.41<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
