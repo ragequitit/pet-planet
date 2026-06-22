@@ -5400,10 +5400,10 @@ function renderHomeAdventures(){
       h+='<div style="font-size:0.5rem;color:rgba(255,255,255,0.5);">Slot '+(i+1)+'</div>';
       h+='<button onclick="buyIdleSlot('+i+')"'+(ok?'':' disabled')+' style="width:100%;background:'+(ok?'linear-gradient(180deg,#f5c842,#e0a800)':'#22304f')+';border:none;border-radius:7px;color:'+(ok?'#1a1305':'rgba(255,255,255,0.4)')+';font-weight:800;font-size:0.52rem;padding:4px 1px;cursor:'+(ok?'pointer':'default')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+COIN_IMG+' '+fmtShort(ucost)+'</button>';
       h+='</div>';
-      h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
+      h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.18);border-radius:9px;display:flex;align-items:center;justify-content:center;opacity:0.5;font-size:1.05rem;">'+LOCK_IMG+'</div>';
     }else{
       h+='<div style="background:#0c1124;border:1px solid rgba(111,138,224,0.15);border-radius:10px;padding:7px 3px;text-align:center;opacity:0.5;height:90px;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div style="font-size:0.95rem;">'+LOCK_IMG+'</div><div style="font-size:0.5rem;color:rgba(255,255,255,0.4);margin-top:3px;">Slot '+(i+1)+'</div></div>';
-      h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.12);border-radius:9px;opacity:0.4;"></div>';
+      h+='<div style="height:46px;background:#0c1124;border:1px solid rgba(111,138,224,0.18);border-radius:9px;display:flex;align-items:center;justify-content:center;opacity:0.5;font-size:1.05rem;">'+LOCK_IMG+'</div>';
     }
     h+='</div>';
   }
@@ -7435,7 +7435,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.43<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.44<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
