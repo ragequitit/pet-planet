@@ -274,7 +274,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #quest-hero{position:relative;flex-shrink:0;padding:13px 14px 12px;background:#15264e;background:url('https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/quests/quest-header-bg.png') top center/cover no-repeat,linear-gradient(180deg,#1d3566,#15264e);overflow:hidden;}
 #quest-hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg,rgba(21,38,78,0),#15264e 92%);pointer-events:none;z-index:0;}
 #quest-hero>*{position:relative;z-index:1;}
-#quest-hero-x{position:absolute;top:10px;right:10px;z-index:3;background:#e23b3b;border:none;border-radius:10px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;box-shadow:0 2px 0 #8a1f1f;}
+#quest-hero-x{position:absolute;top:8px;right:8px;z-index:3;background:transparent;border:none;border-radius:10px;width:36px;height:36px;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:0;}
+#quest-hero-x img{filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6));}
 #quest-hero-text{max-width:64%;margin-bottom:11px;}
 #quest-hero-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;line-height:1;letter-spacing:0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.55);}
 #quest-hero-sub{font-size:0.66rem;color:rgba(255,255,255,0.82);margin-top:5px;line-height:1.35;text-shadow:0 1px 3px rgba(0,0,0,0.6);}
@@ -2378,8 +2379,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="quest-hero">
       <button id="quest-hero-x" onclick="closeQuests()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
       <div id="quest-hero-text">
-        <div id="quest-hero-title">QUESTS</div>
-        <div id="quest-hero-sub">Complete quests to earn 💎 and boost your progress!</div>
+        <div id="quest-hero-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/quests/quests.png" alt="" style="width:34px;height:34px;object-fit:contain;vertical-align:-0.18em;margin-right:8px;" onerror="this.replaceWith(document.createTextNode('📋'))">QUESTS</div>
+        <div id="quest-hero-sub">Complete quests to earn <img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:13px;height:13px;object-fit:contain;vertical-align:-0.1em;" onerror="this.replaceWith(document.createTextNode('💎'))"> and boost your progress!</div>
       </div>
       <div id="quest-bonus"></div>
     </div>
@@ -7511,7 +7512,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.57<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.58<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8565,12 +8566,12 @@ function closeQuests(){
 function renderQuests(){
   ensureDailyQuests();ensureWeeklyQuests();
   var D=G.quests,W=G.weeklyQuests,h='<div class="ev-wrap">';
-  h+='<div class="ev-card"><div class="ev-card-h">\ud83d\udccb Daily Quests <span class="ev-h-timer">\ud83d\udd52 <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></span></div>';
+  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/daily-quests','\ud83d\udccb',20)+' Daily Quests <span class="ev-h-timer">\ud83d\udd52 <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></span></div>';
   D.active.forEach(function(q){h+=questRowHtml(q,D,'claimDailyQuest',true);});
   var rl=dailyRerollsLeft();
-  h+='<div class="ev-newq">\ud83d\udd04 '+(rl>0?(rl+' free reroll'+(rl>1?'s':'')+' today'):(REROLL_GEM_COST+'\ud83d\udc8e per reroll'))+'</div>';
+  h+='<div class="ev-newq">\ud83d\udd04 '+(rl>0?(rl+' free reroll'+(rl>1?'s':'')+' today'):(REROLL_GEM_COST+GEM_IMG+' per reroll'))+'</div>';
   h+='</div>';
-  h+='<div class="ev-card"><div class="ev-card-h">\ud83d\uddd3\ufe0f Weekly Quests <span class="ev-h-timer">\ud83d\udd52 <span id="qw-timer-val">'+fmtEventTime(weeklyCycleLeftMs())+'</span></span></div>';
+  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/weekly-quests','\ud83d\uddd3\ufe0f',20)+' Weekly Quests <span class="ev-h-timer">\ud83d\udd52 <span id="qw-timer-val">'+fmtEventTime(weeklyCycleLeftMs())+'</span></span></div>';
   W.active.forEach(function(q){h+=questRowHtml(q,W,'claimWeeklyQuest',false);});
   h+='</div>';
   h+='</div>';
@@ -8594,7 +8595,7 @@ function renderQuestBonus(){
   var h='<div class="q-bonus">';
   h+='<div class="q-bonus-gift">'+gift+'</div>';
   h+='<div class="q-bonus-mid"><div class="q-bonus-name">Daily Bonus</div><div class="q-bonus-desc">Complete all daily quests</div><div class="q-bonus-bar"><div class="q-bonus-bar-fill" style="width:'+pct+'%"></div></div><div class="q-bonus-prog">'+cc+' / '+tot+'</div></div>';
-  h+='<div class="q-bonus-rw">REWARD<b>'+DAILY_BONUS_GEMS+' \ud83d\udc8e</b></div>';
+  h+='<div class="q-bonus-rw">REWARD<b>'+DAILY_BONUS_GEMS+' '+GEM_IMG+'</b></div>';
   h+='<div class="q-bonus-chest'+(ready?' ready':'')+(claimed?' done':'')+'"'+(ready?' onclick="claimDailyBonus()"':'')+'>'+(claimed?'\u2705':chest)+'</div>';
   h+='</div>';
   el.innerHTML=h;
@@ -8909,7 +8910,7 @@ function eventRewardTextFull(rw){
   if(!rw)return '';
   var out=[];
   if(rw.coins)out.push(fmtShort(rw.coins)+' \ud83e\ude99');
-  if(rw.gems)out.push(rw.gems+' \ud83d\udc8e');
+  if(rw.gems)out.push(rw.gems+' '+GEM_IMG);
   if(rw.shells){for(var r in rw.shells)out.push('\u00d7'+rw.shells[r]+' \ud83d\udc1a');}
   if(rw.cores)out.push('\u00d7'+rw.cores+' \u2b21');
   if(rw.title)out.push('Title');
