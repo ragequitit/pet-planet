@@ -5662,7 +5662,9 @@ function closeBag(){
 }
 
 // Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
+function closeQuestsIfOpen(){var m=document.getElementById('quests-modal');if(m&&m.classList.contains('open')&&typeof closeQuests==='function')closeQuests();}
 function navTab(name){
+  closeQuestsIfOpen();
   if(currentTab===name){switchTab('buildings');}
   else{switchTab(name);}
 }
@@ -5670,6 +5672,7 @@ function navTab(name){
 //  - inte hemma / bladet nere / på upgrades → gå hem med bygg-bladet UPPE
 //  - redan hemma med bygg-bladet uppe → fäll NER bladet (som handtaget)
 function goHome(){
+  closeQuestsIfOpen();
   if(G.homeMode==='adventures'){ switchTab('buildings'); return; }
   var onBuildingsUp=(currentTab==='buildings')&&!homeCollapsed;
   if(onBuildingsUp){
@@ -7512,7 +7515,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.58<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.59<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
