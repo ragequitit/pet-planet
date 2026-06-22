@@ -1997,7 +1997,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div class="howto-sec">Things You'll Find</div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/egg-coin.png" alt="" onerror="this.replaceWith(document.createTextNode('\u2728'))"></div><div class="howto-txt"><div class="howto-nm">Sparks</div><div class="howto-desc">The main currency. Earned by tapping &amp; idling. Spent on crafting eggs, buildings, upgrades and slots.</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83c\udfe0'))"></div><div class="howto-txt"><div class="howto-nm">Buildings</div><div class="howto-desc">Your idle engine. Each building generates Sparks over time &#x2014; unlock and upgrade more to keep your income growing while you play and while you're away.</div></div></div>
-    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shell/uncommon-shell.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc1a'))"></div><div class="howto-txt"><div class="howto-nm">Shells</div><div class="howto-desc">Egg-crafting material in 10 rarities (Common &#x2192; Cosmic). Rarer eggs need rarer Shells. Combine 5 lower into 1 higher with Quick-fuse.</div></div></div>
+    <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shell/forest-shell.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc1a'))"></div><div class="howto-txt"><div class="howto-nm">Shells</div><div class="howto-desc">Egg-crafting material — one per region (Meadow &#x2192; Cosmic). Each region's egg needs its own Shells. Combine 5 lower into 1 higher with Quick-fuse.</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))"></div><div class="howto-txt"><div class="howto-nm">Gems</div><div class="howto-desc">Premium currency. Used for speed-ups and cosmetics.</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83e\udd5a'))"></div><div class="howto-txt"><div class="howto-nm">Eggs</div><div class="howto-desc">Crafted from Sparks + Shells, then hatched in the Hatchery to become a pet.</div></div></div>
     <div class="howto-row"><div class="howto-ic"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-pets.png" alt="" onerror="this.replaceWith(document.createTextNode('\ud83d\udc3e'))"></div><div class="howto-txt"><div class="howto-nm">Pets</div><div class="howto-desc">Hatched from eggs. Each pet has abilities &#x2014; equip them for bonuses, send them on adventures, or fuse and mutate them.</div></div></div>
@@ -2592,27 +2592,27 @@ var GEM_SPEEDUP_MIN_PER_GEM=4; // varje gem kortar äventyret med 4 min (= 15 ge
 var ADVENTURES=[
   {id:'forest', name:'Forest Expedition', icon:'🌲', affinity:'forest', chance:'High', col:'#3f7d3a', dur:10*60*1000, coinRate:0.2, coinFloor:150, xp:20, reqLevel:1,
     desc:'A peaceful tramp through the forest. Great for gathering resources and discovering surprises!',
-    shellLoot:[{type:'common',min:3,max:7},{type:'uncommon',min:2,max:6}],
+    shellLoot:[{type:'meadow',min:3,max:7},{type:'forest',min:2,max:6}],
     bonusLoot:[{type:'gems',min:1,max:2,chance:0.08},{type:'egg',id:'forest',chance:0.04},{type:'egg',id:'mountain',chance:0.02}]},
   {id:'ocean', name:'Ocean Expedition', icon:'🌊', affinity:'ocean', chance:'Medium', col:'#2a6ea8', dur:30*60*1000, coinRate:0.2, coinFloor:400, xp:40, reqLevel:3,
     desc:'Dive the open seas for richer hauls and the odd deep-water treasure.',
-    shellLoot:[{type:'common',min:2,max:5},{type:'uncommon',min:5,max:12},{type:'rare',min:0,max:2}],
+    shellLoot:[{type:'meadow',min:2,max:5},{type:'forest',min:5,max:12},{type:'mountain',min:0,max:2}],
     bonusLoot:[{type:'gems',min:1,max:3,chance:0.10},{type:'egg',id:'ocean',chance:0.05},{type:'egg',id:'desert',chance:0.03}]},
   {id:'desert', name:'Desert Expedition', icon:'🏜️', affinity:'desert', chance:'Medium', col:'#b9893f', dur:120*60*1000, coinRate:0.2, coinFloor:1000, xp:70, reqLevel:6,
     desc:'Cross the dunes under a blazing sun. Long, hot, and surprisingly rewarding.',
-    shellLoot:[{type:'uncommon',min:6,max:14},{type:'rare',min:1,max:4}],
+    shellLoot:[{type:'forest',min:6,max:14},{type:'mountain',min:1,max:4}],
     bonusLoot:[{type:'gems',min:2,max:4,chance:0.12},{type:'egg',id:'desert',chance:0.05},{type:'egg',id:'ocean',chance:0.04},{type:'egg',id:'jungle',chance:0.03},{type:'map',chance:0.04}]},
   {id:'arctic', name:'Arctic Expedition', icon:'❄️', affinity:'arctic', chance:'Low', col:'#3f8fae', dur:360*60*1000, coinRate:0.2, coinFloor:2500, xp:110, reqLevel:10,
     desc:'Brave the frozen north. Few make it far, but the spoils are worth the chill.',
-    shellLoot:[{type:'uncommon',min:5,max:12},{type:'rare',min:4,max:10},{type:'epic',min:0,max:2}],
+    shellLoot:[{type:'forest',min:5,max:12},{type:'mountain',min:4,max:10},{type:'desert',min:0,max:2}],
     bonusLoot:[{type:'gems',min:2,max:6,chance:0.14},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'volcano',chance:0.02},{type:'map',chance:0.05}]},
   {id:'volcano', name:'Volcano Expedition', icon:'🌋', affinity:'volcano', chance:'Low', col:'#b8472f', dur:720*60*1000, coinRate:0.2, coinFloor:6000, xp:180, reqLevel:15,
     desc:'Descend into molten depths. Dangerous, but the rarest shards smoulder here.',
-    shellLoot:[{type:'rare',min:8,max:18},{type:'epic',min:1,max:4}],
+    shellLoot:[{type:'mountain',min:8,max:18},{type:'desert',min:1,max:4}],
     bonusLoot:[{type:'gems',min:3,max:7,chance:0.16},{type:'egg',id:'volcano',chance:0.04},{type:'egg',id:'arctic',chance:0.05},{type:'egg',id:'mystic',chance:0.02},{type:'map',chance:0.06}]},
   {id:'ruins', name:'Ancient Ruins', icon:'🏛️', affinity:'mystic', chance:'Very Low', special:true, col:'#7a5bb0', dur:1440*60*1000, coinRate:0.2, coinFloor:15000, xp:350, reqLevel:20,
     desc:'A long, rewarding dig through forgotten ruins. The ultimate prize hunt.',
-    shellLoot:[{type:'rare',min:12,max:28},{type:'epic',min:2,max:6},{type:'legendary',min:0,max:2}],
+    shellLoot:[{type:'mountain',min:12,max:28},{type:'desert',min:2,max:6},{type:'ocean',min:0,max:2}],
     bonusLoot:[{type:'gems',min:5,max:12,chance:0.20},{type:'egg',id:'ocean',chance:0.08},{type:'egg',id:'volcano',chance:0.03},{type:'egg',id:'mystic',chance:0.015},{type:'egg',id:'celestial',chance:0.007},{type:'egg',id:'cosmic',chance:0.002},{type:'map',chance:0.08}]}
 ];
 var PET_POS=[{left:0,top:0},{left:52,top:20},{left:118,top:34},{left:184,top:20},{left:236,top:0}]; // U/båge (v6.87 djupare): kanterna högst, mitten lägst. top = nedåt.
@@ -2620,18 +2620,24 @@ var PET_POS=[{left:0,top:0},{left:52,top:20},{left:118,top:34},{left:184,top:20}
 // ============================================================
 // DATA: SHELL RARITIES
 // ============================================================
+// Shells = REGION-namngivna, ett per ägg/värld. EGNA id:n (inte längre pet-rarity-orden).
+// Vikter = platshållare (samma droppkänsla som förr) → Balance Sheet. Ikoner: <id>-shell.png.
 var SHELL_RARITIES=[
-  {id:'common',    name:'Common Shell',    icon:'⚪',color:'#aaa',   weight:60},
-  {id:'uncommon',  name:'Uncommon Shell',  icon:'🟢',color:'#4caf50',weight:25},
-  {id:'rare',      name:'Rare Shell',      icon:'🔵',color:'#2196f3',weight:10},
-  {id:'epic',      name:'Epic Shell',      icon:'🟣',color:'#9c27b0',weight:3},
-  {id:'legendary', name:'Legendary Shell', icon:'🟠',color:'#ff9800',weight:1},
-  {id:'mythical',  name:'Mythical Shell',  icon:'🔴',color:'#f44336',weight:0.5},
-  {id:'artifact',  name:'Artifact Shell',  icon:'🟡',color:'#ffd700',weight:0.1},
-  {id:'heavenly',  name:'Heavenly Shell',  icon:'💎',color:'#00bcd4',weight:0.05},
-  {id:'eternal',   name:'Eternal Shell',   icon:'✨',color:'#fff',   weight:0.01},
-  {id:'cosmic',    name:'Cosmic Shell',    icon:'🌌',color:'#e040fb',weight:0.001},
+  {id:'meadow',   name:'Meadow Shell',   icon:'⚪',color:'#aaa',   weight:60},
+  {id:'forest',   name:'Forest Shell',   icon:'🟢',color:'#4caf50',weight:25},
+  {id:'mountain', name:'Mountain Shell', icon:'🔵',color:'#2196f3',weight:10},
+  {id:'desert',   name:'Desert Shell',   icon:'🟣',color:'#9c27b0',weight:3},
+  {id:'ocean',    name:'Ocean Shell',    icon:'🟠',color:'#ff9800',weight:1},
+  {id:'volcano',  name:'Volcano Shell',  icon:'🔴',color:'#f44336',weight:0.5},
+  {id:'jungle',   name:'Jungle Shell',   icon:'🟡',color:'#ffd700',weight:0.1},
+  {id:'arctic',   name:'Arctic Shell',   icon:'❄️',color:'#7fd4ff',weight:0.07},
+  {id:'mystic',   name:'Mystic Shell',   icon:'💎',color:'#00bcd4',weight:0.05},
+  {id:'celestial',name:'Celestial Shell',icon:'✨',color:'#fff',   weight:0.01},
+  {id:'cosmic',   name:'Cosmic Shell',   icon:'🌌',color:'#e040fb',weight:0.001},
 ];
+// Shell-fusens ordning (5 lägre → 1 högre). EGEN lista, frikopplad från pet-rariteterna.
+var SHELL_ORDER=['meadow','forest','mountain','desert','ocean','volcano','jungle','arctic','mystic','celestial','cosmic'];
+function shellNext(id){var i=SHELL_ORDER.indexOf(id);return (i<0||i>=SHELL_ORDER.length-1)?null:SHELL_ORDER[i+1];}
 // Shell-ikoner: custom-PNG per raritet (assets/ui/shell/<id>-shell.png) med emoji-fallback.
 // Alla shell-PNG:er finns nu (inkl. eternal-shell.png). ✨ används bara som onerror-fallback om en bild inte laddar.
 function shellImgUrl(id){return ASSET_BASE+'/assets/ui/shell/'+id+'-shell.png';}
@@ -2644,16 +2650,16 @@ function shellIcon(id,cls){
 // DATA: EGG SHOP
 // ============================================================
 var EGG_SHOP=[
-  {id:'starter',  name:'Starter Egg',  icon:'🥚',shellType:'common',   shellAmt:50, buildReq:null,        hatchReq:null, coinReq:100},
-  {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'common',   shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
-  {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'uncommon', shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
-  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'rare',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
-  {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'epic',     shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
-  {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'legendary',shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
-  {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'mythical', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
-  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'artifact', shellAmt:18, buildReq:'Resort',     hatchReq:'ocean'},
-  {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'heavenly', shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
-  {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'eternal',  shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
+  {id:'starter',  name:'Meadow Egg',   icon:'🥚',shellType:'meadow',   shellAmt:50, buildReq:null,        hatchReq:null, coinReq:100},
+  {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'forest', shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
+  {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'mountain',     shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
+  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'desert',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
+  {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'ocean',shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
+  {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'jungle', shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
+  {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'arctic', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
+  {id:'volcano',  name:'Volcano Egg',  icon:'🌋',shellType:'volcano', shellAmt:18, buildReq:'Resort',     hatchReq:'ocean'},
+  {id:'mystic',   name:'Mystic Egg',   icon:'✨',shellType:'mystic', shellAmt:14, buildReq:'Zoo',        hatchReq:'volcano'},
+  {id:'celestial',name:'Celestial Egg',icon:'🌙',shellType:'celestial',  shellAmt:9,  buildReq:'Research Lab',hatchReq:'mystic'},
   {id:'cosmic',   name:'Cosmic Egg',   icon:'🌌',shellType:'cosmic',   shellAmt:5,  buildReq:'Breeding Center',hatchReq:'celestial'},
 ];
 // LOST WORLDS — moved OUT of the home shop ladder (overhaul step 2). Hidden in the shop until
@@ -3214,9 +3220,9 @@ function freshStats(){
     totalClicks:0,highestClicksPerSecond:0,mostClicksInSession:0,
     // SHELLS
     totalShellsCollected:0,totalShellsSpent:0,
-    shellsCollectedByRarity:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+    shellsCollectedByRarity:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
     shellDropsByRarity:{},
-    highestRarityShellFound:'common',favoriteShell:'common',
+    highestRarityShellFound:'meadow',favoriteShell:'meadow',
     // HATCHING
     eggsHatched:0,eggsHatchedByWorld:{},fastestHatch:null,longestHatch:null,totalHatchTimeWaited:0,
     mostHatchedWorld:null,tier5AbilitiesHatched:0,duplicatePetsHatched:0,
@@ -3248,7 +3254,7 @@ var G={
   buildingDoublings:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
-  shells:{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0},
+  shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
   eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
@@ -3433,7 +3439,7 @@ function dropShell(){
   G.stats.shellsCollectedByRarity[r.id]=(G.stats.shellsCollectedByRarity[r.id]||0)+amt;
   if(!G.stats.shellDropsByRarity)G.stats.shellDropsByRarity={};
   G.stats.shellDropsByRarity[r.id]=(G.stats.shellDropsByRarity[r.id]||0)+1;
-  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var rarityOrder=SHELL_ORDER;
   if(rarityOrder.indexOf(r.id)>rarityOrder.indexOf(G.stats.highestRarityShellFound))G.stats.highestRarityShellFound=r.id;
   // Favorite shell (mest samlad)
   var favMax=0;
@@ -3753,7 +3759,7 @@ function areaAdvId(world,n){return 'area:'+world+':'+n;}
 function parseAreaAdvId(id){ if(typeof id!=='string'||id.indexOf('area:')!==0)return null; var p=id.split(':'); return {world:p[1],n:parseInt(p[2],10)}; }
 function makeAreaAdv(world,n){
   var meta=LOST_WORLD_META[world]||{world:world,relic:world+' Relic',relicIcon:'🗝️'};
-  var egg=EGG_SHOP.find(function(e){return e.id===world;})||{icon:'❓',shellType:'common'};
+  var egg=EGG_SHOP.find(function(e){return e.id===world;})||{icon:'❓',shellType:'meadow'};
   var shellType=egg.shellType||'common';
   var depth=Math.max(1,n||1);
   // PLACEHOLDERS → Balance Sheet. Deeper area = a bit longer + richer odds.
@@ -4022,7 +4028,7 @@ function resetGame(){
   G.buildingDoublings=new Array(20).fill(0);
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
-  G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+  G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
@@ -5259,7 +5265,6 @@ document.getElementById('pet-result-modal').onclick=function(e){if(e.target===th
 var SCENE_TABS=['buildings','upgrades','inventory'];
 var currentTab='buildings';
 // ── HOME FLIP: Build Mode ⇄ Pet Adventures (idle) — two views of the home screen. ──
-function flipSide(btn,active,c1,c2){ if(!btn)return; btn.style.background=active?('linear-gradient(180deg,'+c1+','+c2+')'):'transparent'; btn.style.color=active?'#fff':'rgba(255,255,255,0.55)'; btn.style.boxShadow=active?'0 1px 6px rgba(0,0,0,0.35)':'none'; }
 function setHomeMode(mode){
   if(mode!=='build'&&mode!=='adventures')return;
   G.homeMode=mode;
@@ -5421,7 +5426,7 @@ function renderHomeAdventures(){
 // ── IDLE EARNING + HELPERS (step 2) ──
 var idleViewIdx=0, idleSecAcc=0;
 function isPetIdling(uid){return G.idlePets&&G.idlePets.some(function(u){return String(u)===String(uid);});}
-function idleShellType(){var e=EGG_SHOP.find(function(x){return x.id===(G.idleWorld||'starter');});return e?e.shellType:'common';}
+function idleShellType(){var e=EGG_SHOP.find(function(x){return x.id===(G.idleWorld||'starter');});return e?e.shellType:'meadow';}
 // Världens bakgrundsbild (samma som äggsidan) för idle-scenen; faller tillbaka till starter-bg.
 function idleWorldBg(id){var w=EGG_WORLDS.find(function(x){return x.id===id;});return (w&&w.bg)||EGG_WORLDS[0].bg;}
 // Idle SHELLS are world-INDEPENDENT and identical to the egg page (global SHELL_RARITIES weights via
@@ -5454,14 +5459,6 @@ function idleDropShell(ib){
   G.idleBag.shells[r.id]=(G.idleBag.shells[r.id]||0)+amt;
 }
 function fmtRate(n){n=n||0;return n>=1000?fmtShort(Math.round(n)):(Math.round(n*100)/100).toString();}
-function idlePetRate(pet){ // shells/hour — PLACEHOLDER → Balance Sheet
-  if(!pet)return 0;
-  var lvl=petLevelFromXp(pet.xp||0);
-  var s=(typeof petAdvSum==='function')?petAdvSum(pet):{shellGain:0};
-  var rarIdx=RARITY_PROGRESSION.indexOf(pet.rarity); if(rarIdx<0)rarIdx=0;
-  return (12+lvl*3)*(1+((s.shellGain||0)/100))*(1+rarIdx*0.15);
-}
-function idleTotalRate(){var t=0;(G.idlePets||[]).forEach(function(uid){var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(p)t+=idlePetRate(p);});return t;}
 function idleSinceText(){
   if(!G.idleStartAt||!(G.idlePets&&G.idlePets.length))return '00:00:00';
   var s=Math.floor((Date.now()-G.idleStartAt)/1000);
@@ -5529,28 +5526,6 @@ function removeIdlePet(uid){
   if(typeof saveGame==='function')saveGame();
   renderHomeAdventures();
 }
-function openIdlePicker(slot){
-  if((G.idlePets||[]).length>=G.idleSlots)return;
-  var avail=G.hatchedPets.filter(function(p){return !isPetBusy(p.uid)&&!isPetIdling(p.uid);});
-  avail.sort(function(a,b){return petLevelFromXp(b.xp||0)-petLevelFromXp(a.xp||0);});
-  var shType=idleShellType();
-  var wname=(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:G.idleWorld}).name.replace(' Egg','');
-  var h='<div class="adv-pick-title">Send a pet to idle on<br><b>⛺ '+wname+'</b></div>';
-  if(!avail.length){ h+='<div class="adv-pick-empty">No available pets. Hatch some, or free up pets from adventures or your home slots.</div>'; }
-  else{
-    h+='<div class="adv-pick-list">';
-    avail.forEach(function(p){
-      var rc=RARITY_CONFIG[p.rarity]||{color:'#aaa',label:''}; var lv=petLevelFromXp(p.xp||0);
-      h+='<div class="adv-pick-pet" onclick="assignIdlePet(\''+p.uid+'\')">';
-      h+='<div class="app-emoji">'+petIco(p)+'</div>';
-      h+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+petDisplayName(p)+'</div><div class="app-rar">'+rc.label+' · Lv '+lv+'</div><div class="app-odds"><span class="app-odds-lbl">IDLE</span><span class="app-odd">'+shellIcon(shType)+' '+fmtRate(idlePetRate(p))+'/hr</span></div></div>';
-      h+='<div class="app-go">Idle →</div></div>';
-    });
-    h+='</div>';
-  }
-  document.getElementById('adv-modal-body').innerHTML=h;
-  document.getElementById('adv-modal').classList.add('open');
-}
 function buyIdleSlot(i){
   if(i!==G.idleSlots)return;
   var c=idleSlotCost(i); if(!c)return;
@@ -5560,20 +5535,6 @@ function buyIdleSlot(i){
   if(typeof updateHUD==='function')updateHUD();
   if(typeof saveGame==='function')saveGame();
   renderHomeAdventures();
-}
-function openIdleBag(){
-  var bag=G.idleBag||{shells:{},finds:[]};
-  var lines=[];
-  if(bag.finds&&bag.finds.length){
-    lines.push('✨ Special finds this session:');
-    bag.finds.slice(-12).forEach(function(f){lines.push(f.label);});
-    lines.push('(also placed in your Inventory bag)');
-  }
-  var sh=bag.shells||{}; var shLines=[];
-  Object.keys(sh).forEach(function(t){var r=SHELL_RARITIES.find(function(s){return s.id===t;});if(sh[t]>0)shLines.push((r?shellIcon(t)+' '+r.name:t)+' Shells: +'+sh[t]);});
-  if(shLines.length){ lines.push('🐚 Shells gathered:'); lines=lines.concat(shLines); }
-  if(!lines.length){ if(typeof showRewardPopup==='function')showRewardPopup(['Nothing gathered yet this session.','Your idling pets will fill this up over time.'],false); return; }
-  if(typeof showRewardPopup==='function')showRewardPopup(lines,true);
 }
 function switchTab(name){
   var wasHome=SCENE_TABS.indexOf(currentTab)>=0;
@@ -7444,7 +7405,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.45<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.48<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -7492,7 +7453,7 @@ function resetFromSettings(){
     G.buildingDoublings=new Array(20).fill(0);
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
-    G.shells={common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+    G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
@@ -8458,7 +8419,7 @@ function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
   if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/common/finger-tap.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
   if(t==='hatch')  return '<img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">';
-  if(t==='shells') return '<img src="'+shellImgUrl('common')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">';
+  if(t==='shells') return '<img src="'+shellImgUrl('meadow')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">';
   if(t==='craft')  return '<img src="'+shellImgUrl('starter')+'" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🛠️\'))">';
   if(t==='send')   return '<img src="'+ASSET_BASE+'/assets/ui/nav/nav-adventures.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🚀\'))">';
   return e;
@@ -9494,7 +9455,7 @@ function renderInventory(){
   var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
   var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
   var html='<div class="inv-tabs">';
-  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"> Shells</div>';
+  html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/meadow-shell.png\'}"> Shells</div>';
   html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><img src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:-0.18em" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"> Eggs</div>';
   html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')">🧪 Cores</div>';
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')">'+uiIco('inventory/loot','🗝️',16)+' Loot</div>';
@@ -9618,7 +9579,7 @@ function shellCodexHtml(){
   var hasFav=fav&&s.shellsCollectedByRarity&&(s.shellsCollectedByRarity[s.favoriteShell]||0)>0;
   var h='<div class="codex-intro">🐚 Shells drop while you click and idle. Collect them to craft eggs — rarer eggs need rarer Shells.</div>';
   h+='<div class="codex-stats">';
-  h+='<div class="cstat"><div class="cs-ic"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/common-shell.png\'}"></div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
+  h+='<div class="cstat"><div class="cs-ic"><img class="shell-ic" src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/meadow-shell.png\'}"></div><div class="cs-v">'+fmtShort(s.totalShellsCollected||0)+'</div><div class="cs-l">Collected</div></div>';
   h+='<div class="cstat"><div class="cs-ic">'+(hasRarest?shellIcon(rarest.id):'—')+'</div><div class="cs-v" style="color:'+(hasRarest?rarest.color:'rgba(255,255,255,0.45)')+'">'+(hasRarest?rarest.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Rarest found</div></div>';
   h+='<div class="cstat"><div class="cs-ic">'+(hasFav?shellIcon(fav.id):'—')+'</div><div class="cs-v" style="color:'+(hasFav?fav.color:'rgba(255,255,255,0.45)')+'">'+(hasFav?fav.name.replace(' Shell',''):'—')+'</div><div class="cs-l">Favorite</div></div>';
   h+='</div>';
@@ -9646,7 +9607,7 @@ function renderShop(){
   html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
   html+='<div class="shop-tabs">';
   html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/starter-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/common-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/meadow-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
   html+='</div>';
 
   if(shopTab==='shells'){
@@ -10169,9 +10130,9 @@ function clearFusionSlots(){
 }
 
 function setFusionMode(m){fusionMode=m;if(m==='pets')clearFusionSlots();else renderFusion();}
-function shellMeta(id){var s=SHELL_RARITIES.find(function(x){return x.id===id;});var rc=RARITY_CONFIG[id]||{};return {icon:s?s.icon:'⚪',color:s?s.color:(rc.color||'#aaa'),label:(rc.label||id)};}
+function shellMeta(id){var s=SHELL_RARITIES.find(function(x){return x.id===id;});var rc=RARITY_CONFIG[id]||{};return {icon:s?s.icon:'⚪',color:s?s.color:(rc.color||'#aaa'),label:(s?s.name:(rc.label||id))};}
 function convertShells(fromRarity,batches){
-  var next=getNextRarity(fromRarity);if(!next)return;
+  var next=shellNext(fromRarity);if(!next)return;
   var have=G.shells[fromRarity]||0;
   var maxB=Math.floor(have/5);
   var n=Math.min(batches,maxB);
@@ -10183,8 +10144,8 @@ function convertShells(fromRarity,batches){
   G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+n;
   if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
   G.stats.shellsCollectedByRarity[next]=(G.stats.shellsCollectedByRarity[next]||0)+n;
-  var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
-  if(ORDER.indexOf(next)>ORDER.indexOf(G.stats.highestRarityShellFound||'common'))G.stats.highestRarityShellFound=next;
+  var ORDER=SHELL_ORDER;
+  if(ORDER.indexOf(next)>ORDER.indexOf(G.stats.highestRarityShellFound||'meadow'))G.stats.highestRarityShellFound=next;
   var favMax=0;ORDER.forEach(function(rid){if((G.stats.shellsCollectedByRarity[rid]||0)>favMax){favMax=G.stats.shellsCollectedByRarity[rid];G.stats.favoriteShell=rid;}});
   saveGame();
   renderFusion();
@@ -10200,7 +10161,7 @@ function shellQuickFuseHtml(){
   h+='<div class="qf-list">';
   var any=false;
   SHELL_RARITIES.forEach(function(r){
-    var next=getNextRarity(r.id);if(!next)return;          // toppraritet kan inte fuseras upp
+    var next=shellNext(r.id);if(!next)return;          // toppraritet kan inte fuseras upp
     var have=G.shells[r.id]||0;if(have<=0)return;          // visa bara shells man faktiskt har
     any=true;
     var maxB=Math.floor(have/5);var canFuse=maxB>0;var nm=shellMeta(next);
@@ -10225,7 +10186,7 @@ function renderShellFusion(){
   var src=shellFuseSource;
   var have=src?(G.shells[src]||0):0;
   var maxOut=Math.floor(have/5);
-  var next=src?getNextRarity(src):null;
+  var next=src?shellNext(src):null;
   var sm=src?shellMeta(src):null;
   var nm=next?shellMeta(next):null;
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
@@ -10236,7 +10197,7 @@ function renderShellFusion(){
   if(src){
     h+='<div class="shf-box-ic" style="color:'+sm.color+'">'+shellIcon(src)+'</div><div class="shf-box-lbl">'+sm.label+'</div><div class="shf-box-sub">Have '+fmtShort(have)+' · tap to change</div>';
   } else {
-    h+='<div class="shf-box-ic"><img src="'+shellImgUrl('common')+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))"></div><div class="shf-box-empty">Tap to choose an Shell</div>';
+    h+='<div class="shf-box-ic"><img src="'+shellImgUrl('meadow')+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'🐚\'))"></div><div class="shf-box-empty">Tap to choose an Shell</div>';
   }
   h+='</div>';
   h+='<div class="shf-io-arrow">→</div>';
@@ -10271,11 +10232,11 @@ function renderShellFusion(){
 function setShellQty(v){shellFuseQty=v;renderFusion();}
 function openShellSrcPicker(){renderShellSrcList();document.getElementById('shell-src-modal').classList.add('open');}
 function renderShellSrcList(){
-  var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var ORDER=SHELL_ORDER;
   var wrap=document.getElementById('shell-src-list');if(!wrap)return;
   var h='',any=false;
   ORDER.forEach(function(rid){
-    if(!getNextRarity(rid))return; // cosmic kan inte konverteras
+    if(!shellNext(rid))return; // cosmic kan inte konverteras
     var have=G.shells[rid]||0;if(have<=0)return;
     any=true;var sm=shellMeta(rid),maxOut=Math.floor(have/5);
     h+='<div class="shf-src-row" onclick="setShellSource(\''+rid+'\')"><span class="shf-ic" style="color:'+sm.color+';font-size:1.2rem">'+shellIcon(rid)+'</span><span style="flex:1;font-weight:800;color:#fff;font-size:0.8rem;">'+sm.label+' Shell</span><span style="color:rgba(255,255,255,0.5);font-size:0.7rem;">'+fmtShort(have)+(maxOut>0?' · ⭢'+fmtShort(maxOut):'')+'</span></div>';
@@ -10286,7 +10247,7 @@ function renderShellSrcList(){
 function setShellSource(rid){shellFuseSource=rid;shellFuseQty=1;document.getElementById('shell-src-modal').classList.remove('open');renderFusion();}
 function tryFuseShells(){
   var src=shellFuseSource;if(!src)return;
-  var next=getNextRarity(src);if(!next)return;
+  var next=shellNext(src);if(!next)return;
   var have=G.shells[src]||0,maxOut=Math.floor(have/5);
   var qty=(shellFuseQty==='max')?maxOut:Math.min(shellFuseQty,maxOut);
   if(qty<1)return;
@@ -10490,13 +10451,13 @@ var ACHIEVEMENTS=[
   {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Shell Collector',desc:'Collect 1,000 Shells',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
   {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
   {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
-  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Rare Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.rare||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.rare)||0,1),max:1};}},
-  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Epic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.epic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.epic)||0,1),max:1};}},
-  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Legendary Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.legendary||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.legendary)||0,1),max:1};}},
-  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Mythical Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mythical||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mythical)||0,1),max:1};}},
-  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Artifact Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.artifact||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.artifact)||0,1),max:1};}},
-  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Heavenly Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.heavenly||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.heavenly)||0,1),max:1};}},
-  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Eternal Shell',desc:'Obtain your first Eternal Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.eternal||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.eternal)||0,1),max:1};}},
+  {id:'lucky_drop',cat:'Gameplay',icon:'🔵',name:'Lucky Drop',desc:'Obtain your first Mountain Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,1),max:1};}},
+  {id:'epic_fortune',cat:'Gameplay',icon:'🟣',name:'Epic Fortune',desc:'Obtain your first Desert Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,1),max:1};}},
+  {id:'legendary_treasure',cat:'Gameplay',icon:'🟠',name:'Legendary Treasure',desc:'Obtain your first Ocean Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,1),max:1};}},
+  {id:'mythical_discovery',cat:'Gameplay',icon:'🔴',name:'Mythical Discovery',desc:'Obtain your first Volcano Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,1),max:1};}},
+  {id:'artifact_find',cat:'Gameplay',icon:'🟡',name:'Artifact Find',desc:'Obtain your first Jungle Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,1),max:1};}},
+  {id:'heavenly_luck',cat:'Gameplay',icon:'💎',name:'Heavenly Luck',desc:'Obtain your first Mystic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,1),max:1};}},
+  {id:'eternal_shell',cat:'Gameplay',icon:'✨',name:'Celestial Shell',desc:'Obtain your first Celestial Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,1),max:1};}},
   {id:'cosmic_miracle',cat:'Gameplay',icon:'🌌',name:'Cosmic Miracle',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
 
   // BUILDINGS
@@ -10894,7 +10855,7 @@ document.addEventListener('click',function(e){
 // Kör achievement-check var 2:a sekund
 setInterval(checkAchievements,2000);
 var PETDEX_WORLDS=[
-  {id:'starter',  name:'Starter',   icon:'🥚'},
+  {id:'starter',  name:'Meadow',    icon:'🥚'},
   {id:'forest',   name:'Forest',    icon:'🌿'},
   {id:'mountain', name:'Mountain',  icon:'⛰️'},
   {id:'desert',   name:'Desert',    icon:'🏜️'},
@@ -11336,7 +11297,7 @@ if(savedData){
   if(G.ulvl.craft==null)G.ulvl.craft=0;if(G.ulvl.hatch==null)G.ulvl.hatch=0;
   G.equippedPets=savedData.equippedPets||[null,null,null,null,null];
   G.loadouts=Array.isArray(savedData.loadouts)?savedData.loadouts:[];
-  G.shells=savedData.shells||{common:0,uncommon:0,rare:0,epic:0,legendary:0,mythical:0,artifact:0,heavenly:0,eternal:0,cosmic:0};
+  G.shells=savedData.shells||{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   // Sanera null-värden till 0
   SHELL_RARITIES.forEach(function(r){if(G.shells[r.id]===null||G.shells[r.id]===undefined)G.shells[r.id]=0;});
   G.eggsOwned=savedData.eggsOwned||{};G.eggsHatched=savedData.eggsHatched||{};
