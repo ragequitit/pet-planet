@@ -5339,15 +5339,6 @@ function renderHomeAdventures(){
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.55));"></div>';
   // floating bag (top-right) = SAME as main page (inventory icon + opens the main inventory)
   h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:24px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
-  // floating world-specific "Drops Here" box (right side)
-  h+='<div style="position:absolute;top:80px;right:8px;z-index:3;width:130px;background:rgba(8,12,30,0.72);border:1px solid rgba(150,170,230,0.35);border-radius:10px;padding:8px 9px;">';
-  h+='<div style="font-size:0.54rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Drops Here</div>';
-  h+='<div style="display:flex;flex-direction:column;gap:5px;font-size:0.66rem;">';
-  h+='<div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.85);"><span>🐚</span><span style="flex:1;">Shells</span></div>';
-  if(isLostWorld(G.idleWorld)){var fmeta=LOST_WORLD_META[G.idleWorld]||{relic:'Relic',relicIcon:'🗝️'};h+='<div style="display:flex;align-items:center;gap:6px;color:#cdb6ff;"><span>'+fmeta.relicIcon+'</span><span style="flex:1;">'+fmeta.relic+'</span></div>';}
-  h+='<div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.75);"><span>🥚</span><span style="flex:1;">'+(EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:''}).name.replace(' Egg','')+' egg</span></div>';
-  if(typeof pickAvailableMap==='function'&&pickAvailableMap())h+='<div style="display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.75);"><span>🗺️</span><span style="flex:1;">Secret Map</span></div>';
-  h+='</div></div>';
   if(!pets.length){
     h+='<div style="height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;position:relative;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
@@ -7444,7 +7435,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.42<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.43<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
