@@ -5360,7 +5360,7 @@ function renderHomeAdventures(){
     if(i<pets.length){
       var sp=pets[i]; var slv=petLevelFromXp(sp.xp||0); var src=RARITY_CONFIG[sp.rarity]||{color:'#fff'}; var clp=petXpProgress(sp); var fname=(petDisplayName(sp)||'').split(' ')[0];
       h+='<div onclick="openPetSlotModal('+i+',\'idle\')" style="flex:1;min-width:0;position:relative;background:linear-gradient(180deg,#1c2a5a,#141f44);border:1px solid '+(src.color||'#3a5')+'66;border-radius:10px;cursor:pointer;height:90px;overflow:hidden;">';
-      h+='<div style="position:absolute;top:2px;right:2px;z-index:2;background:linear-gradient(180deg,#6a4fb0,#4a3590);border:1px solid rgba(150,170,230,0.5);border-radius:6px;padding:1px 5px;font-weight:800;font-size:0.5rem;color:#fff;">Lv '+slv+'</div>';
+      h+='<div id="idle-clv-'+i+'" style="position:absolute;top:2px;right:2px;z-index:2;background:linear-gradient(180deg,#6a4fb0,#4a3590);border:1px solid rgba(150,170,230,0.5);border-radius:6px;padding:1px 5px;font-weight:800;font-size:0.5rem;color:#fff;">Lv '+slv+'</div>';
       h+='<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:5.1rem;line-height:1;">'+petIco(sp)+'</div>';
       h+='<div style="position:absolute;left:0;right:0;bottom:0;padding:8px 3px 3px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.92));">';
       h+='<div style="font-weight:800;font-size:0.58rem;color:'+src.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;text-shadow:0 1px 2px #000;margin-bottom:2px;">'+fname+'</div>';
@@ -5480,7 +5480,7 @@ function softUpdateIdle(){
   var el=document.getElementById('idle-since'); if(el)el.textContent=idleSinceText();
   var b=document.getElementById('idle-bag-badge'); if(b){var c=idleBagCount(); b.textContent=c; b.style.display=c?'':'none';}
   var _il=(G.idlePets||[]).map(function(u){return G.hatchedPets.find(function(p){return String(p.uid)===String(u);});}).filter(Boolean);
-  _il.forEach(function(p,idx){var f=document.getElementById('idle-cxp-'+idx);if(f){var lp=petXpProgress(p);f.style.width=lp.pct+'%';}});
+  _il.forEach(function(p,idx){var lp=petXpProgress(p);var f=document.getElementById('idle-cxp-'+idx);if(f)f.style.width=lp.pct+'%';var lvb=document.getElementById('idle-clv-'+idx);if(lvb)lvb.textContent='Lv '+lp.level;});
 }
 function idleSwipe(dir){var n=(G.idlePets||[]).length;if(!n)return;idleViewIdx=(idleViewIdx+dir+n)%n;renderHomeAdventures();}
 function idleGearTap(){ if(typeof showRewardPopup==='function')showRewardPopup(['Gear slots are coming soon.','You\'ll equip adventure gear here to boost a pet\'s idle haul.'],false); }
@@ -7419,7 +7419,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.38<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.39<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
