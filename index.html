@@ -21,7 +21,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
 #scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 #scene-fade{display:none;position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
-.side-btns{position:absolute;top:47px;display:flex;flex-direction:column;gap:18px;z-index:10;}
+.side-btns{position:absolute;top:57px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
 .side-btn{position:relative;width:65px;padding:34px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:none;overflow:visible;}
@@ -1621,8 +1621,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .utile-grid{display:flex;flex-wrap:wrap;gap:7px;}
 .utile{position:relative;width:52px;height:52px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;box-shadow:0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);cursor:pointer;}
 .utile:active{transform:translateY(1px);}
-.utile-ic{font-size:1.5rem;line-height:1;}
-.utile-ic .bld-pic{width:34px;height:34px;}
+.utile-ic{font-size:1.875rem;line-height:1;}
+.utile-ic .bld-pic{width:42.5px;height:42.5px;}
 .utile.afford{border-color:var(--gold);box-shadow:0 0 10px rgba(245,200,66,0.45),0 2px 0 #0a1838,inset 0 1px 0 rgba(255,255,255,0.1);}
 .utile.poor{opacity:0.7;}
 .utile.locked{opacity:0.4;filter:grayscale(0.55);}
@@ -7587,7 +7587,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.85<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.87<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
