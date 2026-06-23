@@ -2310,7 +2310,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-shskim{position:absolute;top:-14%;bottom:-14%;left:0;width:48%;z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:0.55;transform:translateX(-180%) skewX(-13deg);animation:pc2skim 3.8s linear infinite;}
 .pdx2.shiny1 .pdx2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(255,236,170,0.55) 35%,rgba(255,255,255,0.9) 50%,rgba(255,213,90,0.55) 65%,transparent 100%);}
 .pdx2.shiny2 .pdx2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(140,255,225,0.55) 35%,rgba(232,255,255,0.9) 50%,rgba(120,180,255,0.55) 65%,transparent 100%);}
-.is-firefox .pdx2-shframe,.is-firefox .pdx2-shskim{animation:none!important;}
+.pdx2-shrays{position:absolute;left:50%;top:96px;width:280px;height:280px;z-index:1;pointer-events:none;transform:translate(-50%,-50%);-webkit-mask:radial-gradient(circle,#000 14%,transparent 60%);mask:radial-gradient(circle,#000 14%,transparent 60%);opacity:.4;animation:pc2spin 9s linear infinite;}
+.pdx2.shiny1 .pdx2-shrays{background:repeating-conic-gradient(from 0deg,#ff6b6b 0deg 4deg,#ffd24d 4deg 8deg,#6bff9d 8deg 12deg,#5dd0ff 12deg 16deg,#c77dff 16deg 20deg,transparent 20deg 30deg);animation:pc2spin 9s linear infinite,pc2shhue 7s linear infinite;}
+.pdx2.shiny2 .pdx2-shrays{background:repeating-conic-gradient(from 0deg,#5dffd0 0deg 4deg,#5db8ff 4deg 9deg,#7df0ff 9deg 13deg,#ffffff 13deg 17deg,transparent 17deg 28deg);}
+.is-firefox .pdx2-shframe,.is-firefox .pdx2-shskim,.is-firefox .pdx2-shrays{animation:none!important;}
 .pdx2-fav{position:absolute;top:9px;left:11px;z-index:7;font-size:1.6rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.6);text-shadow:0 1px 4px rgba(0,0,0,0.85);transition:transform .1s,color .12s;}
 .pdx2-fav.on{color:var(--gold);text-shadow:0 0 8px rgba(245,200,66,0.85);}
 .pdx2-fav:active{transform:scale(0.85);}
@@ -5303,7 +5306,7 @@ function openPetDetail(uid){
   var html='<div class="pdx2'+(pet.shiny===2?' shiny2':(pet.shiny===1?' shiny1':''))+'" style="--rc:'+rc.color+'">';
   html+=(pet.world?'<img class="pdx2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">':'');
   html+='<div class="pdx2-shade"></div>';
-  if(pet.shiny)html+='<div class="pdx2-shskim"></div><div class="pdx2-shframe"></div>';
+  if(pet.shiny)html+='<div class="pdx2-shrays"></div><div class="pdx2-shskim"></div><div class="pdx2-shframe"></div>';
   html+='<div class="pdx2-fav'+(pet.fav?' on':'')+'" onclick="petDetailToggleFav(\''+pet.uid+'\')">\u2605</div>';
   if(pet.shiny)html+='<div class="pdx2-shiny s'+pet.shiny+'">\u2728</div>';
   html+='<div class="pdx2-art">'+artBig+'</div>';
@@ -7582,7 +7585,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.83<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.84<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
