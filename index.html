@@ -24,11 +24,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btns{position:absolute;top:24px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
-.side-btn{position:relative;width:59px;padding:31px 3px 5px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:14px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:none;overflow:visible;}
+.side-btn{position:relative;width:65px;padding:34px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:none;overflow:visible;}
 .side-btn:active{transform:translateY(2px);}
-.side-btn .sb-icon{position:absolute;top:-19px;left:0;right:0;text-align:center;font-size:2.31rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
-.side-btn .sb-img{width:46px;height:46px;object-fit:contain;display:inline-block;}
-.side-btn .sb-label{font-size:0.55rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
+.side-btn .sb-icon{position:absolute;top:-21px;left:0;right:0;text-align:center;font-size:2.54rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
+.side-btn .sb-img{width:51px;height:51px;object-fit:contain;display:inline-block;}
+.side-btn .sb-label{font-size:0.6rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
 .pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;pointer-events:auto;}
@@ -63,7 +63,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #egg-glow2{position:absolute;width:240px;height:270px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
 @keyframes pulse2{0%,100%{opacity:0.4;}50%{opacity:0.9;}}
-#egg-img{width:173px;height:203px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
+#egg-img{width:156px;height:183px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;top:2px;z-index:2;display:block;transform-origin:center bottom;will-change:transform;}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
 @keyframes eggPop{0%{transform:scale(1,1);}20%{transform:scale(1.07,0.94);}50%{transform:scale(0.96,1.06);}100%{transform:scale(1,1);}}
 /* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
@@ -1686,14 +1686,14 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .side-btn:active .sb-icon{transform:translateY(2px);}
 
 /* ===== HOME-FLIP SWITCH — laser-glow pill med glidande kula ===== */
-.flip-pill{position:relative;display:inline-flex;align-items:center;gap:8px;padding:3px 10px;border-radius:22px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;}
-.flip-pill::before{content:'';position:absolute;inset:0;border-radius:22px;padding:1.5px;background:linear-gradient(90deg,#36a8ff,#6f5bff,#a64bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
-.flip-lbl{background:transparent;border:none;font-family:inherit;font-weight:800;font-size:0.66rem;letter-spacing:0.3px;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;align-items:center;gap:4px;padding:3px 2px;white-space:nowrap;transition:color .2s,text-shadow .2s;}
-.flip-knob{position:relative;width:37px;height:18px;flex:0 0 auto;border-radius:11px;background:rgba(8,12,30,0.9);border:1px solid rgba(150,170,230,0.45);cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);}
-.flip-knob i{position:absolute;top:1px;left:1px;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bcd6ff 70%);box-shadow:0 0 7px rgba(90,160,255,0.9);transition:left .25s ease,background .25s ease,box-shadow .25s ease;}
+.flip-pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:3px 11px;border-radius:24px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;}
+.flip-pill::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1.5px;background:linear-gradient(90deg,#36a8ff,#6f5bff,#a64bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+.flip-lbl{background:transparent;border:none;font-family:inherit;font-weight:800;font-size:0.73rem;letter-spacing:0.3px;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;align-items:center;gap:4px;padding:3px 2px;white-space:nowrap;transition:color .2s,text-shadow .2s;}
+.flip-knob{position:relative;width:41px;height:20px;flex:0 0 auto;border-radius:12px;background:rgba(8,12,30,0.9);border:1px solid rgba(150,170,230,0.45);cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);}
+.flip-knob i{position:absolute;top:1px;left:1px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bcd6ff 70%);box-shadow:0 0 7px rgba(90,160,255,0.9);transition:left .25s ease,background .25s ease,box-shadow .25s ease;}
 .flip-pill.build-on .flip-lbl.l{color:#cfe6ff;text-shadow:0 0 8px rgba(80,160,255,0.85);}
 .flip-pill.adv-on .flip-lbl.r{color:#ecd4ff;text-shadow:0 0 8px rgba(170,90,255,0.9);}
-.flip-pill.adv-on .flip-knob i{left:calc(100% - 14px);background:radial-gradient(circle at 35% 30%,#fff,#d8b6ff 70%);box-shadow:0 0 8px rgba(175,95,255,0.95);}
+.flip-pill.adv-on .flip-knob i{left:calc(100% - 15px);background:radial-gradient(circle at 35% 30%,#fff,#d8b6ff 70%);box-shadow:0 0 8px rgba(175,95,255,0.95);}
 
 /* (2)+(3) Add Friend-popupen och Notifications/View All-popupen saknade
    panel-bakgrund (var inte med i någon .prof-panel-regel) → genomskinliga/"wonky".
@@ -1768,9 +1768,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   <div id="main">
     <div id="home-flip" style="display:none;position:absolute;top:5px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
       <div id="flip-pill" class="flip-pill build-on">
-        <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="" style="width:21px;height:21px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
+        <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/starter-egg.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
         <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
-        <button class="flip-lbl r" onclick="setHomeMode('adventures')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" style="width:21px;height:21px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🗺️'))"> ADVENTURE</button>
+        <button class="flip-lbl r" onclick="setHomeMode('adventures')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🗺️'))"> ADVENTURE</button>
       </div>
     </div>
     <div id="scene-wrap">
@@ -7530,7 +7530,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.63<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.64<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
