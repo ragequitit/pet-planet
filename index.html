@@ -4519,13 +4519,23 @@ function eggTap(clientX,clientY,quiet){
   img.style.animation='eggPop 0.08s ease forwards, float 3s ease-in-out 0.08s infinite';
   if(!quiet){playSfx('click');buzz(8);}
 }
-// ÄGG-INPUT: tapp + HÅLL-INNE auto-tap. Klick oförändrat. Håll = auto-tap 2/sek (svagt men bekvämt — ingen mätare, inget straff).
+// ÄGG-INPUT: tapp + HÅLL (stilla = 2/sek) + CIRKEL (rör sig = 4/sek, fast takt oavsett hastighet). Klick oförändrat.
 (function(){
   var egg=document.getElementById('egg-img'); if(!egg)return;
-  var HOLD_DELAY=300, TAP_INT=500; // ms — PLATSHÅLLARE → Balance Sheet (TAP_INT 500 = 2 tap/s)
-  var holdTimer=0, delayTimer=0, holdId=null;
-  function startAuto(){ if(holdTimer)return; holdTimer=setInterval(function(){ eggTap(0,0,true); }, TAP_INT); }
-  function stopAuto(){ if(delayTimer){clearTimeout(delayTimer);delayTimer=0;} if(holdTimer){clearInterval(holdTimer);holdTimer=0;} }
+  var HOLD_DELAY=300, HOLD_INT=500, CIRCLE_INT=250, MOVE_GRACE=180, MOVE_MIN=4; // ms/px — PLATSHÅLLARE → Balance Sheet
+  var holdId=null, pressStart=0, lastTap=0, lastMove=0, lastX=0, lastY=0, raf=0;
+  function loop(){
+    if(holdId===null)return;
+    var now=Date.now();
+    if(now-pressStart>=HOLD_DELAY){
+      var moving=(now-lastMove)<MOVE_GRACE;        // rör sig nyligen → cirkel-läge
+      var intv=moving?CIRCLE_INT:HOLD_INT;         // 4/sek vid rörelse, annars 2/sek
+      if(now-lastTap>=intv){ lastTap=now; eggTap(0,0,true); }
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  function start(e){ holdId=e.pointerId; pressStart=Date.now(); lastTap=0; lastMove=0; lastX=e.clientX; lastY=e.clientY; cancelAnimationFrame(raf); raf=requestAnimationFrame(loop); }
+  function stop(){ holdId=null; cancelAnimationFrame(raf); }
   egg.addEventListener('contextmenu',function(e){e.preventDefault();});
   egg.addEventListener('dragstart',function(e){e.preventDefault();});
   egg.addEventListener('selectstart',function(e){e.preventDefault();});
@@ -4533,9 +4543,14 @@ function eggTap(clientX,clientY,quiet){
     if(e.button>0)return;
     e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
-    if(holdId===null){ holdId=e.pointerId; try{egg.setPointerCapture(e.pointerId);}catch(_){ } delayTimer=setTimeout(startAuto,HOLD_DELAY); }
+    if(holdId===null){ try{egg.setPointerCapture(e.pointerId);}catch(_){ } start(e); }
   });
-  function up(e){ if(holdId!==null&&e.pointerId===holdId){ holdId=null; stopAuto(); } }
+  egg.addEventListener('pointermove',function(e){
+    if(e.pointerId!==holdId)return;
+    var dx=e.clientX-lastX, dy=e.clientY-lastY;
+    if(dx*dx+dy*dy>=MOVE_MIN*MOVE_MIN){ lastMove=Date.now(); lastX=e.clientX; lastY=e.clientY; }
+  });
+  function up(e){ if(holdId!==null&&e.pointerId===holdId) stop(); }
   egg.addEventListener('pointerup',up);
   egg.addEventListener('pointercancel',up);
 })();
@@ -7616,7 +7631,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.95<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.96<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
