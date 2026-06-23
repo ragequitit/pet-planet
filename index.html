@@ -21,7 +21,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
 #scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 #scene-fade{display:none;position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
-.side-btns{position:absolute;top:42px;display:flex;flex-direction:column;gap:18px;z-index:10;}
+.side-btns{position:absolute;top:47px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
 .side-btn{position:relative;width:65px;padding:34px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:none;overflow:visible;}
@@ -1475,7 +1475,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #ub-buildings.active{background:linear-gradient(180deg,#6791e8,#284ba6);color:#fff;border-color:#84a8ef;}
 /* Ihopfällbart bygg-blad (nav rebuild — hemskärmens två lägen) */
 #home-sheet{display:none;}
-#sheet-handle{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 2px;cursor:pointer;user-select:none;}
+#sheet-handle{display:none;}
 .sheet-grip{width:40px;height:5px;border-radius:3px;background:rgba(255,255,255,0.3);}
 .sheet-handle-label{font-family:'Fredoka One',cursive;font-size:0.72rem;color:rgba(255,255,255,0.55);letter-spacing:0.3px;}
 #sheet-chevron{display:inline-block;transition:transform 0.3s ease;}
@@ -1484,9 +1484,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
 #stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:11;pointer-events:none;transition:transform 0.4s ease,bottom 0.4s ease;}
 /* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
-#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 52px);}
+#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 72px);}
 #app.home-collapsed #coin-display{display:none;}
-#app.home-collapsed #sheet-body{max-height:0;opacity:0;}
+#app.home-collapsed #sheet-body{max-height:4000px;opacity:1;}
 #app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
 #app.home-collapsed #stage-group{bottom:4dvh;transform:scale(1.4);transform-origin:center bottom;}
 #app.home-collapsed #pet-positions{transform:translateX(-50%) scale(0.72);transform-origin:50% 100%;}
@@ -5419,7 +5419,7 @@ function renderHomeAdventures(){
   h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.55));"></div>';
   // floating bag (top-right) = SAME as main page (inventory icon + opens the main inventory)
-  h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:42px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
+  h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:47px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
   if(!pets.length){
     h+='<div style="height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;position:relative;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
@@ -5635,7 +5635,7 @@ function switchTab(name){
   if(name==='quests')renderQuests();
   // Slide-up-animation (nav rebuild — steg 3): spelas bara när man LANDAR på
   // hemskärmen från en annan flik, och bara i utfällt läge.
-  if(isHome&&!wasHome&&!homeCollapsed)playHomeEntrance();
+  if(isHome&&!wasHome){var _mn=document.getElementById('main');if(_mn)_mn.scrollTop=0;}
   applyHomeMode();
 }
 
@@ -5647,20 +5647,14 @@ function playHomeEntrance(){
   replayAnim(document.getElementById('sheet-body'),'home-slide-in');
 }
 
-// Ihopfällbart bygg-blad: utfällt = ägg + Buildings/Upgrades, hopfällt = rent fullskärmsägg
-var homeCollapsed=false;
+// Hemvyn: ALLTID stort ägg uppe + buildings/upgrades nedanför som man scrollar till (handtaget borttaget).
+var homeCollapsed=true;
 function applyHomeCollapsed(){
   var app=document.getElementById('app');
   if(app)app.classList.toggle('home-collapsed',homeCollapsed);
 }
 function toggleHomeSheet(){
-  homeCollapsed=!homeCollapsed;
-  if(homeCollapsed){
-    var m=document.getElementById('main');if(m)m.scrollTop=0;
-    // Fäller man ner inventoryt → återställ hem-bladet till Buildings för nästa gång man fäller upp
-    if(currentTab==='inventory')switchTab('buildings');
-  }
-  applyHomeCollapsed();
+  var m=document.getElementById('main');if(m)m.scrollTo({top:0,behavior:'smooth'});
 }
 // 🎒-knappen växlar bag-popupen (öppna/stäng). Bag är inte längre en flik i drag-bladet.
 function toggleInventory(){
@@ -5683,19 +5677,12 @@ function navTab(name){
   if(currentTab===name){switchTab('buildings');}
   else{switchTab(name);}
 }
-// Home-knappen (mitten av bottom-nav):
-//  - inte hemma / bladet nere / på upgrades → gå hem med bygg-bladet UPPE
-//  - redan hemma med bygg-bladet uppe → fäll NER bladet (som handtaget)
+// Home-knappen (mitten av bottom-nav): tillbaka till bygg-vyn + scrolla upp till ägget.
 function goHome(){
   closeQuestsIfOpen();
   if(G.homeMode==='adventures'){ switchTab('buildings'); return; }
-  var onBuildingsUp=(currentTab==='buildings')&&!homeCollapsed;
-  if(onBuildingsUp){
-    toggleHomeSheet();
-  } else {
-    homeCollapsed=false;
-    switchTab('buildings');
-  }
+  switchTab('buildings');
+  var m=document.getElementById('main');if(m)m.scrollTo({top:0,behavior:'smooth'});
 }
 
 // Pets-hubbens underflikar (nav rebuild — step 4): Pets / Fusion / Extract
@@ -7530,7 +7517,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.66<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.68<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
