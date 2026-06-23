@@ -7610,7 +7610,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.89<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.90<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10116,7 +10116,7 @@ function renderHatchery(){
       if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
       var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
       var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
-      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(slot.eggId===EVENT_EGG_ID?eventEggIconHtml(38):(egg?egg.icon:'🥚'))+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
+      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(slot.eggId===EVENT_EGG_ID?eventEggIconHtml(38):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'🥚')+'\'))">')+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
       html+='<div class="hatch-progress-bar"><div class="hatch-progress-fill" style="width:'+(pct*100)+'%"></div></div>';
       html+='<button class="hatch-collect-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'🎉 Collect Pet!':'Hatching...')+'</button></div>';
     } else {
@@ -10145,7 +10145,7 @@ function renderHatchery(){
     EGG_SHOP.forEach(function(egg){
       var count=G.eggsOwned[egg.id]||0;if(count<=0)return;
       var canHatch=activeCount<maxSlots;
-      html+='<div class="hatch-egg-row"><div class="he-icon">'+egg.icon+'</div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
+      html+='<div class="hatch-egg-row"><div class="he-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
     });
     var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
     if(_ec>0){var _em=eventEggMeta();var _canH=activeCount<maxSlots;html+='<div class="hatch-egg-row"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
