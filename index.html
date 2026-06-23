@@ -1459,9 +1459,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .more-note{font-size:0.62rem;color:rgba(255,255,255,0.3);text-align:center;margin-top:10px;line-height:1.4;}
 
 /* Home Upgrades/Buildings toggle (nav rebuild — step 2) */
-#home-toggle{display:flex;gap:8px;padding:22px 16px 0;position:relative;z-index:1;}
+#home-toggle{display:flex;gap:8px;padding:0 16px 0;position:relative;z-index:1;}
 /* Innehållet är ett upphöjt kort som flikarna tuckar in UNDER (3D-känsla) */
-#tab-buildings,#tab-upgrades{position:relative;z-index:2;margin-top:-9px;padding:13px 12px 12px;background:linear-gradient(180deg,#16284f,#0e1c3c);border-top:1px solid rgba(140,170,225,0.25);border-radius:16px 16px 0 0;box-shadow:0 -5px 14px rgba(0,0,0,0.45);}
+#tab-buildings,#tab-upgrades{position:relative;z-index:2;padding:13px 12px 12px;}
 .ub-tab{flex:1;height:46px;box-sizing:border-box;padding-bottom:9px;border-radius:12px 12px 0 0;border:2px solid #0f1a33;border-bottom:none;background:linear-gradient(180deg,#2c4673,#142136);color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
 .ub-tab:active{transform:translateY(1px);}
 #ub-upgrades.active{background:linear-gradient(180deg,#6791e8,#284ba6);color:#fff;border-color:#84a8ef;}
@@ -1484,7 +1484,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Ägg + pedestal + pet-slots buntas som EN grupp så de växer/flyttas tillsammans */
 #stage-group{position:absolute;left:0;right:0;bottom:0;height:340px;z-index:11;pointer-events:none;transition:transform 0.4s ease,bottom 0.4s ease;}
 /* Hopfällt läge: rent fullskärmsägg, bladet nedfällt */
-#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 72px);}
+#app.home-collapsed #scene-wrap{height:calc(100dvh - var(--top-h) - var(--nav-h) - 50px);}
 #app.home-collapsed #coin-display{display:none;}
 #app.home-collapsed #sheet-body{max-height:4000px;opacity:1;}
 #app.home-collapsed #sheet-chevron{transform:rotate(180deg);}
@@ -1808,8 +1808,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       </div>
       <div id="sheet-body">
         <div id="home-toggle">
-          <button class="ub-tab" id="ub-upgrades" onclick="switchTab('upgrades')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('📈'))"></span> Upgrades</button>
-          <button class="ub-tab active" id="ub-buildings" onclick="switchTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
+          <button class="ub-tab" id="ub-upgrades" onclick="selectBuildTab('upgrades')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('📈'))"></span> Upgrades</button>
+          <button class="ub-tab active" id="ub-buildings" onclick="selectBuildTab('buildings')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" style="width:1.75em;height:1.75em;object-fit:contain;vertical-align:middle;margin:-0.45em 0;" onerror="this.replaceWith(document.createTextNode('🏠'))"></span> Buildings</button>
         </div>
         <div id="tab-buildings" class="tab-content active">
           <div id="blist"></div>
@@ -5672,6 +5672,12 @@ function closeBag(){
 
 // Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
 function closeQuestsIfOpen(){var m=document.getElementById('quests-modal');if(m&&m.classList.contains('open')&&typeof closeQuests==='function')closeQuests();}
+// Tryck på Upgrades/Buildings-fliken (som tittar fram i botten) → byt flik OCH scrolla upp listan i sikte
+function selectBuildTab(name){
+  switchTab(name);
+  var ht=document.getElementById('home-toggle');
+  if(ht)ht.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function navTab(name){
   closeQuestsIfOpen();
   if(currentTab===name){switchTab('buildings');}
@@ -7517,7 +7523,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.68<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.69<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
