@@ -969,6 +969,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#ffd34d,#e0a800);color:#0b1530;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #8a6000;}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
+/* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
+@media (min-width:600px){.idleadv-stage-pet{bottom:50px !important;}}
 
 /* ===== MUTATION SYSTEM (Extract / Mutate) ===== */
 #psub-panel-extract #extract-wrap{padding:6px 2px 90px;}
@@ -5425,7 +5427,7 @@ function renderHomeAdventures(){
   }else{
     var p=pets[idleViewIdx]; var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
     // pet + caption anchored to the BOTTOM of the tall scene (pet stands on the grass), like the main egg page
-    h+='<div style="position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding-bottom:16px;background:linear-gradient(180deg,rgba(8,12,30,0) 50%,rgba(8,12,30,0.45) 78%,rgba(8,12,30,0.9));">';
+    h+='<div class="idleadv-stage-pet" style="position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding-bottom:16px;background:linear-gradient(180deg,rgba(8,12,30,0) 50%,rgba(8,12,30,0.45) 78%,rgba(8,12,30,0.9));">';
     h+='<div style="position:relative;width:100%;display:flex;justify-content:center;">';
     h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:14rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
     if(pets.length>1){
@@ -7520,7 +7522,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.74<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.75<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
