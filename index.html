@@ -64,13 +64,6 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
 @keyframes pulse2{0%,100%{opacity:0.4;}50%{opacity:0.9;}}
 #egg-img{width:156px;height:183px;object-fit:contain;animation:float 3s ease-in-out infinite;position:relative;top:2px;z-index:2;display:block;transform-origin:center bottom;will-change:transform;cursor:pointer;pointer-events:auto;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-tap-highlight-color:transparent;}
-/* HÅLL-INNE mätare (ring runt ägget) + "Release!"-hint. Ringen visas efter 2s håll, full på 15s. */
-#egg-hold-ring{position:absolute;left:50%;top:50%;width:206px;height:206px;transform:translate(-50%,-50%);border-radius:50%;background:conic-gradient(from -90deg,#ffd24d var(--p,0deg),rgba(255,255,255,0.22) 0deg);-webkit-mask:radial-gradient(transparent 76%,#000 79%);mask:radial-gradient(transparent 76%,#000 79%);opacity:0;transition:opacity .3s ease;pointer-events:none;z-index:5;}
-#egg-hold-ring.full{background:conic-gradient(from -90deg,#ff5a3c var(--p,0deg),rgba(255,255,255,0.22) 0deg);animation:eggRingFull .55s ease-in-out infinite alternate;}
-@keyframes eggRingFull{from{filter:drop-shadow(0 0 2px #ff5a3c);}to{filter:drop-shadow(0 0 9px #ff5a3c);}}
-.is-firefox #egg-hold-ring.full{animation:none!important;}
-#egg-hold-hint{position:absolute;left:50%;top:8px;transform:translateX(-50%);font-family:'Fredoka One',cursive;font-size:0.82rem;color:#ff8a6c;text-shadow:0 1px 3px #000;opacity:0;transition:opacity .2s;pointer-events:none;z-index:6;white-space:nowrap;}
-#egg-hold-hint.show{opacity:1;}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-15px);}}
 @keyframes eggPop{0%{transform:scale(1,1);}20%{transform:scale(1.07,0.94);}50%{transform:scale(0.96,1.06);}100%{transform:scale(1,1);}}
 /* Slide-up-animation (nav rebuild steg 3): bygg-vyn glider upp medan ägget krymper in */
@@ -1824,8 +1817,6 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
           <div id="particles-front"></div>
           <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" draggable="false">
           <div id="egg-shadow"></div>
-          <div id="egg-hold-ring"></div>
-          <div id="egg-hold-hint">Release!</div>
         </div>
       </div>
     </div>
@@ -4528,33 +4519,13 @@ function eggTap(clientX,clientY,quiet){
   img.style.animation='eggPop 0.08s ease forwards, float 3s ease-in-out 0.08s infinite';
   if(!quiet){playSfx('click');buzz(8);}
 }
-// ÄGG-INPUT: tapp + HÅLL-INNE auto-tap med uthållighets-mätare. Klick finns kvar (samma pointerdown ger tappet).
-// Håll → auto-tappar (tyst); mätaren visas efter 2s, full på 15s → sparksen stannar; släpp → töms (~1s) → börja om.
+// ÄGG-INPUT: tapp + HÅLL-INNE auto-tap. Klick oförändrat. Håll = auto-tap 2/sek (svagt men bekvämt — ingen mätare, inget straff).
 (function(){
   var egg=document.getElementById('egg-img'); if(!egg)return;
-  var ring=document.getElementById('egg-hold-ring'), hint=document.getElementById('egg-hold-hint');
-  var TAP_DELAY=300, TAP_INT=250, SHOW=2000, FULL=15000, DRAIN=1000; // ms — PLATSHÅLLARE → Balance Sheet (TAP_INT 250 = 4 tap/s)
-  var holding=false,hStart=0,lastTap=0,fill=0,raf=0,cooling=false,dStart=0,dFrom=0,holdId=null;
-  function paint(p,full){ if(ring){ring.style.setProperty('--p',(p*360)+'deg');ring.classList.toggle('full',!!full);} }
-  function loop(){
-    if(!holding)return;
-    var now=Date.now(),el=now-hStart;
-    fill=Math.min(1,el/FULL);
-    var vis=el>=SHOW;
-    if(ring)ring.style.opacity=vis?'1':'0';
-    paint(fill,fill>=1);
-    if(hint)hint.classList.toggle('show',fill>=1&&vis);
-    if(el>=TAP_DELAY&&fill<1&&now-lastTap>=TAP_INT){lastTap=now;eggTap(0,0,true);}
-    raf=requestAnimationFrame(loop);
-  }
-  function drain(){
-    var p=Math.max(0,dFrom-(Date.now()-dStart)/DRAIN);
-    paint(p,false);
-    if(p<=0.001){if(ring)ring.style.opacity='0';if(hint)hint.classList.remove('show');fill=0;cooling=false;return;}
-    raf=requestAnimationFrame(drain);
-  }
-  function startHold(){holding=true;hStart=Date.now();lastTap=0;fill=0;cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);}
-  function endHold(){if(!holding)return;holding=false;cancelAnimationFrame(raf);cooling=true;dFrom=fill;dStart=Date.now();raf=requestAnimationFrame(drain);}
+  var HOLD_DELAY=300, TAP_INT=500; // ms — PLATSHÅLLARE → Balance Sheet (TAP_INT 500 = 2 tap/s)
+  var holdTimer=0, delayTimer=0, holdId=null;
+  function startAuto(){ if(holdTimer)return; holdTimer=setInterval(function(){ eggTap(0,0,true); }, TAP_INT); }
+  function stopAuto(){ if(delayTimer){clearTimeout(delayTimer);delayTimer=0;} if(holdTimer){clearInterval(holdTimer);holdTimer=0;} }
   egg.addEventListener('contextmenu',function(e){e.preventDefault();});
   egg.addEventListener('dragstart',function(e){e.preventDefault();});
   egg.addEventListener('selectstart',function(e){e.preventDefault();});
@@ -4562,9 +4533,9 @@ function eggTap(clientX,clientY,quiet){
     if(e.button>0)return;
     e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
-    if(!holding&&!cooling){ holdId=e.pointerId; try{egg.setPointerCapture(e.pointerId);}catch(_){ } startHold(); }
+    if(holdId===null){ holdId=e.pointerId; try{egg.setPointerCapture(e.pointerId);}catch(_){ } delayTimer=setTimeout(startAuto,HOLD_DELAY); }
   });
-  function up(e){ if(holdId!==null&&e.pointerId===holdId){holdId=null;endHold();} }
+  function up(e){ if(holdId!==null&&e.pointerId===holdId){ holdId=null; stopAuto(); } }
   egg.addEventListener('pointerup',up);
   egg.addEventListener('pointercancel',up);
 })();
@@ -7645,7 +7616,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.94<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.95<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
