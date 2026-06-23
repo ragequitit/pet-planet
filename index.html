@@ -5546,8 +5546,8 @@ function renderHomeAdventures(){
     h+='<div style="position:relative;width:100%;display:flex;justify-content:center;">';
     h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:14rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
     if(pets.length>1){
-      h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">‹</button>';
-      h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">›</button>';
+      h+='<button onclick="idleSwipe(-1)" aria-label="Previous pet" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:none;border:none;padding:12px 16px;color:#38B6FF;font-size:2.4rem;line-height:1;cursor:pointer;z-index:5;text-shadow:0 0 5px #38B6FF,0 0 11px rgba(56,182,255,0.75),0 1px 2px rgba(0,0,0,0.65);-webkit-tap-highlight-color:transparent;">‹</button>';
+      h+='<button onclick="idleSwipe(1)" aria-label="Next pet" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;padding:12px 16px;color:#38B6FF;font-size:2.4rem;line-height:1;cursor:pointer;z-index:5;text-shadow:0 0 5px #38B6FF,0 0 11px rgba(56,182,255,0.75),0 1px 2px rgba(0,0,0,0.65);-webkit-tap-highlight-color:transparent;">›</button>';
     }
     h+='</div>';
     h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;white-space:nowrap;margin-top:-4px;">'+petDisplayName(p)+'</div>';
@@ -7681,7 +7681,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.04<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.05<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
