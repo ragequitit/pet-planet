@@ -2724,6 +2724,8 @@ function shellIcon(id,cls){
   var r=SHELL_RARITIES.find(function(x){return x.id===id;})||{icon:'🐚'};
   return '<img class="shell-ic'+(cls?' '+cls:'')+'" src="'+shellImgUrl(id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+r.icon+'\'))">';
 }
+// Reward-shell-ikon: visar exakt shell-typ. Okänd/random/ogiltig typ (t.ex. battle-pass 'common') → meadow-ikonen (per design).
+function rewardShellIcon(id){var ok=SHELL_RARITIES.some(function(x){return x.id===id;});return shellIcon(ok?id:'meadow');}
 
 // ============================================================
 // DATA: EGG SHOP
@@ -7585,7 +7587,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.84<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.85<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8976,7 +8978,7 @@ function eventQuestRewardText(rw){
   if(rw.coins)return fmtShort(rw.coins)+' \ud83e\ude99';
   if(rw.gems)return rw.gems+' \ud83d\udc8e';
   if(rw.cores)return '\u00d7'+rw.cores+' \u2b21';
-  if(rw.shells){for(var r in rw.shells)return '\u00d7'+rw.shells[r]+' \ud83d\udc1a';}
+  if(rw.shells){for(var r in rw.shells)return '\u00d7'+rw.shells[r]+' '+rewardShellIcon(r);}
   return '';
 }
 function eventRewardTextFull(rw){
@@ -8984,7 +8986,7 @@ function eventRewardTextFull(rw){
   var out=[];
   if(rw.coins)out.push(fmtShort(rw.coins)+' \ud83e\ude99');
   if(rw.gems)out.push(rw.gems+' '+GEM_IMG);
-  if(rw.shells){for(var r in rw.shells)out.push('\u00d7'+rw.shells[r]+' \ud83d\udc1a');}
+  if(rw.shells){for(var r in rw.shells)out.push('\u00d7'+rw.shells[r]+' '+rewardShellIcon(r));}
   if(rw.cores)out.push('\u00d7'+rw.cores+' \u2b21');
   if(rw.title)out.push('Title');
   if(rw.cosmetic)out.push('Frame');
@@ -9181,7 +9183,7 @@ function collMilestoneText(m){
   if(r.title)return 'Title + '+(r.gems?r.gems+' \ud83d\udc8e':'')+(r.cosmetic?' + Frame':'');
   if(r.gems)return r.gems+' \ud83d\udc8e';
   if(r.cores)return '\u00d7'+r.cores+' \u2b21';
-  if(r.shells){for(var k in r.shells)return '\u00d7'+r.shells[k]+' \ud83d\udc1a';}
+  if(r.shells){for(var k in r.shells)return '\u00d7'+r.shells[k]+' '+rewardShellIcon(k);}
   if(r.coins)return fmtShort(r.coins)+' \ud83e\ude99';
   return '\u2605';
 }
@@ -11037,7 +11039,7 @@ function grantReward(id){
 function rewardShortText(id){
   var r=ACH_REWARDS[id];if(!r)return '';
   var p=[];
-  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(r.shells[rar]+' '+rwCap(rar)+' Shells');});
+  if(r.shells)Object.keys(r.shells).forEach(function(rar){p.push(rewardShellIcon(rar)+' '+r.shells[rar]+' '+rwCap(rar)+' Shells');});
   if(r.eggs)Object.keys(r.eggs).forEach(function(eid){var em=EGG_SHOP.find(function(e){return e.id===eid;});p.push(r.eggs[eid]+'× '+(em?em.name:eid));});
   if(r.gems)p.push(r.gems+' '+GEM_IMG);
   if(r.pet)p.push(rwCap(r.pet)+' pet 🐾');
