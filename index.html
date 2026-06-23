@@ -893,7 +893,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pc2-shskim{position:absolute;top:-18%;bottom:-18%;left:0;width:60%;z-index:4;pointer-events:none;mix-blend-mode:screen;opacity:0.6;transform:translateX(-180%) skewX(-13deg);animation:pc2skim 3.6s linear infinite;}
 .pc2.shiny1 .pc2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(255,236,170,0.6) 35%,rgba(255,255,255,0.95) 50%,rgba(255,213,90,0.6) 65%,transparent 100%);}
 .pc2.shiny2 .pc2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(140,255,225,0.6) 35%,rgba(232,255,255,0.95) 50%,rgba(120,180,255,0.6) 65%,transparent 100%);}
-.is-firefox .pc2-shframe,.is-firefox .pc2-shskim{animation:none!important;}
+.pc2-shrays{position:absolute;left:50%;top:46%;width:170%;height:170%;z-index:1;pointer-events:none;transform:translate(-50%,-50%);-webkit-mask:radial-gradient(circle,#000 16%,transparent 60%);mask:radial-gradient(circle,#000 16%,transparent 60%);opacity:.34;animation:pc2spin 9s linear infinite;}
+.pc2.shiny1 .pc2-shrays{background:repeating-conic-gradient(from 0deg,#ff6b6b 0deg 4deg,#ffd24d 4deg 8deg,#6bff9d 8deg 12deg,#5dd0ff 12deg 16deg,#c77dff 16deg 20deg,transparent 20deg 30deg);animation:pc2spin 9s linear infinite,pc2shhue 7s linear infinite;}
+.pc2.shiny2 .pc2-shrays{background:repeating-conic-gradient(from 0deg,#5dffd0 0deg 4deg,#5db8ff 4deg 9deg,#7df0ff 9deg 13deg,#ffffff 13deg 17deg,transparent 17deg 28deg);}
+@keyframes pc2shhue{to{filter:hue-rotate(360deg)}}
+.is-firefox .pc2-shframe,.is-firefox .pc2-shskim,.is-firefox .pc2-shrays{animation:none!important;}
 .pet-card{border:2px solid rgba(58,92,184,0.6);border-radius:14px;padding:10px;cursor:pointer;transition:border-color 0.15s;position:relative;overflow:hidden;}
 .pet-card::before{content:'';position:absolute;inset:0;opacity:0.08;pointer-events:none;}
 .pet-card:active{transform:scale(0.97);}
@@ -2297,7 +2301,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0.92;}
 .pdx2-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,13,32,0.12) 0%,rgba(7,13,32,0.32) 36%,rgba(7,13,32,0.8) 70%,rgba(7,13,32,0.96) 100%);}
 /* SHINY i popupen (matchar småkorten): badge uppe-höger + spektrum-ram + sparkle-sweep. Återanvänder shframe1/2 + pc2skim keyframes. */
-.pdx2-shiny{position:absolute;top:9px;right:11px;z-index:8;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;font-size:1rem;line-height:1;pointer-events:none;box-shadow:0 1px 0 rgba(0,0,0,0.45);}
+.pdx2-shiny{position:absolute;top:9px;right:46px;z-index:8;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;font-size:1rem;line-height:1;pointer-events:none;box-shadow:0 1px 0 rgba(0,0,0,0.45);}
 .pdx2-shiny.s1{background:linear-gradient(180deg,#fff7da,#f5c842);border:1px solid #fff;box-shadow:0 0 10px rgba(245,200,66,0.9),0 1px 0 rgba(0,0,0,0.4);}
 .pdx2-shiny.s2{background:linear-gradient(180deg,#d9fff5,#4fd0e0);border:1px solid #eafffb;box-shadow:0 0 10px rgba(90,210,230,0.95),0 1px 0 rgba(0,0,0,0.4);}
 .pdx2-shframe{position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:19px;border:2px solid #fff;}
@@ -4929,9 +4933,15 @@ function petCardHtml(pet,idx,opts){
   html+='<div class="pc2-bgshade"></div>';
   if(fx>=1)html+='<div class="pc2-aura"></div>';
   if(!lite){
-    if(fx>=4)html+='<div class="pc2-rays"></div>';
+    if(pet.shiny)html+='<div class="pc2-shrays"></div>';
+    else if(fx>=4)html+='<div class="pc2-rays"></div>';
     else if(fx>=1)html+='<div class="pc2-glow"></div>';
-    if(FX_PN[fx]>0){
+    if(pet.shiny){
+      var _spal=pet.shiny===2?['#5dffd0','#5db8ff','#7df0ff','#ffffff']:['#ff6b6b','#ffd24d','#6bff9d','#5dd0ff','#c77dff','#ffffff'];
+      html+='<div class="pc2-parts">';
+      for(var spi=0;spi<7;spi++){var _sc=_spal[spi%_spal.length];var _slf=(12+spi*(76/6)).toFixed(0);var _spdl=((spi/7)*3.8+(idx%7)*0.3).toFixed(2);html+='<i style="left:'+_slf+'%;background:'+_sc+';box-shadow:0 0 6px '+_sc+';animation-delay:'+_spdl+'s"></i>';}
+      html+='</div>';
+    } else if(FX_PN[fx]>0){
       html+='<div class="pc2-parts">';
       var pn=FX_PN[fx];
       for(var pi=0;pi<pn;pi++){
@@ -7572,7 +7582,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.81<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.83<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
