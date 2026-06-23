@@ -5415,30 +5415,27 @@ function renderHomeAdventures(){
   var h='';
   // STAGE — world background, full-bleed edge-to-edge up to the top nav (no frame), like the main page
   var bgUrl=idleWorldBg(G.idleWorld);
-  h+='<div style="position:relative;width:auto;overflow:hidden;margin:-6px -13px 12px;background:#101a38;">';
+  h+='<div style="position:relative;height:calc(100dvh - var(--top-h) - var(--nav-h) - 76px);overflow:hidden;margin:-6px -13px 12px;background:#101a38;">';
   h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
-  h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.55));"></div>';
+  h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.28) 60%,rgba(8,12,30,0.50));"></div>';
   // floating bag (top-right) = SAME as main page (inventory icon + opens the main inventory)
   h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:47px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
   if(!pets.length){
-    h+='<div style="height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;position:relative;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
+    h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
     var p=pets[idleViewIdx]; var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
-    // content column — pet area, then caption flows BELOW (background grows DOWN adaptively, pet stays put)
-    h+='<div style="position:relative;z-index:2;display:flex;flex-direction:column;">';
-    h+='<div style="position:relative;height:250px;">';
-    h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
+    // pet + caption anchored to the BOTTOM of the tall scene (pet stands on the grass), like the main egg page
+    h+='<div style="position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;padding-bottom:16px;background:linear-gradient(180deg,rgba(8,12,30,0) 50%,rgba(8,12,30,0.45) 78%,rgba(8,12,30,0.9));">';
+    h+='<div style="position:relative;width:100%;display:flex;justify-content:center;">';
+    h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:14rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
     if(pets.length>1){
-      h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">‹</button>';
-      h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:38px;height:38px;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">›</button>';
+      h+='<button onclick="idleSwipe(-1)" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">‹</button>';
+      h+='<button onclick="idleSwipe(1)" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(10,16,40,0.55);border:1px solid rgba(150,170,230,0.4);border-radius:50%;width:40px;height:40px;color:#fff;font-size:1.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:3;">›</button>';
     }
     h+='</div>';
-    // caption (centered, flows below the pet) — stats visas nu i POPUP vid tryck på petet
-    h+='<div style="padding:6px 12px 14px;background:linear-gradient(180deg,rgba(8,12,30,0),rgba(8,12,30,0.82) 35%,rgba(8,12,30,0.95));display:flex;flex-direction:column;align-items:center;">';
-    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;white-space:nowrap;">'+petDisplayName(p)+'</div>';
-    h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:0.6rem;color:rgba(255,255,255,0.62);margin-top:4px;text-shadow:0 1px 2px #000;cursor:pointer;">\u24d8 Tap pet for stats</div>';
-    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:7px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe \u2039 \u203a</div>';
-    h+='</div>';
+    h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;white-space:nowrap;margin-top:-4px;">'+petDisplayName(p)+'</div>';
+    h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:4px;text-shadow:0 1px 2px #000;cursor:pointer;">\u24d8 Tap pet for stats</div>';
+    if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe \u2039 \u203a</div>';
     h+='</div>';
   }
   h+='</div>';
@@ -7523,7 +7520,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.73<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.74<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
