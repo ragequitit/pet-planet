@@ -92,6 +92,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
    Allt är platshållar-former (inline SVG / mjuka puffar) tills riktiga PNG:er finns — byt då bara art/innehåll, inte logiken. */
 #sky-life{position:absolute;inset:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:2;}
 .no-skylife #sky-life,.reduce-motion #sky-life{display:none!important;}
+.no-clouds .sky-cloud{display:none!important;}
+.no-birds .sky-bird{display:none!important;}
 /* MOLN (kontinuerlig drift) */
 .sky-cloud{position:absolute;left:0;width:var(--cw,140px);height:var(--ch,48px);background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,0.95),rgba(255,255,255,0.55) 45%,rgba(255,255,255,0) 76%);border-radius:50%;filter:blur(2px);opacity:0;will-change:transform;}
 @keyframes skyDrift{0%{left:110%;opacity:0;}10%{opacity:var(--cop,0.7);}90%{opacity:var(--cop,0.7);}100%{left:-50%;opacity:0;}}
@@ -4413,6 +4415,7 @@ function setWorld(idx){
   G.currentWorld=idx;
   initParticles();
   applySkins();
+  if(typeof refreshSkyForWorld==='function')refreshSkyForWorld();
 }
 // TEST-knapp: bläddra genom alla världar för att granska konst. TAS BORT INNAN RELEASE.
 function cycleWorld(){
@@ -7376,7 +7379,21 @@ function runConfirm(){var cb=_confirmCb;closeConfirm();if(typeof cb==='function'
 var _cloudsBuilt=false,_skyRunning=false,_skyTimers=[];
 function _rnd(a,b){return a+Math.random()*(b-a);}
 function _pick(a){return a[Math.floor(Math.random()*a.length)];}
-function skyLifeActive(){return !!(G.settings&&G.settings.skyLife)&&!(G.settings&&G.settings.reduceMotion);}
+// Per-värld himmel-liv: MOLN och FÅGLAR styrs OBEROENDE. Default = båda PÅ. Sätt false för att stänga av just den.
+var WORLD_SKY={
+  cosmic:{clouds:false,birds:false},
+  mystic:{clouds:false,birds:false},
+  ocean:{clouds:false,birds:false},
+  volcano:{clouds:false,birds:true},  // exempel: fåglar kvar, inga moln
+  celestial:{clouds:true,birds:false} // moln men inga fåglar
+};
+function worldSky(){var w=EGG_WORLDS[G.currentWorld];var c=(w&&WORLD_SKY[w.id])||{};return {clouds:c.clouds!==false,birds:c.birds!==false};}
+function skyGlobalOn(){return !!(G.settings&&G.settings.skyLife)&&!(G.settings&&G.settings.reduceMotion);}
+function cloudsActive(){return skyGlobalOn()&&worldSky().clouds;}
+function birdsActive(){return skyGlobalOn()&&worldSky().birds;}
+function skyLifeActive(){return birdsActive();} // bakåtkompat: gatar fågel-spawning
+function refreshSkyClasses(){var app=document.getElementById('app')||document.body;app.classList.toggle('no-skylife',!(G.settings&&G.settings.skyLife));var ws=worldSky();app.classList.toggle('no-clouds',!ws.clouds);app.classList.toggle('no-birds',!ws.birds);}
+function refreshSkyForWorld(){refreshSkyClasses();updateSkyLife();}
 
 // Fågel-arter (olika form, storlek, flax-takt, färgval) — platshållar-silhuetter
 var SKY_BIRDS=[
@@ -7458,7 +7475,7 @@ function applySettings(){
   if(!G.settings)G.settings=Object.assign({},DEFAULT_SETTINGS);
   var app=document.getElementById('app')||document.body;
   app.classList.toggle('no-particles',!G.settings.particles);
-  app.classList.toggle('no-skylife',!G.settings.skyLife);
+  refreshSkyClasses();
   app.classList.toggle('reduce-motion',!!G.settings.reduceMotion);
   updateSkyLife();
 }
@@ -7632,7 +7649,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.98<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.01<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
