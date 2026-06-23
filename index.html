@@ -1461,7 +1461,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 /* Home Upgrades/Buildings toggle (nav rebuild — step 2) */
 #home-toggle{display:flex;gap:8px;padding:0 16px 0;position:relative;z-index:1;}
 /* Innehållet är ett upphöjt kort som flikarna tuckar in UNDER (3D-känsla) */
-#tab-buildings,#tab-upgrades{position:relative;z-index:2;padding:13px 12px 12px;}
+#tab-buildings,#tab-upgrades{position:relative;z-index:2;padding:13px 12px 12px;background:linear-gradient(180deg,#16284f,#0e1c3c);}
 .ub-tab{flex:1;height:46px;box-sizing:border-box;padding-bottom:9px;border-radius:12px 12px 0 0;border:2px solid #0f1a33;border-bottom:none;background:linear-gradient(180deg,#2c4673,#142136);color:rgba(255,255,255,0.5);font-family:'Fredoka One',cursive;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
 .ub-tab:active{transform:translateY(1px);}
 #ub-upgrades.active{background:linear-gradient(180deg,#6791e8,#284ba6);color:#fff;border-color:#84a8ef;}
@@ -7523,7 +7523,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.69<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.70<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
