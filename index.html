@@ -2296,6 +2296,17 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .pdx2{position:relative;border:2px solid var(--rc,#f5c842);border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#1a2f57,#0d1a38);box-shadow:0 0 22px -4px var(--rc,#f5c842),inset 0 0 42px -16px var(--rc,#f5c842);}
 .pdx2-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0.92;}
 .pdx2-shade{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(7,13,32,0.12) 0%,rgba(7,13,32,0.32) 36%,rgba(7,13,32,0.8) 70%,rgba(7,13,32,0.96) 100%);}
+/* SHINY i popupen (matchar småkorten): badge uppe-höger + spektrum-ram + sparkle-sweep. Återanvänder shframe1/2 + pc2skim keyframes. */
+.pdx2-shiny{position:absolute;top:9px;right:11px;z-index:8;display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;font-size:1rem;line-height:1;pointer-events:none;box-shadow:0 1px 0 rgba(0,0,0,0.45);}
+.pdx2-shiny.s1{background:linear-gradient(180deg,#fff7da,#f5c842);border:1px solid #fff;box-shadow:0 0 10px rgba(245,200,66,0.9),0 1px 0 rgba(0,0,0,0.4);}
+.pdx2-shiny.s2{background:linear-gradient(180deg,#d9fff5,#4fd0e0);border:1px solid #eafffb;box-shadow:0 0 10px rgba(90,210,230,0.95),0 1px 0 rgba(0,0,0,0.4);}
+.pdx2-shframe{position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:19px;border:2px solid #fff;}
+.pdx2.shiny1 .pdx2-shframe{animation:shframe1 2.4s ease-in-out infinite;}
+.pdx2.shiny2 .pdx2-shframe{animation:shframe2 2.4s ease-in-out infinite;}
+.pdx2-shskim{position:absolute;top:-14%;bottom:-14%;left:0;width:48%;z-index:3;pointer-events:none;mix-blend-mode:screen;opacity:0.55;transform:translateX(-180%) skewX(-13deg);animation:pc2skim 3.8s linear infinite;}
+.pdx2.shiny1 .pdx2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(255,236,170,0.55) 35%,rgba(255,255,255,0.9) 50%,rgba(255,213,90,0.55) 65%,transparent 100%);}
+.pdx2.shiny2 .pdx2-shskim{background:linear-gradient(90deg,transparent 0%,rgba(140,255,225,0.55) 35%,rgba(232,255,255,0.9) 50%,rgba(120,180,255,0.55) 65%,transparent 100%);}
+.is-firefox .pdx2-shframe,.is-firefox .pdx2-shskim{animation:none!important;}
 .pdx2-fav{position:absolute;top:9px;left:11px;z-index:7;font-size:1.6rem;line-height:1;cursor:pointer;color:rgba(255,255,255,0.6);text-shadow:0 1px 4px rgba(0,0,0,0.85);transition:transform .1s,color .12s;}
 .pdx2-fav.on{color:var(--gold);text-shadow:0 0 8px rgba(245,200,66,0.85);}
 .pdx2-fav:active{transform:scale(0.85);}
@@ -5279,10 +5290,12 @@ function openPetDetail(uid){
   var mottoHtml=fl
     ? '<div class="pdx2-motto">\u201c'+fl.text+'\u201d<span class="pdx2-motto-by">\u2014 '+fl.who+'</span></div>'
     : '<div class="pdx2-motto" style="opacity:0.7">\u201cA story still waiting to be told\u2026\u201d</div>';
-  var html='<div class="pdx2" style="--rc:'+rc.color+'">';
+  var html='<div class="pdx2'+(pet.shiny===2?' shiny2':(pet.shiny===1?' shiny1':''))+'" style="--rc:'+rc.color+'">';
   html+=(pet.world?'<img class="pdx2-bg" src="'+petBgUrl(pet.world)+'" alt="" onerror="this.remove()">':'');
   html+='<div class="pdx2-shade"></div>';
+  if(pet.shiny)html+='<div class="pdx2-shskim"></div><div class="pdx2-shframe"></div>';
   html+='<div class="pdx2-fav'+(pet.fav?' on':'')+'" onclick="petDetailToggleFav(\''+pet.uid+'\')">\u2605</div>';
+  if(pet.shiny)html+='<div class="pdx2-shiny s'+pet.shiny+'">\u2728</div>';
   html+='<div class="pdx2-art">'+artBig+'</div>';
   html+='<div class="pdx2-body">';
   html+='<div class="pdx2-namerow"><div class="pdx2-name">'+petDisplayName(pet)+'<span class="pdx2-edit" onclick="petRenamePrompt(\''+pet.uid+'\')" title="Rename">\u270f\ufe0f</span><span class="pdx2-skin" onclick="openPetSkinPicker(\''+pet.uid+'\')" title="Skins"><img src="'+ASSET_BASE+'/assets/ui/profiles/skin-pet.png" alt="Skins" onerror="this.replaceWith(document.createTextNode(\'👕\'))"></span></div><div class="pdx2-lv">Lv '+lp.level+(lp.max?' \u00b7 MAX':'')+'</div></div>';
@@ -7559,7 +7572,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.80<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v7.81<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
