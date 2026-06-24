@@ -765,6 +765,17 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hsu-buy:active{transform:translateY(2px);box-shadow:0 1px 0 #137a3e;}
 .hsu-buy.poor{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);box-shadow:none;cursor:default;}
 .hsu-maxed{text-align:center;color:var(--gold,#f5c842);font-family:'Fredoka One',cursive;font-size:0.82rem;margin-top:10px;}
+.empty-slot{cursor:pointer;}
+.empty-slot:active{transform:translateY(1px);}
+.hcard-time.hcard-tap{color:var(--gold,#f5c842);font-weight:700;}
+.egp-empty{text-align:center;color:rgba(255,255,255,0.7);font-size:0.86rem;line-height:1.5;padding:10px 6px;}
+.egp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:2px;}
+.egp-cell{background:linear-gradient(160deg,#22325c,#152340);border:2px solid #3a5cb8;border-radius:14px;padding:10px 5px 8px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform 0.1s ease,border-color 0.15s ease;}
+.egp-cell:active{transform:scale(0.94);}
+.egp-ic{height:48px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;}
+.egp-ic img{width:46px;height:46px;object-fit:contain;}
+.egp-nm{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.egp-ct{font-size:0.72rem;color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;}
 .hspd-mid{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1;}
 .hspd-price{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;display:flex;align-items:center;gap:2px;white-space:nowrap;}
 .hspd-price .coin-ic{width:13px;height:13px;}
@@ -772,6 +783,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hspd-dots .dot{width:5px;height:5px;}
 .hspd-pct{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.78rem;color:#3ddc84;flex:0 0 auto;}
 .hatch-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
+.nest-particles{position:absolute;left:0;right:0;bottom:0;height:64%;z-index:1;pointer-events:none;overflow:hidden;}
+.nest-particle{position:absolute;bottom:6%;border-radius:50%;opacity:0;will-change:transform,opacity;animation-name:nestRise;animation-timing-function:ease-in-out;animation-iteration-count:infinite;}
+@keyframes nestRise{
+  0%{transform:translate(0,0) scale(0.55);opacity:0;}
+  18%{opacity:0.9;}
+  70%{opacity:0.65;}
+  100%{transform:translate(var(--drift,0),-160px) scale(1);opacity:0;}
+}
 .hatch-hero-name,.hatch-hero-time{text-shadow:0 2px 5px rgba(0,0,0,0.8);}
 .hatch-egg-glow{position:absolute;inset:-42px;border-radius:50%;z-index:-1;filter:blur(16px);animation:eggGlowPulse 4s ease-in-out infinite;pointer-events:none;}
 @keyframes eggGlowPulse{0%,100%{opacity:0.4;transform:scale(0.9);}50%{opacity:0.8;transform:scale(1.12);}}
@@ -2066,6 +2085,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:-0.18em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
 <div class="hatch-info-body" id="hatch-speed-body"></div>
 <button class="hatch-info-close" onclick="closeHatchSpeed()">Done</button>
+</div></div>
+<div id="egg-picker-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeEggPicker()">
+<div class="hatch-info-card">
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/hatchary-empty.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:-0.22em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83e\udeb9'))"> Pick an Egg to Hatch</div>
+<div class="hatch-info-body" id="egg-picker-body"></div>
+<button class="hatch-info-close" onclick="closeEggPicker()">Cancel</button>
 </div></div>
 <div id="loadout-modal" class="modal-overlay">
   <div class="prof-panel">
@@ -7809,7 +7834,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.28<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.30<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10227,6 +10252,33 @@ function startHatching(eggId){
   G.hatchSlots.push({eggId:eggId,startTime:Date.now(),duration:getHatchDuration(eggId),done:false});
   renderHatchery();
 }
+function openEggPicker(){
+  if(G.hatchSlots.length>=G.hatchSlotCount)return; // ingen ledig slot
+  renderEggPicker();
+  var m=document.getElementById('egg-picker-modal');if(m)m.classList.add('open');
+}
+function closeEggPicker(){var m=document.getElementById('egg-picker-modal');if(m)m.classList.remove('open');}
+function renderEggPicker(){
+  var box=document.getElementById('egg-picker-body');if(!box)return;
+  var items=[];
+  var evN=G.eggsOwned[EVENT_EGG_ID]||0;
+  if(evN>0){var em=(typeof eventEggMeta==='function')?eventEggMeta():null;items.push({id:EVENT_EGG_ID,name:em&&em.name?em.name.replace(' Egg',''):'Event',count:evN,icon:eventEggIconHtml(46)});}
+  EGG_SHOP.forEach(function(e){
+    var n=G.eggsOwned[e.id]||0;
+    if(n>0)items.push({id:e.id,name:(e.name||'Egg').replace(' Egg',''),count:n,icon:'<img src="'+eggShopIconUrl(e.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(e.icon||'\ud83e\udd5a')+'\'))">'});
+  });
+  if(items.length===0){
+    box.innerHTML='<div class="egp-empty">You don\u2019t own any eggs yet.<br>Craft one in the <b>Shop</b>, then tap a nest to hatch it here.</div>';
+    return;
+  }
+  var html='<div class="egp-grid">';
+  items.forEach(function(it){
+    html+='<button class="egp-cell" onclick="pickEggToHatch(\''+it.id+'\')"><div class="egp-ic">'+it.icon+'</div><div class="egp-nm">'+it.name+'</div><div class="egp-ct">x'+it.count+'</div></button>';
+  });
+  html+='</div>';
+  box.innerHTML=html;
+}
+function pickEggToHatch(id){startHatching(id);closeEggPicker();}
 function buyHatchSlot(){
   var info=hatchSlotUnlockInfo(G.hatchSlotCount);
   if(!info||!info.afford)return;
@@ -10372,6 +10424,22 @@ function hatchSpeedPillHtml(){
     '<span class="hspd-action">'+(maxed?'Max':'Upgrade')+'</span>'+
     '</button>';
 }
+function nestParticlesHtml(){
+  if(G.settings&&G.settings.reduceMotion)return '';
+  var n=14;var s='<div class="nest-particles">';
+  for(var i=0;i<n;i++){
+    var left=(8+Math.random()*84).toFixed(1);
+    var size=(3+Math.random()*4).toFixed(1);
+    var dur=(6+Math.random()*6).toFixed(1);
+    var delay=(Math.random()*8).toFixed(1);
+    var drift=(Math.random()*40-20).toFixed(0);
+    var lime=Math.random()<0.55;
+    var col=lime?'#c6f96e':'#ffffff';
+    var glow=lime?'rgba(198,249,110,0.85)':'rgba(255,255,255,0.85)';
+    s+='<span class="nest-particle" style="left:'+left+'%;width:'+size+'px;height:'+size+'px;background:'+col+';box-shadow:0 0 6px '+glow+';--drift:'+drift+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s;"></span>';
+  }
+  return s+'</div>';
+}
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
@@ -10390,7 +10458,7 @@ function renderHatchery(){
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
         html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
       } else {
-        html+='<div class="hcard empty-slot" data-slot="'+i+'"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time"></div></div>';
+        html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
     } else if(i===maxSlots){
       var hinfo=hatchSlotUnlockInfo(maxSlots);var hafford=hinfo.afford;var hicon=hinfo.currency==='gem'?GEM_IMG:COIN_IMG;
@@ -10407,6 +10475,7 @@ function renderHatchery(){
   html+='<div class="hatch-hero"><img class="hatch-bg-img" src="'+ASSET_BASE+'/assets/ui/hatch/hatcharry-bg.png" alt="" onerror="this.onerror=null;this.src=\''+ASSET_BASE+'/assets/ui/hatch/hatchary-bg.png\'">';
   if(nActive===0){
     /* Tomt näste (Bild 1): bara bakgrundsbilden — ingen text/ikon-overlay. */
+    html+=nestParticlesHtml();
   } else {
     if(hatchView>=nActive)hatchView=0;
     var hidx=hatchView;var hs=G.hatchSlots[hidx];
