@@ -4233,7 +4233,7 @@ function saveGame(){
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
-    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
+    stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now(),cloudVersion:(cloudVersion==null?null:cloudVersion)
   }));}catch(e){}
   if(typeof cloudMarkDirty==='function')cloudMarkDirty();
 }
@@ -7778,7 +7778,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.23<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.24<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12022,11 +12022,20 @@ function cloudEnter(){
       // Okänd ägare eller annat konto => lita på molnet (eller börja färskt).
       if(row){
         if(!ownerMine){cloudApplyAndReload(JSON.stringify(row.data));return;}
-        var cloudAt=Number(row.client_saved_at)||0;
-        var localAt=Number(localObj&&localObj.savedAt)||0;
-        if(localAt>cloudAt){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
-        else if(localAt===cloudAt){cloudHideGate();}
-        else{cloudApplyAndReload(JSON.stringify(row.data));}
+        // STEG 3: avgör med VERSIONSNUMMER, inte klocka. Högsta numret vinner.
+        var cloudV=(typeof row.version==='number')?row.version:null;
+        var localV=(localObj&&typeof localObj.cloudVersion==='number')?localObj.cloudVersion:null;
+        if(cloudV!=null&&localV!=null){
+          if(localV===cloudV){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});} // vi sparade senast → fortsätt här, tryck upp ev. sista sekunder
+          else{cloudApplyAndReload(JSON.stringify(row.data));}                              // annat nummer → molnet är sanningen, ladda det
+        }else{
+          // Övergång: lokal sparning saknar nummer (gjord före denna uppdatering) → använd dagens klock-regel som förut, tills nästa sparning skrivit dit numret.
+          var cloudAt=Number(row.client_saved_at)||0;
+          var localAt=Number(localObj&&localObj.savedAt)||0;
+          if(localAt>cloudAt){cloudDirty=true;cloudPushNow(function(){cloudHideGate();});}
+          else if(localAt===cloudAt){cloudHideGate();}
+          else{cloudApplyAndReload(JSON.stringify(row.data));}
+        }
       }else{
         if(ownerMine){cloudHideGate();}
         else if(localObj){_applyingSave=true;try{ppStore.removeItem(SAVE_KEY);}catch(e){}try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}location.reload();}
