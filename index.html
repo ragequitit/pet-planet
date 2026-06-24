@@ -7692,7 +7692,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.07<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.08<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9911,27 +9911,9 @@ function shellCodexHtml(){
   h+='</div>';
   return h;
 }
-function renderShop(){
-  var wrap=document.getElementById('shop-wrap');if(!wrap)return;
+// Bygger äggkorten (Craft/Hatch/info) — delas av Egg Crafting-shoppen OCH Hatchery.
+function eggCraftCardsHtml(){
   var html='';
-  html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
-  html+='<div class="shop-tabs">';
-  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/meadow-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
-  html+='</div>';
-
-  if(shopTab==='shells'){
-    html+=shellQuickFuseHtml();
-    wrap.innerHTML=html;return;
-  }
-
-  // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
-  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Shells</b>. Rarer eggs need rarer Shells — each card shows the exact Shell it needs. Collect Shells by clicking &amp; idling.</div>';
-
-  // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
-  // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
-
-  // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
   var occupied=G.hatchSlots.length;
   var slotFree=occupied<G.hatchSlotCount;
   EGG_SHOP.forEach(function(egg){
@@ -9973,6 +9955,30 @@ function renderShop(){
     html+='</div>';
     html+='</div>';
   });
+  return html;
+}
+function renderShop(){
+  var wrap=document.getElementById('shop-wrap');if(!wrap)return;
+  var html='';
+  html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
+  html+='<div class="shop-tabs">';
+  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
+  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/meadow-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
+  html+='</div>';
+
+  if(shopTab==='shells'){
+    html+=shellQuickFuseHtml();
+    wrap.innerHTML=html;return;
+  }
+
+  // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
+  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Shells</b>. Rarer eggs need rarer Shells — each card shows the exact Shell it needs. Collect Shells by clicking &amp; idling.</div>';
+
+  // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
+  // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
+
+  // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
+  html+=eggCraftCardsHtml();
   wrap.innerHTML=html;
 }
 function getEggCost(egg){
@@ -9993,7 +9999,7 @@ function buyEgg(id){
   G.stats.eggsCrafted=(G.stats.eggsCrafted||0)+1;
   addPlayerXp(PLAYER_XP.craft);
   if(typeof updateHUD==='function')updateHUD();
-  renderShop();
+  renderShop();renderHatchery();
 }
 // Hatch direkt från shoppen. Har du ägget i lager → hatcha det gratis. Annars → crafta ett nytt och hatcha (kräver att du har råd). Kräver alltid en ledig kläck-slot.
 function hatchFromShop(id){
@@ -10215,24 +10221,13 @@ function renderHatchery(){
       '<div class="hatch-unlock-sub">Hatch more eggs at the same time.</div></div>'+
       '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+hicon+' '+fmtShort(hinfo.cost)+'</div></div>';
   }
-  var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;})||(G.eggsOwned[EVENT_EGG_ID]||0)>0;
   html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
   html+=movedUpgCardHtml('hatch','buyHatchSpeed()');
-  html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Eggs in Inventory</div>';
-  if(!hasEggs){
-    html+='<div style="text-align:center;padding:20px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No eggs — craft some in the 🛍️ Shop!</div>';
-  } else {
-    var activeCount=G.hatchSlots.length;
-    html+='<div class="hatch-egg-list">';
-    EGG_SHOP.forEach(function(egg){
-      var count=G.eggsOwned[egg.id]||0;if(count<=0)return;
-      var canHatch=activeCount<maxSlots;
-      html+='<div class="hatch-egg-row"><div class="he-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div class="he-name">'+egg.name+'</div><div class="he-count">x'+count+'</div><button class="he-btn" style="background:rgba(27,45,78,0.6);margin-right:4px;" onclick="showEggInfo(\''+egg.id+'\')">ℹ️</button><button class="he-btn'+(canHatch?'':' disabled')+'" onclick="startHatching(\''+egg.id+'\')">'+(canHatch?'Hatch':'Full')+'</button></div>';
-    });
-    var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
-    if(_ec>0){var _em=eventEggMeta();var _canH=activeCount<maxSlots;html+='<div class="hatch-egg-row"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
-    html+='</div>';
-  }
+  html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Craft & Hatch Eggs</div>';
+  html+='<div style="margin-bottom:8px;">'+craftUpgBoxHtml()+'</div>';
+  html+=eggCraftCardsHtml();
+  var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
+  if(_ec>0){var _em=eventEggMeta();var _canH=G.hatchSlots.length<maxSlots;html+='<div class="hatch-egg-row" style="margin-top:8px;"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
   wrap.innerHTML=html;
 }
 
