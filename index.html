@@ -1350,7 +1350,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pdx-chest-ic{font-size:1.9rem;line-height:1;}
 .pdx-chest-lbl{font-size:0.46rem;color:rgba(255,255,255,0.4);margin-top:2px;max-width:58px;}
 .pdx-section-label{font-family:'Fredoka One',cursive;font-size:0.7rem;color:rgba(255,255,255,0.6);text-align:center;margin-bottom:8px;letter-spacing:0.5px;}
-.pdx-world-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;}
+.pdx-world-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;cursor:grab;touch-action:pan-x;-webkit-overflow-scrolling:touch;}
 .pdx-world-tabs::-webkit-scrollbar{height:3px;}
 .pdx-world-tabs::-webkit-scrollbar-thumb{background:#1f3d78;border-radius:2px;}
 .pdx-world-tab{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 12px;background:linear-gradient(160deg,#16284f,#0e1c3c);border:2px solid rgba(58,92,184,0.6);border-radius:13px;cursor:pointer;min-width:62px;}
@@ -6495,7 +6495,7 @@ var MORE_ITEMS=[
   {label:'Achievements',icon:uiIco('menu/achievements','🏆',30),tab:'more'},
   {label:'Inventory',icon:uiIco('menu/inventory','🎒',30),action:'bag'},
   {label:'Friends',icon:uiIco('more/friends','👥',30),action:'friends'},
-  {label:'How to Play',icon:uiIco('menu/howto','❓',30),action:'howto'},
+  {label:'How to Play',icon:uiIco('more/how-to-play','❓',30),action:'howto'},
 ];
 function openMore(){
   var g=document.getElementById('more-grid');g.innerHTML='';
@@ -7906,7 +7906,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.43<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.44<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10222,7 +10222,8 @@ function renderShop(){
 
   if(shopTab==='shells'){
     html+=shellQuickFuseHtml();
-    wrap.innerHTML=html;return;
+    wrap.innerHTML=html;
+   var _wt=wrap.querySelector('.pdx-world-tabs');if(_wt)attachDragScroll(_wt);return;
   }
 
   // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
@@ -11839,7 +11840,7 @@ function renderWorldCompletion(){
     var pct=c.total>0?Math.floor(c.found/c.total*100):0;
     var done=pct>=100;
     h+='<div class="wc-row'+(done?' done':'')+'">';
-    h+='<div class="wc-ic">'+w.icon+'</div>';
+    h+='<div class="wc-ic"><img src="'+eggShopIconUrl(w.id)+'" alt="" style="width:100%;height:100%;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\''+w.icon+'\'))"></div>';
     h+='<div class="wc-mid"><div class="wc-name">'+w.name+' Egg'+(done?'<span class="wc-done-tag">✓ COMPLETE</span>':'')+'</div>';
     h+='<div class="wc-bar"><div class="wc-fill" style="width:'+pct+'%"></div></div>';
     h+='<div class="wc-pct">'+c.found+' / '+c.total+' species · '+pct+'%</div></div>';
@@ -11888,7 +11889,7 @@ function renderPetdex(){
   var worldInfo=PETDEX_WORLDS.find(function(w){return w.id===petdexActiveWorld;});
   var species=getPetdexSpecies(petdexActiveWorld);
   var wc=getWorldSpeciesCount(petdexActiveWorld);
-  html+='<div class="pdx-world-header"><div class="pdx-world-title">'+(worldInfo?worldInfo.icon+' '+worldInfo.name+' Egg':'')+'</div><div class="pdx-world-count">'+wc.found+' / '+wc.total+'</div></div>';
+  html+='<div class="pdx-world-header"><div class="pdx-world-title">'+(worldInfo?'<img src="'+eggShopIconUrl(petdexActiveWorld)+'" alt="" style="width:1.3em;height:1.3em;object-fit:contain;vertical-align:-0.24em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode(\''+worldInfo.icon+'\'))">'+worldInfo.name+' Egg':'')+'</div><div class="pdx-world-count">'+wc.found+' / '+wc.total+'</div></div>';
   html+='<div class="pdx-grid">';
   species.forEach(function(sp){
     var found=isSpeciesFound(sp.name,sp.native);
