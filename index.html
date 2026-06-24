@@ -1128,9 +1128,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .nogems-buy{display:inline-flex;align-items:center;justify-content:center;margin:6px auto 4px;padding:12px 26px;border:none;border-radius:14px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #5a32c0;}
 .nogems-buy:active{transform:translateY(3px);box-shadow:0 1px 0 #5a32c0;}
 .hatch-hero-adv{position:relative;z-index:2;width:72%;max-width:240px;margin-top:18px;display:flex;flex-direction:column;align-items:stretch;gap:6px;}
-.hha-time{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.95);}
-.hha-bar{height:9px;background:rgba(0,0,0,0.5);border-radius:5px;overflow:hidden;border:1px solid rgba(0,0,0,0.4);}
-.hha-fill{height:100%;background:linear-gradient(90deg,#2e9e3f,#7fe06a);border-radius:5px;transition:width 0.5s;}
+.hha-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:0.95rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.95),0 0 5px rgba(0,0,0,0.55);}
+.hha-bar{position:relative;height:28px;background:rgba(0,0,0,0.5);border-radius:9px;overflow:hidden;border:1px solid rgba(0,0,0,0.4);}
+.hha-fill{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,#2e9e3f,#7fe06a);border-radius:9px;transition:width 0.5s;}
 .hha-speed{padding:10px 6px;border:none;border-radius:11px;background:linear-gradient(180deg,#5aa9e6,#2f6ea8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:pointer;box-shadow:0 3px 0 #1c456e;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .hha-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #1c456e;}
 .hha-speed .gem-ic{width:1.15em;height:1.15em;}
@@ -7870,7 +7870,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.40<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.41<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10429,7 +10429,7 @@ function updateHatchTimers(){
   for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;if(el>=s.duration&&!s.done){s.done=true;structural=true;}}
   if(structural){renderHatchery();return;}
   for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;var pct=Math.min(1,el/s.duration);var rem=Math.max(0,Math.ceil((s.duration-el)/1000));var card=wrap.querySelector('.hcard.active[data-slot="'+i+'"]');if(card){var t=card.querySelector('.hcard-time');if(t)t.textContent=s.done?'\u2705 Ready!':formatTime(rem);var f=card.querySelector('.hcard-bar-fill');if(f)f.style.width=(pct*100)+'%';}}
-  var hs=G.hatchSlots[hatchView];if(hs&&!hs.done){var el=now-hs.startTime;var pct=Math.min(1,el/hs.duration);var rem=Math.max(0,Math.ceil((hs.duration-el)/1000));var ht=wrap.querySelector('.hha-time');if(ht)ht.textContent=formatTime(rem);var hf=wrap.querySelector('.hha-fill');if(hf)hf.style.width=(pct*100)+'%';}
+  var hs=G.hatchSlots[hatchView];if(hs&&!hs.done){var el=now-hs.startTime;var pct=Math.min(1,el/hs.duration);var rem=Math.max(0,Math.ceil((hs.duration-el)/1000));var ht=wrap.querySelector('.hha-time');if(ht)ht.textContent='\u23f3 '+formatTime(rem)+' left';var hf=wrap.querySelector('.hha-fill');if(hf)hf.style.width=(pct*100)+'%';}
 }
 function hatchHeroPage(dir){
   var n=G.hatchSlots.length;if(n<=1)return;
@@ -10537,7 +10537,7 @@ function renderHatchery(){
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" onclick="collectHatch('+hidx+')">Collect</button>';
-    else{var hsuC=hatchSpeedUpCost(hs),hsuH=G.gems||0,hsuL;if(hsuH>=hsuC)hsuL='SPEED UP '+GEM_IMG+hsuC;else if(hsuH>0)hsuL='\u2212'+(hsuH*GEM_SPEEDUP_MIN_PER_GEM)+'m '+GEM_IMG+hsuH;else hsuL='SPEED UP '+GEM_IMG+hsuC;html+='<div class="hatch-hero-adv"><div class="hha-time">'+formatTime(hrem)+'</div><div class="hha-bar"><div class="hha-fill" style="width:'+(hpct*100)+'%"></div></div><button class="hha-speed" onclick="hatchSpeedUp('+hidx+')">'+hsuL+'</button></div>';}
+    else{var hsuC=hatchSpeedUpCost(hs),hsuH=G.gems||0,hsuL;if(hsuH>=hsuC)hsuL='SPEED UP '+GEM_IMG+hsuC;else if(hsuH>0)hsuL='\u2212'+(hsuH*GEM_SPEEDUP_MIN_PER_GEM)+'m '+GEM_IMG+hsuH;else hsuL='SPEED UP '+GEM_IMG+hsuC;html+='<div class="hatch-hero-adv"><div class="hha-bar"><div class="hha-fill" style="width:'+(hpct*100)+'%"></div><div class="hha-time">\u23f3 '+formatTime(hrem)+' left</div></div><button class="hha-speed" onclick="hatchSpeedUp('+hidx+')">'+hsuL+'</button></div>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
