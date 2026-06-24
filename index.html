@@ -7778,7 +7778,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.21<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.22<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11886,6 +11886,7 @@ try{if(typeof window!=='undefined'&&window.supabase&&window.supabase.createClien
 var cloudUser=null, cloudDirty=false, cloudBusy=false, cloudClaimed=false, cloudKickedFlag=false;
 var cloudBusyAt=0; // tidsstämpel när cloudBusy senast sattes — används av vakthunden mot tysta frysningar
 var cloudLastSavedAt=0; // tidsstämpel för senaste LYCKADE molnsparning — driver "Last saved"-indikatorn
+var cloudVersion=null;  // STEG 1 (spar-synk): molnets versionsnummer (räknar bara uppåt). Bara ihågkommet ännu — inget nekas.
 var cloudSession=(Date.now().toString(36)+Math.random().toString(36).slice(2,10));
 var OWNER_KEY='pp_cloud_owner';
 
@@ -12010,8 +12011,9 @@ function cloudEnter(){
   cloudShowGate('loading');
   cloudClaimSession(function(){
     cloudClaimed=true;
-    sb.from('saves').select('data,client_saved_at,banned,ban_reason').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
+    sb.from('saves').select('data,client_saved_at,banned,ban_reason,version').eq('user_id',cloudUser.id).maybeSingle().then(function(res){
       var row=res&&res.data;
+      if(row&&typeof row.version==='number')cloudVersion=row.version; // STEG 1: kom ihåg molnets nuvarande nummer
       if(row&&row.banned){_gateBlock=true;cloudShowGate('banned',row.ban_reason||'This account has been suspended. Contact support if you think this is a mistake.');return;}
       var localObj=cloudLocalObj();
       var owner=ppStore.getItem(OWNER_KEY);
@@ -12111,7 +12113,7 @@ function cloudPushNow(cb){
     cloudBusy=false;var st=res&&res.data;
     if(st==='banned'){cloudBanned();}
     else if(st==='superseded'){cloudKicked();}
-    else if(st==='saved'||st==='created'){cloudDirty=false;cloudLastSavedAt=Date.now();try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();cloudSyncAvatar();if(typeof cloudUpdateSaveStatus==='function')cloudUpdateSaveStatus();}
+    else if(st==='saved'||st==='created'){if(st==='created')cloudVersion=1;else if(cloudVersion!=null)cloudVersion=cloudVersion+1;cloudDirty=false;cloudLastSavedAt=Date.now();try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();cloudSyncAvatar();if(typeof cloudUpdateSaveStatus==='function')cloudUpdateSaveStatus();}
     if(cb)cb(st);
   },function(){cloudBusy=false;if(cb)cb();});
 }
