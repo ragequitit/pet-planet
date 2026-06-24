@@ -710,8 +710,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
 .hatch-hero{position:relative;width:calc(100% + 20px);border-radius:0;overflow:hidden;margin:6px -10px 8px;padding:16px 14px 18px;background:#13102e;border:none;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;gap:7px;height:300px;}
 .hatch-hero-glow{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:230px;height:230px;background:radial-gradient(circle,rgba(195,150,255,0.6),rgba(120,90,210,0.18) 45%,transparent 68%);filter:blur(10px);pointer-events:none;z-index:0;}
-.hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;transform:translate(-15px,15px);}
-.hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));transform:rotate(15deg);animation:eggPulse 7s ease-in-out infinite;}
+.hatch-hero-egg{position:relative;z-index:2;width:195px;height:195px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;transform:translate(-10px,10px);}
+.hatch-hero-egg img{width:180px;height:180px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));transform:rotate(15deg);animation:eggPulse 7s ease-in-out infinite;}
 @keyframes eggPulse{0%,100%{transform:rotate(15deg) scale(1);}50%{transform:rotate(15deg) scale(1.08);}}
 .reduce-motion .hatch-hero-egg img{animation:none;}
 .hatch-nest{position:relative;z-index:1;width:172px;height:46px;margin-top:-24px;border-radius:0 0 86px 86px / 0 0 46px 46px;background:repeating-linear-gradient(96deg,#7a4a26,#7a4a26 5px,#5e3819 5px,#5e3819 10px);border:3px solid #4a2c14;border-top:none;box-shadow:inset 0 7px 9px rgba(0,0,0,0.4),0 5px 7px rgba(0,0,0,0.45);}
@@ -754,7 +754,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hsu-row:last-child{border-bottom:none;}
 .hsu-row.locked{opacity:0.45;}
 .hsu-lvl{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:rgba(58,92,184,0.4);color:#fff;font-family:'Fredoka One',cursive;font-size:0.85rem;display:flex;align-items:center;justify-content:center;}
-.hsu-row.owned .hsu-lvl{background:rgba(61,220,132,0.35);}
+.hsu-row.owned .hsu-lvl{background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;}
 .hsu-row.next .hsu-lvl{background:var(--gold,#f5c842);color:#0b1530;}
 .hsu-desc{flex:1;min-width:0;}
 .hsu-desc-t{font-family:'Fredoka One',cursive;font-size:0.86rem;color:#fff;line-height:1.1;}
@@ -762,6 +762,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hsu-right{flex:0 0 auto;}
 .hsu-check{color:#3ddc84;font-size:1.1rem;font-weight:800;}
 .hsu-cost{font-family:'Fredoka One',cursive;font-size:0.78rem;color:rgba(255,255,255,0.6);display:inline-flex;align-items:center;gap:3px;}
+.hsu-buy .coin-ic,.hsu-cost .coin-ic{width:2em;height:2em;vertical-align:middle;}
 .hsu-buy{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#0b1530;background:linear-gradient(180deg,#3ddc84,#1faa5a);border:none;border-radius:10px;padding:6px 12px;box-shadow:0 3px 0 #137a3e;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
 .hsu-buy:active{transform:translateY(2px);box-shadow:0 1px 0 #137a3e;}
 .hsu-buy.poor{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);box-shadow:none;cursor:default;}
@@ -2072,7 +2073,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 </div>
 <div id="hatch-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeHatchInfo()">
 <div class="hatch-info-card">
-<div class="hatch-info-head">🥚 How Hatching Works</div>
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shop/forest-egg.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:-0.28em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83e\udd5a'))"> How Hatching Works</div>
 <div class="hatch-info-body">
 <p><b>Craft</b> eggs with Sparks + Shells, then <b>Hatch</b> them into an incubation slot below.</p>
 <p>Each slot hatches one egg at a time. <b>Unlock more slots</b> to hatch several at once — slots 2–3 cost Sparks, slots 4–5 cost Gems.</p>
@@ -2083,7 +2084,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 </div></div>
 <div id="hatch-speed-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeHatchSpeed()">
 <div class="hatch-info-card">
-<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:-0.18em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:40px;height:40px;object-fit:contain;vertical-align:middle;margin-right:7px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
 <div class="hatch-info-body" id="hatch-speed-body"></div>
 <button class="hatch-info-close" onclick="closeHatchSpeed()">Done</button>
 </div></div>
@@ -7835,7 +7836,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.31<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.32<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
