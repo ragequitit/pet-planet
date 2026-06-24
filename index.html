@@ -2571,8 +2571,19 @@ var UPGRADES=[
 var SLOTS=[{slot:2,cost:10000},{slot:3,cost:1e6},{slot:4,cost:1e8},{slot:5,cost:1e10}];
 // === HATCH SLOTS (separat från pet slots) ===
 // Spelaren börjar med 1 hatch slot, max 3 (spikat). Köps med Sparks i Hatchery.
-var HATCH_SLOT_MAX=3;
-var HATCH_SLOT_COSTS=[50000,5e6]; // Sparks för att låsa upp slot 2 resp 3 — PRELIMINÄRA värden, justeras vid balansering
+var HATCH_SLOT_MAX=5;
+var HATCH_SLOT_COSTS=[50000,5e6]; // Sparks för slot 2 resp 3 — PRELIMINÄRA, justeras vid balansering
+var HATCH_SLOT_GEM_COSTS=[500,2500]; // Gems för slot 4 resp 5 — PRELIMINÄRA
+// Returnerar hur NÄSTA hatch-slot låses upp givet nuvarande antal (count): valuta + kostnad + om man har råd.
+function hatchSlotUnlockInfo(count){
+  if(count>=HATCH_SLOT_MAX)return null;
+  if(count<=2){ // count 1→slot2, count 2→slot3 = Sparks
+    var sc=HATCH_SLOT_COSTS[count-1];
+    return {currency:'spark',cost:sc,afford:G.coins>=sc};
+  }
+  var gc=HATCH_SLOT_GEM_COSTS[count-3]; // count 3→slot4, count 4→slot5 = Gems
+  return {currency:'gem',cost:gc,afford:(G.gems||0)>=gc};
+}
 // === KLICK-BALANS ===
 // Andel av EPS som varje klick ger ovanpå bas-klicket (Cookie Clicker-stil), så aktivt
 // klickande förblir meningsfullt hela spelet. 0.08 = 8% av EPS per klick. Tuna fritt.
@@ -7681,7 +7692,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.06<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.07<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10094,10 +10105,9 @@ function startHatching(eggId){
   renderHatchery();
 }
 function buyHatchSlot(){
-  if(G.hatchSlotCount>=HATCH_SLOT_MAX)return;
-  var cost=HATCH_SLOT_COSTS[G.hatchSlotCount-1];
-  if(G.coins<cost)return;
-  G.coins-=cost;
+  var info=hatchSlotUnlockInfo(G.hatchSlotCount);
+  if(!info||!info.afford)return;
+  if(info.currency==='gem')G.gems-=info.cost; else G.coins-=info.cost;
   G.hatchSlotCount++;
   buzz(15);
   if(typeof updateHUD==='function')updateHUD();
@@ -10196,13 +10206,14 @@ function renderHatchery(){
   }
   // Upplåsnings-kort för nästa hatch slot (separat system, max 3, betalas med Sparks)
   if(maxSlots<HATCH_SLOT_MAX){
-    var hcost=HATCH_SLOT_COSTS[maxSlots-1];
-    var hafford=G.coins>=hcost;
+    var hinfo=hatchSlotUnlockInfo(maxSlots);
+    var hafford=hinfo.afford;
+    var hicon=hinfo.currency==='gem'?GEM_IMG:COIN_IMG;
     html+='<div class="hatch-unlock'+(hafford?' afford':'')+'" '+(hafford?'onclick="buyHatchSlot()"':'')+'>'+
       '<div class="hatch-unlock-icon">🔓</div>'+
       '<div class="hatch-unlock-info"><div class="hatch-unlock-title">Unlock Hatch Slot '+(maxSlots+1)+'</div>'+
       '<div class="hatch-unlock-sub">Hatch more eggs at the same time.</div></div>'+
-      '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+COIN_IMG+' '+fmtShort(hcost)+'</div></div>';
+      '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+hicon+' '+fmtShort(hinfo.cost)+'</div></div>';
   }
   var hasEggs=EGG_SHOP.some(function(e){return (G.eggsOwned[e.id]||0)>0;})||(G.eggsOwned[EVENT_EGG_ID]||0)>0;
   html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
