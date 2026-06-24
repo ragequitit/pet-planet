@@ -710,8 +710,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
 .hatch-hero{position:relative;width:calc(100% + 20px);border-radius:0;overflow:hidden;margin:6px -10px 8px;padding:16px 14px 18px;background:#13102e;border:none;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;gap:7px;height:300px;}
 .hatch-hero-glow{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:230px;height:230px;background:radial-gradient(circle,rgba(195,150,255,0.6),rgba(120,90,210,0.18) 45%,transparent 68%);filter:blur(10px);pointer-events:none;z-index:0;}
-.hatch-hero-egg{position:relative;z-index:2;width:195px;height:195px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;transform:translate(-10px,10px);}
-.hatch-hero-egg img{width:180px;height:180px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));transform:rotate(15deg);animation:eggPulse 7s ease-in-out infinite;}
+.hatch-hero-egg{position:relative;z-index:2;width:117px;height:117px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;transform:translate(-10px,10px);}
+.hatch-hero-egg img{width:108px;height:108px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));transform:rotate(15deg);animation:eggPulse 7s ease-in-out infinite;}
 @keyframes eggPulse{0%,100%{transform:rotate(15deg) scale(1);}50%{transform:rotate(15deg) scale(1.08);}}
 .reduce-motion .hatch-hero-egg img{animation:none;}
 .hatch-nest{position:relative;z-index:1;width:172px;height:46px;margin-top:-24px;border-radius:0 0 86px 86px / 0 0 46px 46px;background:repeating-linear-gradient(96deg,#7a4a26,#7a4a26 5px,#5e3819 5px,#5e3819 10px);border:3px solid #4a2c14;border-top:none;box-shadow:inset 0 7px 9px rgba(0,0,0,0.4),0 5px 7px rgba(0,0,0,0.45);}
@@ -1111,6 +1111,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-world{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:6px;text-align:center;}
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#3ddc84,#1faa5a);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #137a3e;}
 .hatch-collect:active{transform:translateY(3px);box-shadow:0 1px 0 #137a3e;}
+.hcard-btn.speed{background:linear-gradient(180deg,#9b6cff,#6a3de0);box-shadow:0 2px 0 #4a2aa0;color:#fff;display:flex;align-items:center;justify-content:center;gap:4px;}
+.hcard-btn.speed.poor{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);box-shadow:none;}
+.hcard-btn .gem-ic{width:1.05em;height:1.05em;}
+.hatch-speedup{position:relative;z-index:2;margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#9b6cff,#6a3de0);border:none;border-radius:13px;padding:8px 18px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 4px 0 #4a2aa0;}
+.hatch-speedup:active{transform:translateY(3px);box-shadow:0 1px 0 #4a2aa0;}
+.hatch-speedup.poor{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);box-shadow:none;cursor:default;}
+.hatch-speedup .gem-ic{width:1.15em;height:1.15em;}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 /* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
@@ -7836,7 +7843,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.32<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.34<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10281,6 +10288,20 @@ function renderEggPicker(){
   box.innerHTML=html;
 }
 function pickEggToHatch(id){startHatching(id);closeEggPicker();}
+function hatchSpeedUpCost(slot){var remain=Math.max(0,(slot.startTime+slot.duration)-Date.now());return Math.max(1,Math.ceil(remain/60000/GEM_SPEEDUP_MIN_PER_GEM));}
+function hatchSpeedUp(idx){
+  var s=G.hatchSlots[idx];if(!s)return;
+  var remain=(s.startTime+s.duration)-Date.now();if(remain<=0)return; // redan klart
+  var have=G.gems||0;if(have<=0)return;                              // inga gems
+  var fullCost=hatchSpeedUpCost(s);
+  var spend=Math.min(have,fullCost);                                // spendera bara det som behövs/finns
+  G.gems-=spend;
+  if(spend>=fullCost){s.startTime=Date.now()-s.duration;s.done=true;} // räcker hela vägen → klar direkt
+  else{s.startTime-=spend*GEM_SPEEDUP_MIN_PER_GEM*60000;}             // partiellt → korta tiden proportionellt
+  buzz(8);
+  if(typeof updateHUD==='function')updateHUD();
+  saveGame();renderHatchery();
+}
 function buyHatchSlot(){
   var info=hatchSlotUnlockInfo(G.hatchSlotCount);
   if(!info||!info.afford)return;
@@ -10458,7 +10479,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
+        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">\ud83c\udf89 Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+GEM_IMG+' '+hatchSpeedUpCost(slot)+'</button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
@@ -10489,7 +10510,7 @@ function renderHatchery(){
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)">\u2039</div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)">\u203a</div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" onclick="collectHatch('+hidx+')">Collect Pet</button>';
-    else html+='<div class="hatch-collect waiting">\u23f3 '+formatTime(hrem)+' left</div>';
+    else{html+='<div class="hatch-collect waiting">\u23f3 '+formatTime(hrem)+' left</div>';html+='<button class="hatch-speedup'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+hidx+')">'+GEM_IMG+' Speed up \u00b7 '+hatchSpeedUpCost(hs)+'</button>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
