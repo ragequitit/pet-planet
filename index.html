@@ -680,6 +680,43 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-collect-btn{width:100%;padding:9px;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;}
 .hatch-collect-btn.ready{background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 3px 0 #8a6000;}
 .hatch-collect-btn.waiting{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;}
+.hatch-slot-row{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;}
+.hatch-slot-row::-webkit-scrollbar{height:0;}
+.hcard{flex:0 0 auto;width:118px;min-height:158px;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;scroll-snap-align:start;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
+.hcard.active{border-color:#ffce4a;box-shadow:0 0 14px rgba(245,200,66,0.38),inset 0 2px 0 rgba(255,255,255,0.18),0 3px 0 #0b1326;}
+.hcard.locked{border-style:dashed;background:linear-gradient(180deg,#1a2848,#121f3a);}
+.hcard-num{position:absolute;top:6px;left:9px;font-size:0.7rem;font-weight:800;color:rgba(255,255,255,0.4);font-family:'Baloo 2',cursive;}
+.hcard-egg{width:54px;height:54px;display:flex;align-items:center;justify-content:center;margin-top:8px;font-size:2.6rem;}
+.hcard-egg img{width:54px;height:54px;object-fit:contain;}
+.hcard-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;text-align:center;line-height:1.05;}
+.hcard-time{font-size:0.64rem;color:rgba(255,255,255,0.55);text-align:center;min-height:0.8em;}
+.hcard-bar{width:100%;height:7px;background:rgba(0,0,0,0.32);border-radius:5px;overflow:hidden;}
+.hcard-bar-fill{height:100%;background:linear-gradient(90deg,#5ad6ff,#3a8cff);border-radius:5px;}
+.hcard-btn{margin-top:auto;width:100%;border:none;border-radius:11px;padding:7px 4px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;cursor:pointer;}
+.hcard-btn.ready{background:linear-gradient(180deg,#3ddc84,#1faa5a);box-shadow:0 2px 0 #137a3e;}
+.hcard-btn.waiting{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
+.hcard-btn.unlock{background:linear-gradient(180deg,#3a78ff,#2456c8);box-shadow:0 2px 0 #163b8c;display:flex;align-items:center;justify-content:center;gap:4px;}
+.hcard-btn.unlock.bad{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);box-shadow:none;cursor:default;}
+.hcard-lock-ic{font-size:2.2rem;margin-top:10px;opacity:0.75;}
+.hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
+.hatch-hero{position:relative;width:100%;border-radius:20px;overflow:hidden;margin:6px 0 4px;padding:16px 14px 18px;background:radial-gradient(120% 90% at 50% 28%,#3a2d6b 0%,#241a4a 55%,#1a1438 100%);border:2px solid #4a3a8c;box-shadow:inset 0 2px 12px rgba(0,0,0,0.45);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:235px;}
+.hatch-hero-glow{position:absolute;top:14%;left:50%;transform:translateX(-50%);width:210px;height:210px;background:radial-gradient(circle,rgba(185,145,255,0.5),transparent 65%);filter:blur(9px);pointer-events:none;z-index:0;}
+.hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:4px;font-size:5rem;animation:heroEggBob 3.2s ease-in-out infinite;}
+.hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));}
+@keyframes heroEggBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.reduce-motion .hatch-hero-egg{animation:none;}
+.hatch-nest{position:relative;z-index:1;width:172px;height:46px;margin-top:-24px;border-radius:0 0 86px 86px / 0 0 46px 46px;background:repeating-linear-gradient(96deg,#7a4a26,#7a4a26 5px,#5e3819 5px,#5e3819 10px);border:3px solid #4a2c14;border-top:none;box-shadow:inset 0 7px 9px rgba(0,0,0,0.4),0 5px 7px rgba(0,0,0,0.45);}
+.hatch-hero-name{z-index:2;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;margin-top:8px;}
+.hatch-hero-time{z-index:2;font-size:0.82rem;color:rgba(255,255,255,0.88);font-family:'Baloo 2',cursive;font-weight:700;}
+.hatch-hero-bar{z-index:2;width:78%;max-width:300px;height:9px;background:rgba(0,0,0,0.38);border-radius:6px;overflow:hidden;}
+.hatch-hero-bar-fill{height:100%;background:linear-gradient(90deg,#ffce4a,#ff9a3a);border-radius:6px;}
+.hatch-hero-arrow{position:absolute;top:46%;transform:translateY(-50%);z-index:5;width:40px;height:40px;border-radius:50%;background:rgba(20,30,60,0.72);border:2px solid rgba(120,170,255,0.7);color:#dce8ff;font-size:1.5rem;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 12px rgba(80,150,255,0.55);}
+.hatch-hero-arrow:active{transform:translateY(-50%) scale(0.92);}
+.hatch-hero-arrow.l{left:10px;} .hatch-hero-arrow.r{right:10px;}
+.hatch-hero-empty{z-index:2;color:rgba(255,255,255,0.6);text-align:center;font-size:0.9rem;line-height:1.4;padding:14px 10px 4px;}
+.hatch-hero-dots{z-index:2;display:flex;gap:6px;margin-top:2px;}
+.hatch-hero-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);}
+.hatch-hero-dot.on{background:#ffce4a;}
 .hatch-egg-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .hatch-egg-row{background:rgba(27,45,78,0.45);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
 .he-icon{font-size:1.5rem;flex-shrink:0;}
@@ -7692,7 +7729,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.08<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.10<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10192,35 +10229,65 @@ function showPetResult(pet){
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your inventory.';inv.style.display='';}
   openPetResultModal(pet);
 }
+// NÄST-HERO: vilket aktivt kläck-slot som visas i den stora rutan; pilar bläddrar.
+var hatchView=0;
+function hatchHeroPage(dir){
+  var n=G.hatchSlots.length;if(n<=1)return;
+  hatchView=(hatchView+dir+n)%n;
+  renderHatchery();
+}
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
   var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
-  for(var i=0;i<maxSlots;i++){
-    var slot=G.hatchSlots[i];
-    if(slot){
-      var elapsed=now-slot.startTime;var pct=Math.min(1,elapsed/slot.duration);
-      if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
-      var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
-      var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
-      html+='<div class="hatch-slot active-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">'+(slot.eggId===EVENT_EGG_ID?eventEggIconHtml(38):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" style="width:40px;height:40px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'🥚')+'\'))">')+'</div><div><div class="hatch-slot-name">'+(egg?egg.name:'Egg')+'</div><div class="hatch-slot-time">'+(slot.done?'✅ Ready!':formatTime(remaining)+' remaining')+'</div></div></div>';
-      html+='<div class="hatch-progress-bar"><div class="hatch-progress-fill" style="width:'+(pct*100)+'%"></div></div>';
-      html+='<button class="hatch-collect-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'🎉 Collect Pet!':'Hatching...')+'</button></div>';
+  html+='<div class="hatch-slot-row">';
+  for(var i=0;i<HATCH_SLOT_MAX;i++){
+    var num='<div class="hcard-num">#'+(i+1)+'</div>';
+    if(i<maxSlots){
+      var slot=G.hatchSlots[i];
+      if(slot){
+        var elapsed=now-slot.startTime;var pct=Math.min(1,elapsed/slot.duration);
+        if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
+        var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
+        var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
+        var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
+        html+='<div class="hcard active">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
+      } else {
+        html+='<div class="hcard">'+num+'<div class="hcard-egg">\ud83e\udeb9</div><div class="hcard-name">Empty</div><div class="hcard-time">Pick an egg below</div></div>';
+      }
+    } else if(i===maxSlots){
+      var hinfo=hatchSlotUnlockInfo(maxSlots);var hafford=hinfo.afford;var hicon=hinfo.currency==='gem'?GEM_IMG:COIN_IMG;
+      html+='<div class="hcard locked">'+num+'<div class="hcard-lock-ic">\ud83d\udd13</div><div class="hcard-name">Unlock</div><div class="hcard-time"></div><button class="hcard-btn unlock'+(hafford?'':' bad')+'" '+(hafford?'onclick="buyHatchSlot()"':'disabled')+'>'+hicon+' '+fmtShort(hinfo.cost)+'</button></div>';
     } else {
-      html+='<div class="hatch-slot empty-slot"><div class="hatch-slot-top"><div class="hatch-slot-icon">🪹</div><div><div class="hatch-slot-name">Empty Slot</div><div class="hatch-slot-time">Select an egg below</div></div></div></div>';
+      var fc=i<=2?{currency:'spark',cost:HATCH_SLOT_COSTS[i-1]}:{currency:'gem',cost:HATCH_SLOT_GEM_COSTS[i-3]};
+      var ficon=fc.currency==='gem'?GEM_IMG:COIN_IMG;
+      html+='<div class="hcard locked">'+num+'<div class="hcard-lock-ic">\ud83d\udd12</div><div class="hcard-name">Locked</div><div class="hcard-time"></div><button class="hcard-btn unlock bad" disabled>'+ficon+' '+fmtShort(fc.cost)+'</button></div>';
     }
   }
-  // Upplåsnings-kort för nästa hatch slot (separat system, max 3, betalas med Sparks)
-  if(maxSlots<HATCH_SLOT_MAX){
-    var hinfo=hatchSlotUnlockInfo(maxSlots);
-    var hafford=hinfo.afford;
-    var hicon=hinfo.currency==='gem'?GEM_IMG:COIN_IMG;
-    html+='<div class="hatch-unlock'+(hafford?' afford':'')+'" '+(hafford?'onclick="buyHatchSlot()"':'')+'>'+
-      '<div class="hatch-unlock-icon">🔓</div>'+
-      '<div class="hatch-unlock-info"><div class="hatch-unlock-title">Unlock Hatch Slot '+(maxSlots+1)+'</div>'+
-      '<div class="hatch-unlock-sub">Hatch more eggs at the same time.</div></div>'+
-      '<div class="hatch-unlock-cost'+(hafford?'':' bad')+'">'+hicon+' '+fmtShort(hinfo.cost)+'</div></div>';
+  html+='</div>';
+  // ---- NÄST-HERO ----
+  var nActive=G.hatchSlots.length;
+  html+='<div class="hatch-hero"><div class="hatch-hero-glow"></div>';
+  if(nActive===0){
+    html+='<div class="hatch-hero-egg" style="opacity:0.4;animation:none;">\ud83e\udeb9</div><div class="hatch-nest"></div>';
+    html+='<div class="hatch-hero-empty">No egg hatching yet.<br>Craft &amp; hatch one below to fill a nest.</div>';
+  } else {
+    if(hatchView>=nActive)hatchView=0;
+    var hidx=hatchView;var hs=G.hatchSlots[hidx];
+    var hel=now-hs.startTime;var hpct=Math.min(1,hel/hs.duration);
+    if(hpct>=1&&!hs.done)G.hatchSlots[hidx].done=hs.done=true;
+    var hrem=Math.max(0,Math.ceil((hs.duration-hel)/1000));
+    var heg=hs.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===hs.eggId;});
+    var hImg=hs.eggId===EVENT_EGG_ID?eventEggIconHtml(120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
+    if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)">\u2039</div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)">\u203a</div>';
+    html+='<div class="hatch-hero-egg">'+hImg+'</div><div class="hatch-nest"></div>';
+    html+='<div class="hatch-hero-name">'+(heg?heg.name:'Egg')+'</div>';
+    html+='<div class="hatch-hero-time">'+(hs.done?'\u2705 Ready to collect!':'\u23f3 '+formatTime(hrem)+' left')+'</div>';
+    html+='<div class="hatch-hero-bar"><div class="hatch-hero-bar-fill" style="width:'+(hpct*100)+'%"></div></div>';
+    if(hs.done)html+='<button class="hcard-btn ready" style="width:62%;max-width:220px;margin-top:8px;" onclick="collectHatch('+hidx+')">\ud83c\udf89 Collect Pet!</button>';
+    if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
+  html+='</div>';
   html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
   html+=movedUpgCardHtml('hatch','buyHatchSpeed()');
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Craft & Hatch Eggs</div>';
