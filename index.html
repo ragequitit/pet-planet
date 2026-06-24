@@ -1125,6 +1125,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hht-time{width:100%;text-align:center;background:linear-gradient(180deg,#3a4a72,#26324f);box-shadow:0 3px 0 #161f33,inset 0 2px 0 rgba(255,255,255,0.12);color:rgba(255,255,255,0.9);border-radius:12px;padding:6px 12px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.92rem;}
 .hht-bar{width:100%;height:7px;background:rgba(0,0,0,0.35);border-radius:5px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,0.4);}
 .hht-bar-fill{height:100%;background:linear-gradient(90deg,#5ad6ff,#3a8cff);border-radius:5px;}
+.nogems-buy{display:inline-flex;align-items:center;justify-content:center;margin:6px auto 4px;padding:12px 26px;border:none;border-radius:14px;background:linear-gradient(180deg,#b388ff,#7c4dff);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #5a32c0;}
+.nogems-buy:active{transform:translateY(3px);box-shadow:0 1px 0 #5a32c0;}
+.hatch-hero-adv{position:relative;z-index:2;width:72%;max-width:240px;margin-top:18px;display:flex;flex-direction:column;align-items:stretch;gap:6px;}
+.hha-time{font-family:'Fredoka One',cursive;font-size:1rem;color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,0.95);}
+.hha-bar{height:9px;background:rgba(0,0,0,0.5);border-radius:5px;overflow:hidden;border:1px solid rgba(0,0,0,0.4);}
+.hha-fill{height:100%;background:linear-gradient(90deg,#2e9e3f,#7fe06a);border-radius:5px;transition:width 0.5s;}
+.hha-speed{padding:10px 6px;border:none;border-radius:11px;background:linear-gradient(180deg,#5aa9e6,#2f6ea8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:pointer;box-shadow:0 3px 0 #1c456e;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+.hha-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #1c456e;}
+.hha-speed .gem-ic{width:1.15em;height:1.15em;}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 /* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
@@ -2103,6 +2112,13 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:40px;height:40px;object-fit:contain;vertical-align:middle;margin-right:7px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
 <div class="hatch-info-body" id="hatch-speed-body"></div>
 <button class="hatch-info-close" onclick="closeHatchSpeed()">Done</button>
+</div></div>
+<div id="nogems-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeNoGems()">
+<div class="hatch-info-card" style="text-align:center;max-width:320px;">
+<div class="hatch-info-head" style="justify-content:center;"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:30px;height:30px;object-fit:contain;vertical-align:middle;margin-right:7px;" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))"> Out of Gems</div>
+<div class="hatch-info-body" style="padding:10px 8px 6px;font-size:0.92rem;color:rgba(255,255,255,0.82);line-height:1.5;">Looks like you're out of Gems! Grab some more from the Gem Shop and you'll be speeding things up in no time.</div>
+<button class="nogems-buy" onclick="closeNoGems();openGemShop();"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:1.3em;height:1.3em;object-fit:contain;vertical-align:-0.25em;margin-right:6px;" onerror="this.replaceWith(document.createTextNode('\ud83d\udc8e'))">Get Gems</button>
+<button class="hatch-info-close" onclick="closeNoGems()">Maybe later</button>
 </div></div>
 <div id="egg-picker-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeEggPicker()">
 <div class="hatch-info-card">
@@ -3789,7 +3805,7 @@ function openAdvPickerSmart(){
 function speedUpCost(a){var remain=Math.max(0,a.endAt-Date.now());return Math.max(1,Math.ceil(remain/60000/GEM_SPEEDUP_MIN_PER_GEM));}
 function speedUpAdventure(index){
   var a=G.adventures[index];if(!a||Date.now()>=a.endAt)return;
-  var have=G.gems||0;if(have<=0)return;                 // inga gems → gör inget
+  var have=G.gems||0;if(have<=0){noGemsPopup();return;} // inga gems → popup
   var fullCost=speedUpCost(a);
   var spend=Math.min(have,fullCost);                    // spendera bara det som behövs/finns
   G.gems-=spend;
@@ -4218,7 +4234,7 @@ function renderAdventure(){
       html+='<div class="as-top"><span class="as-name">'+(adv?adv.name.replace(' Expedition',''):a.advId)+'</span><span class="as-pet">'+(pet?pet.e:'❔')+'</span></div>';
       html+='<div class="as-bar"><div class="as-fill" id="asfill'+i+'" style="width:'+pct+'%"></div></div>';
       if(ready){html+='<button class="as-claim" onclick="event.stopPropagation();claimAdventure('+i+')">CLAIM ✓</button>';}
-      else{var suCost=speedUpCost(a),suHave=G.gems||0,suLabel,suDim='';if(suHave>=suCost){suLabel='SPEED UP '+GEM_IMG+suCost;}else if(suHave>0){suLabel='−'+(suHave*GEM_SPEEDUP_MIN_PER_GEM)+'m '+GEM_IMG+suHave;}else{suLabel='SPEED UP '+GEM_IMG+suCost;suDim=' style="opacity:0.5"';}html+='<div class="as-time" id="astime'+i+'">'+formatTime(remain)+'</div><button class="as-speed"'+suDim+' onclick="event.stopPropagation();speedUpAdventure('+i+')">'+suLabel+'</button>';}
+      else{var suCost=speedUpCost(a),suHave=G.gems||0,suLabel,suDim='';if(suHave>=suCost){suLabel='SPEED UP '+GEM_IMG+suCost;}else if(suHave>0){suLabel='−'+(suHave*GEM_SPEEDUP_MIN_PER_GEM)+'m '+GEM_IMG+suHave;}else{suLabel='SPEED UP '+GEM_IMG+suCost;}html+='<div class="as-time" id="astime'+i+'">'+formatTime(remain)+'</div><button class="as-speed"'+suDim+' onclick="event.stopPropagation();speedUpAdventure('+i+')">'+suLabel+'</button>';}
       html+='</div>';
     } else if(i<G.adventureSlots){
       html+='<div class="adv-slot empty" onclick="openAdvPickerSmart()"><div class="as-plus">+</div><div class="as-emptyt">Tap to send a pet</div></div>';
@@ -6215,7 +6231,7 @@ function unlockExtractChamber(){
   var cost=EXTRACT_CHAMBER_UNLOCK[G.extractUnlocked-1];if(G.coins<cost)return;
   G.coins-=cost;G.extractUnlocked++;if(typeof buzz==='function')buzz(15);updateHUD();renderExtract();saveGame();
 }
-function speedExtract(i){var c=G.extractChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderExtract();}
+function speedExtract(i){var c=G.extractChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<=0){noGemsPopup();return;}if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderExtract();}
 function collectExtract(i){
   var c=G.extractChambers[i];if(!c||Date.now()<c.endAt)return;
   G.mutationCores.push({id:c.coreId,tier:c.coreTier});
@@ -6320,7 +6336,7 @@ function mutateChamberHtml(i){
   return html;
 }
 function unlockMutateChamber(){if(G.mutateUnlocked>=MUTATE_CHAMBER_MAX)return;var cost=MUTATE_CHAMBER_UNLOCK[G.mutateUnlocked-1];if(G.coins<cost)return;G.coins-=cost;G.mutateUnlocked++;if(typeof buzz==='function')buzz(15);updateHUD();renderMutate();saveGame();}
-function speedMutate(i){var c=G.mutateChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderMutate();}
+function speedMutate(i){var c=G.mutateChambers[i];if(!c||Date.now()>=c.endAt)return;var cost=chamberSpeedCost(c.endAt);if((G.gems||0)<=0){noGemsPopup();return;}if((G.gems||0)<cost)return;G.gems-=cost;c.endAt=Date.now();updateHUD();saveGame();renderMutate();}
 function collectMutate(i){
   var c=G.mutateChambers[i];if(!c||Date.now()<c.endAt)return;
   var pet=c.pet;
@@ -7523,6 +7539,8 @@ function showComingSoon(title,body){showGenericModal('🚧',title,body);}
 // ===== GEM STORE (v7.09) — köp-paket är "Coming soon" (väntar på app-butik) =====
 function openGemShop(){var b=document.getElementById('gemshop-body');if(b)b.innerHTML=renderGemShop();document.getElementById('gemshop-modal').classList.add('open');}
 function closeGemShop(){document.getElementById('gemshop-modal').classList.remove('open');}
+function noGemsPopup(){var m=document.getElementById('nogems-modal');if(m)m.classList.add('open');buzz(8);}
+function closeNoGems(){var m=document.getElementById('nogems-modal');if(m)m.classList.remove('open');}
 function gemPackImg(file){return '<img src="'+ASSET_BASE+'/assets/ui/gems/'+file+'.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\ud83d\\udc8e\'))">';}
 function gemPackSoon(){showComingSoon('Gem Store','Buying Gems will arrive once Pet Planet launches in the app stores. Until then you can earn Gems for free \u2014 from achievements, daily & weekly quests, the Battle Pass and events.');}
 function renderGemShop(){
@@ -7852,7 +7870,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.39<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.40<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10301,7 +10319,7 @@ function hatchSpeedUpCost(slot){var remain=Math.max(0,(slot.startTime+slot.durat
 function hatchSpeedUp(idx){
   var s=G.hatchSlots[idx];if(!s)return;
   var remain=(s.startTime+s.duration)-Date.now();if(remain<=0)return; // redan klart
-  var have=G.gems||0;if(have<=0)return;                              // inga gems
+  var have=G.gems||0;if(have<=0){noGemsPopup();return;}              // inga gems → popup
   var fullCost=hatchSpeedUpCost(s);
   var spend=Math.min(have,fullCost);                                // spendera bara det som behövs/finns
   G.gems-=spend;
@@ -10411,7 +10429,7 @@ function updateHatchTimers(){
   for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;if(el>=s.duration&&!s.done){s.done=true;structural=true;}}
   if(structural){renderHatchery();return;}
   for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;var pct=Math.min(1,el/s.duration);var rem=Math.max(0,Math.ceil((s.duration-el)/1000));var card=wrap.querySelector('.hcard.active[data-slot="'+i+'"]');if(card){var t=card.querySelector('.hcard-time');if(t)t.textContent=s.done?'\u2705 Ready!':formatTime(rem);var f=card.querySelector('.hcard-bar-fill');if(f)f.style.width=(pct*100)+'%';}}
-  var hs=G.hatchSlots[hatchView];if(hs&&!hs.done){var el=now-hs.startTime;var rem=Math.max(0,Math.ceil((hs.duration-el)/1000));var hw=wrap.querySelector('.hatch-collect.waiting');if(hw)hw.innerHTML='\u23f3 '+formatTime(rem)+' left';}
+  var hs=G.hatchSlots[hatchView];if(hs&&!hs.done){var el=now-hs.startTime;var pct=Math.min(1,el/hs.duration);var rem=Math.max(0,Math.ceil((hs.duration-el)/1000));var ht=wrap.querySelector('.hha-time');if(ht)ht.textContent=formatTime(rem);var hf=wrap.querySelector('.hha-fill');if(hf)hf.style.width=(pct*100)+'%';}
 }
 function hatchHeroPage(dir){
   var n=G.hatchSlots.length;if(n<=1)return;
@@ -10488,7 +10506,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
+        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed" onclick="hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
@@ -10519,7 +10537,7 @@ function renderHatchery(){
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" onclick="collectHatch('+hidx+')">Collect</button>';
-    else{html+='<div class="hatch-hero-timer"><div class="hht-time">\u23f3 '+formatTime(hrem)+' left</div><div class="hht-bar"><div class="hht-bar-fill" style="width:'+(hpct*100)+'%"></div></div></div>';html+='<button class="hatch-speedup'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+hidx+')">'+hatchSpeedUpCost(hs)+' '+GEM_IMG+' Speed up</button>';}
+    else{var hsuC=hatchSpeedUpCost(hs),hsuH=G.gems||0,hsuL;if(hsuH>=hsuC)hsuL='SPEED UP '+GEM_IMG+hsuC;else if(hsuH>0)hsuL='\u2212'+(hsuH*GEM_SPEEDUP_MIN_PER_GEM)+'m '+GEM_IMG+hsuH;else hsuL='SPEED UP '+GEM_IMG+hsuC;html+='<div class="hatch-hero-adv"><div class="hha-time">'+formatTime(hrem)+'</div><div class="hha-bar"><div class="hha-fill" style="width:'+(hpct*100)+'%"></div></div><button class="hha-speed" onclick="hatchSpeedUp('+hidx+')">'+hsuL+'</button></div>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
