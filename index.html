@@ -700,8 +700,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard-btn.unlock.bad{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);box-shadow:none;cursor:default;}
 .hcard-lock-ic{font-size:2.2rem;margin-top:10px;opacity:0.75;}
 .hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
-.hatch-hero{position:relative;width:100%;border-radius:20px;overflow:hidden;margin:6px 0 4px;padding:16px 14px 18px;background:radial-gradient(120% 90% at 50% 28%,#3a2d6b 0%,#241a4a 55%,#1a1438 100%);border:2px solid #4a3a8c;box-shadow:inset 0 2px 12px rgba(0,0,0,0.45);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:235px;}
-.hatch-hero-glow{position:absolute;top:14%;left:50%;transform:translateX(-50%);width:210px;height:210px;background:radial-gradient(circle,rgba(185,145,255,0.5),transparent 65%);filter:blur(9px);pointer-events:none;z-index:0;}
+.hatch-hero{position:relative;width:100%;border-radius:20px;overflow:hidden;margin:6px 0 4px;padding:16px 14px 18px;background:radial-gradient(2px 2px at 18% 22%,rgba(255,255,255,0.85),transparent),radial-gradient(2px 2px at 78% 17%,rgba(255,255,255,0.6),transparent),radial-gradient(1.5px 1.5px at 50% 10%,rgba(255,255,255,0.9),transparent),radial-gradient(2px 2px at 87% 42%,rgba(255,228,170,0.7),transparent),radial-gradient(1.5px 1.5px at 28% 36%,rgba(255,255,255,0.55),transparent),radial-gradient(1.5px 1.5px at 64% 30%,rgba(200,220,255,0.6),transparent),radial-gradient(130% 95% at 50% 26%,#43327a 0%,#281c52 52%,#171138 100%);border:2px solid #5a47a8;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5),0 0 0 1px rgba(140,110,220,0.25);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:235px;}
+.hatch-hero-glow{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:230px;height:230px;background:radial-gradient(circle,rgba(195,150,255,0.6),rgba(120,90,210,0.18) 45%,transparent 68%);filter:blur(10px);pointer-events:none;z-index:0;}
 .hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:4px;font-size:5rem;animation:heroEggBob 3.2s ease-in-out infinite;}
 .hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));}
 @keyframes heroEggBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
@@ -718,6 +718,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-hero-dots{z-index:2;display:flex;gap:6px;margin-top:2px;}
 .hatch-hero-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);}
 .hatch-hero-dot.on{background:#ffce4a;}
+.hatch-head{display:flex;align-items:center;gap:9px;margin:2px 2px 10px;}
+.hatch-head-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.45);}
+.hatch-info-i{width:25px;height:25px;border-radius:50%;border:2px solid rgba(120,170,255,0.75);background:rgba(20,30,60,0.6);color:#cfe0ff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex:0 0 auto;}
+.hatch-info-i:active{transform:scale(0.92);}
+.hatch-info-card{background:linear-gradient(180deg,#1c2c54,#101d3a);border:2px solid #4a6ad0;border-radius:20px;width:var(--w);max-width:340px;margin:0 16px;padding:18px 18px 16px;box-shadow:0 12px 44px rgba(0,0,0,0.55);}
+.hatch-info-head{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;text-align:center;margin-bottom:10px;}
+.hatch-info-body{font-size:0.87rem;line-height:1.5;color:rgba(255,255,255,0.85);display:flex;flex-direction:column;gap:9px;}
+.hatch-info-body b{color:#ffce4a;}
+.hatch-info-close{margin-top:15px;width:100%;border:none;border-radius:12px;padding:11px;background:linear-gradient(180deg,#3a78ff,#2456c8);box-shadow:0 3px 0 #163b8c;color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.95rem;cursor:pointer;}
 .hatch-egg-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .hatch-egg-row{background:rgba(27,45,78,0.45);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
 .he-icon{font-size:1.5rem;flex-shrink:0;}
@@ -1988,6 +1997,17 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="egg-info-content"></div>
   </div>
 </div>
+<div id="hatch-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeHatchInfo()">
+<div class="hatch-info-card">
+<div class="hatch-info-head">🥚 How Hatching Works</div>
+<div class="hatch-info-body">
+<p><b>Craft</b> eggs with Sparks + Shells, then <b>Hatch</b> them into an incubation slot below.</p>
+<p>Each slot hatches one egg at a time. <b>Unlock more slots</b> to hatch several at once — slots 2–3 cost Sparks, slots 4–5 cost Gems.</p>
+<p><b>Hatch Speed</b> upgrades make every egg finish faster.</p>
+<p>When an egg is ready, tap <b>Collect</b> to add the new pet to your collection!</p>
+</div>
+<button class="hatch-info-close" onclick="closeHatchInfo()">Got it!</button>
+</div></div>
 <div id="loadout-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -7730,7 +7750,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.13<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.14<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10246,11 +10266,13 @@ function hatchHeroPage(dir){
   hatchView=(hatchView+dir+n)%n;
   renderHatchery();
 }
+function openHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.add('open');}
+function closeHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.remove('open');}
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
-  var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
+  var html='<div class="hatch-head"><div class="hatch-head-title">🥚 Egg Hatchery</div><button class="hatch-info-i" onclick="openHatchInfo()" aria-label="How hatching works">i</button></div><div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
   html+='<div class="hatch-slot-row">';
   for(var i=0;i<HATCH_SLOT_MAX;i++){
     var num='<div class="hcard-num">#'+(i+1)+'</div>';
