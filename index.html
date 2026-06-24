@@ -702,12 +702,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
 .hatch-hero{position:relative;width:calc(100% + 20px);border-radius:0;overflow:hidden;margin:6px -10px 8px;padding:16px 14px 18px;background:#13102e;border:2px solid #5a47a8;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5),0 0 0 1px rgba(140,110,220,0.25);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:300px;}
 .hatch-hero-glow{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:230px;height:230px;background:radial-gradient(circle,rgba(195,150,255,0.6),rgba(120,90,210,0.18) 45%,transparent 68%);filter:blur(10px);pointer-events:none;z-index:0;}
-.hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;animation:heroEggBob 3.2s ease-in-out infinite;}
-.hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));}
-@keyframes heroEggBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.reduce-motion .hatch-hero-egg{animation:none;}
+.hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:30px;font-size:5rem;transform:translate(-15px,5px);}
+.hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));transform:rotate(15deg);animation:eggPulse 7s ease-in-out infinite;}
+@keyframes eggPulse{0%,100%{transform:rotate(15deg) scale(1);}50%{transform:rotate(15deg) scale(1.08);}}
+.reduce-motion .hatch-hero-egg img{animation:none;}
 .hatch-nest{position:relative;z-index:1;width:172px;height:46px;margin-top:-24px;border-radius:0 0 86px 86px / 0 0 46px 46px;background:repeating-linear-gradient(96deg,#7a4a26,#7a4a26 5px,#5e3819 5px,#5e3819 10px);border:3px solid #4a2c14;border-top:none;box-shadow:inset 0 7px 9px rgba(0,0,0,0.4),0 5px 7px rgba(0,0,0,0.45);}
-.hatch-hero-name{z-index:2;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;margin-top:8px;}
+.hatch-hero-name{z-index:2;font-family:'Fredoka One',cursive;font-size:1.05rem;color:#fff;margin-top:44px;}
 .hatch-hero-time{z-index:2;font-size:0.82rem;color:rgba(255,255,255,0.88);font-family:'Baloo 2',cursive;font-weight:700;}
 .hatch-hero-bar{z-index:2;width:78%;max-width:300px;height:9px;background:rgba(0,0,0,0.38);border-radius:6px;overflow:hidden;}
 .hatch-hero-bar-fill{height:100%;background:linear-gradient(90deg,#ffce4a,#ff9a3a);border-radius:6px;}
@@ -7765,7 +7765,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.17<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.18<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10276,6 +10276,14 @@ function attachDragScroll(el){
 }
 // NÄST-HERO: vilket aktivt kläck-slot som visas i den stora rutan; pilar bläddrar.
 var hatchView=0;
+function updateHatchTimers(){
+  var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
+  var now=Date.now();var structural=false;
+  for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;if(el>=s.duration&&!s.done){s.done=true;structural=true;}}
+  if(structural){renderHatchery();return;}
+  for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i];if(!s)continue;var el=now-s.startTime;var pct=Math.min(1,el/s.duration);var rem=Math.max(0,Math.ceil((s.duration-el)/1000));var card=wrap.querySelector('.hcard.active[data-slot="'+i+'"]');if(card){var t=card.querySelector('.hcard-time');if(t)t.textContent=s.done?'\u2705 Ready!':formatTime(rem);var f=card.querySelector('.hcard-bar-fill');if(f)f.style.width=(pct*100)+'%';}}
+  var hs=G.hatchSlots[hatchView];if(hs){var el=now-hs.startTime;var pct=Math.min(1,el/hs.duration);var rem=Math.max(0,Math.ceil((hs.duration-el)/1000));var ht=wrap.querySelector('.hatch-hero-time');if(ht)ht.innerHTML=hs.done?'\u2705 Ready to collect!':'\u23f3 '+formatTime(rem)+' left';var hf=wrap.querySelector('.hatch-hero-bar-fill');if(hf)hf.style.width=(pct*100)+'%';}
+}
 function hatchHeroPage(dir){
   var n=G.hatchSlots.length;if(n<=1)return;
   hatchView=(hatchView+dir+n)%n;
@@ -10310,7 +10318,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
+        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
       } else {
         html+='<div class="hcard">'+num+'<div class="hcard-egg">\ud83e\udeb9</div><div class="hcard-name">Empty</div><div class="hcard-time">Pick an egg below</div></div>';
       }
@@ -11726,7 +11734,7 @@ function softUpdateShop(){
   if(sig!==_shopSig){_shopSig=sig;renderShop();}
 }
 setInterval(function(){if(document.getElementById('tab-shop').style.display==='block')softUpdateShop();},700);
-setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')renderHatchery();},1000);
+setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')updateHatchTimers();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
 setInterval(function(){if(G.homeMode==='adventures'){var ha=document.getElementById('home-adventures');if(ha&&ha.style.display!=='none')softUpdateIdle();}},1000);
 setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
