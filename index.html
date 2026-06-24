@@ -686,7 +686,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard{flex:0 0 auto;width:112px;min-height:158px;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
 .hcard.active{border-color:#ffce4a;box-shadow:0 0 14px rgba(245,200,66,0.38),inset 0 2px 0 rgba(255,255,255,0.18),0 3px 0 #0b1326;}
 .hcard.locked{border-style:dashed;background:linear-gradient(180deg,#1a2848,#121f3a);}
-.hcard-num{position:absolute;top:6px;left:9px;font-size:0.7rem;font-weight:800;color:rgba(255,255,255,0.4);font-family:'Baloo 2',cursive;}
+.hcard-num{position:absolute;top:6px;left:7px;z-index:2;font-size:0.6rem;font-weight:900;background:linear-gradient(180deg,#3a5cb8,#2a4288);color:#fff;border:1px solid #5a7ad0;border-radius:5px;padding:1px 6px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #15203f;line-height:1.25;}
 .hcard-egg{width:54px;height:54px;display:flex;align-items:center;justify-content:center;margin-top:8px;font-size:2.6rem;}
 .hcard-egg img{width:54px;height:54px;object-fit:contain;}
 .hcard-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;text-align:center;line-height:1.05;}
@@ -700,7 +700,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard-btn.unlock.bad{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);box-shadow:none;cursor:default;}
 .hcard-lock-ic{font-size:2.2rem;margin-top:10px;opacity:0.75;}
 .hcard .coin-ic,.hcard .gem-ic{width:15px;height:15px;vertical-align:middle;}
-.hatch-hero{position:relative;width:100%;border-radius:20px;overflow:hidden;margin:6px 0 4px;padding:16px 14px 18px;background:radial-gradient(2px 2px at 18% 22%,rgba(255,255,255,0.85),transparent),radial-gradient(2px 2px at 78% 17%,rgba(255,255,255,0.6),transparent),radial-gradient(1.5px 1.5px at 50% 10%,rgba(255,255,255,0.9),transparent),radial-gradient(2px 2px at 87% 42%,rgba(255,228,170,0.7),transparent),radial-gradient(1.5px 1.5px at 28% 36%,rgba(255,255,255,0.55),transparent),radial-gradient(1.5px 1.5px at 64% 30%,rgba(200,220,255,0.6),transparent),radial-gradient(130% 95% at 50% 26%,#43327a 0%,#281c52 52%,#171138 100%);border:2px solid #5a47a8;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5),0 0 0 1px rgba(140,110,220,0.25);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:235px;}
+.hatch-hero{position:relative;width:calc(100% + 20px);border-radius:0;overflow:hidden;margin:6px -10px 8px;padding:16px 14px 18px;background:radial-gradient(2px 2px at 18% 22%,rgba(255,255,255,0.85),transparent),radial-gradient(2px 2px at 78% 17%,rgba(255,255,255,0.6),transparent),radial-gradient(1.5px 1.5px at 50% 10%,rgba(255,255,255,0.9),transparent),radial-gradient(2px 2px at 87% 42%,rgba(255,228,170,0.7),transparent),radial-gradient(1.5px 1.5px at 28% 36%,rgba(255,255,255,0.55),transparent),radial-gradient(1.5px 1.5px at 64% 30%,rgba(200,220,255,0.6),transparent),radial-gradient(130% 95% at 50% 26%,#43327a 0%,#281c52 52%,#171138 100%);border:2px solid #5a47a8;box-shadow:inset 0 2px 14px rgba(0,0,0,0.5),0 0 0 1px rgba(140,110,220,0.25);display:flex;flex-direction:column;align-items:center;gap:7px;min-height:235px;}
 .hatch-hero-glow{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:230px;height:230px;background:radial-gradient(circle,rgba(195,150,255,0.6),rgba(120,90,210,0.18) 45%,transparent 68%);filter:blur(10px);pointer-events:none;z-index:0;}
 .hatch-hero-egg{position:relative;z-index:2;width:130px;height:130px;display:flex;align-items:center;justify-content:center;margin-top:4px;font-size:5rem;animation:heroEggBob 3.2s ease-in-out infinite;}
 .hatch-hero-egg img{width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 8px 10px rgba(0,0,0,0.45));}
@@ -719,14 +719,27 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-hero-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);}
 .hatch-hero-dot.on{background:#ffce4a;}
 .hatch-head{display:flex;align-items:center;gap:9px;margin:2px 2px 10px;}
-.hatch-head-title{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.45);}
-.hatch-info-i{width:25px;height:25px;border-radius:50%;border:2px solid rgba(120,170,255,0.75);background:rgba(20,30,60,0.6);color:#cfe0ff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex:0 0 auto;}
+.hatch-head-title{font-family:'Fredoka One',cursive;font-size:1.17rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.45);}
+.hatch-info-i{width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(120,170,255,0.75);background:rgba(20,30,60,0.6);color:#cfe0ff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.68rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex:0 0 auto;}
 .hatch-info-i:active{transform:scale(0.92);}
 .hatch-info-card{background:linear-gradient(180deg,#1c2c54,#101d3a);border:2px solid #4a6ad0;border-radius:20px;width:var(--w);max-width:340px;margin:0 16px;padding:18px 18px 16px;box-shadow:0 12px 44px rgba(0,0,0,0.55);}
 .hatch-info-head{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;text-align:center;margin-bottom:10px;}
 .hatch-info-body{font-size:0.87rem;line-height:1.5;color:rgba(255,255,255,0.85);display:flex;flex-direction:column;gap:9px;}
 .hatch-info-body b{color:#ffce4a;}
 .hatch-info-close{margin-top:15px;width:100%;border:none;border-radius:12px;padding:11px;background:linear-gradient(180deg,#3a78ff,#2456c8);box-shadow:0 3px 0 #163b8c;color:#fff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.95rem;cursor:pointer;}
+.hatch-head-ic{width:30px;height:30px;object-fit:contain;flex:0 0 auto;}
+.hspd{margin-left:auto;display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,#1e2f58,#13203f);border:2px solid #3a5cb8;border-radius:999px;padding:4px 9px 4px 7px;cursor:pointer;flex:0 0 auto;-webkit-tap-highlight-color:transparent;}
+.hspd.afford{border-color:#5a7ad0;box-shadow:0 0 8px rgba(90,140,255,0.35);}
+.hspd.maxed{border-color:#3ddc84;cursor:default;}
+.hspd.poor{opacity:0.8;}
+.hspd:active{transform:scale(0.96);}
+.hspd-rocket{width:20px;height:20px;object-fit:contain;flex:0 0 auto;}
+.hspd-mid{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1;}
+.hspd-price{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;display:flex;align-items:center;gap:2px;white-space:nowrap;}
+.hspd-price .coin-ic{width:13px;height:13px;}
+.hspd-dots{margin-top:0;gap:3px;}
+.hspd-dots .dot{width:5px;height:5px;}
+.hspd-pct{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.78rem;color:#3ddc84;flex:0 0 auto;}
 .hatch-egg-list{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
 .hatch-egg-row{background:rgba(27,45,78,0.45);border:1px solid rgba(58,92,184,0.5);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px;}
 .he-icon{font-size:1.5rem;flex-shrink:0;}
@@ -7750,7 +7763,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.14<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.15<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10268,14 +10281,25 @@ function hatchHeroPage(dir){
 }
 function openHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.add('open');}
 function closeHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.remove('open');}
+// Hatch-speed-upgraden som piller i headern: raket + pris (mitten) + dots + hatch%.
+function hatchSpeedPillHtml(){
+  var u=UPGRADES.find(function(x){return x.id==='hatch';});if(!u)return '';
+  var l=G.ulvl.hatch||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
+  var d=[1,0.9,0.8,0.7,0.6,0.5][l];var pct=Math.round((1/d-1)*100);
+  var price=maxed?'<span style="color:#3ddc84;">MAX</span>':(COIN_IMG+' '+fmtShort(c));
+  return '<button class="hspd'+(maxed?' maxed':afford?' afford':' poor')+'"'+((!maxed)?' onclick="buyHatchSpeed()"':'')+'>'+
+    '<img class="hspd-rocket" src="'+ASSET_BASE+'/assets/ui/common/rocket.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83d\ude80\'))">'+
+    '<span class="hspd-mid"><span class="hspd-price">'+price+'</span><span class="udots hspd-dots">'+dots(l,u.max)+'</span></span>'+
+    '<span class="hspd-pct">+'+pct+'%</span></button>';
+}
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
-  var html='<div class="hatch-head"><div class="hatch-head-title">🥚 Egg Hatchery</div><button class="hatch-info-i" onclick="openHatchInfo()" aria-label="How hatching works">i</button></div><div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
+  var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchery.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i" onclick="openHatchInfo()" aria-label="How hatching works">i</button>'+hatchSpeedPillHtml()+'</div>';
   html+='<div class="hatch-slot-row">';
   for(var i=0;i<HATCH_SLOT_MAX;i++){
-    var num='<div class="hcard-num">#'+(i+1)+'</div>';
+    var num='<div class="hcard-num">'+(i+1)+'</div>';
     if(i<maxSlots){
       var slot=G.hatchSlots[i];
       if(slot){
@@ -10321,8 +10345,6 @@ function renderHatchery(){
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
-  html+='<div class="hatch-section-title" style="margin-top:16px;">⏩ Hatchery Upgrade</div>';
-  html+=movedUpgCardHtml('hatch','buyHatchSpeed()');
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Craft & Hatch Eggs</div>';
   html+='<div style="margin-bottom:8px;">'+craftUpgBoxHtml()+'</div>';
   html+=eggCraftCardsHtml();
