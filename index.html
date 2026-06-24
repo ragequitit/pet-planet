@@ -685,6 +685,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hslot-arrow{position:absolute;top:82px;transform:translateY(-50%);z-index:6;background:none;border:none;color:#fff;font-size:3rem;line-height:1;cursor:pointer;padding:4px 6px;text-shadow:0 2px 4px rgba(0,0,0,0.7);-webkit-text-stroke:0.6px rgba(0,0,0,0.85);-webkit-tap-highlight-color:transparent;}
 .hslot-arrow.l{left:0;} .hslot-arrow.r{right:0;}
 .hslot-arrow:active{transform:translateY(-50%) scale(0.92);}
+.hslot-arrow img{width:38px;height:38px;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.55));}
 .hatch-slot-row.dragging{cursor:grabbing;}
 .hatch-slot-row::-webkit-scrollbar{height:7px;}
 .hatch-slot-row::-webkit-scrollbar-track{background:rgba(255,255,255,0.06);border-radius:4px;}
@@ -7834,7 +7835,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.30<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.31<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10445,7 +10446,7 @@ function renderHatchery(){
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
   var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i img-mode" onclick="openHatchInfo()" aria-label="How hatching works"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" onerror="this.replaceWith(document.createTextNode(\'i\'))"></button>'+hatchSpeedPillHtml()+'</div>';
-  html+='<div class="hatch-slot-wrap"><div class="hslot-arrow l" onclick="slotRowScroll(-1)">‹</div><div class="hatch-slot-row">';
+  html+='<div class="hatch-slot-wrap"><div class="hslot-arrow l" onclick="slotRowScroll(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-slot-row">';
   for(var i=0;i<HATCH_SLOT_MAX;i++){
     var num='<div class="hcard-num">'+(i+1)+'</div>';
     if(i<maxSlots){
@@ -10469,7 +10470,7 @@ function renderHatchery(){
       html+='<div class="hcard locked">'+num+'<div class="hcard-lock-ic">'+LOCK_IMG+'</div><div class="hcard-name">Locked</div><div class="hcard-time"></div><button class="hcard-btn unlock bad" disabled>'+ficon+' '+fmtShort(fc.cost)+'</button></div>';
     }
   }
-  html+='</div><div class="hslot-arrow r" onclick="slotRowScroll(1)">›</div></div>';
+  html+='</div><div class="hslot-arrow r" onclick="slotRowScroll(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div></div>';
   // ---- NÄST-HERO ----
   var nActive=G.hatchSlots.length;
   html+='<div class="hatch-hero"><img class="hatch-bg-img" src="'+ASSET_BASE+'/assets/ui/hatch/hatcharry-bg.png" alt="" onerror="this.onerror=null;this.src=\''+ASSET_BASE+'/assets/ui/hatch/hatchary-bg.png\'">';
