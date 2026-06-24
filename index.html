@@ -680,7 +680,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-collect-btn{width:100%;padding:9px;border:none;border-radius:10px;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;}
 .hatch-collect-btn.ready{background:linear-gradient(180deg,#f5c842,#e0a800);color:#0b1530;box-shadow:0 3px 0 #8a6000;}
 .hatch-collect-btn.waiting{background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.3);cursor:default;}
-.hatch-slot-row{display:flex;gap:9px;overflow-x:auto;padding:4px 34px 10px;-webkit-overflow-scrolling:touch;touch-action:pan-x;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
+.hatch-slot-row{display:flex;gap:9px;overflow-x:auto;padding:4px 12px 10px 34px;-webkit-overflow-scrolling:touch;touch-action:pan-x;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
 .hatch-slot-wrap{position:relative;margin:0 -10px;}
 .hslot-arrow{position:absolute;top:82px;transform:translateY(-50%);z-index:6;background:none;border:none;color:#fff;font-size:3rem;line-height:1;cursor:pointer;padding:4px 6px;text-shadow:0 2px 4px rgba(0,0,0,0.7);-webkit-text-stroke:0.6px rgba(0,0,0,0.85);-webkit-tap-highlight-color:transparent;}
 .hslot-arrow.l{left:0;} .hslot-arrow.r{right:0;}
@@ -729,6 +729,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-head-title{font-family:'Fredoka One',cursive;font-size:1.0rem;color:#fff;text-shadow:0 2px 5px rgba(0,0,0,0.45);white-space:nowrap;}
 .hatch-info-i{width:19px;height:19px;border-radius:50%;border:1.5px solid rgba(120,170,255,0.75);background:rgba(20,30,60,0.6);color:#cfe0ff;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.68rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;flex:0 0 auto;}
 .hatch-info-i:active{transform:scale(0.92);}
+.hatch-info-i.img-mode{border:none;background:none;width:21px;height:21px;padding:0;}
+.hatch-info-i img{width:100%;height:100%;object-fit:contain;display:block;}
 .hatch-info-card{background:linear-gradient(180deg,#1c2c54,#101d3a);border:2px solid #4a6ad0;border-radius:20px;width:var(--w);max-width:340px;margin:0 16px;padding:18px 18px 16px;box-shadow:0 12px 44px rgba(0,0,0,0.55);}
 .hatch-info-head{font-family:'Fredoka One',cursive;font-size:1.15rem;color:#fff;text-align:center;margin-bottom:10px;}
 .hatch-info-body{font-size:0.87rem;line-height:1.5;color:rgba(255,255,255,0.85);display:flex;flex-direction:column;gap:9px;}
@@ -741,6 +743,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hspd.maxed{cursor:default;}
 .hspd-max{font-size:0.66rem;color:#cfe0ff;white-space:nowrap;font-weight:800;}
 .hspd-rocket{font-size:1.05rem;line-height:1;flex:0 0 auto;}
+.hspd-rocket img{width:17px;height:17px;object-fit:contain;display:block;}
 .hspd-mid{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1;}
 .hspd-price{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;display:flex;align-items:center;gap:2px;white-space:nowrap;}
 .hspd-price .coin-ic{width:13px;height:13px;}
@@ -7779,7 +7782,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.26<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.27<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10313,7 +10316,7 @@ function hatchSpeedPillHtml(){
   var d=[1,0.9,0.8,0.7,0.6,0.5][l];var pct=Math.round((1/d-1)*100);
   var price=maxed?'<span class="hspd-max">Speed Upgrade</span>':(COIN_IMG+' '+fmtShort(c));
   return '<button class="hspd'+(maxed?' maxed':afford?' afford':' poor')+'"'+((!maxed)?' onclick="buyHatchSpeed()"':'')+'>'+
-    '<span class="hspd-rocket">\ud83d\ude80</span>'+
+    '<span class="hspd-rocket"><img src="'+ASSET_BASE+'/assets/ui/common/rocket.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83d\ude80\'))"></span>'+
     '<span class="hspd-mid"><span class="hspd-price">'+price+'</span><span class="udots hspd-dots">'+dots(l,u.max)+'</span></span>'+
     '<span class="hspd-pct">+'+pct+'%</span></button>';
 }
@@ -10321,7 +10324,7 @@ function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
-  var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i" onclick="openHatchInfo()" aria-label="How hatching works">i</button>'+hatchSpeedPillHtml()+'</div>';
+  var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i img-mode" onclick="openHatchInfo()" aria-label="How hatching works"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" onerror="this.replaceWith(document.createTextNode(\'i\'))"></button>'+hatchSpeedPillHtml()+'</div>';
   html+='<div class="hatch-slot-wrap"><div class="hslot-arrow l" onclick="slotRowScroll(-1)">‹</div><div class="hatch-slot-row">';
   for(var i=0;i<HATCH_SLOT_MAX;i++){
     var num='<div class="hcard-num">'+(i+1)+'</div>';
@@ -10335,7 +10338,7 @@ function renderHatchery(){
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
         html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div><button class="hcard-btn '+(slot.done?'ready':'waiting')+'" onclick="collectHatch('+i+')">'+(slot.done?'\ud83c\udf89 Collect':'Hatching\u2026')+'</button></div>';
       } else {
-        html+='<div class="hcard">'+num+'<div class="hcard-egg">\ud83e\udeb9</div><div class="hcard-name">Empty</div><div class="hcard-time">Pick an egg below</div></div>';
+        html+='<div class="hcard empty-slot" data-slot="'+i+'"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time"></div></div>';
       }
     } else if(i===maxSlots){
       var hinfo=hatchSlotUnlockInfo(maxSlots);var hafford=hinfo.afford;var hicon=hinfo.currency==='gem'?GEM_IMG:COIN_IMG;
@@ -10351,8 +10354,7 @@ function renderHatchery(){
   var nActive=G.hatchSlots.length;
   html+='<div class="hatch-hero"><img class="hatch-bg-img" src="'+ASSET_BASE+'/assets/ui/hatch/hatcharry-bg.png" alt="" onerror="this.onerror=null;this.src=\''+ASSET_BASE+'/assets/ui/hatch/hatchary-bg.png\'">';
   if(nActive===0){
-    html+='<div class="hatch-hero-egg" style="opacity:0.4;animation:none;">\ud83e\udeb9</div>';
-    html+='<div class="hatch-hero-empty">No egg hatching yet.<br>Craft &amp; hatch one below to fill a nest.</div>';
+    /* Tomt näste (Bild 1): bara bakgrundsbilden — ingen text/ikon-overlay. */
   } else {
     if(hatchView>=nActive)hatchView=0;
     var hidx=hatchView;var hs=G.hatchSlots[hidx];
