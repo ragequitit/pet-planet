@@ -281,7 +281,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #quest-hero-x img{filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6));}
 #quest-hero-text{max-width:64%;margin-bottom:11px;}
 #quest-hero-title{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff;line-height:1;letter-spacing:0.5px;text-shadow:0 2px 6px rgba(0,0,0,0.8),0 0 3px rgba(0,0,0,0.5);}
-#quest-hero-sub{font-size:0.66rem;color:#fff;margin-top:5px;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 6px rgba(0,0,0,0.55);}
+#quest-hero-sub{font-size:0.74rem;color:#fff;margin-top:5px;line-height:1.35;text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 6px rgba(0,0,0,0.55);}
 .q-bonus{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#241a3f,#19132e);border:1px solid rgba(150,110,230,0.45);border-radius:14px;padding:9px 11px;box-shadow:0 3px 10px rgba(0,0,0,0.35);}
 .q-bonus-gift{width:46px;height:46px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.9rem;}
 .q-bonus-mid{flex:1;min-width:0;}
@@ -1113,8 +1113,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#3ddc84,#1faa5a);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #137a3e;}
 .hatch-collect:active{transform:translateY(3px);box-shadow:0 1px 0 #137a3e;}
 .hcard-btn.speed{background:linear-gradient(180deg,#9b6cff,#6a3de0);box-shadow:0 2px 0 #4a2aa0;color:#fff;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 4px;line-height:1.05;padding:6px 4px;}
-.hcard-btn.speed .gem-ic{width:2.1em;height:2.1em;}
-.hcard-btn.speed .hspeed-cost{font-size:1.44rem;font-weight:800;}
+.hcard-btn.speed .hspeed-cost{font-size:0.82rem;font-weight:800;}
 .hcard-btn.speed .hspeed-lbl{width:100%;text-align:center;font-size:0.62rem;font-weight:700;opacity:0.95;}
 .hcard-btn.speed.poor{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);box-shadow:none;}
 .hcard-btn .gem-ic{width:1.05em;height:1.05em;}
@@ -2584,7 +2583,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <button id="quest-hero-x" onclick="closeQuests()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
       <div id="quest-hero-text">
         <div id="quest-hero-title"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/quests/quests.png" alt="" style="width:34px;height:34px;object-fit:contain;vertical-align:-0.18em;margin-right:8px;" onerror="this.replaceWith(document.createTextNode('📋'))">QUESTS</div>
-        <div id="quest-hero-sub">Complete quests to earn <img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:13px;height:13px;object-fit:contain;vertical-align:-0.1em;" onerror="this.replaceWith(document.createTextNode('💎'))"> and boost your progress!</div>
+        <div id="quest-hero-sub">Complete quests to earn <img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/currency/pet-gem.png" alt="" style="width:15px;height:15px;object-fit:contain;vertical-align:-0.1em;" onerror="this.replaceWith(document.createTextNode('💎'))"> and boost your progress!</div>
       </div>
       <div id="quest-bonus"></div>
     </div>
@@ -7853,7 +7852,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.38<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.39<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8907,12 +8906,12 @@ function closeQuests(){
 function renderQuests(){
   ensureDailyQuests();ensureWeeklyQuests();
   var D=G.quests,W=G.weeklyQuests,h='<div class="ev-wrap">';
-  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/daily-quests','\ud83d\udccb',20)+' Daily Quests <span class="ev-h-timer">\ud83d\udd52 <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></span></div>';
+  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/daily-quests','\ud83d\udccb',23)+' Daily Quests <span class="ev-h-timer">\ud83d\udd52 <span id="q-timer-val">'+fmtEventTime(dailyCycleLeftMs())+'</span></span></div>';
   D.active.forEach(function(q){h+=questRowHtml(q,D,'claimDailyQuest',true);});
   var rl=dailyRerollsLeft();
   h+='<div class="ev-newq">\ud83d\udd04 '+(rl>0?(rl+' free reroll'+(rl>1?'s':'')+' today'):(REROLL_GEM_COST+GEM_IMG+' per reroll'))+'</div>';
   h+='</div>';
-  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/weekly-quests','\ud83d\uddd3\ufe0f',20)+' Weekly Quests <span class="ev-h-timer">\ud83d\udd52 <span id="qw-timer-val">'+fmtEventTime(weeklyCycleLeftMs())+'</span></span></div>';
+  h+='<div class="ev-card"><div class="ev-card-h">'+uiIco('quests/weekly-quests','\ud83d\uddd3\ufe0f',23)+' Weekly Quests <span class="ev-h-timer">\ud83d\udd52 <span id="qw-timer-val">'+fmtEventTime(weeklyCycleLeftMs())+'</span></span></div>';
   W.active.forEach(function(q){h+=questRowHtml(q,W,'claimWeeklyQuest',false);});
   h+='</div>';
   h+='</div>';
@@ -10478,7 +10477,7 @@ function renderHatchery(){
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
   var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i img-mode" onclick="openHatchInfo()" aria-label="How hatching works"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" onerror="this.replaceWith(document.createTextNode(\'i\'))"></button>'+hatchSpeedPillHtml()+'</div>';
-  html+='<div class="hatch-slot-wrap"><div class="hslot-arrow l" onclick="slotRowScroll(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-slot-row">';
+  html+='<div class="hatch-slot-wrap"><div class="hatch-slot-row">';
   for(var i=0;i<HATCH_SLOT_MAX;i++){
     var num='<div class="hcard-num">'+(i+1)+'</div>';
     if(i<maxSlots){
@@ -10489,7 +10488,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+GEM_IMG+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span><span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
+        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
@@ -10502,7 +10501,7 @@ function renderHatchery(){
       html+='<div class="hcard locked">'+num+'<div class="hcard-lock-ic">'+LOCK_IMG+'</div><div class="hcard-name">Locked</div><div class="hcard-time"></div><button class="hcard-btn unlock bad" disabled>'+ficon+' '+fmtShort(fc.cost)+'</button></div>';
     }
   }
-  html+='</div><div class="hslot-arrow r" onclick="slotRowScroll(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div></div>';
+  html+='</div></div>';
   // ---- NÄST-HERO ----
   var nActive=G.hatchSlots.length;
   html+='<div class="hatch-hero"><img class="hatch-bg-img" src="'+ASSET_BASE+'/assets/ui/hatch/hatcharry-bg.png" alt="" onerror="this.onerror=null;this.src=\''+ASSET_BASE+'/assets/ui/hatch/hatchary-bg.png\'">';
