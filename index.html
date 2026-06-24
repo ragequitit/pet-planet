@@ -7778,7 +7778,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.22<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.23<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12109,13 +12109,28 @@ function cloudPushNow(cb){
   if(_own!==cloudUser.id){if(cb)cb();return;}
 
   cloudBusy=true;cloudBusyAt=Date.now();
-  sb.rpc('pp_save',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession}).then(function(res){
+  sb.rpc('pp_save_v2',{p_data:o,p_client_saved_at:(o.savedAt||Date.now()),p_session:cloudSession,p_base_version:(cloudVersion==null?null:cloudVersion)}).then(function(res){
     cloudBusy=false;var st=res&&res.data;
     if(st==='banned'){cloudBanned();}
     else if(st==='superseded'){cloudKicked();}
+    else if(st==='stale'){
+      // STEG 2: vi byggde på ett ÄLDRE nummer än molnet. Hämta molnets sanning och fortsätt därifrån.
+      sb.from('saves').select('data,version').eq('user_id',cloudUser.id).maybeSingle().then(function(r2){
+        var row=r2&&r2.data;
+        if(row&&typeof row.version==='number'){
+          if(cloudVersion==null||row.version>cloudVersion){cloudVersion=row.version;cloudApplyAndReload(JSON.stringify(row.data));return;}
+          cloudVersion=row.version;cloudDirty=true; // var bara en transient — försök igen med rätt nummer
+        }
+      },function(){});
+    }
     else if(st==='saved'||st==='created'){if(st==='created')cloudVersion=1;else if(cloudVersion!=null)cloudVersion=cloudVersion+1;cloudDirty=false;cloudLastSavedAt=Date.now();try{ppStore.setItem(OWNER_KEY,cloudUser.id);}catch(e){}cloudSyncPets(o.hatchedPets);cloudRegisterMissingPets();cloudSyncAvatar();if(typeof cloudUpdateSaveStatus==='function')cloudUpdateSaveStatus();}
     if(cb)cb(st);
-  },function(){cloudBusy=false;if(cb)cb();});
+  },function(){
+    cloudBusy=false;
+    // Sparsvaret tappades på vägen — läs om molnets nummer så vi inte felaktigt ser oss som "för gamla" nästa gång.
+    try{sb.from('saves').select('version').eq('user_id',cloudUser.id).maybeSingle().then(function(r2){var row=r2&&r2.data;if(row&&typeof row.version==='number')cloudVersion=row.version;},function(){});}catch(e){}
+    if(cb)cb();
+  });
 }
 function cloudFlush(){
   // VAKTHUND: om en sparning fastnat (svar kom aldrig) i mer än 20s, släpp spärren så vi kan försöka igen.
