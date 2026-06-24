@@ -744,6 +744,27 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hspd-max{font-size:0.66rem;color:#cfe0ff;white-space:nowrap;font-weight:800;}
 .hspd-rocket{font-size:1.05rem;line-height:1;flex:0 0 auto;}
 .hspd-rocket img{width:17px;height:17px;object-fit:contain;display:block;}
+.hspd-label{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.7rem;color:#cfe0ff;letter-spacing:0.3px;line-height:1;}
+.hspd-div{width:1px;height:14px;background:rgba(255,255,255,0.18);}
+.hspd-action{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.7rem;color:var(--gold,#f5c842);line-height:1;}
+.hspd.maxed .hspd-action{color:rgba(255,255,255,0.5);}
+.hsu-cur{text-align:center;color:rgba(255,255,255,0.8);font-size:0.82rem;margin:0 0 10px;}
+.hsu-row{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.hsu-row:last-child{border-bottom:none;}
+.hsu-row.locked{opacity:0.45;}
+.hsu-lvl{flex:0 0 auto;width:26px;height:26px;border-radius:8px;background:rgba(58,92,184,0.4);color:#fff;font-family:'Fredoka One',cursive;font-size:0.85rem;display:flex;align-items:center;justify-content:center;}
+.hsu-row.owned .hsu-lvl{background:rgba(61,220,132,0.35);}
+.hsu-row.next .hsu-lvl{background:var(--gold,#f5c842);color:#0b1530;}
+.hsu-desc{flex:1;min-width:0;}
+.hsu-desc-t{font-family:'Fredoka One',cursive;font-size:0.86rem;color:#fff;line-height:1.1;}
+.hsu-desc-s{font-size:0.68rem;color:rgba(255,255,255,0.55);margin-top:1px;}
+.hsu-right{flex:0 0 auto;}
+.hsu-check{color:#3ddc84;font-size:1.1rem;font-weight:800;}
+.hsu-cost{font-family:'Fredoka One',cursive;font-size:0.78rem;color:rgba(255,255,255,0.6);display:inline-flex;align-items:center;gap:3px;}
+.hsu-buy{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#0b1530;background:linear-gradient(180deg,#3ddc84,#1faa5a);border:none;border-radius:10px;padding:6px 12px;box-shadow:0 3px 0 #137a3e;cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+.hsu-buy:active{transform:translateY(2px);box-shadow:0 1px 0 #137a3e;}
+.hsu-buy.poor{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);box-shadow:none;cursor:default;}
+.hsu-maxed{text-align:center;color:var(--gold,#f5c842);font-family:'Fredoka One',cursive;font-size:0.82rem;margin-top:10px;}
 .hspd-mid{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1;}
 .hspd-price{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;display:flex;align-items:center;gap:2px;white-space:nowrap;}
 .hspd-price .coin-ic{width:13px;height:13px;}
@@ -2039,6 +2060,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <p>When an egg is ready, tap <b>Collect</b> to add the new pet to your collection!</p>
 </div>
 <button class="hatch-info-close" onclick="closeHatchInfo()">Got it!</button>
+</div></div>
+<div id="hatch-speed-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeHatchSpeed()">
+<div class="hatch-info-card">
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:20px;height:20px;object-fit:contain;vertical-align:-0.18em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
+<div class="hatch-info-body" id="hatch-speed-body"></div>
+<button class="hatch-info-close" onclick="closeHatchSpeed()">Done</button>
 </div></div>
 <div id="loadout-modal" class="modal-overlay">
   <div class="prof-panel">
@@ -7782,7 +7809,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.27<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.28<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10308,17 +10335,42 @@ function hatchHeroPage(dir){
   renderHatchery();
 }
 function openHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.add('open');}
+function openHatchSpeed(){renderHatchSpeedModal();var m=document.getElementById('hatch-speed-modal');if(m)m.classList.add('open');}
+function closeHatchSpeed(){var m=document.getElementById('hatch-speed-modal');if(m)m.classList.remove('open');}
+function buyHatchSpeedLvl(){if(buyUpgradeById('hatch')){renderHatchery();renderHatchSpeedModal();}}
+function renderHatchSpeedModal(){
+  var box=document.getElementById('hatch-speed-body');if(!box)return;
+  var u=UPGRADES.find(function(x){return x.id==='hatch';});if(!u){box.innerHTML='';return;}
+  var l=G.ulvl.hatch||0;var mult=[100,90,80,70,60,50];
+  var curPct=100-mult[Math.min(l,5)];
+  var html='<div class="hsu-cur">Eggs currently hatch <b>'+curPct+'% faster</b></div>';
+  for(var i=0;i<u.max;i++){
+    var owned=l>i, isNext=l===i, cost=u.cost[i], afford=G.coins>=cost;
+    var fasterTotal=100-mult[i+1];
+    var cls=owned?'owned':(isNext?'next':'locked');
+    var right;
+    if(owned)right='<span class="hsu-check">\u2713</span>';
+    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(afford?' onclick="buyHatchSpeedLvl()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button>';
+    else right='<span class="hsu-cost">'+COIN_IMG+' '+fmtShort(cost)+'</span>';
+    html+='<div class="hsu-row '+cls+'">'+
+      '<div class="hsu-lvl">'+(i+1)+'</div>'+
+      '<div class="hsu-desc"><div class="hsu-desc-t">Hatch '+fasterTotal+'% faster</div><div class="hsu-desc-s">Hatch time '+mult[i]+'% \u2192 '+mult[i+1]+'%</div></div>'+
+      '<div class="hsu-right">'+right+'</div></div>';
+  }
+  if(l>=u.max)html+='<div class="hsu-maxed">\u26a1 Maximum hatch speed reached!</div>';
+  box.innerHTML=html;
+}
 function closeHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.remove('open');}
 // Hatch-speed-upgraden som piller i headern: raket + pris (mitten) + dots + hatch%.
 function hatchSpeedPillHtml(){
   var u=UPGRADES.find(function(x){return x.id==='hatch';});if(!u)return '';
-  var l=G.ulvl.hatch||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
-  var d=[1,0.9,0.8,0.7,0.6,0.5][l];var pct=Math.round((1/d-1)*100);
-  var price=maxed?'<span class="hspd-max">Speed Upgrade</span>':(COIN_IMG+' '+fmtShort(c));
-  return '<button class="hspd'+(maxed?' maxed':afford?' afford':' poor')+'"'+((!maxed)?' onclick="buyHatchSpeed()"':'')+'>'+
+  var l=G.ulvl.hatch||0;var maxed=l>=u.max;
+  return '<button class="hspd'+(maxed?' maxed':'')+'" onclick="openHatchSpeed()">'+
     '<span class="hspd-rocket"><img src="'+ASSET_BASE+'/assets/ui/common/rocket.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83d\ude80\'))"></span>'+
-    '<span class="hspd-mid"><span class="hspd-price">'+price+'</span><span class="udots hspd-dots">'+dots(l,u.max)+'</span></span>'+
-    '<span class="hspd-pct">+'+pct+'%</span></button>';
+    '<span class="hspd-label">HATCH SPEED</span>'+
+    '<span class="hspd-div"></span>'+
+    '<span class="hspd-action">'+(maxed?'Max':'Upgrade')+'</span>'+
+    '</button>';
 }
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
