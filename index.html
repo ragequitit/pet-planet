@@ -7730,7 +7730,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.12<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.13<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10248,6 +10248,7 @@ function hatchHeroPage(dir){
 }
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
+  var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
   var html='<div class="hatch-section-title">🐣 Incubation Slots ('+maxSlots+' / '+HATCH_SLOT_MAX+' unlocked)</div>';
   html+='<div class="hatch-slot-row">';
@@ -10306,7 +10307,7 @@ function renderHatchery(){
   var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
   if(_ec>0){var _em=eventEggMeta();var _canH=G.hatchSlots.length<maxSlots;html+='<div class="hatch-egg-row" style="margin-top:8px;"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
   wrap.innerHTML=html;
-  var _srow=wrap.querySelector('.hatch-slot-row');if(_srow)attachDragScroll(_srow);
+  var _srow=wrap.querySelector('.hatch-slot-row');if(_srow){attachDragScroll(_srow);_srow.scrollLeft=_prevScroll;}
 }
 
 // ============================================================
