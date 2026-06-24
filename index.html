@@ -701,9 +701,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard-bar{width:100%;height:7px;background:rgba(0,0,0,0.32);border-radius:5px;overflow:hidden;}
 .hcard-bar-fill{height:100%;background:linear-gradient(90deg,#5ad6ff,#3a8cff);border-radius:5px;}
 .hcard-btn{margin-top:auto;width:100%;border:none;border-radius:11px;padding:7px 4px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;cursor:pointer;}
-.hcard-btn.ready{background:linear-gradient(180deg,#3ddc84,#1faa5a);box-shadow:0 2px 0 #137a3e;}
+.hcard-btn.ready{background:linear-gradient(180deg,#3ddc84,#1faa5a);box-shadow:0 2px 0 #137a3e;font-size:1.35rem;}
 .hcard-btn.waiting{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);}
-.hcard-btn.unlock{background:linear-gradient(180deg,#3a78ff,#2456c8);box-shadow:0 2px 0 #163b8c;display:flex;align-items:center;justify-content:center;gap:4px;}
+.hcard-btn.unlock{background:linear-gradient(180deg,#3a78ff,#2456c8);box-shadow:0 2px 0 #163b8c;display:flex;align-items:center;justify-content:center;gap:6px;font-size:1.4rem;}
+.hcard-btn.unlock .coin-ic,.hcard-btn.unlock .gem-ic{width:2em;height:2em;}
 .hcard-btn.unlock.bad{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.55);box-shadow:none;cursor:default;}
 .hcard-lock-ic{font-size:2.2rem;margin-top:10px;opacity:0.85;}
 .hcard-lock-ic .lock-ic{width:44px;height:44px;object-fit:contain;}
@@ -721,6 +722,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-hero-bar-fill{height:100%;background:linear-gradient(90deg,#ffce4a,#ff9a3a);border-radius:6px;}
 .hatch-hero-arrow{position:absolute;top:44%;transform:translateY(-50%);z-index:5;color:#fff;font-size:3rem;line-height:1;cursor:pointer;background:none;border:none;padding:6px;text-shadow:0 2px 5px rgba(0,0,0,0.6);-webkit-text-stroke:0.6px rgba(0,0,0,0.85);}
 .hatch-hero-arrow:active{transform:translateY(-50%) scale(0.92);}
+.hatch-hero-arrow img{width:40px;height:40px;object-fit:contain;display:block;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.55));}
 .hatch-hero-arrow.l{left:2px;} .hatch-hero-arrow.r{right:2px;}
 .hatch-hero-empty{z-index:2;color:rgba(255,255,255,0.6);text-align:center;font-size:0.9rem;line-height:1.4;padding:14px 10px 4px;}
 .hatch-hero-dots{z-index:2;display:flex;gap:6px;margin-top:2px;}
@@ -1111,7 +1113,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-world{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:6px;text-align:center;}
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#3ddc84,#1faa5a);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #137a3e;}
 .hatch-collect:active{transform:translateY(3px);box-shadow:0 1px 0 #137a3e;}
-.hcard-btn.speed{background:linear-gradient(180deg,#9b6cff,#6a3de0);box-shadow:0 2px 0 #4a2aa0;color:#fff;display:flex;align-items:center;justify-content:center;gap:4px;}
+.hcard-btn.speed{background:linear-gradient(180deg,#9b6cff,#6a3de0);box-shadow:0 2px 0 #4a2aa0;color:#fff;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 4px;line-height:1.05;padding:6px 4px;}
+.hcard-btn.speed .gem-ic{width:2.1em;height:2.1em;}
+.hcard-btn.speed .hspeed-cost{font-size:1.44rem;font-weight:800;}
+.hcard-btn.speed .hspeed-lbl{width:100%;text-align:center;font-size:0.62rem;font-weight:700;opacity:0.95;}
 .hcard-btn.speed.poor{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.5);box-shadow:none;}
 .hcard-btn .gem-ic{width:1.05em;height:1.05em;}
 .hatch-speedup{position:relative;z-index:2;margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#9b6cff,#6a3de0);border:none;border-radius:13px;padding:8px 18px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 4px 0 #4a2aa0;}
@@ -7845,7 +7850,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.36<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.37<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10481,7 +10486,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+GEM_IMG+' '+hatchSpeedUpCost(slot)+'</button>')+'</div>';
+        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+i+')">'+GEM_IMG+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span><span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
@@ -10509,7 +10514,7 @@ function renderHatchery(){
     var hrem=Math.max(0,Math.ceil((hs.duration-hel)/1000));
     var heg=hs.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===hs.eggId;});
     var hImg=hs.eggId===EVENT_EGG_ID?eventEggIconHtml(120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
-    if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)">\u2039</div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)">\u203a</div>';
+    if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" onclick="collectHatch('+hidx+')">Collect</button>';
     else{html+='<div class="hatch-collect waiting">\u23f3 '+formatTime(hrem)+' left</div>';html+='<button class="hatch-speedup'+((G.gems||0)>0?'':' poor')+'" onclick="hatchSpeedUp('+hidx+')">'+GEM_IMG+' Speed up \u00b7 '+hatchSpeedUpCost(hs)+'</button>';}
