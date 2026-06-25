@@ -808,6 +808,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hspd-dots{margin-top:0;gap:3px;}
 .hspd-dots .dot{width:5px;height:5px;}
 .hspd-pct{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.78rem;color:#3ddc84;flex:0 0 auto;}
+.cloud-link-google{margin-top:10px;display:inline-flex;align-items:center;gap:9px;background:#fff;color:#1f1f1f;border:none;border-radius:11px;padding:9px 15px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.85rem;cursor:pointer;box-shadow:0 3px 0 #b8b8b8;-webkit-tap-highlight-color:transparent;}
+.cloud-link-google:active{transform:translateY(2px);box-shadow:0 1px 0 #b8b8b8;}
+.cloud-link-google .clg-g{font-family:'Fredoka One',cursive;font-weight:bold;font-size:1.05rem;color:#4285F4;line-height:1;}
 .hatch-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 .nest-particles{position:absolute;left:0;right:0;bottom:0;height:64%;z-index:1;pointer-events:none;overflow:hidden;}
 .nest-particle{position:absolute;bottom:6%;border-radius:50%;opacity:0;will-change:transform,opacity;animation-name:nestRise;animation-timing-function:ease-in-out;animation-iteration-count:infinite;}
@@ -7984,7 +7987,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.55<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.56<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12579,6 +12582,35 @@ function cloudOAuth(provider){
     },function(){cloudGateMsg('Something went wrong. Try again.');});
   }catch(e){cloudGateMsg('Sign-in not available right now. Try again.');}
 }
+// Koppla nuvarande konto till Google (identity linking): samma user-id, samma save.
+// Visas bara för konton som inte redan har Google. Kräver att "Manual linking" är på i Supabase.
+function cloudHasGoogle(){
+  try{
+    var u=cloudUser;if(!u)return false;
+    if(u.identities&&u.identities.some&&u.identities.some(function(i){return i&&i.provider==='google';}))return true;
+    var am=u.app_metadata||{};
+    if(am.provider==='google')return true;
+    if(am.providers&&am.providers.indexOf&&am.providers.indexOf('google')>=0)return true;
+  }catch(e){}
+  return false;
+}
+function cloudLinkGoogle(){
+  function info(t,b){if(typeof showConfirm==='function')showConfirm(t,b,'OK',function(){});}
+  if(!sb||!cloudUser){info('Connect Google','Please sign in first, then try again.');return;}
+  if(cloudHasGoogle()){info('Already connected','Your account is already linked to Google \u2014 you can log in with Google any time.');return;}
+  var ret;try{ret=window.location.origin+window.location.pathname;}catch(e){ret=undefined;}
+  var opts={skipBrowserRedirect:true};if(ret)opts.redirectTo=ret;
+  function fail(msg){info('Couldn\u2019t connect Google',msg||'Something went wrong. Please try again.');}
+  try{
+    if(!sb.auth.linkIdentity){fail('Account linking isn\u2019t available in this version yet.');return;}
+    sb.auth.linkIdentity({provider:'google',options:opts}).then(function(res){
+      if(res&&res.error){fail(res.error.message||'Linking Google accounts isn\u2019t enabled yet.');return;}
+      var url=res&&res.data&&res.data.url;
+      if(url){window.location.href=url;}
+      else{fail('Linking Google accounts isn\u2019t enabled yet.');}
+    },function(){fail();});
+  }catch(e){fail();}
+}
 function cloudDoLogOut(){
   // Enad, säker utloggning: rensar lokal cache + loggar ut + laddar om (via cloudLogout).
   if(typeof cloudLogout==='function'){cloudLogout();return;}
@@ -12597,7 +12629,8 @@ function cloudAccountHtml(){
   }
   if(cloudUser){
     var email=(typeof profEsc==='function')?profEsc(cloudUser.email||'Signed in'):(cloudUser.email||'Signed in');
-    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div></div></div>';
+    var gbtn=cloudHasGoogle()?'':'<button class="cloud-link-google" onclick="cloudLinkGoogle()"><span class="clg-g">G</span>Connect Google account</button>';
+    return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Signed in as '+email+'. Your progress saves automatically and syncs across your devices. Only one device can play at a time.</div>'+gbtn+'</div></div>';
   }
   return '<div class="set-row"><div class="set-row-info"><div class="set-row-label">\u2601\ufe0f Account</div><div class="set-row-desc">Not signed in.</div></div></div>';
 }
