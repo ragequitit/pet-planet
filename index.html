@@ -690,18 +690,18 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ecard-art{width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.95rem;}
 .ecard-art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,0.4));}
 .ecard.locked .ecard-art img{filter:grayscale(1) brightness(0.5);}
-.ecard-owned{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.64rem;color:rgba(255,255,255,0.7);}
-.ecard-cost{display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.66rem;}
-.ecard-shell,.ecard-coin{display:inline-flex;align-items:center;gap:2px;}
+.ecard-owned{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.8rem;color:rgba(255,255,255,0.7);}
+.ecard-cost{display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.82rem;}
+.ecard-shell,.ecard-coin{display:inline-flex;align-items:center;gap:2px;white-space:nowrap;}
 .ecard-shell.good,.ecard-coin.good{color:#9be08a;}
 .ecard-shell.bad,.ecard-coin.bad{color:#ff9a9a;}
-.ecard-shell .shell-ic,.ecard-coin img{width:1.15em;height:1.15em;object-fit:contain;}
+.ecard-shell .shell-ic,.ecard-coin img{width:1.4em;height:1.4em;object-fit:contain;}
 .ecard-lock{font-size:0.54rem;color:rgba(255,255,255,0.55);text-align:center;line-height:1.2;min-height:2em;display:flex;align-items:center;}
 .ecard-btns{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:auto;}
-.ecard-btn{border:none;border-radius:8px;padding:5px 3px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.66rem;color:#fff;cursor:pointer;}
+.ecard-btn{border:none;border-radius:8px;padding:6px 3px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.9rem;color:#fff;cursor:pointer;}
 .ecard-btn.craft{background:linear-gradient(180deg,#3ddc84,#1faa5a);box-shadow:0 2px 0 #137a3e;}
 .ecard-btn.craft.no{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:default;}
-.ecard-btn.chnh{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 2px 0 #5a32c0;font-size:0.66rem;}
+.ecard-btn.chnh{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 2px 0 #5a32c0;font-size:0.9rem;}
 .ecard-btn.chnh.dis{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:default;}
 .ecard-btn.locked{background:rgba(255,255,255,0.08);font-size:0.78rem;}
 .hslot-arrow{position:absolute;top:82px;transform:translateY(-50%);z-index:6;background:none;border:none;color:#fff;font-size:3rem;line-height:1;cursor:pointer;padding:4px 6px;text-shadow:0 2px 4px rgba(0,0,0,0.7);-webkit-text-stroke:0.6px rgba(0,0,0,0.85);-webkit-tap-highlight-color:transparent;}
@@ -7987,7 +7987,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.58<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.59<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
