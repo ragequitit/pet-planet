@@ -683,8 +683,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hatch-slot-row{display:flex;gap:9px;overflow-x:auto;padding:4px 8px 10px 14px;-webkit-overflow-scrolling:touch;touch-action:pan-x;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
 .hatch-slot-wrap{position:relative;margin:0 -10px;}
 .egg-craft-wrap{position:relative;margin:0 -10px;}
-.egg-craft-row{display:flex;gap:7px;overflow-x:auto;padding:4px 8px 12px 12px;-webkit-overflow-scrolling:touch;touch-action:pan-x;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
-.ecard{flex:0 0 auto;width:80px;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:12px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
+.egg-craft-row{display:flex;gap:7px;overflow-x:auto;padding:4px 8px 12px 12px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
+.ecard{flex:0 0 auto;width:calc((100% - 41px)/3);min-width:0;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:12px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
 .ecard.locked{filter:saturate(0.55) brightness(0.92);}
 .ecard-name{font-family:'Fredoka One',cursive;font-size:0.64rem;color:#fff;text-align:center;line-height:1.05;min-height:2em;display:flex;align-items:center;}
 .ecard-art{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;}
@@ -701,7 +701,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ecard-btn{border:none;border-radius:8px;padding:5px 3px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.66rem;color:#fff;cursor:pointer;}
 .ecard-btn.craft{background:linear-gradient(180deg,#3ddc84,#1faa5a);box-shadow:0 2px 0 #137a3e;}
 .ecard-btn.craft.no{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:default;}
-.ecard-btn.chnh{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 2px 0 #5a32c0;font-size:0.55rem;}
+.ecard-btn.chnh{background:linear-gradient(180deg,#b388ff,#7c4dff);box-shadow:0 2px 0 #5a32c0;font-size:0.66rem;}
 .ecard-btn.chnh.dis{background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45);box-shadow:none;cursor:default;}
 .ecard-btn.locked{background:rgba(255,255,255,0.08);font-size:0.78rem;}
 .hslot-arrow{position:absolute;top:82px;transform:translateY(-50%);z-index:6;background:none;border:none;color:#fff;font-size:3rem;line-height:1;cursor:pointer;padding:4px 6px;text-shadow:0 2px 4px rgba(0,0,0,0.7);-webkit-text-stroke:0.6px rgba(0,0,0,0.85);-webkit-tap-highlight-color:transparent;}
@@ -715,7 +715,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hcard{flex:0 0 auto;width:100px;min-height:158px;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
 .hcard.active{border-color:#ffce4a;box-shadow:inset 0 2px 0 rgba(255,255,255,0.18),0 3px 0 #0b1326;}
 .hcard.locked{border-style:dashed;background:linear-gradient(180deg,#1a2848,#121f3a);}
-.hcard-num{position:absolute;top:6px;left:7px;z-index:2;font-size:0.67rem;font-weight:900;background:linear-gradient(180deg,#5cc6ff,#2a9fe6);color:#fff;border:1px solid #7ad4ff;border-radius:7px;padding:2px 8px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #1a6ba8;line-height:1.25;}
+.hcard.empty-slot{justify-content:center;}
+.hcard-num{position:absolute;top:6px;left:7px;z-index:2;font-size:0.67rem;font-weight:900;background:linear-gradient(180deg,#4a6cc8,#3a5cb8);color:#fff;border:1px solid #6a86d0;border-radius:7px;padding:2px 8px;font-family:'Baloo 2',sans-serif;box-shadow:0 1px 0 #28407e;line-height:1.25;}
 .hcard-egg{width:54px;height:54px;display:flex;align-items:center;justify-content:center;margin-top:8px;font-size:2.6rem;}
 .hcard-egg img{width:54px;height:54px;object-fit:contain;}
 .hcard-name{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;text-align:center;line-height:1.05;}
@@ -2154,6 +2155,23 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/rocket.png" alt="" style="width:40px;height:40px;object-fit:contain;vertical-align:middle;margin-right:7px;" onerror="this.replaceWith(document.createTextNode('\ud83d\ude80'))"> Hatch Speed</div>
 <div class="hatch-info-body" id="hatch-speed-body"></div>
 <button class="hatch-info-close" onclick="closeHatchSpeed()">Done</button>
+</div></div>
+<div id="craft-cost-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeCraftCost()">
+<div class="hatch-info-card">
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shop/forest-egg.png" alt="" style="width:34px;height:34px;object-fit:contain;vertical-align:middle;margin-right:7px;" onerror="this.replaceWith(document.createTextNode('\ud83e\udd5a'))"> Craft Cost</div>
+<div class="hatch-info-body" id="craft-cost-body"></div>
+<button class="hatch-info-close" onclick="closeCraftCost()">Done</button>
+</div></div>
+<div id="craft-info-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeCraftInfo()">
+<div class="hatch-info-card">
+<div class="hatch-info-head"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shop/forest-egg.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:-0.28em;margin-right:5px;" onerror="this.replaceWith(document.createTextNode('\ud83e\udd5a'))"> How Crafting Works</div>
+<div class="hatch-info-body">
+<p><b>Craft</b> eggs using <b>Sparks</b> + <b>Shells</b>. Each egg card shows exactly which Shell it needs.</p>
+<p>Rarer eggs need <b>rarer Shells</b> — collect Shells by clicking your egg and idling.</p>
+<p>The <b>Craft Cost</b> upgrade lowers the Shells each egg costs — up to 50% off at max level.</p>
+<p>Tap <b>Hatch</b> on a card to craft an egg and drop it straight into a hatching slot.</p>
+</div>
+<button class="hatch-info-close" onclick="closeCraftInfo()">Got it!</button>
 </div></div>
 <div id="nogems-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeNoGems()">
 <div class="hatch-info-card" style="text-align:center;max-width:320px;">
@@ -7966,7 +7984,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.51<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.55<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10265,9 +10283,22 @@ function eggCraftRowHtml(){
     }else{
       html+='<button class="ecard-btn craft'+(afford?'':' no')+'"'+(afford?' data-buy-egg="'+egg.id+'"':' disabled')+'>Craft</button>';
       var canHatch=owned>0||afford;
-      if(slotFree&&canHatch)html+='<button class="ecard-btn chnh" data-hatch-egg="'+egg.id+'">Craft &amp; Hatch 🔨</button>';
+      if(slotFree&&canHatch)html+='<button class="ecard-btn chnh" data-hatch-egg="'+egg.id+'">Hatch</button>';
       else if(!slotFree)html+='<button class="ecard-btn chnh dis" disabled>Slots full</button>';
     }
+    html+='</div></div>';
+  });
+  // Event-ägg (Winter m.fl.) ligger nu bland de vanliga äggen — bara om man äger dem. Går ej att crafta, bara kläcka.
+  ownedEventEggIds().forEach(function(_eid){
+    var _em=eventEggMetaById(_eid);
+    var _ec=G.eggsOwned[_eid]||0;
+    html+='<div class="ecard" style="--rc:#f5c842">';
+    html+='<div class="ecard-name" style="color:var(--gold)">'+_em.name+'</div>';
+    html+='<div class="ecard-art">'+eventEggIconHtmlById(_eid,44)+'</div>';
+    html+='<div class="ecard-owned">Owned: '+_ec+'</div>';
+    html+='<div class="ecard-btns">';
+    if(slotFree)html+='<button class="ecard-btn chnh" onclick="startHatching(\''+_eid+'\')">Hatch</button>';
+    else html+='<button class="ecard-btn chnh dis" disabled>Slots full</button>';
     html+='</div></div>';
   });
   html+='</div></div>';
@@ -10601,6 +10632,44 @@ function renderHatchSpeedModal(){
   box.innerHTML=html;
 }
 function closeHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.remove('open');}
+// CRAFT COST: piller i Craft Eggs-headern (speglar Hatch Speed) + popup med nivåerna + info-popup.
+function craftCostPillHtml(){
+  var u=UPGRADES.find(function(x){return x.id==='craft';});if(!u)return '';
+  var l=G.ulvl.craft||0;var maxed=l>=u.max;
+  return '<button class="hspd'+(maxed?' maxed':'')+'" onclick="openCraftCost()">'+
+    '<span class="hspd-rocket">'+u.e+'</span>'+
+    '<span class="hspd-label">CRAFT COST</span>'+
+    '<span class="hspd-div"></span>'+
+    '<span class="hspd-action">'+(maxed?'Max':'Upgrade')+'</span>'+
+    '</button>';
+}
+function openCraftCost(){renderCraftCostModal();var m=document.getElementById('craft-cost-modal');if(m)m.classList.add('open');}
+function closeCraftCost(){var m=document.getElementById('craft-cost-modal');if(m)m.classList.remove('open');}
+function buyCraftCostLvl(){if(buyUpgradeById('craft')){renderHatchery();renderCraftCostModal();}}
+function renderCraftCostModal(){
+  var box=document.getElementById('craft-cost-body');if(!box)return;
+  var u=UPGRADES.find(function(x){return x.id==='craft';});if(!u){box.innerHTML='';return;}
+  var l=G.ulvl.craft||0;var mult=[100,90,80,70,60,50];
+  var curPct=100-mult[Math.min(l,5)];
+  var html='<div class="hsu-cur">Eggs currently cost <b>'+curPct+'% less</b> to craft</div>';
+  for(var i=0;i<u.max;i++){
+    var owned=l>i, isNext=l===i, cost=u.cost[i], afford=G.coins>=cost;
+    var saveTotal=100-mult[i+1];
+    var cls=owned?'owned':(isNext?'next':'locked');
+    var right;
+    if(owned)right='<span class="hsu-check">\u2713</span>';
+    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(afford?' onclick="buyCraftCostLvl()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button>';
+    else right='<span class="hsu-cost">'+COIN_IMG+' '+fmtShort(cost)+'</span>';
+    html+='<div class="hsu-row '+cls+'">'+
+      '<div class="hsu-lvl">'+(i+1)+'</div>'+
+      '<div class="hsu-desc"><div class="hsu-desc-t">Save '+saveTotal+'% on craft cost</div><div class="hsu-desc-s">Craft cost '+mult[i]+'% \u2192 '+mult[i+1]+'%</div></div>'+
+      '<div class="hsu-right">'+right+'</div></div>';
+  }
+  if(l>=u.max)html+='<div class="hsu-maxed">\ud83d\udc8e Maximum craft discount reached!</div>';
+  box.innerHTML=html;
+}
+function openCraftInfo(){var m=document.getElementById('craft-info-modal');if(m)m.classList.add('open');}
+function closeCraftInfo(){var m=document.getElementById('craft-info-modal');if(m)m.classList.remove('open');}
 // Hatch-speed-upgraden som piller i headern: raket + pris (mitten) + dots + hatch%.
 function hatchSpeedPillHtml(){
   var u=UPGRADES.find(function(x){return x.id==='hatch';});if(!u)return '';
@@ -10679,10 +10748,8 @@ function renderHatchery(){
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
-  html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Craft & Hatch Eggs</div>';
-  html+='<div style="margin-bottom:8px;">'+craftUpgBoxHtml()+'</div>';
+  html+='<div class="hatch-head" style="margin-top:16px;"><img class="hatch-head-ic" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/shop/forest-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\\ud83e\\udd5a\'))"><div class="hatch-head-title">Craft Eggs</div><button class="hatch-info-i img-mode" onclick="openCraftInfo()" aria-label="How crafting works"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/info.png" alt="i" onerror="this.replaceWith(document.createTextNode(\'i\'))"></button>'+craftCostPillHtml()+'</div>';
   html+=eggCraftRowHtml();
-  ownedEventEggIds().forEach(function(_eid){var _ec=G.eggsOwned[_eid]||0;var _em=eventEggMetaById(_eid);var _canH=G.hatchSlots.length<maxSlots;html+='<div class="hatch-egg-row" style="margin-top:8px;"><div class="he-icon">'+eventEggIconHtmlById(_eid,30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+_eid+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';});
   wrap.innerHTML=html;
   var _srow=wrap.querySelector('.hatch-slot-row');if(_srow){attachDragScroll(_srow);_srow.scrollLeft=_prevScroll;}
   var _ecr=wrap.querySelector('.egg-craft-row');if(_ecr)attachDragScroll(_ecr);
