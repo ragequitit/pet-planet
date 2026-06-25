@@ -686,12 +686,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .egg-craft-row{display:flex;gap:7px;overflow-x:auto;padding:4px 8px 12px 12px;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;cursor:grab;scrollbar-width:thin;scrollbar-color:rgba(120,160,255,0.5) transparent;}
 .ecard{flex:0 0 auto;width:calc((100% - 41px)/3);min-width:0;background:linear-gradient(180deg,#22325c,#172643);border:2px solid #3a5cb8;border-radius:12px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 3px 0 #0b1326;}
 .ecard.locked{filter:saturate(0.55) brightness(0.92);}
-.ecard-name{font-family:'Fredoka One',cursive;font-size:0.64rem;color:#fff;text-align:center;line-height:1.05;min-height:2em;display:flex;align-items:center;}
-.ecard-art{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;}
+.ecard-name{font-family:'Fredoka One',cursive;font-size:0.8rem;color:#fff;text-align:center;line-height:1.1;min-height:1.15em;white-space:nowrap;overflow:hidden;display:flex;align-items:center;justify-content:center;width:100%;}
+.ecard-art{width:50px;height:50px;display:flex;align-items:center;justify-content:center;font-size:1.95rem;}
 .ecard-art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,0.4));}
 .ecard.locked .ecard-art img{filter:grayscale(1) brightness(0.5);}
-.ecard-owned{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.58rem;color:rgba(255,255,255,0.7);}
-.ecard-cost{display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.6rem;}
+.ecard-owned{font-family:'Baloo 2',cursive;font-weight:700;font-size:0.64rem;color:rgba(255,255,255,0.7);}
+.ecard-cost{display:flex;flex-direction:column;align-items:center;gap:1px;font-family:'Baloo 2',cursive;font-weight:800;font-size:0.66rem;}
 .ecard-shell,.ecard-coin{display:inline-flex;align-items:center;gap:2px;}
 .ecard-shell.good,.ecard-coin.good{color:#9be08a;}
 .ecard-shell.bad,.ecard-coin.bad{color:#ff9a9a;}
@@ -7987,7 +7987,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.56<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.58<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9970,9 +9970,21 @@ function updateEventGlow(){
   });
 })();
 // Generiskt köp av en (kvarvarande) upgrade via id. Returnerar true om köpet gick igenom.
+// Vissa upgrade-NIVÅER kostar gems i stället för coins (premium-steg). Per upgrade-id + 0-baserat nivå-index.
+var UPG_GEM_COSTS={craft:{3:150,4:250},hatch:{3:150,4:250}}; // nivå 4 = 150 gems, nivå 5 = 250 gems (placeholder)
+function upgGemCost(id,idx){var m=UPG_GEM_COSTS[id];return (m&&m[idx])?m[idx]:0;}
 function buyUpgradeById(id){
   var u=UPGRADES.find(function(uu){return uu.id===id;});if(!u)return false;
   var l=G.ulvl[u.id]||0;if(l>=u.max)return false;
+  var gem=upgGemCost(id,l);
+  if(gem>0){
+    if((G.gems||0)<gem){if(typeof noGemsPopup==='function')noGemsPopup();return false;}
+    G.gems-=gem;G.ulvl[u.id]++;G.stats.totalUpgradesPurchased++;
+    u.apply(G.ulvl[u.id]);
+    if(typeof updateHUD==='function')updateHUD();
+    saveGame();
+    return true;
+  }
   var c=u.cost[l];if(G.coins<c)return false;
   G.coins-=c;G.ulvl[u.id]++;G.stats.totalUpgradesPurchased++;G.stats.totalCoinsSpent+=c;
   u.apply(G.ulvl[u.id]);
@@ -9983,11 +9995,16 @@ function buyUpgradeById(id){
 // HTML för ett flyttat upgrade-kort (används i Shop + Hatchery).
 function craftUpgBoxHtml(){
   var u=UPGRADES.find(function(uu){return uu.id==='craft';});if(!u)return '';
-  var l=G.ulvl['craft']||0;var maxed=l>=u.max;var c=maxed?0:u.cost[l];var afford=!maxed&&G.coins>=c;
-  return '<div class="ec-upgbox'+(maxed?' maxed':afford?' afford':'')+'"'+((!maxed&&afford)?' onclick="buyEggCrafting()"':'')+'>'+
+  var l=G.ulvl['craft']||0;var maxed=l>=u.max;
+  var gem=maxed?0:upgGemCost('craft',l);
+  var c=maxed?0:u.cost[l];
+  var afford=!maxed&&(gem>0?((G.gems||0)>=gem):(G.coins>=c));
+  var clickable=!maxed&&(gem>0?true:afford);
+  var costIco=gem>0?GEM_IMG:COIN_IMG, costAmt=gem>0?fmtShort(gem):fmtShort(c);
+  return '<div class="ec-upgbox'+(maxed?' maxed':afford?' afford':'')+'"'+(clickable?' onclick="buyEggCrafting()"':'')+'>'+
     '<div class="ec-upgbox-ic">'+u.e+'</div>'+
     '<div class="ec-upgbox-txt"><div class="ec-upgbox-name">Upgrade · Lv '+l+(maxed?' MAX':'/'+u.max)+'</div>'+
-    '<div class="ec-upgbox-cost'+(maxed||afford?'':' bad')+'">'+(maxed?'Maxed out':COIN_IMG+' '+fmtShort(c))+'</div>'+
+    '<div class="ec-upgbox-cost'+(maxed||afford?'':' bad')+'">'+(maxed?'Maxed out':costIco+' '+costAmt)+'</div>'+
     '</div></div>';
 }
 function movedUpgCardHtml(id,onclick){
@@ -10254,6 +10271,8 @@ function eggCraftCardsHtml(){
   });
   return html;
 }
+// Textstorlek på ägg-kortets namn efter längd → alltid EN rad, så stort som möjligt utan radbrytning.
+function ecardNameFs(s){var n=(s||'').length;if(n<=9)return 0.95;if(n<=11)return 0.84;if(n<=13)return 0.74;if(n<=15)return 0.66;return 0.58;}
 function eggCraftRowHtml(){
   var occupied=G.hatchSlots.length;
   var slotFree=occupied<G.hatchSlotCount;
@@ -10269,7 +10288,7 @@ function eggCraftRowHtml(){
     var afford=unlocked&&shellOk&&coinOk;
     var rc=(sc>0&&shellR)?shellR.color:'#3a5cb8';
     html+='<div class="ecard'+(unlocked?'':' locked')+'" data-info-egg="'+egg.id+'" style="--rc:'+rc+'">';
-    html+='<div class="ecard-name">'+egg.name+'</div>';
+    html+='<div class="ecard-name" style="font-size:'+ecardNameFs(egg.name)+'rem">'+egg.name+'</div>';
     html+='<div class="ecard-art"><img src="'+eggShopIconUrl(egg.id)+'" alt="" onerror="this.parentNode.textContent=\''+egg.icon+'\'"></div>';
     html+='<div class="ecard-owned">Owned: '+owned+'</div>';
     if(unlocked){
@@ -10296,7 +10315,7 @@ function eggCraftRowHtml(){
     var _em=eventEggMetaById(_eid);
     var _ec=G.eggsOwned[_eid]||0;
     html+='<div class="ecard" style="--rc:#f5c842">';
-    html+='<div class="ecard-name" style="color:var(--gold)">'+_em.name+'</div>';
+    html+='<div class="ecard-name" style="color:var(--gold);font-size:'+ecardNameFs(_em.name)+'rem">'+_em.name+'</div>';
     html+='<div class="ecard-art">'+eventEggIconHtmlById(_eid,44)+'</div>';
     html+='<div class="ecard-owned">Owned: '+_ec+'</div>';
     html+='<div class="ecard-btns">';
@@ -10619,13 +10638,17 @@ function renderHatchSpeedModal(){
   var curPct=100-mult[Math.min(l,5)];
   var html='<div class="hsu-cur">Eggs currently hatch <b>'+curPct+'% faster</b></div>';
   for(var i=0;i<u.max;i++){
-    var owned=l>i, isNext=l===i, cost=u.cost[i], afford=G.coins>=cost;
+    var owned=l>i, isNext=l===i;
+    var gem=upgGemCost('hatch',i), cost=u.cost[i];
+    var costIco=gem>0?GEM_IMG:COIN_IMG, costTxt=gem>0?fmtShort(gem):fmtShort(cost);
+    var afford=gem>0?((G.gems||0)>=gem):(G.coins>=cost);
+    var clickable=gem>0?true:afford;
     var fasterTotal=100-mult[i+1];
     var cls=owned?'owned':(isNext?'next':'locked');
     var right;
     if(owned)right='<span class="hsu-check">\u2713</span>';
-    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(afford?' onclick="buyHatchSpeedLvl()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button>';
-    else right='<span class="hsu-cost">'+COIN_IMG+' '+fmtShort(cost)+'</span>';
+    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(clickable?' onclick="buyHatchSpeedLvl()"':' disabled')+'>'+costIco+' '+costTxt+'</button>';
+    else right='<span class="hsu-cost">'+costIco+' '+costTxt+'</span>';
     html+='<div class="hsu-row '+cls+'">'+
       '<div class="hsu-lvl">'+(i+1)+'</div>'+
       '<div class="hsu-desc"><div class="hsu-desc-t">Hatch '+fasterTotal+'% faster</div><div class="hsu-desc-s">Hatch time '+mult[i]+'% \u2192 '+mult[i+1]+'%</div></div>'+
@@ -10656,13 +10679,17 @@ function renderCraftCostModal(){
   var curPct=100-mult[Math.min(l,5)];
   var html='<div class="hsu-cur">Eggs currently cost <b>'+curPct+'% less</b> to craft</div>';
   for(var i=0;i<u.max;i++){
-    var owned=l>i, isNext=l===i, cost=u.cost[i], afford=G.coins>=cost;
+    var owned=l>i, isNext=l===i;
+    var gem=upgGemCost('craft',i), cost=u.cost[i];
+    var costIco=gem>0?GEM_IMG:COIN_IMG, costTxt=gem>0?fmtShort(gem):fmtShort(cost);
+    var afford=gem>0?((G.gems||0)>=gem):(G.coins>=cost);
+    var clickable=gem>0?true:afford;
     var saveTotal=100-mult[i+1];
     var cls=owned?'owned':(isNext?'next':'locked');
     var right;
     if(owned)right='<span class="hsu-check">\u2713</span>';
-    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(afford?' onclick="buyCraftCostLvl()"':' disabled')+'>'+COIN_IMG+' '+fmtShort(cost)+'</button>';
-    else right='<span class="hsu-cost">'+COIN_IMG+' '+fmtShort(cost)+'</span>';
+    else if(isNext)right='<button class="hsu-buy'+(afford?'':' poor')+'"'+(clickable?' onclick="buyCraftCostLvl()"':' disabled')+'>'+costIco+' '+costTxt+'</button>';
+    else right='<span class="hsu-cost">'+costIco+' '+costTxt+'</span>';
     html+='<div class="hsu-row '+cls+'">'+
       '<div class="hsu-lvl">'+(i+1)+'</div>'+
       '<div class="hsu-desc"><div class="hsu-desc-t">Save '+saveTotal+'% on craft cost</div><div class="hsu-desc-s">Craft cost '+mult[i]+'% \u2192 '+mult[i+1]+'%</div></div>'+
