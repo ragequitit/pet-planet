@@ -937,6 +937,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .reset-btn{margin-top:10px;padding:10px 20px;background:#c0392b;border:none;border-radius:10px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.9rem;cursor:pointer;box-shadow:0 3px 0 #7b241c;width:100%;}
 @keyframes petBounce{0%{transform:scale(0);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
 @keyframes hatchPetIn{0%{transform:translate(-50%,-50%) scale(0.35);opacity:0;}60%{transform:translate(-50%,-50%) scale(1.14);opacity:1;}100%{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+@keyframes hatchPetIn2{0%{transform:scale(0.35);opacity:0;}60%{transform:scale(1.14);opacity:1;}100%{transform:scale(1);opacity:1;}}
 
 /* Pet Inventory Styles */
 .pet-inv-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
@@ -1111,8 +1112,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pra-val{color:rgba(255,255,255,0.82);font-size:0.92rem;font-weight:800;}
 
 /* ===== HATCH/FUSION RESULT — rarity-burst-bakgrund + roterande glow-skimmer + pet i boet ===== */
-#pet-result-card{position:relative;width:min(90vw,340px);aspect-ratio:1080/1450;border-radius:20px;overflow:hidden;--rc:#9aa0a6;
-  background:radial-gradient(circle at 50% 42%, #ffffff 0%, var(--rc) 15%, rgba(10,17,36,0) 47%), #0a1124;
+#pet-result-card{position:relative;width:min(90vw,340px);min-height:min(86vh,460px);border-radius:20px;overflow:hidden;--rc:#9aa0a6;
+  display:flex;flex-direction:column;align-items:center;padding:18px 16px 20px;
+  background:radial-gradient(circle at 50% 38%, #ffffff 0%, var(--rc) 15%, rgba(10,17,36,0) 47%), #0a1124;
   box-shadow:0 18px 50px rgba(0,0,0,0.6);}
 .hatch-rays{position:absolute;left:50%;top:42%;width:170%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
   background:repeating-conic-gradient(from 0deg, var(--rc) 0deg 3.5deg, transparent 3.5deg 9deg);
@@ -1130,14 +1132,15 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes hatchSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes hatchSpinRev{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 @keyframes hatchPulse{0%,100%{opacity:0.5;}50%{opacity:0.9;}}
-.hatch-pet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;font-size:min(50vw,185px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn 0.5s ease;}
-.hatch-top{position:absolute;left:0;right:0;top:3.2%;z-index:5;text-align:center;padding:0 14px;}
+.hatch-pet{position:relative;z-index:4;font-size:min(40vw,150px);line-height:1;margin:8px 0 2px;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn2 0.5s ease;}
+.hatch-top{position:relative;z-index:5;text-align:center;padding:0 14px;width:100%;}
 .hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;animation:hatchTitleGlow 5s ease-in-out infinite;}
 @keyframes hatchTitleGlow{0%,100%{text-shadow:0 2px 0 #a76f00,0 0 8px rgba(255,205,70,0.3);}50%{text-shadow:0 2px 0 #a76f00,0 0 28px rgba(255,212,82,0.9);}}
 .hatch-sub{font-size:0.82rem;color:rgba(255,255,255,0.82);margin-top:7px;}
 .hatch-badge{display:inline-block;margin-top:7px;padding:3px 15px;border-radius:999px;font-family:'Fredoka One',cursive;font-size:0.85rem;color:#0b1530;background:var(--rc);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
 .hatch-name{font-family:'Fredoka One',cursive;font-size:1.55rem;color:#fff;margin-top:8px;text-shadow:0 2px 7px rgba(0,0,0,0.65);}
-.hatch-bottom{position:absolute;left:0;right:0;bottom:3.4%;z-index:5;padding:0 16px;text-align:center;}
+.hatch-bottom{position:relative;z-index:5;padding:0 16px;text-align:center;width:100%;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;}
+#pet-result-card .hatch-collect{margin-top:auto;}
 #pet-result-card .pet-result-abilities{background:rgba(8,12,24,0.66);width:58%;min-width:168px;max-width:240px;margin:0 auto 10px;}
 .hatch-world{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:6px;text-align:center;}
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#3ddc84,#1faa5a);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #137a3e;}
@@ -7994,7 +7997,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.65<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.67<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10573,15 +10576,25 @@ function collectHatch(idx){
   showPetResult(pet);
   renderHatchery();
 }
-// Forladdar pet-bilden och oppnar hatch/fusion-popupen forst nar bilden ar klar (ingen ful platshallare). Failsafe-timeout sa den aldrig hanger.
+// Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
 function openPetResultModal(pet){
   var modal=document.getElementById('pet-result-modal');if(!modal)return;
-  var url=(pet&&pet.world)?petImgUrl(pet.world,pet.name,pet.shiny):null;
-  if(!url){modal.classList.add('open');return;}
-  var done=false,open=function(){if(done)return;done=true;modal.classList.add('open');};
-  var im=new Image();im.onload=open;im.onerror=open;im.src=url;
-  setTimeout(open,1500);
+  var urls=[];
+  if(pet&&pet.world){var pu=petImgUrl(pet.world,pet.name,pet.shiny);if(pu)urls.push(pu);}
+  if(pet&&pet.rarity)urls.push(ASSET_BASE+'/assets/ui/hatch/hatch-bg-'+pet.rarity+'.png');
+  if(!urls.length){modal.classList.add('open');return;}
+  var done=false,pending=urls.length,open=function(){if(done)return;done=true;modal.classList.add('open');};
+  var oneDone=function(){pending--;if(pending<=0)open();};
+  urls.forEach(function(u){var im=new Image();im.onload=oneDone;im.onerror=oneDone;im.src=u;});
+  setTimeout(open,1200);
 }
+// Forladda alla hatch-bakgrunder (en per raritet) en gang strax efter start, sa hatch-popupen aldrig vantar pa dem.
+function preloadHatchBgs(){
+  ['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'].forEach(function(r){
+    var im=new Image();im.src=ASSET_BASE+'/assets/ui/hatch/hatch-bg-'+r+'.png';
+  });
+}
+setTimeout(preloadHatchBgs,2000);
 function showPetResult(pet){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
@@ -10614,6 +10627,23 @@ function attachDragScroll(el){
   if(!el||el._ds)return;el._ds=true;
   el.addEventListener('mousedown',function(e){_dragRow=el;_dragSX=e.pageX;_dragSL=el.scrollLeft;_dragMoved=false;el.classList.add('dragging');e.preventDefault();});
   el.addEventListener('click',function(e){if(_dragMoved){e.preventDefault();e.stopPropagation();_dragMoved=false;}},true);
+}
+// NÄST-HERO swipe (mobil): ett tydligt horisontellt svep åt VALFRITT håll går alltid till NÄSTA ägg.
+// passive:true => ingen preventDefault => vertikal scroll + knapptryck (Collect/Speed Up) påverkas ej.
+function attachHeroSwipe(el){
+  if(!el||el._hs)return;el._hs=true;
+  var sx=0,sy=0,tracking=false;
+  el.addEventListener('touchstart',function(e){
+    if(e.touches.length!==1){tracking=false;return;}
+    sx=e.touches[0].clientX;sy=e.touches[0].clientY;tracking=true;
+  },{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(!tracking)return;tracking=false;
+    if(G.hatchSlots.length<=1)return;
+    var t=e.changedTouches[0];if(!t)return;
+    var dx=t.clientX-sx,dy=t.clientY-sy;
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.4)hatchHeroPage(1);
+  },{passive:true});
 }
 // NÄST-HERO: vilket aktivt kläck-slot som visas i den stora rutan; pilar bläddrar.
 var hatchView=0;
@@ -10788,6 +10818,7 @@ function renderHatchery(){
   wrap.innerHTML=html;
   var _srow=wrap.querySelector('.hatch-slot-row');if(_srow){attachDragScroll(_srow);_srow.scrollLeft=_prevScroll;}
   var _ecr=wrap.querySelector('.egg-craft-row');if(_ecr){attachDragScroll(_ecr);_ecr.scrollLeft=_prevEcr;}
+  var _hero=wrap.querySelector('.hatch-hero');if(_hero)attachHeroSwipe(_hero);
 }
 
 // ============================================================
