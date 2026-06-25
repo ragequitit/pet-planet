@@ -1188,7 +1188,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @media (min-width:600px){.idleadv-stage-pet{bottom:50px !important;}}
 
 /* ===== MUTATION SYSTEM (Extract / Mutate) ===== */
-#psub-panel-extract #extract-wrap{padding:6px 2px 90px;}
+#reroll-wrap{padding:6px 2px 90px;}
 .ex-modes{display:flex;gap:8px;margin-bottom:12px;}
 .ex-mode{flex:1;padding:11px;border:2px solid rgba(58,92,184,0.5);border-radius:13px;background:rgba(27,45,78,0.4);color:rgba(255,255,255,0.7);font-family:'Fredoka One',cursive;font-size:0.86rem;cursor:pointer;}
 .ex-mode.active{border-color:#7c4dff;background:linear-gradient(180deg,#2a1f55,#1a1340);color:#fff;box-shadow:0 0 10px rgba(124,77,255,0.35);}
@@ -2043,22 +2043,25 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="tab-pets" class="tab-content">
       <div class="pets-subnav">
         <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
-        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Fusion</button>
-        <button class="psub-btn" id="psub-extract" onclick="petsSub('extract')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
-        <button class="psub-btn" id="psub-mutate" onclick="petsSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Mutate</button>
-        <button class="psub-btn" id="psub-reroll" onclick="petsSub('reroll')"><span>🎲</span> Reroll</button>
+        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Merge</button>
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
       <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
-      <div id="psub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
-      <div id="psub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
-      <div id="psub-panel-reroll" class="psub-panel" style="display:none"><div id="reroll-wrap"></div></div>
     </div>
     <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
     <div id="tab-hatch" class="tab-content"><div id="hatch-wrap"></div></div>
     <div id="tab-adventure" class="tab-content"><div id="adv-wrap" style="padding:14px 13px 90px;"></div></div>
-    <div id="tab-shop" class="tab-content"><div id="shop-wrap"></div></div>
+    <div id="tab-shop" class="tab-content">
+      <div class="pets-subnav">
+        <button class="psub-btn active" id="wsub-extract" onclick="workshopSub('extract')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
+        <button class="psub-btn" id="wsub-mutate" onclick="workshopSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Mutate</button>
+        <button class="psub-btn" id="wsub-reroll" onclick="workshopSub('reroll')"><span>🎲</span> Reroll</button>
+      </div>
+      <div id="wsub-panel-extract" class="psub-panel"><div id="extract-wrap"></div></div>
+      <div id="wsub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
+      <div id="wsub-panel-reroll" class="psub-panel" style="display:none"><div id="reroll-wrap"></div></div>
+    </div>
     <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly and event quests are coming in a later update.</p></div></div>
   </div>
   <div id="bottomnav">
@@ -2296,7 +2299,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <li>Put the egg in the <b>Hatchery</b> and wait for it to hatch into a Pet.</li>
       <li>Equip your best pets in your <b>active slots</b> — their abilities boost your income and luck.</li>
       <li>Send pets on <b>Adventures</b> to earn rewards and pet XP over time.</li>
-      <li>Use <b>Fusion</b>, <b>Mutation</b> and <b>Reroll</b> to improve your pets, and fill your <b>Petdex</b>.</li>
+      <li>Use <b>Merge</b>, <b>Mutation</b> and <b>Reroll</b> to improve your pets, and fill your <b>Petdex</b>.</li>
     </ol>
 
     <div class="howto-sec">Things You'll Find</div>
@@ -4134,7 +4137,7 @@ function placeLostMap(id){
   if(typeof saveGame==='function')saveGame();
   var egg=EGG_SHOP.find(function(e){return e.id===id;});
   if(typeof showRewardPopup==='function')showRewardPopup(['🗺️ Lost World unlocked: '+(egg?egg.name.replace(' Egg',''):id)+'!','Its egg is now in the shop.'],true);
-  renderAdventure(); if(typeof renderShop==='function')renderShop(); if(typeof renderInventory==='function')renderInventory();
+  renderAdventure(); if(typeof renderWorkshop==='function')renderWorkshop(); if(typeof renderInventory==='function')renderInventory();
 }
 // Called from the bag's Loot tab — same as placeLostMap (kept as a clear name for the inventory button).
 function useMapFromBag(id){ placeLostMap(id); }
@@ -4523,7 +4526,7 @@ function devSpawnShiny(){
   if(typeof saveGame==='function')saveGame();
   alert('Spawned '+made+' shiny test pets (common + legendary, shiny + shiny2). Open the Pets tab.');
 }
-function addTestCharms(){G.rerollCharms=(G.rerollCharms||0)+10;if(typeof updateHUD==='function')updateHUD();if(petsSubTab==='reroll'&&typeof renderReroll==='function')renderReroll();if(typeof saveGame==='function')saveGame();}
+function addTestCharms(){G.rerollCharms=(G.rerollCharms||0)+10;if(typeof updateHUD==='function')updateHUD();if(workshopSubTab==='reroll'&&typeof renderReroll==='function')renderReroll();if(typeof saveGame==='function')saveGame();}
 
 // ===== DEV-MENY (flytande DEV-knapp) — tas bort innan release =====
 function applyPedestalVisibility(){
@@ -5444,7 +5447,7 @@ function softUpdateSlotXp(){
 // Ägg känns igen på pet.world, event på pet.evid, fusion/trade/adventure på pet.src.
 function petSourceInfo(pet){
   if(pet){
-    if(pet.src==='fusion') return {icon:'⚗️',text:'Created by Fusion'};
+    if(pet.src==='fusion') return {icon:'⚗️',text:'Created by Merge'};
     if(pet.src==='trade')  return {icon:uiIco('menu/trading','🔄',16),text:'Received via Trading'};
     if(typeof pet.src==='string'&&pet.src.indexOf('adventure:')===0){
       var aid=pet.src.slice(10),adv=(typeof ADVENTURES!=='undefined')?ADVENTURES.find(function(a){return a.id===aid;}):null;
@@ -5629,7 +5632,7 @@ function petDetailGoto(action){
   var m=document.getElementById('pet-detail-modal');if(m)m.classList.remove('open');
   if(action==='adventure'){if(typeof switchTab==='function')switchTab('adventure');}
   else if(action==='fusion'){if(typeof switchTab==='function')switchTab('pets');if(typeof petsSub==='function')petsSub('fusion');}
-  else if(action==='mutate'){if(typeof switchTab==='function')switchTab('pets');if(typeof petsSub==='function')petsSub('mutate');}
+  else if(action==='mutate'){if(typeof navTab==='function')navTab('shop');if(typeof workshopSub==='function')workshopSub('mutate');}
 }
 function petRenamePrompt(uid){
   var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});if(!p)return;
@@ -5685,7 +5688,7 @@ function openPetDetail(uid){
   if(!isPetBusy(pet.uid)){
     html+='<div class="pdx2-shortcuts">'
       +'<button class="pdx2-sc" onclick="petDetailGoto(\'adventure\')">'+uiIco('nav/nav-adventures','\ud83d\uddfa\ufe0f',22)+'Adventure</button>'
-      +'<button class="pdx2-sc" onclick="petDetailGoto(\'fusion\')">'+uiIco('lab/fusion','\u2697\ufe0f',22)+'Fusion</button>'
+      +'<button class="pdx2-sc" onclick="petDetailGoto(\'fusion\')">'+uiIco('lab/fusion','\u2697\ufe0f',22)+'Merge</button>'
       +'<button class="pdx2-sc" onclick="petDetailGoto(\'mutate\')">'+uiIco('lab/mutate','\ud83e\uddec',22)+'Mutate</button>'
       +'</div>';
   }
@@ -6048,7 +6051,7 @@ function switchTab(name){
   if(isHome)applyHomeCollapsed();
   currentTab=name;
   if(name==='inventory')renderInventory();
-  if(name==='shop')renderShop();
+  if(name==='shop')renderWorkshop();
   if(name==='hatch')renderHatchery();
   if(name==='pets')showPetsHub();
   if(name==='petdex')renderPetdex();
@@ -6116,18 +6119,29 @@ function goHome(){
 // Pets-hubbens underflikar (nav rebuild — step 4): Pets / Fusion / Extract
 var petsSubTab='pets';
 function petsSub(sub){
+  if(sub!=='pets'&&sub!=='fusion')sub='pets'; // Extract/Mutate/Reroll bor nu i Workshop
   petsSubTab=sub;
-  ['pets','fusion','extract','mutate','reroll'].forEach(function(s){
+  ['pets','fusion'].forEach(function(s){
     var p=document.getElementById('psub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('psub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='pets')renderPets();
   else if(sub==='fusion')renderFusion();
-  else if(sub==='extract')renderExtract();
+}
+function showPetsHub(){petsSub(petsSubTab);}
+// WORKSHOP: Extract / Mutate / Reroll (flyttade hit fran Pets-hubben). Fusion ar separat (kvar i Pets).
+var workshopSubTab='extract';
+function workshopSub(sub){
+  workshopSubTab=sub;
+  ['extract','mutate','reroll'].forEach(function(s){
+    var p=document.getElementById('wsub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
+    var b=document.getElementById('wsub-'+s);if(b)b.classList.toggle('active',s===sub);
+  });
+  if(sub==='extract')renderExtract();
   else if(sub==='mutate')renderMutate();
   else if(sub==='reroll')renderReroll();
 }
-function showPetsHub(){petsSub(petsSubTab);}
+function renderWorkshop(){workshopSub(workshopSubTab);}
 
 // ============================================================
 // REROLL CHARMS — rulla om TIERN på en ability (Diablo-stil, direkt)
@@ -6539,14 +6553,14 @@ function doMutateStart(){
 var extractSig='',mutateSig='';
 function chamberSig(arr,unlocked){var now=Date.now();return arr.map(function(c){return c?(now>=c.endAt?'2':'1'):'0';}).join('')+'|'+unlocked;}
 function tickChambers(){
-  if(document.getElementById('tab-pets').style.display!=='block')return;
-  if(petsSubTab==='extract'){
+  if(document.getElementById('tab-shop').style.display!=='block')return;
+  if(workshopSubTab==='extract'){
     var canUnlE=G.extractUnlocked<EXTRACT_CHAMBER_MAX&&G.coins>=EXTRACT_CHAMBER_UNLOCK[G.extractUnlocked-1];
     var sig=chamberSig(G.extractChambers,G.extractUnlocked)+(canUnlE?'A':'a');
     if(sig!==extractSig){extractSig=sig;renderExtract();return;}
     var now=Date.now();
     G.extractChambers.forEach(function(c,i){if(!c||now>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;var f=document.getElementById('exfill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('extime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000));});
-  } else if(petsSubTab==='mutate'){
+  } else if(workshopSubTab==='mutate'){
     var canUnlM=G.mutateUnlocked<MUTATE_CHAMBER_MAX&&G.coins>=MUTATE_CHAMBER_UNLOCK[G.mutateUnlocked-1];
     var sig2=chamberSig(G.mutateChambers,G.mutateUnlocked)+(canUnlM?'A':'a');
     if(sig2!==mutateSig){mutateSig=sig2;renderMutate();return;}
@@ -6556,7 +6570,7 @@ function tickChambers(){
 }
 function coresInvHtml(){
   var groups=groupedCores();
-  if(groups.length===0)return '<div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets in the 🧬 Mutation tab.</p></div>';
+  if(groups.length===0)return '<div class="inv-coming"><div class="ic-icon">🧪</div><p>Ability Cores appear here after extracting abilities from pets in the <b>Workshop</b> (Extract).</p></div>';
   var html='<div class="inv-total"><span class="inv-total-label">Total Cores</span><span class="inv-total-val">'+G.mutationCores.length+'</span></div><div class="inv-grid">';
   groups.forEach(function(g){var m=ABILITY_META[g.id];var crc=coreRarityConf(g.tier);
     html+='<div class="inv-card" style="border-color:'+crc.color+'66"><div class="inv-icon">'+coreIconImg(g.tier)+'</div><div><div class="inv-name" style="color:'+crc.color+'">'+coreLabel(g.id,g.tier)+'</div><div class="inv-count">×'+g.count+'</div></div></div>';});
@@ -7966,7 +7980,7 @@ function renderSettings(){
     c+='</div>';
   } else if(settingsTab==='gameplay'){
     c+='<div class="set-sec"><div class="set-sec-title">🎮 Gameplay</div>';
-    c+=setToggleRow('confirmFusion','Confirm Fusion','Ask before fusing pets or shells. Turn off to fuse instantly.');
+    c+=setToggleRow('confirmFusion','Confirm Merge','Ask before merging pets. Turn off to merge instantly.');
     c+=soonRow('Confirm Extraction','Ask before extracting abilities.');
     c+=soonRow('Auto Claim Offline Rewards','Automatically collect offline coins on return.');
     c+='</div>';
@@ -7996,7 +8010,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.71<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.73<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10332,12 +10346,7 @@ function eggCraftRowHtml(){
   html+='</div></div>';
   return html;
 }
-function renderShop(){
-  var wrap=document.getElementById('shop-wrap');if(!wrap)return;
-  // STEG 1 av Workshop-flippen: gamla Craft Egg-skärmen (EGGS + FUSE SHELLS) pensionerad.
-  // Äggen craftas nu i Hatchery; Fuse Shells är borttagen. Workshop-innehållet (Extract/Mutate/Reroll) byggs senare.
-  wrap.innerHTML='<div class="placeholder"><div class="phi">🔧</div><h2>Workshop</h2><p>The Workshop is coming soon &mdash; a place to <b>Extract</b>, <b>Mutate</b> and <b>Reroll</b> your pets.</p><p style="margin-top:10px;opacity:0.65;">Craft &amp; hatch your eggs in the <b>Hatchery</b> for now.</p></div>';
-}
+function renderShop(){ /* Pensionerad. Workshop ritas av renderWorkshop(); Extract/Mutate/Reroll flyttade dit. Kvar som no-op sa gamla anropare (buyEgg/hatchFromShop/setShopTab) inte kraschar. */ }
 function getEggCost(egg){
   if(!egg.shellAmt)return 0;
   return Math.max(1,Math.floor(egg.shellAmt*G.craftDiscount));
@@ -10869,7 +10878,7 @@ function tryFusePets(){
   var next=getNextRarity(firstPet.rarity);
   if(!next){alert('Already at max rarity!');return;}
   var cur=RARITY_CONFIG[firstPet.rarity]||{},nm=RARITY_CONFIG[next]||{};
-  showConfirm('Fuse Pets','This will permanently destroy <b>5 '+(cur.label||firstPet.rarity)+' pets</b> to create <b style="color:'+(nm.color||'#fff')+'">1 '+(nm.label||next)+' pet</b>.<br><br>The fused pets cannot be recovered.','⚗️ Fuse',function(){doFusion();},true);
+  showConfirm('Merge Pets','This will permanently destroy <b>5 '+(cur.label||firstPet.rarity)+' pets</b> to create <b style="color:'+(nm.color||'#fff')+'">1 '+(nm.label||next)+' pet</b>.<br><br>The merged pets cannot be recovered.','⚗️ Merge',function(){doFusion();},true);
 }
 function doFusion(){
   if(!canFuse())return;
@@ -10957,12 +10966,12 @@ function showFusionResult(pet,perfect){
   var card=document.getElementById('pet-result-card');
   if(card)card.style.setProperty('--rc',rc.color);
   var bg=document.getElementById('pet-result-bg');if(bg)bg.style.display='none';
-  document.getElementById('pet-result-title').textContent=perfect?'PERFECT FUSION!':'FUSION COMPLETE!';
+  document.getElementById('pet-result-title').textContent=perfect?'PERFECT MERGE!':'MERGE COMPLETE!';
   document.getElementById('pet-result-sub').textContent='You created a';
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=petDisplayName(pet);
   document.getElementById('pet-result-rarity').textContent=rc.label;
-  var w=document.getElementById('pet-result-world');if(w){w.style.display='';w.textContent='✨ Fusion Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));}
+  var w=document.getElementById('pet-result-world');if(w){w.style.display='';w.textContent='✨ Merge Result · Lv '+(pet.level||petLevelFromXp(pet.xp||0));}
   var abHtml='';
   pet.abilities.forEach(function(ab){
     var m=ABILITY_META[ab.id];if(!m)return;
@@ -11029,7 +11038,7 @@ function convertShells(fromRarity,batches){
 function quickFuseShells(fromRarity,batches){
   convertShells(fromRarity,batches);
   if(typeof updateHUD==='function')updateHUD();
-  if(typeof renderShop==='function')renderShop();
+  if(typeof renderWorkshop==='function')renderWorkshop();
 }
 function shellQuickFuseHtml(){
   var h='<div class="qf-intro">⚗️ Quick-fuse Shells — 5 lower = 1 higher. Combine spares into rarer Shells to craft better eggs.</div>';
@@ -11150,10 +11159,10 @@ function autoSelectFusion(){
 
 function renderFusion(){
   var wrap=document.getElementById('fusion-wrap');if(!wrap)return;
-  var modeTabs='<div style="display:flex;gap:6px;margin-bottom:12px;">'
-    +'<div class="fusion-tab'+(fusionMode==='pets'?' active':'')+'" onclick="setFusionMode(\'pets\')">⚗️ Pet Fusion</div>'
-    +'<div class="fusion-tab'+(fusionMode==='shells'?' active':'')+'" onclick="setFusionMode(\'shells\')">🐚 Shell Fusion</div>'
-    +'</div>';
+  // STEG 1 (2026-06-25): Shell Fusion-läget GÖMT VILANDE (reversibelt) — läges-växeln borttagen
+  // ur UI:t men all shell-kod (setFusionMode/renderShellFusion/convertShells) ligger kvar orörd.
+  // För att slå på igen: återställ modeTabs-strängen nedan till de två .fusion-tab-knapparna.
+  var modeTabs='';
   if(fusionMode==='shells'){wrap.innerHTML=modeTabs+renderShellFusion();return;}
   var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
   var selectedRarity=getFusionSelectedRarity();
@@ -11217,10 +11226,10 @@ function renderFusion(){
 
   // Perfect fusion badge
   if(perfect){
-    html+='<div class="fusion-perfect">⭐ Perfect Fusion — 100% guaranteed species!</div>';
+    html+='<div class="fusion-perfect">⭐ Perfect Merge — 100% guaranteed species!</div>';
   }
 
-  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="tryFusePets()"':'')+'>⚗️ '+(ready?'Fuse Pets!':'Select 5 pets of the same rarity')+'</button>';
+  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="tryFusePets()"':'')+'>⚗️ '+(ready?'Merge Pets!':'Select 5 pets of the same rarity')+'</button>';
   html+='</div>';
 
   // Rarity filter chips
@@ -12176,7 +12185,7 @@ setInterval(function(){if(document.getElementById('tab-shop').style.display==='b
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')updateHatchTimers();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
 setInterval(function(){if(G.homeMode==='adventures'){var ha=document.getElementById('home-adventures');if(ha&&ha.style.display!=='none')softUpdateIdle();}},1000);
-setInterval(function(){if(document.getElementById('tab-pets').style.display==='block'&&(petsSubTab==='extract'||petsSubTab==='mutate'))tickChambers();},1000);
+setInterval(function(){if(document.getElementById('tab-shop').style.display==='block'&&(workshopSubTab==='extract'||workshopSubTab==='mutate'))tickChambers();},1000);
 setInterval(saveGame,15000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveGame();});
 
