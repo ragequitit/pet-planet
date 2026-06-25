@@ -1160,21 +1160,21 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hha-speed{padding:10px 6px;border:none;border-radius:11px;background:linear-gradient(180deg,#5aa9e6,#2f6ea8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:pointer;box-shadow:0 3px 0 #1c456e;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .hha-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #1c456e;}
 .hha-speed .gem-ic{width:1.15em;height:1.15em;}
-.hatch-time-card{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:2;width:calc(100% - 26px);max-width:300px;display:flex;flex-direction:column;gap:5px;background:linear-gradient(180deg,#1c2550,#141b3a);border:1px solid rgba(120,150,230,0.28);border-radius:13px;padding:7px 10px;box-shadow:0 3px 11px rgba(0,0,0,0.45);}
+.hatch-time-card{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:2;width:auto;max-width:330px;display:flex;flex-direction:column;gap:4px;background:linear-gradient(180deg,#1c2550,#141b3a);border:1px solid rgba(120,150,230,0.28);border-radius:13px;padding:6px 9px;box-shadow:0 3px 11px rgba(0,0,0,0.45);}
 .htc-top{display:flex;align-items:center;gap:8px;}
-.htc-left{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;}
+.htc-left{display:flex;align-items:center;}
 .htc-title{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#F5C842;text-align:center;}
 .htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:0.92rem;color:#fff;}
 .htc-tic{width:1.05em;height:1.05em;object-fit:contain;}
 .htc-meterrow{display:flex;align-items:center;gap:7px;}
-.htc-meter{flex:1;height:9px;background:rgba(0,0,0,0.45);border-radius:5px;overflow:hidden;border:1px solid rgba(0,0,0,0.35);}
+.htc-meter{flex:1;height:7px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.35);}
 .htc-fill{height:100%;background:linear-gradient(90deg,#b388ff,#7c4dff);border-radius:5px;transition:width 0.5s;}
 .htc-pct{font-family:'Fredoka One',cursive;font-size:0.62rem;color:rgba(255,255,255,0.75);flex:0 0 auto;}
-.htc-speed{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:72px;border:none;border-radius:11px;padding:6px 11px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
+.htc-speed{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border:none;border-radius:11px;padding:6px 12px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
 .htc-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #163b8c;}
 .htc-gemline{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.88rem;}
 .htc-gemline .gem-ic{width:1.2em;height:1.2em;}
-.htc-lbl{font-family:'Fredoka One',cursive;font-size:0.66rem;line-height:1;}
+.htc-lbl{font-family:'Fredoka One',cursive;font-size:0.82rem;line-height:1;}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 /* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
@@ -3313,6 +3313,58 @@ function eventEggIconHtml(px){
   var m=eventEggMeta();if(!m.iconUrl)return m.icon;
   return '<img src="'+m.iconUrl+'" alt="" style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+m.icon+'\'))">';
 }
+// ---- EVENT-ÄGG: per-event identitet (Winter-ägg förblir Winter-ägg även efter att eventet bytts) ----
+function curEventId(){return (typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.id)||'event';}
+function eventEggIdFor(evId){return 'event_egg_'+evId;}
+function curEventEggId(){return eventEggIdFor(curEventId());}
+function isEventEggId(id){return typeof id==='string'&&id.indexOf('event_egg')===0;}
+function evIdFromEggId(id){if(!isEventEggId(id))return curEventId();var s=String(id).replace(/^event_egg_?/,'');return s||curEventId();}
+// Snapshotta aktuellt events ägg-definition in i SPARFILEN (så kvarvarande ägg kan kläckas korrekt långt senare).
+function snapshotEventEggDef(){
+  if(typeof ACTIVE_EVENT==='undefined'||!ACTIVE_EVENT||!ACTIVE_EVENT.id)return;
+  G.eventEggDefs=G.eventEggDefs||{};
+  if(G.eventEggDefs[ACTIVE_EVENT.id])return;
+  var se=null;(ACTIVE_EVENT.shop||[]).forEach(function(x){if(x.kind==='egg')se=x;});
+  var slug=se?String(se.id).replace(/^egg_/,''):'';
+  G.eventEggDefs[ACTIVE_EVENT.id]={
+    id:ACTIVE_EVENT.id,
+    name:(se&&se.name)||((ACTIVE_EVENT.name||'Event')+' Egg'),
+    icon:(se&&se.icon)||'\ud83e\udd5a',
+    iconUrl:slug?(ASSET_BASE+'/assets/ui/shop/'+slug+'-egg.png'):null,
+    hatchSeconds:ACTIVE_EVENT.eggHatchSeconds||90,
+    pets:(ACTIVE_EVENT.pets||[]).map(function(p){return {id:p.id,name:p.name,rarity:p.rarity,weight:p.weight,emoji:p.emoji};})
+  };
+}
+function eventEggDef(eggId){
+  G.eventEggDefs=G.eventEggDefs||{};
+  var evId=evIdFromEggId(eggId);
+  if(G.eventEggDefs[evId])return G.eventEggDefs[evId];
+  snapshotEventEggDef();
+  return G.eventEggDefs[curEventId()]||{name:'Event Egg',icon:'\ud83e\udd5a',iconUrl:null,hatchSeconds:90,pets:[]};
+}
+function eventEggMetaById(eggId){var d=eventEggDef(eggId);return {id:eggId,name:d.name,icon:d.icon,iconUrl:d.iconUrl};}
+function eventEggIconHtmlById(eggId,px){var d=eventEggDef(eggId);if(!d.iconUrl)return d.icon;return '<img src="'+d.iconUrl+'" alt="" style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+d.icon+'\'))">';}
+function ownedEventEggIds(){var o=G.eggsOwned||{};return Object.keys(o).filter(function(k){return isEventEggId(k)&&(o[k]||0)>0;});}
+// Kläck ett (ev. gammalt) event-ägg ur sin egna snapshottade pet-pool.
+function generateEventPetById(eggId){
+  if(eggId===curEventEggId())return generateEventPet(); // aktuellt event → behåll pity-systemet
+  var d=eventEggDef(eggId);var pets=(d&&d.pets&&d.pets.length)?d.pets:null;
+  if(!pets)return generateEventPet();
+  var total=0;pets.forEach(function(p){total+=(p.weight||1);});
+  var r=Math.random()*total,cfg=pets[pets.length-1];
+  for(var i=0;i<pets.length;i++){r-=(pets[i].weight||1);if(r<=0){cfg=pets[i];break;}}
+  var rarity=cfg.rarity||'common';var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
+  var abilities=[],j;for(j=0;j<rc.slots;j++){var _t=rc.tiers[j],_rv=rollAbilityValue(_t);abilities.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_t,v:_rv.v,mega:_rv.mega});}
+  return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'event',evid:cfg.id,abilities:abilities,explorer:rollExplorerRows(rarity),equippedSlot:-1,level:1,xp:0};
+}
+// Migrera gamla saves: bart 'event_egg' → aktuellt events per-event-id (+ snapshot). En gång vid load.
+function migrateEventEggs(){
+  if(typeof G==='undefined'||!G)return;
+  snapshotEventEggDef();
+  var cur=curEventEggId();
+  if(G.eggsOwned&&G.eggsOwned['event_egg']){G.eggsOwned[cur]=(G.eggsOwned[cur]||0)+G.eggsOwned['event_egg'];delete G.eggsOwned['event_egg'];}
+  if(G.hatchSlots&&G.hatchSlots.length){G.hatchSlots.forEach(function(s){if(s&&s.eggId==='event_egg')s.eggId=cur;});}
+}
 // ============================================================
 // PET LEVELING (Lv 1–25) — nivå ÄR skild från rarity
 // Balansvärden är PLATSHÅLLARE (Balance Sheet ej spikad).
@@ -3378,7 +3430,7 @@ function generateEventPet(){
   return {uid:Date.now()+Math.random(),name:cfg.name,e:cfg.emoji||'\ud83d\udc3e',rarity:rarity,world:'winter',evid:cfg.id,abilities:abilities,explorer:rollExplorerRows(rarity),equippedSlot:-1,level:1,xp:0};
 }
 function generatePet(eggId){
-  if(eggId===EVENT_EGG_ID)return generateEventPet();
+  if(isEventEggId(eggId))return generateEventPetById(eggId);
   var rarity=rollRarity(eggId);
   var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
   var species=rollSpecies(eggId,rarity);
@@ -4362,7 +4414,7 @@ function saveGame(){
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
-    equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,
+    equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
@@ -7914,7 +7966,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.46<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.49<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9451,7 +9503,7 @@ function buyEventShopItem(id){
   if(it.kind==='cosmetic'&&cosmeticOwned(it))return;
   G.event.currency-=it.cost;
   var parts=[];
-  if(it.kind==='egg'){G.eggsOwned[EVENT_EGG_ID]=(G.eggsOwned[EVENT_EGG_ID]||0)+1;parts=[eventEggMeta().name+' added to your Hatchery \ud83e\udd5a'];}
+  if(it.kind==='egg'){snapshotEventEggDef();var _eid=curEventEggId();G.eggsOwned[_eid]=(G.eggsOwned[_eid]||0)+1;parts=[eventEggMeta().name+' added to your Hatchery \ud83e\udd5a'];}
   else if(it.kind==='boost'){
     if(!G.boosts)G.boosts={coin:0,luck:0};
     var base=Math.max(Date.now(),G.boosts[it.boostType]||0);
@@ -9984,7 +10036,7 @@ document.addEventListener('click',function(e){
 function renderInventory(){
   var wrap=document.getElementById('inv-wrap');if(!wrap)return;
   var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
-  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
+  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0)+ownedEventEggIds().reduce(function(s,k){return s+(G.eggsOwned[k]||0);},0);
   var html='<div class="inv-tabs">';
   html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><span class="it-ic"><img src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/meadow-shell.png\'}"></span><span class="it-lb">Shells</span></div>';
   html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><span class="it-ic"><img src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"></span><span class="it-lb">Eggs</span></div>';
@@ -9995,6 +10047,7 @@ function renderInventory(){
   SHELL_RARITIES.forEach(function(r){var count=G.shells[r.id]||0;if(isLostWorld(r.id)&&!(G.lostUnlocked&&G.lostUnlocked[r.id])&&count===0)return;var glow=count>0?'filter:drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+');':'';html+='<div class="inv-card'+(count===0?' empty':'')+'" id="inv-scard-'+r.id+'" onclick="showShellInfo(\''+r.id+'\')" style="cursor:pointer;border-color:'+(count>0?r.color+'66':'rgba(58,92,184,0.6)')+'"><div class="inv-icon" id="inv-sicon-'+r.id+'" style="'+glow+'">'+shellIcon(r.id)+'</div><div><div class="inv-name" style="color:'+r.color+'">'+r.name+'</div><div class="inv-count" id="inv-s-'+r.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-eggs" style="display:none;"><div class="inv-total"><span class="inv-total-label">Total Eggs</span><span class="inv-total-val" id="inv-egg-total">'+totalEggs+'</span></div><div class="inv-grid">';
+  ownedEventEggIds().forEach(function(_eid){var _evC=G.eggsOwned[_eid]||0;var _evM=eventEggMetaById(_eid);html+='<div class="inv-card"><div class="inv-icon">'+eventEggIconHtmlById(_eid,30)+'</div><div><div class="inv-name" style="color:var(--gold)">'+_evM.name+'</div><div class="inv-count" id="inv-e-'+_eid+'">'+_evC+'</div></div></div>';});
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
   html+='<div id="isec-cores" style="display:none;">'+coresInvHtml()+'</div>';
@@ -10006,7 +10059,7 @@ function renderInventory(){
 function softUpdateInventory(){
   // Uppdatera bara siffrorna, bygg inte om DOM
   var totalShells=SHELL_RARITIES.reduce(function(s,r){return s+(G.shells[r.id]||0);},0);
-  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0);
+  var totalEggs=EGG_SHOP.reduce(function(s,e){return s+(G.eggsOwned[e.id]||0);},0)+ownedEventEggIds().reduce(function(s,k){return s+(G.eggsOwned[k]||0);},0);
   var el=document.getElementById('inv-shell-total');if(el)el.textContent=totalShells;
   var el2=document.getElementById('inv-egg-total');if(el2)el2.textContent=totalEggs;
   SHELL_RARITIES.forEach(function(r){
@@ -10021,6 +10074,7 @@ function softUpdateInventory(){
     if(icon)icon.style.filter=count>0?'drop-shadow(0 0 4px '+r.color+') drop-shadow(0 0 8px '+r.color+')':'';
   });
   EGG_SHOP.forEach(function(egg){var el=document.getElementById('inv-e-'+egg.id);if(el)el.textContent=G.eggsOwned[egg.id]||0;});
+  ownedEventEggIds().forEach(function(_eid){var _evEl=document.getElementById('inv-e-'+_eid);if(_evEl)_evEl.textContent=G.eggsOwned[_eid]||0;});
 }
 var activeInvSection='shells';
 function showInvSection(name){
@@ -10231,7 +10285,7 @@ function renderShop(){
   if(shopTab==='shells'){
     html+=shellQuickFuseHtml();
     wrap.innerHTML=html;
-   var _wt=wrap.querySelector('.pdx-world-tabs');if(_wt)attachDragScroll(_wt);return;
+    return;
   }
 
   // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
@@ -10288,7 +10342,7 @@ function hatchFromShop(id){
 // HATCHERY
 // ============================================================
 function getHatchDuration(eggId){
-  var base=(eggId===EVENT_EGG_ID)?((typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT&&ACTIVE_EVENT.eggHatchSeconds)||90):(EGG_HATCH_TIMES[eggId]||30);
+  var base=isEventEggId(eggId)?((eventEggDef(eggId).hatchSeconds)||90):(EGG_HATCH_TIMES[eggId]||30);
   var upgMult=G.hatchDiscount;
   var petMult=getHatchSpeedMult();
   return Math.floor(base*upgMult*petMult)*1000;
@@ -10382,8 +10436,7 @@ function closeEggPicker(){var m=document.getElementById('egg-picker-modal');if(m
 function renderEggPicker(){
   var box=document.getElementById('egg-picker-body');if(!box)return;
   var items=[];
-  var evN=G.eggsOwned[EVENT_EGG_ID]||0;
-  if(evN>0){var em=(typeof eventEggMeta==='function')?eventEggMeta():null;items.push({id:EVENT_EGG_ID,name:em&&em.name?em.name.replace(' Egg',''):'Event',count:evN,icon:eventEggIconHtml(46)});}
+  ownedEventEggIds().forEach(function(_eid){var em=eventEggMetaById(_eid);items.push({id:_eid,name:em&&em.name?em.name.replace(' Egg',''):'Event',count:G.eggsOwned[_eid]||0,icon:eventEggIconHtmlById(_eid,46)});});
   EGG_SHOP.forEach(function(e){
     var n=G.eggsOwned[e.id]||0;
     if(n>0)items.push({id:e.id,name:(e.name||'Egg').replace(' Egg',''),count:n,icon:'<img src="'+eggShopIconUrl(e.id)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(e.icon||'\ud83e\udd5a')+'\'))">'});
@@ -10427,7 +10480,7 @@ function buyHatchSlot(){
 function collectHatch(idx){
   var slot=G.hatchSlots[idx];if(!slot||!slot.done)return;
   var pet=generatePet(slot.eggId);
-  var isEventEgg=(slot.eggId===EVENT_EGG_ID);
+  var isEventEgg=isEventEggId(slot.eggId);
   // Hatch stats
   G.stats.eggsHatched++;addBattlePassXp(BP_XP.hatch);addPlayerXp(PLAYER_XP.hatch);
   if(!isEventEgg)eventOnHatch();
@@ -10589,8 +10642,8 @@ function renderHatchery(){
         var elapsed=now-slot.startTime;var pct=Math.min(1,elapsed/slot.duration);
         if(pct>=1&&!slot.done)G.hatchSlots[i].done=slot.done=true;
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
-        var egg=slot.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===slot.eggId;});
-        var eggImg=slot.eggId===EVENT_EGG_ID?eventEggIconHtml(54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
+        var egg=isEventEggId(slot.eggId)?eventEggMetaById(slot.eggId):EGG_SHOP.find(function(e){return e.id===slot.eggId;});
+        var eggImg=isEventEggId(slot.eggId)?eventEggIconHtmlById(slot.eggId,54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
         html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed" onclick="hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
@@ -10617,20 +10670,19 @@ function renderHatchery(){
     var hel=now-hs.startTime;var hpct=Math.min(1,hel/hs.duration);
     if(hpct>=1&&!hs.done)G.hatchSlots[hidx].done=hs.done=true;
     var hrem=Math.max(0,Math.ceil((hs.duration-hel)/1000));
-    var heg=hs.eggId===EVENT_EGG_ID?eventEggMeta():EGG_SHOP.find(function(e){return e.id===hs.eggId;});
-    var hImg=hs.eggId===EVENT_EGG_ID?eventEggIconHtml(120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
+    var heg=isEventEggId(hs.eggId)?eventEggMetaById(hs.eggId):EGG_SHOP.find(function(e){return e.id===hs.eggId;});
+    var hImg=isEventEggId(hs.eggId)?eventEggIconHtmlById(hs.eggId,120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" onclick="collectHatch('+hidx+')">Collect</button>';
-    else{html+='<div class="hatch-time-card"><div class="htc-top"><div class="htc-left"><div class="htc-title">Hatch Time</div><div class="htc-time"><img src="'+ASSET_BASE+'/assets/ui/hatch/timer.png" alt="" class="htc-tic" onerror="this.replaceWith(document.createTextNode(\'\u23f1\'))"><span class="htc-tval">'+formatTime(hrem)+'</span></div></div><button class="htc-speed" onclick="hatchSpeedUp('+hidx+')"><span class="htc-gemline">'+GEM_IMG+'<span class="htc-cost">'+hatchSpeedUpCost(hs)+'</span></span><span class="htc-lbl">Speed Up</span></button></div><div class="htc-meterrow"><div class="htc-meter"><div class="htc-fill" style="width:'+(hpct*100)+'%"></div></div><span class="htc-pct">'+(hpct*100).toFixed(1)+'%</span></div></div>';}
+    else{html+='<div class="hatch-time-card"><div class="htc-top"><div class="htc-left"><div class="htc-time"><img src="'+ASSET_BASE+'/assets/ui/hatch/timer.png" alt="" class="htc-tic" onerror="this.replaceWith(document.createTextNode(\'\u23f1\'))"><span class="htc-tval">'+formatTime(hrem)+'</span></div></div><button class="htc-speed" onclick="hatchSpeedUp('+hidx+')"><span class="htc-gemline">'+GEM_IMG+'<span class="htc-cost">'+hatchSpeedUpCost(hs)+'</span></span><span class="htc-lbl">Speed Up</span></button></div><div class="htc-meterrow"><div class="htc-meter"><div class="htc-fill" style="width:'+(hpct*100)+'%"></div></div><span class="htc-pct">'+(hpct*100).toFixed(1)+'%</span></div></div>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
   html+='<div class="hatch-section-title" style="margin-top:16px;">🥚 Craft & Hatch Eggs</div>';
   html+='<div style="margin-bottom:8px;">'+craftUpgBoxHtml()+'</div>';
   html+=eggCraftRowHtml();
-  var _ec=G.eggsOwned[EVENT_EGG_ID]||0;
-  if(_ec>0){var _em=eventEggMeta();var _canH=G.hatchSlots.length<maxSlots;html+='<div class="hatch-egg-row" style="margin-top:8px;"><div class="he-icon">'+eventEggIconHtml(30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+EVENT_EGG_ID+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';}
+  ownedEventEggIds().forEach(function(_eid){var _ec=G.eggsOwned[_eid]||0;var _em=eventEggMetaById(_eid);var _canH=G.hatchSlots.length<maxSlots;html+='<div class="hatch-egg-row" style="margin-top:8px;"><div class="he-icon">'+eventEggIconHtmlById(_eid,30)+'</div><div class="he-name">'+_em.name+'</div><div class="he-count">x'+_ec+'</div><button class="he-btn'+(_canH?'':' disabled')+'" onclick="startHatching(\''+_eid+'\')">'+(_canH?'Hatch':'Full')+'</button></div>';});
   wrap.innerHTML=html;
   var _srow=wrap.querySelector('.hatch-slot-row');if(_srow){attachDragScroll(_srow);_srow.scrollLeft=_prevScroll;}
   var _ecr=wrap.querySelector('.egg-craft-row');if(_ecr)attachDragScroll(_ecr);
@@ -11911,6 +11963,7 @@ function renderPetdex(){
   });
   html+='</div>';
   wrap.innerHTML=html;
+  var _wt=wrap.querySelector('.pdx-world-tabs');if(_wt)attachDragScroll(_wt);
 }
 
 function setPetdexWorld(worldId){
@@ -12039,6 +12092,8 @@ if(savedData){
   SHELL_RARITIES.forEach(function(r){if(G.shells[r.id]===null||G.shells[r.id]===undefined)G.shells[r.id]=0;});
   G.eggsOwned=savedData.eggsOwned||{};G.eggsHatched=savedData.eggsHatched||{};
   G.hatchSlots=savedData.hatchSlots||[];
+  G.eventEggDefs=savedData.eventEggDefs||{};
+  if(typeof migrateEventEggs==='function')migrateEventEggs();
   // Hatch slots är numera ett eget system (max 3). Gamla sparfiler saknar fältet → ärv från petSlots (men aldrig över 3) så ingen tappar kläck-kapacitet
   if(typeof savedData.hatchSlotCount==='number')G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.hatchSlotCount));
   else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
