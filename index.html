@@ -1168,8 +1168,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .htc-top{display:flex;align-items:center;gap:8px;}
 .htc-left{display:flex;align-items:center;}
 .htc-title{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#F5C842;text-align:center;}
-.htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:0.92rem;color:#fff;}
-.htc-tic{width:1.05em;height:1.05em;object-fit:contain;}
+.htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:0.92rem;color:#fff;white-space:nowrap;}
+.htc-tic{width:1.35em;height:1.35em;object-fit:contain;}
 .htc-meterrow{display:flex;align-items:center;gap:7px;}
 .htc-meter{flex:1;height:7px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.35);}
 .htc-fill{height:100%;background:linear-gradient(90deg,#b388ff,#7c4dff);border-radius:5px;transition:width 0.5s;}
@@ -1179,6 +1179,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .htc-gemline{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.88rem;}
 .htc-gemline .gem-ic{width:1.2em;height:1.2em;}
 .htc-lbl{font-family:'Fredoka One',cursive;font-size:0.82rem;line-height:1;}
+.htc-div{font-family:'Fredoka One',cursive;font-size:0.82rem;line-height:1;color:rgba(255,255,255,0.5);}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 /* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
@@ -7987,7 +7988,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.61<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.63<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10771,8 +10772,8 @@ function renderHatchery(){
     var hImg=isEventEggId(hs.eggId)?eventEggIconHtmlById(hs.eggId,120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
-    if(hs.done)html+='<button class="hatch-collect" style="margin-top:55px;text-shadow:0 2px 4px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.7)" onclick="collectHatch('+hidx+')">Collect</button>';
-    else{html+='<div class="hatch-time-card"><div class="htc-top"><div class="htc-left"><div class="htc-time"><img src="'+ASSET_BASE+'/assets/ui/hatch/timer.png" alt="" class="htc-tic" onerror="this.replaceWith(document.createTextNode(\'\u23f1\'))"><span class="htc-tval">'+formatTime(hrem)+'</span></div></div><button class="htc-speed" onclick="hatchSpeedUp('+hidx+')"><span class="htc-gemline">'+GEM_IMG+'<span class="htc-cost">'+hatchSpeedUpCost(hs)+'</span></span><span class="htc-lbl">Speed Up</span></button></div><div class="htc-meterrow"><div class="htc-meter"><div class="htc-fill" style="width:'+(hpct*100)+'%"></div></div><span class="htc-pct">'+(hpct*100).toFixed(1)+'%</span></div></div>';}
+    if(hs.done)html+='<button class="hatch-collect" style="margin-top:55px" onclick="collectHatch('+hidx+')">Collect</button>';
+    else{html+='<div class="hatch-time-card"><div class="htc-top"><div class="htc-left"><div class="htc-time"><img src="'+ASSET_BASE+'/assets/ui/common/timer.png" alt="" class="htc-tic" onerror="this.replaceWith(document.createTextNode(\'\u23f1\'))"><span class="htc-tval">'+formatTime(hrem)+'</span></div></div><button class="htc-speed" onclick="hatchSpeedUp('+hidx+')"><span class="htc-gemline">'+GEM_IMG+'<span class="htc-cost">'+hatchSpeedUpCost(hs)+'</span></span><span class="htc-div">|</span><span class="htc-lbl">Speed Up</span></button></div><div class="htc-meterrow"><div class="htc-meter"><div class="htc-fill" style="width:'+(hpct*100)+'%"></div></div><span class="htc-pct">'+(hpct*100).toFixed(1)+'%</span></div></div>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
   html+='</div>';
