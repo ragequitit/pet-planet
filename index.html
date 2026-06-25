@@ -1112,8 +1112,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pra-val{color:rgba(255,255,255,0.82);font-size:0.92rem;font-weight:800;}
 
 /* ===== HATCH/FUSION RESULT — rarity-burst-bakgrund + roterande glow-skimmer + pet i boet ===== */
-#pet-result-card{position:relative;width:min(90vw,340px);min-height:min(86vh,460px);border-radius:20px;overflow:hidden;--rc:#9aa0a6;
-  display:flex;flex-direction:column;align-items:center;padding:18px 16px 20px;
+#pet-result-card{position:relative;width:min(90vw,340px);aspect-ratio:1080/1450;border-radius:20px;overflow:hidden;--rc:#9aa0a6;
   background:radial-gradient(circle at 50% 38%, #ffffff 0%, var(--rc) 15%, rgba(10,17,36,0) 47%), #0a1124;
   box-shadow:0 18px 50px rgba(0,0,0,0.6);}
 .hatch-rays{position:absolute;left:50%;top:42%;width:170%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
@@ -1132,15 +1131,14 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 @keyframes hatchSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes hatchSpinRev{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 @keyframes hatchPulse{0%,100%{opacity:0.5;}50%{opacity:0.9;}}
-.hatch-pet{position:relative;z-index:4;font-size:min(40vw,150px);line-height:1;margin:8px 0 2px;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn2 0.5s ease;}
-.hatch-top{position:relative;z-index:5;text-align:center;padding:0 14px;width:100%;}
-.hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;animation:hatchTitleGlow 5s ease-in-out infinite;}
+.hatch-pet{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);z-index:4;font-size:min(40vw,150px);line-height:1;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn 0.5s ease;}
+.hatch-top{position:absolute;left:0;right:0;top:3.2%;z-index:5;text-align:center;padding:0 14px;}
+.hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;text-shadow:0 2px 0 #a76f00,0 0 10px rgba(255,205,70,0.35);}
 @keyframes hatchTitleGlow{0%,100%{text-shadow:0 2px 0 #a76f00,0 0 8px rgba(255,205,70,0.3);}50%{text-shadow:0 2px 0 #a76f00,0 0 28px rgba(255,212,82,0.9);}}
 .hatch-sub{font-size:0.82rem;color:rgba(255,255,255,0.82);margin-top:7px;}
 .hatch-badge{display:inline-block;margin-top:7px;padding:3px 15px;border-radius:999px;font-family:'Fredoka One',cursive;font-size:0.85rem;color:#0b1530;background:var(--rc);box-shadow:0 2px 0 rgba(0,0,0,0.3);}
 .hatch-name{font-family:'Fredoka One',cursive;font-size:1.55rem;color:#fff;margin-top:8px;text-shadow:0 2px 7px rgba(0,0,0,0.65);}
-.hatch-bottom{position:relative;z-index:5;padding:0 16px;text-align:center;width:100%;flex:1 1 auto;display:flex;flex-direction:column;align-items:center;}
-#pet-result-card .hatch-collect{margin-top:auto;}
+.hatch-bottom{position:absolute;left:0;right:0;bottom:3.4%;z-index:5;padding:0 16px;text-align:center;}
 #pet-result-card .pet-result-abilities{background:rgba(8,12,24,0.66);width:58%;min-width:168px;max-width:240px;margin:0 auto 10px;}
 .hatch-world{font-size:0.7rem;color:rgba(255,255,255,0.55);margin-bottom:6px;text-align:center;}
 .hatch-collect{display:inline-block;width:auto;padding:11px 30px;border:none;border-radius:14px;background:linear-gradient(180deg,#3ddc84,#1faa5a);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;box-shadow:0 4px 0 #137a3e;}
@@ -1171,13 +1169,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .htc-top{display:flex;align-items:center;gap:8px;}
 .htc-left{display:flex;align-items:center;}
 .htc-title{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#F5C842;text-align:center;}
-.htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:0.92rem;color:#fff;white-space:nowrap;}
-.htc-tic{width:1.35em;height:1.35em;object-fit:contain;}
+.htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:1.06rem;color:#fff;white-space:nowrap;}
+.htc-tic{width:1.42em;height:1.42em;object-fit:contain;}
 .htc-meterrow{display:flex;align-items:center;gap:7px;}
 .htc-meter{flex:1;height:7px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.35);}
 .htc-fill{height:100%;background:linear-gradient(90deg,#b388ff,#7c4dff);border-radius:5px;transition:width 0.5s;}
 .htc-pct{font-family:'Fredoka One',cursive;font-size:0.62rem;color:rgba(255,255,255,0.75);flex:0 0 auto;}
-.htc-speed{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border:none;border-radius:11px;padding:6px 12px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
+.htc-speed{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border:none;border-radius:11px;padding:4px 12px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
 .htc-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #163b8c;}
 .htc-gemline{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.88rem;}
 .htc-gemline .gem-ic{width:1.2em;height:1.2em;}
@@ -2066,7 +2064,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <button class="nav-btn" id="nb-pets" onclick="navTab('pets')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-pets.png" alt="" onerror="this.parentNode.textContent='🐾'"></span><span>Pets</span></button>
     <button class="nav-btn" id="nb-hatch" onclick="navTab('hatch')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-hatchery.png" alt="" onerror="this.parentNode.textContent='🐣'"></span><span>Hatchery</span></button>
     <button class="nav-btn" id="nb-home" onclick="goHome()"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-home.png" alt="" onerror="this.parentNode.textContent='🥚'"></span><span>Home</span></button>
-    <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-shop.png" alt="" onerror="this.parentNode.textContent='🛍️'"></span><span>Craft Egg</span></button>
+    <button class="nav-btn" id="nb-shop" onclick="navTab('shop')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-workshop.png" alt="" onerror="this.parentNode.textContent='🔧'"></span><span>Workshop</span></button>
     <button class="nav-btn" id="nb-adventure" onclick="navTab('adventure')"><span class="ni"><img class="ni-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" onerror="this.parentNode.textContent='🗺️'"></span><span>Adventure</span></button>
   </div>
   <div id="dev-fab" onclick="openDevMenu()" title="Dev Menu">DEV</div>
@@ -7997,7 +7995,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.67<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.69<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10335,28 +10333,9 @@ function eggCraftRowHtml(){
 }
 function renderShop(){
   var wrap=document.getElementById('shop-wrap');if(!wrap)return;
-  var html='';
-  html+='<div class="ec-headrow"><div class="shop-header">Egg Crafting</div>'+craftUpgBoxHtml()+'</div>';
-  html+='<div class="shop-tabs">';
-  html+='<div class="shop-tab'+(shopTab==='eggs'?' active':'')+'" data-shop-tab="eggs"><img class="stab-img" src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">EGGS</div>';
-  html+='<div class="shop-tab'+(shopTab==='shells'?' active':'')+'" data-shop-tab="shells"><img class="stab-img" src="'+ASSET_BASE+'/assets/ui/shell/meadow-shell.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">FUSE SHELLS</div>';
-  html+='</div>';
-
-  if(shopTab==='shells'){
-    html+=shellQuickFuseHtml();
-    wrap.innerHTML=html;
-    return;
-  }
-
-  // Förklaringsrad: lär ut crafting-regeln (rarare ägg = rarare ember)
-  html+='<div class="ec-explain">Craft eggs with <b>Sparks</b> + <b>Shells</b>. Rarer eggs need rarer Shells — each card shows the exact Shell it needs. Collect Shells by clicking &amp; idling.</div>';
-
-  // Världsväljaren borttagen — äggen ligger redan i listan nedan (överflödig dubblett)
-  // Egg Crafting-upgraden ligger nu som liten ruta i header-raden (craftUpgBoxHtml)
-
-  // Äggkort (tät rad: ägg · namn+text · coin/shell-kostnad · Craft över Hatch)
-  html+=eggCraftCardsHtml();
-  wrap.innerHTML=html;
+  // STEG 1 av Workshop-flippen: gamla Craft Egg-skärmen (EGGS + FUSE SHELLS) pensionerad.
+  // Äggen craftas nu i Hatchery; Fuse Shells är borttagen. Workshop-innehållet (Extract/Mutate/Reroll) byggs senare.
+  wrap.innerHTML='<div class="placeholder"><div class="phi">🔧</div><h2>Workshop</h2><p>The Workshop is coming soon &mdash; a place to <b>Extract</b>, <b>Mutate</b> and <b>Reroll</b> your pets.</p><p style="margin-top:10px;opacity:0.65;">Craft &amp; hatch your eggs in the <b>Hatchery</b> for now.</p></div>';
 }
 function getEggCost(egg){
   if(!egg.shellAmt)return 0;
@@ -10573,17 +10552,17 @@ function collectHatch(idx){
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
   buzz([12,40,18]);
-  showPetResult(pet);
-  renderHatchery();
+  // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
+  showPetResult(pet,function(){renderHatchery();});
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
-function openPetResultModal(pet){
+function openPetResultModal(pet,onShown){
   var modal=document.getElementById('pet-result-modal');if(!modal)return;
   var urls=[];
   if(pet&&pet.world){var pu=petImgUrl(pet.world,pet.name,pet.shiny);if(pu)urls.push(pu);}
   if(pet&&pet.rarity)urls.push(ASSET_BASE+'/assets/ui/hatch/hatch-bg-'+pet.rarity+'.png');
-  if(!urls.length){modal.classList.add('open');return;}
-  var done=false,pending=urls.length,open=function(){if(done)return;done=true;modal.classList.add('open');};
+  if(!urls.length){modal.classList.add('open');if(onShown)onShown();return;}
+  var done=false,pending=urls.length,open=function(){if(done)return;done=true;modal.classList.add('open');if(onShown)onShown();};
   var oneDone=function(){pending--;if(pending<=0)open();};
   urls.forEach(function(u){var im=new Image();im.onload=oneDone;im.onerror=oneDone;im.src=u;});
   setTimeout(open,1200);
@@ -10595,7 +10574,7 @@ function preloadHatchBgs(){
   });
 }
 setTimeout(preloadHatchBgs,2000);
-function showPetResult(pet){
+function showPetResult(pet,onShown){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
   var card=document.getElementById('pet-result-card');
@@ -10615,9 +10594,9 @@ function showPetResult(pet){
   });
   abHtml+=explorerRowsHtml(pet);
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
-  document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
+  document.getElementById('pet-result-close').innerHTML='Collect';
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your inventory.';inv.style.display='';}
-  openPetResultModal(pet);
+  openPetResultModal(pet,onShown);
 }
 // Dra-för-att-scrolla (mus) på horisontella rader, t.ex. hatch-slot-raden. Touch scrollar redan.
 var _dragRow=null,_dragSX=0,_dragSL=0,_dragMoved=false;
@@ -10697,7 +10676,7 @@ function craftCostPillHtml(){
   var u=UPGRADES.find(function(x){return x.id==='craft';});if(!u)return '';
   var l=G.ulvl.craft||0;var maxed=l>=u.max;
   return '<button class="hspd'+(maxed?' maxed':'')+'" onclick="openCraftCost()">'+
-    '<span class="hspd-rocket">'+u.e+'</span>'+
+    '<span class="hspd-rocket"><img src="'+ASSET_BASE+'/assets/ui/shell/arctic-shell.png" alt="" style="width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'\ud83d\udc1a\'))"></span>'+
     '<span class="hspd-label">CRAFT COST</span>'+
     '<span class="hspd-div"></span>'+
     '<span class="hspd-action">'+(maxed?'Max':'Upgrade')+'</span>'+
@@ -10808,7 +10787,7 @@ function renderHatchery(){
     var hImg=isEventEggId(hs.eggId)?eventEggIconHtmlById(hs.eggId,120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
-    if(hs.done)html+='<button class="hatch-collect" style="margin-top:55px" onclick="collectHatch('+hidx+')">Collect</button>';
+    if(hs.done)html+='<button class="hatch-collect" style="margin-top:60px" onclick="collectHatch('+hidx+')">Collect</button>';
     else{html+='<div class="hatch-time-card"><div class="htc-top"><div class="htc-left"><div class="htc-time"><img src="'+ASSET_BASE+'/assets/ui/common/timer.png" alt="" class="htc-tic" onerror="this.replaceWith(document.createTextNode(\'\u23f1\'))"><span class="htc-tval">'+formatTime(hrem)+'</span></div></div><button class="htc-speed" onclick="hatchSpeedUp('+hidx+')"><span class="htc-gemline">'+GEM_IMG+'<span class="htc-cost">'+hatchSpeedUpCost(hs)+'</span></span><span class="htc-div">|</span><span class="htc-lbl">Speed Up</span></button></div><div class="htc-meterrow"><div class="htc-meter"><div class="htc-fill" style="width:'+(hpct*100)+'%"></div></div><span class="htc-pct">'+(hpct*100).toFixed(1)+'%</span></div></div>';}
     if(nActive>1){html+='<div class="hatch-hero-dots">';for(var _di=0;_di<nActive;_di++)html+='<div class="hatch-hero-dot'+(_di===hatchView?' on':'')+'"></div>';html+='</div>';}
   }
@@ -10990,7 +10969,7 @@ function showFusionResult(pet,perfect){
   });
   abHtml+=explorerRowsHtml(pet);
   document.getElementById('pet-result-abilities').innerHTML=abHtml;
-  document.getElementById('pet-result-close').innerHTML='Collect '+profEsc(pet.name);
+  document.getElementById('pet-result-close').innerHTML='Collect';
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your collection.';inv.style.display='';}
   openPetResultModal(pet);
 }
@@ -12179,6 +12158,7 @@ document.addEventListener('click',function(e){
 // Live-uppdatera shoppens äggkort (Craft-knapp + kostnads-chip + Hatch/Full) — bygger bara om när nåt faktiskt ändras (ingen flimmer)
 var _shopSig='';
 function softUpdateShop(){
+  return; // Workshop-platshållaren ar statisk -> ingen live-omritning behovs (gamla agg-skarmen pensionerad)
   if(typeof shopTab!=='undefined'&&shopTab!=='eggs')return;
   var slotFree=G.hatchSlots.length<G.hatchSlotCount;
   var sig=String(slotFree);
