@@ -7987,7 +7987,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.60<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.61<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10727,6 +10727,7 @@ function nestParticlesHtml(){
 function renderHatchery(){
   var wrap=document.getElementById('hatch-wrap');if(!wrap)return;
   var _prevScroll=0;var _oldRow=wrap.querySelector('.hatch-slot-row');if(_oldRow)_prevScroll=_oldRow.scrollLeft;
+  var _prevEcr=0;var _oldEcr=wrap.querySelector('.egg-craft-row');if(_oldEcr)_prevEcr=_oldEcr.scrollLeft;
   var maxSlots=G.hatchSlotCount;var now=Date.now();
   var html='<div class="hatch-head"><img class="hatch-head-ic" src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udd5a\'))"><div class="hatch-head-title">Egg Hatchery</div><button class="hatch-info-i img-mode" onclick="openHatchInfo()" aria-label="How hatching works"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" onerror="this.replaceWith(document.createTextNode(\'i\'))"></button>'+hatchSpeedPillHtml()+'</div>';
   html+='<div class="hatch-slot-wrap"><div class="hatch-slot-row">';
@@ -10779,7 +10780,7 @@ function renderHatchery(){
   html+=eggCraftRowHtml();
   wrap.innerHTML=html;
   var _srow=wrap.querySelector('.hatch-slot-row');if(_srow){attachDragScroll(_srow);_srow.scrollLeft=_prevScroll;}
-  var _ecr=wrap.querySelector('.egg-craft-row');if(_ecr)attachDragScroll(_ecr);
+  var _ecr=wrap.querySelector('.egg-craft-row');if(_ecr){attachDragScroll(_ecr);_ecr.scrollLeft=_prevEcr;}
 }
 
 // ============================================================
