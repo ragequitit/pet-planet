@@ -7153,6 +7153,9 @@ document.getElementById('more-drawer').onclick=function(e){if(e.target===this)cl
 // NÄR VI PUSHAR NYTT: lägg ett objekt med UNIKT id ÖVERST. (id används för "läst"-spårning, byt aldrig ett gammalt id.)
 // ============================================================
 var NEWS=[
+  {id:'2026-06-26-bigupdate', date:'Jun 26, 2026', tag:'update', popup:true,
+   title:'v8.99 — Gear, Loadouts & New Pet Skills',
+   body:'A big batch of new systems just landed:<br>• <b>Adventure Gear</b> — equip 5 gear types on your explorers to power up every adventure.<br>• <b>Gear drops</b> from adventures, with rarer gear from tougher expeditions.<br>• <b>Merge gear</b> — combine 5 of the same rarity into one stronger piece.<br>• <b>Gear Loadouts</b> — save themed gear sets and switch any time; unlock more with Gems.<br>• <b>8 new pet skills</b> — Treasure, Shell Luck, Gem, Egg and Stone Find, plus Rare Find, Fortune and XP Boost, all boosting adventure and idle rewards.<br>• <b>Stamina</b> — pets rest between adventures, and the right gear gives them more energy.<br>• <b>Faster trips, bigger hauls</b> — Speed gear shortens adventures while Haul, Spark and Shell gear pile on the loot.<br>• <b>Tap to focus</b> — tap a hatching egg in the queue to bring it to the center nest.<br>• <b>Sharper Hatchery egg</b> — bigger, crisper egg art with a gentle slow rock.<br>• <b>Polish</b> — fixed the Speed Up button sticking out, plus other tidy-ups.'},
   {id:'2026-06-22-welcome', date:'Jun 22, 2026', tag:'event', popup:true,
    title:'News & Updates is here!',
    body:'Big news — new events and Battle Passes — will pop up right here when you open the game. Smaller fixes and tweaks just add a little red dot to the ⋯ menu. Tap News any time to catch up on what changed.'},
@@ -8541,7 +8544,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99h<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99i<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
