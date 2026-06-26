@@ -6192,6 +6192,7 @@ function idleBonuses(){
     if(!p)return;
     var s=petAdvSum(p); b.shellGain+=s.shellGain||0; b.luck+=s.luck||0;
   });
+  if(typeof gearBonuses==='function'){ var gb=gearBonuses(); b.shellGain+=(gb.shellBoost||0)+(gb.haul||0); b.luck+=(gb.findChance||0); } // STEG 6.8d: equippad gear boostar idle-skörd
   return b;
 }
 function idleDropChance(ib){ ib=ib||idleBonuses(); return Math.min(0.95, IDLE_SHELL_BASE+(ib.luck||0)*0.01); }
@@ -6258,7 +6259,16 @@ function softUpdateIdle(){
   _il.forEach(function(p,idx){var lp=petXpProgress(p);var f=document.getElementById('idle-cxp-'+idx);if(f)f.style.width=lp.pct+'%';var lvb=document.getElementById('idle-clv-'+idx);if(lvb)lvb.textContent='Lv '+lp.level;});
 }
 function idleSwipe(dir){var n=(G.idlePets||[]).length;if(!n)return;idleViewIdx=(idleViewIdx+dir+n)%n;renderHomeAdventures();}
-function idleGearTap(){ if(typeof showRewardPopup==='function')showRewardPopup(['Gear slots are coming soon.','You\'ll equip adventure gear here to boost a pet\'s idle haul.'],false); }
+function idleGearTap(){
+  var gb=(typeof gearBonuses==='function')?gearBonuses():{};
+  var lines=[];
+  if(gb.shellBoost)lines.push('🐚 Shell Boost +'+gb.shellBoost+'%');
+  if(gb.haul)lines.push('📦 Haul +'+gb.haul+'%');
+  if(gb.findChance)lines.push('🍀 Lucky Find +'+gb.findChance+'%');
+  if(gb.offlineBoost)lines.push('🌙 Offline Boost +'+gb.offlineBoost+'% (while away)');
+  var msg=lines.length?['Your equipped Explorer Gear is boosting this pet\'s idle haul:'].concat(lines):['No Explorer Gear equipped yet.','Equip gear in your bag (Loot tab) to boost idle haul.'];
+  if(typeof showRewardPopup==='function')showRewardPopup(msg,false);
+}
 function assignIdlePet(uid){
   if((G.idlePets||[]).length>=G.idleSlots)return;
   if(isPetIdling(uid))return;
@@ -8451,7 +8461,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.91<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.92<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
