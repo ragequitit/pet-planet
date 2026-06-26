@@ -3388,6 +3388,86 @@ function gearAbilityLine(ab){
   if(ab.mega)return '<b>'+m.name+'</b> <span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+ab.v+'% ★</span>';
   return '<b>'+m.name+'</b> +'+ab.v+'%';
 }
+// GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
+function getEquippedGear(type){
+  if(!G.gearEquipped)return null;
+  var uid=G.gearEquipped[type];if(uid==null)return null;
+  return (G.gearInv||[]).find(function(g){return g.uid===uid;})||null;
+}
+function isGearEquipped(uid){
+  if(!G.gearEquipped)return false;
+  for(var t in G.gearEquipped){if(G.gearEquipped[t]===uid)return true;}
+  return false;
+}
+function equipGear(type,uid){
+  if(!G.gearEquipped)G.gearEquipped={};
+  var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});
+  if(!g||g.type!==type)return; // slots are type-locked
+  G.gearEquipped[type]=uid;
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderInventory==='function')renderInventory();
+  openGearSlotPicker(type);
+}
+function unequipGear(type){
+  if(!G.gearEquipped)return;
+  G.gearEquipped[type]=null;
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderInventory==='function')renderInventory();
+  openGearSlotPicker(type);
+}
+function openGearSlotPicker(type){
+  var tm=gearTypeMeta(type);
+  var list=(G.gearInv||[]).filter(function(g){return g.type===type;});
+  var rord=Object.keys(RARITY_CONFIG);
+  list.sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
+  var equippedUid=G.gearEquipped?G.gearEquipped[type]:null;
+  var html='';
+  if(equippedUid!=null){
+    html+='<button onclick="unequipGear(\''+type+'\')" style="width:100%;margin-bottom:8px;padding:8px;border-radius:10px;border:1px solid rgba(255,120,120,0.5);background:rgba(255,120,120,0.12);color:#ffb0b0;font-weight:700;font-size:0.78rem;cursor:pointer;">✕ Unequip</button>';
+  }
+  if(!list.length){
+    html+='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.8rem;padding:16px;">No '+tm.name+' gear in your bag yet.</div>';
+  } else {
+    list.forEach(function(g){
+      var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+      var on=g.uid===equippedUid;
+      var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
+      html+='<div onclick="equipGear(\''+type+'\','+g.uid+')" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">';
+      html+='<div style="font-size:1.3rem;">'+tm.icon+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' · equipped':'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div>';
+      html+='</div>';
+    });
+  }
+  if(typeof showGenericModal==='function'){
+    showGenericModal(tm.icon,tm.name+' Slot','');
+    var bodyEl=document.getElementById('generic-modal-body');
+    if(bodyEl){bodyEl.style.textAlign='left';bodyEl.innerHTML=html;}
+  }
+}
+function renderExplorerSlots(){
+  var h='<div class="adv-sech">🎒 Explorer Gear</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Equip one gear of each type. Boosts apply on adventures &mdash; coming soon.</div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">';
+  GEAR_TYPES.forEach(function(t){
+    var g=getEquippedGear(t.id);
+    if(g){
+      var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+      var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join('<br>');
+      h+='<div onclick="openGearSlotPicker(\''+t.id+'\')" style="background:linear-gradient(180deg,#2a2350,#1a1636);border:1.5px solid '+rc.color+'88;border-radius:12px;padding:8px 10px;cursor:pointer;">'
+        +'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">'+t.icon+' '+t.name+'</div>'
+        +'<div style="font-weight:800;font-size:0.76rem;color:'+rc.color+';margin-top:3px;">'+rc.icon+' '+rc.label+'</div>'
+        +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.6);margin-top:3px;line-height:1.45;">'+ab+'</div>'
+        +'</div>';
+    } else {
+      h+='<div onclick="openGearSlotPicker(\''+t.id+'\')" style="background:rgba(0,0,0,0.2);border:1.5px dashed rgba(150,120,220,0.4);border-radius:12px;padding:8px 10px;cursor:pointer;min-height:62px;display:flex;flex-direction:column;justify-content:center;">'
+        +'<div style="font-size:0.62rem;color:rgba(255,255,255,0.4);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">'+t.icon+' '+t.name+'</div>'
+        +'<div style="font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:4px;">+ Equip</div>'
+        +'</div>';
+    }
+  });
+  h+='</div>';
+  return h;
+}
 
 // ============================================================
 // PET GENERATION
@@ -3742,7 +3822,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},gearInv:[],
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},gearInv:[],gearEquipped:{backpack:null,compass:null,boots:null,charm:null,tool:null},
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -4419,6 +4499,7 @@ function lootInvHtml(){
       h+='</div>';
     }
     if(gear.length){
+      h+=renderExplorerSlots();
       var rord=Object.keys(RARITY_CONFIG);
       var gs=gear.slice().sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
       h+='<div class="adv-sech">🧰 Adventure Gear</div>';
@@ -4431,7 +4512,7 @@ function lootInvHtml(){
         h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:8px 11px;">'
           +'<div style="font-size:1.5rem;width:30px;text-align:center;">'+tm.icon+'</div>'
           +'<div style="flex:1;min-width:0;">'
-            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'
+            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+(isGearEquipped(g.uid)?' <span style="font-size:0.6rem;color:#7fe0a0;background:rgba(127,224,160,0.14);border:1px solid rgba(127,224,160,0.4);border-radius:6px;padding:1px 5px;vertical-align:middle;">equipped</span>':'')+'</div>'
             +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.72);margin-top:2px;line-height:1.5;">'+ab+'</div>'
           +'</div>'
           +'</div>';
@@ -4576,7 +4657,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,gearInv:G.gearInv,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,gearInv:G.gearInv,gearEquipped:G.gearEquipped,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -4596,7 +4677,7 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -8324,7 +8405,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.84<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.85<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8373,7 +8454,7 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -11651,7 +11732,7 @@ function removeGearFusionSlot(idx){gearFusionSlots[idx]=null;renderFusion();}
 function clearGearFusionSlots(){gearFusionSlots=[null,null,null,null,null];if(fusionMode==='gear')renderFusion();}
 function autoSelectGearFusion(){
   var rar=getGearFusionRarity()||gearFusionRarityFilter;
-  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0;});
+  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0&&!isGearEquipped(g.uid);});
   for(var i=0;i<gearFusionSlots.length&&avail.length;i++){if(gearFusionSlots[i]===null){gearFusionSlots[i]=avail.shift().uid;}}
   renderFusion();
 }
@@ -11731,7 +11812,7 @@ function renderGearFusion(){
   }
   html+='</div>';
   var fr=sel||gearFusionRarityFilter;
-  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0;}).length;
+  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0&&!isGearEquipped(g.uid);}).length;
   html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
   html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(sel&&selRc?' · <span style="color:'+selRc.color+'">'+selRc.label+'</span>':'')+'</div>';
   if(filledCount<5&&avail>0)html+='<button class="fusion-auto-btn" onclick="autoSelectGearFusion()">⚡ Auto</button>';
@@ -11750,13 +11831,13 @@ function renderGearFusion(){
   html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">';
   RARITY_PROGRESSION.forEach(function(r){
     var rc3=RARITY_CONFIG[r];if(!rc3)return;
-    var count=gear.filter(function(g){return g.rarity===r;}).length;
+    var count=gear.filter(function(g){return g.rarity===r&&!isGearEquipped(g.uid);}).length;
     if(count===0)return;
     html+='<div data-gearfusion-rarity="'+r+'" style="padding:4px 10px;background:rgba(27,45,78,0.5);border:1.5px solid '+(gearFusionRarityFilter===r?rc3.color:'rgba(58,92,184,0.6)')+';border-radius:20px;font-size:0.62rem;color:'+(gearFusionRarityFilter===r?rc3.color:'rgba(255,255,255,0.5)')+';cursor:pointer;">'+rc3.icon+' '+rc3.label+' ('+count+')</div>';
   });
   html+='</div>';
   var eligR=sel||gearFusionRarityFilter;
-  var show=gear.filter(function(g){return g.rarity===eligR;});
+  var show=gear.filter(function(g){return g.rarity===eligR&&!isGearEquipped(g.uid);});
   if(!show.length){
     html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No '+eligR+' gear — find more on adventures!</div>';
   } else {
@@ -12734,6 +12815,8 @@ if(savedData){
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
   G.gearInv=Array.isArray(savedData.gearInv)?savedData.gearInv:[];
+  G.gearEquipped=(savedData.gearEquipped&&typeof savedData.gearEquipped==='object'&&!Array.isArray(savedData.gearEquipped))?savedData.gearEquipped:{};
+  ['backpack','compass','boots','charm','tool'].forEach(function(t){if(!(t in G.gearEquipped))G.gearEquipped[t]=null;});
   G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
   while(G.extractChambers.length<3)G.extractChambers.push(null);
   G.mutateChambers=Array.isArray(savedData.mutateChambers)?savedData.mutateChambers.slice(0,3):[null,null,null];
