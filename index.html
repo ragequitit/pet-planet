@@ -31,6 +31,10 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btn .sb-label{font-size:0.6rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
+/* STEG 6.6b: 5 active-slots DORMANTA (reversibelt — ta bort detta block för att visa dem igen).
+   JS:en (renderSlotRow/equippedPets/loadouts) lämnas orörd och funktionsduglig; bara UI:t göms. */
+#pet-positions{display:none !important;}
+#loadout-btn{display:none !important;}
 .pet-pos{position:absolute;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;pointer-events:auto;}
 .pet-pos .ppi{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.3);border:2px dashed rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:rgba(255,255,255,0.3);overflow:hidden;}
 .pet-pos.unlocked .ppi{border-color:rgba(255,255,255,0.35);cursor:pointer;}
@@ -2914,7 +2918,21 @@ function buyClickUpgrade(id){
 // Balansvärden är preliminära (Balance Sheet ej spikad). dur=ms, coins=[min,max], shellAmt=[min,max].
 var ADVENTURE_SLOT_MAX=5;
 var ADVENTURE_SLOT_COSTS=[25000,2e6,1.5e8,5e9]; // kostnad i Sparks för att låsa upp slot 2,3,4,5
-var IDLE_SLOT_MAX=5;
+var IDLE_SLOT_MAX=1; // STEG 6.6a: idle = EN idle-pet (reversibelt — höj tillbaka för fler). Köp-väg + load-klamp följer denna.
+// STEG 6.7a: STAMINA/ENERGY (alla siffror PLATSHÅLLARE → Balance Sheet). Pet tröttnar vid deploy, vilar tillbaka över tid.
+var STAMINA_MAX=100;
+var ADV_STAMINA_COST=34;       // ~3 turer på full mätare
+var STAMINA_REGEN_PER_MIN=10;  // full vila ~10 min
+function petStamina(pet){ if(!pet)return 0; if(typeof pet.stamina!=='number')pet.stamina=STAMINA_MAX; return Math.max(0,Math.min(STAMINA_MAX,pet.stamina)); }
+function tickStamina(dt){
+  if(!G.hatchedPets)return;
+  var inc=STAMINA_REGEN_PER_MIN/60*dt;
+  G.hatchedPets.forEach(function(p){
+    if(typeof p.stamina!=='number')p.stamina=STAMINA_MAX;
+    if(typeof isPetBusy==='function'&&isPetBusy(p.uid))return; // pets ute på uppdrag vilar inte
+    if(p.stamina<STAMINA_MAX)p.stamina=Math.min(STAMINA_MAX,p.stamina+inc);
+  });
+}
 var IDLE_SLOT_COSTS=[{cur:'coins',amt:10000},{cur:'coins',amt:100000},{cur:'gems',amt:50},{cur:'gems',amt:150}]; // PLATSHÅLLARE: kostnad för idle-slot 2..5 (Sparks/Gems) → Balance Sheet
 function idleSlotCost(i){var c=IDLE_SLOT_COSTS[i-1];return c||null;}
 function idleSlotAfford(c){if(!c)return false;return c.cur==='gems'?(G.gems||0)>=c.amt:(G.coins||0)>=c.amt;}
@@ -4189,6 +4207,8 @@ function startAdventure(advId,petUid){
   if(isPetBusy(petUid))return;                          // redan ute
   if(!advMeetsLevel(adv,[petUid]))return;               // nivåspärr: pet:en når inte uppdragets krav
   var pet=G.hatchedPets.find(function(p){return p.uid===petUid;});if(!pet)return;
+  if(petStamina(pet)<ADV_STAMINA_COST){ if(typeof showRewardPopup==='function')showRewardPopup(['This pet is too tired — let it rest first.'],false); return; } // STEG 6.7a
+  pet.stamina=petStamina(pet)-ADV_STAMINA_COST;
   var eqi=G.equippedPets.indexOf(petUid);               // är pet utrustad → ta av den
   if(eqi>=0){G.equippedPets[eqi]=null;pet.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}
   var now=Date.now();
@@ -4264,6 +4284,7 @@ function openAdvPicker(advId){
       var lv=petLevelFromXp(p.xp||0);
       var lp=petXpProgress(p);
       var ok=lv>=req;
+      var stam=petStamina(p);var tired=stam<ADV_STAMINA_COST;var canSend=ok&&!tired;
       var s=petAdvSum(p);var tags=[];
       if(s.coinGain)tags.push('🪙+'+s.coinGain+'%');
       if(s.shellGain)tags.push('🐚+'+s.shellGain+'%');
@@ -4277,11 +4298,11 @@ function openAdvPicker(advId){
         return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+ico+(e?e.name.replace(' Egg',''):o.id)+' '+Math.round(o.pct*100)+'%</span>';
       }).join('');
       var oddsLine='<div class="app-odds"><span class="app-odds-lbl">BONUS</span>'+oddsHtml+(ec.aff?' <span class="app-aff-tag">🎯 Affinity!</span>':'')+'</div>';
-      html+='<div class="adv-pick-pet'+(ok?'':' locked')+'"'+(ok?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
+      html+='<div class="adv-pick-pet'+(canSend?'':' locked')+'"'+(canSend?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+petIco(p)+'</div>';
-      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'</div>';
+      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'<div style="display:flex;align-items:center;gap:5px;margin-top:3px;"><span style="font-size:0.62rem;">💪</span><div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.35);overflow:hidden;"><div style="height:100%;width:'+Math.round(stam)+'%;background:'+(tired?'#e0683a':'linear-gradient(90deg,#3aa0e0,#5ad0e0)')+';"></div></div><span style="font-size:0.58rem;color:rgba(255,255,255,0.55);">'+Math.round(stam)+'</span></div></div>';
       html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
-      html+=(ok?'<div class="app-go">Send →</div>':'<div class="app-lock">Needs<br>Lv '+req+'</div>')+'</div>';
+      html+=(canSend?'<div class="app-go">Send →</div>':(!ok?'<div class="app-lock">Needs<br>Lv '+req+'</div>':'<div class="app-lock">😴<br>Resting</div>'))+'</div>';
     });
     html+='</div>';
   }
@@ -6089,7 +6110,7 @@ function renderHomeAdventures(){
   h+='<div style="font-size:0.74rem;color:#9fb6ef;font-weight:700;flex:0 0 auto;">Change ▸</div>';
   h+='</div>';
   // idle slots — compact horizontal row of 5 (tap a pet to see more)
-  h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pets <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
+  h+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Idle Pet <span style="color:rgba(255,255,255,0.35);">'+pets.length+' / '+G.idleSlots+' active</span></div>';
   h+='<div style="display:flex;gap:5px;align-items:flex-start;">';
   for(var i=0;i<IDLE_SLOT_MAX;i++){
     h+='<div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;">';
@@ -8405,7 +8426,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.85<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.88<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12732,6 +12753,7 @@ function tick(now){
   }
   // Äggsidans idle-shell-generering BORTTAGEN — shells idlas nu ENBART via pets i Pet Adventures (tickIdlePets nedan).
   tickIdlePets(dt); // adventure-idle: assigned pets gather shells (open-only)
+  tickStamina(dt); // STEG 6.7a: pets som inte är ute vilar tillbaka energi
   // HUD skrivs bara ~10 ggr/sek (inte varje bildruta) — siffran tickar fortfarande men belastar huvudtråden 6× mindre
   hudAcc+=dt;
   if(hudAcc>=0.1){updateHUD();hudAcc=0;}
