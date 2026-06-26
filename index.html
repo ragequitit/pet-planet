@@ -3410,6 +3410,55 @@ function gearAbilityLine(ab){
   return '<b>'+m.name+'</b> +'+ab.v+'%';
 }
 // GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
+// ====== GEAR LOADOUTS (STEG 6.9) — 5 set; #1 gratis, #2–5 köps med Gems. Aktiv loadouts slots = G.gearEquipped. ======
+function loadoutGemCost(i){return [0,75,150,300,600][i]||0;} // PLATSHÅLLARE → Balance Sheet
+function ensureLoadouts(){
+  if(!Array.isArray(G.gearLoadouts)||G.gearLoadouts.length<5){
+    var arr=[];
+    for(var i=0;i<5;i++)arr.push({bought:i===0,name:'Loadout '+(i+1),slots:{backpack:null,compass:null,boots:null,charm:null,tool:null}});
+    if(G.gearEquipped&&typeof G.gearEquipped==='object'){ // migrera nuvarande set → Loadout 1
+      ['backpack','compass','boots','charm','tool'].forEach(function(t){arr[0].slots[t]=(G.gearEquipped[t]!=null?G.gearEquipped[t]:null);});
+    }
+    G.gearLoadouts=arr;
+  }
+  for(var j=0;j<5;j++){ if(!G.gearLoadouts[j].slots)G.gearLoadouts[j].slots={backpack:null,compass:null,boots:null,charm:null,tool:null}; if(!G.gearLoadouts[j].name)G.gearLoadouts[j].name='Loadout '+(j+1); }
+  if(typeof G.activeLoadout!=='number'||G.activeLoadout<0||G.activeLoadout>4||!G.gearLoadouts[G.activeLoadout].bought)G.activeLoadout=0;
+  G.gearEquipped=G.gearLoadouts[G.activeLoadout].slots; // alias: aktiv loadout = equippad uppsättning
+}
+function isGearLocked(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});return !!(g&&typeof g.lockedTo==='number'&&g.lockedTo>=0);}
+function gearLockName(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});if(!g||typeof g.lockedTo!=='number'||g.lockedTo<0)return '';ensureLoadouts();var lo=G.gearLoadouts[g.lockedTo];return lo?lo.name:'';}
+function switchLoadout(i){ensureLoadouts();if(!G.gearLoadouts[i]||!G.gearLoadouts[i].bought)return;G.activeLoadout=i;G.gearEquipped=G.gearLoadouts[i].slots;if(typeof saveGame==='function')saveGame();if(typeof renderInventory==='function')renderInventory();}
+function buyLoadout(i){
+  ensureLoadouts();var lo=G.gearLoadouts[i];if(!lo||lo.bought)return;
+  var cost=loadoutGemCost(i);
+  if((G.gems||0)<cost){if(typeof showRewardPopup==='function')showRewardPopup(['Not enough Gems.','Loadout '+(i+1)+' costs '+cost+' Gems.'],false);return;}
+  if(typeof confirm==='function'&&!confirm('Buy '+lo.name+' for '+cost+' Gems?'))return;
+  G.gems-=cost;lo.bought=true;if(typeof updateHUD==='function')updateHUD();
+  switchLoadout(i);
+}
+function renameActiveLoadout(){
+  ensureLoadouts();var lo=G.gearLoadouts[G.activeLoadout];
+  if(typeof prompt!=='function')return;
+  var n=prompt('Loadout name:',lo.name);if(n==null)return;n=String(n).trim().slice(0,18);if(n)lo.name=n;
+  if(typeof saveGame==='function')saveGame();if(typeof renderInventory==='function')renderInventory();
+}
+function renderLoadoutBar(){
+  ensureLoadouts();
+  var h='<div class="adv-sech">🎒 Gear Loadouts</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Each loadout keeps its own set of 5 gear. Switch anytime. Gear in a loadout is locked &amp; safe from merging.</div>';
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">';
+  G.gearLoadouts.forEach(function(lo,i){
+    var active=i===G.activeLoadout;
+    if(lo.bought){
+      h+='<div onclick="switchLoadout('+i+')" style="padding:6px 11px;border-radius:18px;border:1.5px solid '+(active?'#b083ff':'rgba(58,92,184,0.5)')+';background:'+(active?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.5)')+';color:'+(active?'#e3d4ff':'rgba(255,255,255,0.7)')+';font-weight:800;font-size:0.72rem;cursor:pointer;">'+(active?'✓ ':'')+loEsc(lo.name)+'</div>';
+    }else{
+      h+='<div onclick="buyLoadout('+i+')" style="padding:6px 11px;border-radius:18px;border:1.5px dashed rgba(245,200,66,0.5);background:rgba(0,0,0,0.2);color:rgba(255,255,255,0.6);font-weight:700;font-size:0.72rem;cursor:pointer;">🔒 '+GEM_IMG+' '+loadoutGemCost(i)+'</div>';
+    }
+  });
+  h+='</div>';
+  h+='<div style="margin-bottom:12px;"><button onclick="renameActiveLoadout()" style="background:none;border:1px solid rgba(150,120,220,0.4);border-radius:8px;color:#cdb6ff;font-size:0.68rem;padding:5px 9px;cursor:pointer;">✏️ Rename &ldquo;'+loEsc(G.gearLoadouts[G.activeLoadout].name)+'&rdquo;</button></div>';
+  return h;
+}
 function getEquippedGear(type){
   if(!G.gearEquipped)return null;
   var uid=G.gearEquipped[type];if(uid==null)return null;
@@ -3421,43 +3470,61 @@ function isGearEquipped(uid){
   return false;
 }
 function equipGear(type,uid){
-  if(!G.gearEquipped)G.gearEquipped={};
+  ensureLoadouts();
   var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});
   if(!g||g.type!==type)return; // slots are type-locked
-  G.gearEquipped[type]=uid;
+  if(typeof g.lockedTo==='number'&&g.lockedTo>=0&&g.lockedTo!==G.activeLoadout)return; // låst till annan loadout → använd move-flödet
+  var prevUid=G.gearEquipped[type];
+  if(prevUid!=null&&prevUid!==uid){var pg=gearById(prevUid);if(pg)pg.lockedTo=-1;} // gammalt gear i sloten frigörs
+  G.gearEquipped[type]=uid; g.lockedTo=G.activeLoadout;
   if(typeof saveGame==='function')saveGame();
   if(typeof renderInventory==='function')renderInventory();
   openGearSlotPicker(type);
 }
+function moveGearToActive(type,uid){ // lås upp från annan loadout + equippa i aktiv
+  ensureLoadouts();
+  var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});if(!g||g.type!==type)return;
+  if(typeof g.lockedTo==='number'&&g.lockedTo>=0&&G.gearLoadouts[g.lockedTo]&&G.gearLoadouts[g.lockedTo].slots[type]===uid)G.gearLoadouts[g.lockedTo].slots[type]=null;
+  g.lockedTo=-1;
+  equipGear(type,uid);
+}
 function unequipGear(type){
-  if(!G.gearEquipped)return;
+  ensureLoadouts();
+  var uid=G.gearEquipped[type];
+  if(uid!=null){var g=gearById(uid);if(g)g.lockedTo=-1;}
   G.gearEquipped[type]=null;
   if(typeof saveGame==='function')saveGame();
   if(typeof renderInventory==='function')renderInventory();
   openGearSlotPicker(type);
 }
 function openGearSlotPicker(type){
+  ensureLoadouts();
   var tm=gearTypeMeta(type);
-  var list=(G.gearInv||[]).filter(function(g){return g.type===type;});
   var rord=Object.keys(RARITY_CONFIG);
-  list.sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
+  var all=(G.gearInv||[]).filter(function(g){return g.type===type;}).sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
   var equippedUid=G.gearEquipped?G.gearEquipped[type]:null;
-  var html='';
+  var free=all.filter(function(g){return !(typeof g.lockedTo==='number'&&g.lockedTo>=0)||g.uid===equippedUid;});
+  var elsewhere=all.filter(function(g){return typeof g.lockedTo==='number'&&g.lockedTo>=0&&g.lockedTo!==G.activeLoadout;});
+  var html='<div style="font-size:0.66rem;color:rgba(255,255,255,0.5);margin-bottom:8px;">Active: <b>'+loEsc(G.gearLoadouts[G.activeLoadout].name)+'</b></div>';
   if(equippedUid!=null){
     html+='<button onclick="unequipGear(\''+type+'\')" style="width:100%;margin-bottom:8px;padding:8px;border-radius:10px;border:1px solid rgba(255,120,120,0.5);background:rgba(255,120,120,0.12);color:#ffb0b0;font-weight:700;font-size:0.78rem;cursor:pointer;">✕ Unequip</button>';
   }
-  if(!list.length){
+  function card(g,onclick,note){
+    var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+    var on=g.uid===equippedUid;
+    var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
+    return '<div onclick="'+onclick+'" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">'
+      +'<div style="font-size:1.3rem;">'+tm.icon+'</div>'
+      +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' · equipped':'')+(note?' '+note:'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
+  }
+  if(!free.length&&!elsewhere.length){
     html+='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.8rem;padding:16px;">No '+tm.name+' gear in your bag yet.</div>';
-  } else {
-    list.forEach(function(g){
-      var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
-      var on=g.uid===equippedUid;
-      var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
-      html+='<div onclick="equipGear(\''+type+'\','+g.uid+')" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">';
-      html+='<div style="font-size:1.3rem;">'+tm.icon+'</div>';
-      html+='<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' · equipped':'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div>';
-      html+='</div>';
-    });
+  }else{
+    free.forEach(function(g){html+=card(g,'equipGear(\''+type+'\','+g.uid+')','');});
+    if(elsewhere.length){
+      html+='<div style="font-size:0.64rem;color:rgba(255,255,255,0.4);margin:10px 0 5px;">🔒 In other loadouts — tap to unlock &amp; move here</div>';
+      elsewhere.forEach(function(g){html+=card(g,'moveGearToActive(\''+type+'\','+g.uid+')','<span style="font-size:0.6rem;color:#f5c842;">🔒 '+loEsc(gearLockName(g.uid))+'</span>');});
+    }
   }
   if(typeof showGenericModal==='function'){
     showGenericModal(tm.icon,tm.name+' Slot','');
@@ -3466,8 +3533,9 @@ function openGearSlotPicker(type){
   }
 }
 function renderExplorerSlots(){
-  var h='<div class="adv-sech">🎒 Explorer Gear</div>';
-  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Equip one gear of each type. Boosts apply on adventures &mdash; coming soon.</div>';
+  ensureLoadouts();
+  var h='<div class="adv-sech">🎒 Explorer Gear &middot; <span style="color:#b083ff;">'+loEsc(G.gearLoadouts[G.activeLoadout].name)+'</span></div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Equip one gear of each type into this loadout. Boosts apply on adventures, idle &amp; offline.</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">';
   GEAR_TYPES.forEach(function(t){
     var g=getEquippedGear(t.id);
@@ -3843,7 +3911,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},gearInv:[],gearEquipped:{backpack:null,compass:null,boots:null,charm:null,tool:null},
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},gearInv:[],gearEquipped:{backpack:null,compass:null,boots:null,charm:null,tool:null},gearLoadouts:null,activeLoadout:0,
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -4163,6 +4231,16 @@ function advEffChances(adv,pet){
     return {type:B.type,id:B.id,pct:Math.min(1,B.chance*luckMult)};
   })};
 }
+// STEG 6.10: vilket gear-drop-band ett äventyr använder (placeholder-trösklar → Balance Sheet).
+function advGearBand(adv){
+  if(!adv)return 'band1';
+  var req=advReqLevel(adv);
+  if(adv.isArea)return req>=25?'band5':'band4'; // Lost World areas → djupa band
+  if(req>=18)return 'band3';
+  if(req>=8)return 'band2';
+  return 'band1';
+}
+var GEAR_DROP_CHANCE=0.10; // STEG 6.10 placeholder → Balance Sheet (generell drop likt Skill Stones, skalar med Luck)
 function rollAdvReward(adv,pet){
   var s=petAdvSum(pet);
   var gb=gearBonuses(); // STEG 6.8b: equippad gear
@@ -4210,6 +4288,10 @@ function rollAdvReward(adv,pet){
   var SKILL_STONE_DROP_CHANCE=0.15;
   if(Math.random()<SKILL_STONE_DROP_CHANCE*luckMult){
     bonus.push({type:'stone',id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)]});
+  }
+  // Gear-drop (STEG 6.10): generell drop, band styrt av äventyret, skalar med Luck. Placeholder-chans → Balance Sheet.
+  if(typeof rollGear==='function'&&Math.random()<GEAR_DROP_CHANCE*luckMult){
+    bonus.push({type:'gear',gear:rollGear(advGearBand(adv))});
   }
   return {coins:coins,shells:shells,xp:adv.xp,bonus:bonus,affinity:aff};
 }
@@ -4271,6 +4353,7 @@ function claimAdventure(index){
     else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
     else if(b.type==='stone'){grantSkillStone(b.id,1);var sm=ABILITY_META[b.id]||{name:'Skill'};parts.push('🎯 '+sm.name+' Stone found!');}
+    else if(b.type==='gear'&&b.gear){if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(b.gear);var gtm=gearTypeMeta(b.gear.type);var grc=RARITY_CONFIG[b.gear.rarity]||{label:b.gear.rarity,icon:'⚪'};parts.push(gtm.icon+' '+grc.icon+' '+grc.label+' '+gtm.name+' gear found!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
   if(typeof updateHUD==='function')updateHUD();
@@ -4544,6 +4627,7 @@ function lootInvHtml(){
       h+='</div>';
     }
     if(gear.length){
+      h+=renderLoadoutBar();
       h+=renderExplorerSlots();
       var rord=Object.keys(RARITY_CONFIG);
       var gs=gear.slice().sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
@@ -4557,7 +4641,7 @@ function lootInvHtml(){
         h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:8px 11px;">'
           +'<div style="font-size:1.5rem;width:30px;text-align:center;">'+tm.icon+'</div>'
           +'<div style="flex:1;min-width:0;">'
-            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+(isGearEquipped(g.uid)?' <span style="font-size:0.6rem;color:#7fe0a0;background:rgba(127,224,160,0.14);border:1px solid rgba(127,224,160,0.4);border-radius:6px;padding:1px 5px;vertical-align:middle;">equipped</span>':'')+'</div>'
+            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+(isGearLocked(g.uid)?' <span style="font-size:0.6rem;color:#f5c842;background:rgba(245,200,66,0.14);border:1px solid rgba(245,200,66,0.4);border-radius:6px;padding:1px 5px;vertical-align:middle;">🔒 '+loEsc(gearLockName(g.uid))+'</span>':'')+'</div>'
             +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.72);margin-top:2px;line-height:1.5;">'+ab+'</div>'
           +'</div>'
           +'</div>';
@@ -4651,6 +4735,7 @@ function renderAdventure(){
     else if(B.type==='relic'){var rm=LOST_WORLD_META[B.id]||{relic:'Relic',relicIcon:'🗝️'};html+=advRewItem(rm.relicIcon,rm.relic,Math.round(B.chance*100)+'%',true);}
   });
   html+=advRewItem('🎯','Skill Stones','~15%',true);
+  html+=advRewItem('🧰','Adventure Gear','~10%',true);
   html+=advRewItem(uiIco('stats/discoveries','🗺️',22),'Discoveries','soon',false);
   html+=advRewItem('🐣','Adv. Pets','soon',false);
   html+='</div>';
@@ -4703,7 +4788,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,gearInv:G.gearInv,gearEquipped:G.gearEquipped,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -4723,7 +4808,7 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -8461,7 +8546,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.92<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.94<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8510,7 +8595,7 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -11788,7 +11873,7 @@ function removeGearFusionSlot(idx){gearFusionSlots[idx]=null;renderFusion();}
 function clearGearFusionSlots(){gearFusionSlots=[null,null,null,null,null];if(fusionMode==='gear')renderFusion();}
 function autoSelectGearFusion(){
   var rar=getGearFusionRarity()||gearFusionRarityFilter;
-  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0&&!isGearEquipped(g.uid);});
+  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0&&!isGearLocked(g.uid);});
   for(var i=0;i<gearFusionSlots.length&&avail.length;i++){if(gearFusionSlots[i]===null){gearFusionSlots[i]=avail.shift().uid;}}
   renderFusion();
 }
@@ -11868,7 +11953,7 @@ function renderGearFusion(){
   }
   html+='</div>';
   var fr=sel||gearFusionRarityFilter;
-  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0&&!isGearEquipped(g.uid);}).length;
+  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0&&!isGearLocked(g.uid);}).length;
   html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
   html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(sel&&selRc?' · <span style="color:'+selRc.color+'">'+selRc.label+'</span>':'')+'</div>';
   if(filledCount<5&&avail>0)html+='<button class="fusion-auto-btn" onclick="autoSelectGearFusion()">⚡ Auto</button>';
@@ -11887,13 +11972,13 @@ function renderGearFusion(){
   html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">';
   RARITY_PROGRESSION.forEach(function(r){
     var rc3=RARITY_CONFIG[r];if(!rc3)return;
-    var count=gear.filter(function(g){return g.rarity===r&&!isGearEquipped(g.uid);}).length;
+    var count=gear.filter(function(g){return g.rarity===r&&!isGearLocked(g.uid);}).length;
     if(count===0)return;
     html+='<div data-gearfusion-rarity="'+r+'" style="padding:4px 10px;background:rgba(27,45,78,0.5);border:1.5px solid '+(gearFusionRarityFilter===r?rc3.color:'rgba(58,92,184,0.6)')+';border-radius:20px;font-size:0.62rem;color:'+(gearFusionRarityFilter===r?rc3.color:'rgba(255,255,255,0.5)')+';cursor:pointer;">'+rc3.icon+' '+rc3.label+' ('+count+')</div>';
   });
   html+='</div>';
   var eligR=sel||gearFusionRarityFilter;
-  var show=gear.filter(function(g){return g.rarity===eligR&&!isGearEquipped(g.uid);});
+  var show=gear.filter(function(g){return g.rarity===eligR&&!isGearLocked(g.uid);});
   if(!show.length){
     html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No '+eligR+' gear — find more on adventures!</div>';
   } else {
@@ -12874,6 +12959,9 @@ if(savedData){
   G.gearInv=Array.isArray(savedData.gearInv)?savedData.gearInv:[];
   G.gearEquipped=(savedData.gearEquipped&&typeof savedData.gearEquipped==='object'&&!Array.isArray(savedData.gearEquipped))?savedData.gearEquipped:{};
   ['backpack','compass','boots','charm','tool'].forEach(function(t){if(!(t in G.gearEquipped))G.gearEquipped[t]=null;});
+  G.gearLoadouts=Array.isArray(savedData.gearLoadouts)?savedData.gearLoadouts:null;
+  G.activeLoadout=(typeof savedData.activeLoadout==='number')?savedData.activeLoadout:0;
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
   G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
   while(G.extractChambers.length<3)G.extractChambers.push(null);
   G.mutateChambers=Array.isArray(savedData.mutateChambers)?savedData.mutateChambers.slice(0,3):[null,null,null];
