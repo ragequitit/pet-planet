@@ -8550,7 +8550,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.98<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11331,7 +11331,7 @@ function renderHatchery(){
     if(hpct>=1&&!hs.done)G.hatchSlots[hidx].done=hs.done=true;
     var hrem=Math.max(0,Math.ceil((hs.duration-hel)/1000));
     var heg=isEventEggId(hs.eggId)?eventEggMetaById(hs.eggId):EGG_SHOP.find(function(e){return e.id===hs.eggId;});
-    var hImg=isEventEggId(hs.eggId)?eventEggIconHtmlById(hs.eggId,120):'<img src="'+eggShopIconUrl(hs.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(heg?heg.icon:'\ud83e\udd5a')+'\'))">';
+    var hImg=isEventEggId(hs.eggId)?eventEggIconHtmlById(hs.eggId,120):'<img src="'+ASSET_BASE+'/assets/eggs/'+hs.eggId+'-egg.png" alt="" onerror="this.onerror=null;this.src=\''+eggShopIconUrl(hs.eggId)+'\'">';
     if(nActive>1)html+='<div class="hatch-hero-arrow l" onclick="hatchHeroPage(-1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-left.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u2039\'))"></div><div class="hatch-hero-arrow r" onclick="hatchHeroPage(1)"><img src="'+ASSET_BASE+'/assets/ui/common/blue-arrow-right.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\u203a\'))"></div>';
     html+='<div class="hatch-hero-egg">'+hImg+'</div>';
     if(hs.done)html+='<button class="hatch-collect" style="margin-top:60px" onclick="collectHatch('+hidx+')">Collect</button>';
