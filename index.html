@@ -2055,7 +2055,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="tab-shop" class="tab-content">
       <div class="pets-subnav">
         <button class="psub-btn" id="wsub-extract" onclick="workshopSub('extract')" style="display:none"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
-        <button class="psub-btn active" id="wsub-mutate" onclick="workshopSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Mutate</button>
+        <button class="psub-btn active" id="wsub-mutate" onclick="workshopSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Pet Trainer</button>
         <button class="psub-btn" id="wsub-reroll" onclick="workshopSub('reroll')" style="display:none"><span>🎲</span> Reroll</button>
       </div>
       <div id="wsub-panel-extract" class="psub-panel"><div id="extract-wrap"></div></div>
@@ -2299,7 +2299,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <li>Put the egg in the <b>Hatchery</b> and wait for it to hatch into a Pet.</li>
       <li>Equip your best pets in your <b>active slots</b> — their abilities boost your income and luck.</li>
       <li>Send pets on <b>Adventures</b> to earn rewards and pet XP over time.</li>
-      <li>Use <b>Merge</b> and <b>Mutation</b> to improve your pets, and fill your <b>Petdex</b>.</li>
+      <li>Use <b>Merge</b> and the <b>Pet Trainer</b> to improve your pets, and fill your <b>Petdex</b>.</li>
     </ol>
 
     <div class="howto-sec">Things You'll Find</div>
@@ -2783,7 +2783,7 @@ var EGG_WORLDS=[
 // ============================================================
 var BUILDINGS=[
   {n:"Egg Tapper",e:"🥚",b:17,p:0.1,img:"egg-tapper"},{n:"Nest",e:"🪺",b:120,p:0.8,img:"nest"},{n:"Nursery",e:"🌱",b:1300,p:5,img:"nursery"},
-  {n:"Pet House",e:"🏠",b:14000,p:28,img:"pet-house"},{n:"Pet Trainer",e:"🎯",b:150000,p:150,img:"pet-trainer"},{n:"Pet Ranch",e:"🌾",b:1.6e6,p:800,img:"pet-ranch"},
+  {n:"Pet House",e:"🏠",b:14000,p:28,img:"pet-house"},{n:"Training Yard",e:"🎯",b:150000,p:150,img:"pet-trainer"},{n:"Pet Ranch",e:"🌾",b:1.6e6,p:800,img:"pet-ranch"},
   {n:"Pet Shop",e:"🏪",b:1.7e7,p:4200,img:"pet-shop"},{n:"Egg Vault",e:"🏦",b:1.8e8,p:22000,img:"egg-vault"},{n:"Resort",e:"🏖️",b:1.9e9,p:115000,img:"resort"},
   {n:"Zoo",e:"🦁",b:2e10,p:600000,img:"zoo"},{n:"Research Lab",e:"🔬",b:2.2e11,p:3.1e6,img:"research-lab"},{n:"Breeding Center",e:"🧬",b:2.4e12,p:1.6e7,img:"breeding-center"},
   {n:"Clone Lab",e:"🧪",b:2.6e13,p:8.2e7,img:"clone-lab"},{n:"Arcade",e:"🕹️",b:2.8e14,p:4.2e8,img:"arcade"},{n:"Pet Mall",e:"🛍️",b:3e15,p:2.2e9,img:"pet-mall"},
@@ -2997,7 +2997,7 @@ var EGG_SHOP=[
   {id:'starter',  name:'Meadow Egg',   icon:'🥚',shellType:'meadow',   shellAmt:50, buildReq:null,        hatchReq:null, coinReq:100},
   {id:'forest',   name:'Forest Egg',   icon:'🌿',shellType:'forest', shellAmt:70, buildReq:'Nest',       hatchReq:'starter'},
   {id:'mountain', name:'Mountain Egg', icon:'⛰️',shellType:'mountain',     shellAmt:55, buildReq:'Pet House',  hatchReq:'forest'},
-  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'desert',     shellAmt:65, buildReq:'Pet Trainer',hatchReq:'mountain'},
+  {id:'desert',   name:'Desert Egg',   icon:'🏜️',shellType:'desert',     shellAmt:65, buildReq:'Training Yard',hatchReq:'mountain'},
   {id:'ocean',    name:'Ocean Egg',    icon:'🌊',shellType:'ocean',shellAmt:50, buildReq:'Pet Ranch',  hatchReq:'desert'},
   {id:'jungle',   name:'Jungle Egg',   icon:'🌴',shellType:'jungle', shellAmt:37, buildReq:'Pet Shop',   hatchReq:'ocean'},
   {id:'arctic',   name:'Arctic Egg',   icon:'❄️',shellType:'arctic', shellAmt:28, buildReq:'Egg Vault',  hatchReq:'jungle'},
@@ -3657,7 +3657,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -3998,6 +3998,12 @@ function rollAdvReward(adv,pet){
       else if(B.type==='map'){var _mid=B.id||pickAvailableMap();if(_mid)bonus.push({type:'map',id:_mid});}
     }
   });
+  // Skill Stones (STEG 4c): droppar från ALLA äventyr — den tydliga äventyrs-belöningen.
+  // Chans = placeholder → Balance Sheet. Skalar med Luck/affinity/nivå likt annan loot.
+  var SKILL_STONE_DROP_CHANCE=0.15;
+  if(Math.random()<SKILL_STONE_DROP_CHANCE*luckMult){
+    bonus.push({type:'stone',id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)]});
+  }
   return {coins:coins,shells:shells,xp:adv.xp,bonus:bonus,affinity:aff};
 }
 function nextAdvSlotCost(){if(G.adventureSlots>=ADVENTURE_SLOT_MAX)return null;return ADVENTURE_SLOT_COSTS[G.adventureSlots-1];}
@@ -4055,6 +4061,7 @@ function claimAdventure(index){
     else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
     else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
+    else if(b.type==='stone'){grantSkillStone(b.id,1);var sm=ABILITY_META[b.id]||{name:'Skill'};parts.push('🎯 '+sm.name+' Stone found!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
   if(typeof updateHUD==='function')updateHUD();
@@ -4284,8 +4291,9 @@ function lootInvHtml(){
   G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; G.relics=G.relics||{};
   var maps=LOST_WORLDS.filter(function(id){return (G.mapsOwned[id]||0)>0 && !G.lostUnlocked[id];});
   var rel=LOST_WORLDS.filter(function(id){return relicCount(id)>0;});
+  var stones=ownedStoneIds();
   var h='';
-  if(!maps.length && !rel.length){
+  if(!maps.length && !rel.length && !stones.length){
     h+='<div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here. Find <b>Secret Maps</b> and <b>Relics</b> on adventures — they land in your bag, ready to use.</p></div>';
   }else{
     if(maps.length){
@@ -4312,6 +4320,15 @@ function lootInvHtml(){
           +'<div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+meta.relic+'</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">'+meta.world+'</div></div>'
           +'<div style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+relicCount(id)+'</div>'
           +'</div>';
+      });
+      h+='</div>';
+    }
+    if(stones.length){
+      h+='<div class="adv-sech">🎯 Skill Stones</div>';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Bring these to the <b>Pet Trainer</b> (Workshop) to reroll a pet&#39;s ability.</div>';
+      h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+      stones.forEach(function(id){var m=ABILITY_META[id];
+        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><span style="font-size:1.4rem;width:30px;text-align:center;">'+abilityIconImg(id)+'</span><div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;color:'+m.color+'">'+m.name+' Stone</div></div><span style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+skillStoneCount(id)+'</span></div>';
       });
       h+='</div>';
     }
@@ -4390,7 +4407,7 @@ function renderAdventure(){
     else if(B.type==='egg'){var e=EGG_SHOP.find(function(x){return x.id===B.id;});var eico='<img src="'+eggShopIconUrl(B.id)+'" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';html+=advRewItem(eico,(e?e.name.replace(' Egg',''):B.id),Math.round(B.chance*100)+'%',true);}
     else if(B.type==='relic'){var rm=LOST_WORLD_META[B.id]||{relic:'Relic',relicIcon:'🗝️'};html+=advRewItem(rm.relicIcon,rm.relic,Math.round(B.chance*100)+'%',true);}
   });
-  html+=advRewItem('🧬','Cores','soon',false);
+  html+=advRewItem('🎯','Skill Stones','~15%',true);
   html+=advRewItem(uiIco('stats/discoveries','🗺️',22),'Discoveries','soon',false);
   html+=advRewItem('🐣','Adv. Pets','soon',false);
   html+='</div>';
@@ -4443,7 +4460,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -4463,7 +4480,7 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -4547,7 +4564,7 @@ function renderDevMenu(){
   var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
-  html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button></div>';
+  html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="devGrantStones()" '+bBlue+'>+\ud83c\udfaf Stones</button></div>';
   html+='<div class="dev-row"><button onclick="devUnlockFrames()" '+bBlue+'>\ud83d\uddbc\ufe0f Unlock all frames</button></div>';
   html+='<div class="dev-row"><button onclick="devSpawnShiny()" '+bBlue+'>\u2728 Spawn Shiny + Shiny2</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
@@ -5690,7 +5707,7 @@ function openPetDetail(uid){
     html+='<div class="pdx2-shortcuts">'
       +'<button class="pdx2-sc" onclick="petDetailGoto(\'adventure\')">'+uiIco('nav/nav-adventures','\ud83d\uddfa\ufe0f',22)+'Adventure</button>'
       +'<button class="pdx2-sc" onclick="petDetailGoto(\'fusion\')">'+uiIco('lab/fusion','\u2697\ufe0f',22)+'Merge</button>'
-      +'<button class="pdx2-sc" onclick="petDetailGoto(\'mutate\')">'+uiIco('lab/mutate','\ud83e\uddec',22)+'Mutate</button>'
+      +'<button class="pdx2-sc" onclick="petDetailGoto(\'mutate\')">'+uiIco('lab/mutate','\ud83e\uddec',22)+'Pet Trainer</button>'
       +'</div>';
   }
   // Equip / unequip / busy
@@ -6141,7 +6158,7 @@ function workshopSub(sub){
     var b=document.getElementById('wsub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='extract')renderExtract();
-  else if(sub==='mutate')renderMutate();
+  else if(sub==='mutate')renderPetTrainer();
   else if(sub==='reroll')renderReroll();
 }
 function renderWorkshop(){workshopSub(workshopSubTab);}
@@ -6552,6 +6569,118 @@ function doMutateStart(){
   mutateSetup=null;closeMutationModal();updateHUD();renderMutate();if(typeof renderSlotRow==='function')renderSlotRow();saveGame();
 }
 
+// ============================================================
+// PET TRAINER + SKILL STONES (STEG 4b, 2026-06-25) — instant, ersätter cores i UI:t.
+// En Skill Stone är typad (ability-id). Värdet ROLLAS vid applicering i petens rarity-band
+// (slotens tier → rollAbilityValue), Mega möjlig. Ny sten på samma plats = ny roll.
+// Cores + Mutation-kammare ligger kvar VILANDE (reversibelt). Ingen coin-kostnad, ingen timer.
+// ============================================================
+function skillStoneCount(id){return (G.skillStones&&G.skillStones[id])||0;}
+function totalSkillStones(){var n=0;if(G.skillStones)for(var k in G.skillStones)n+=G.skillStones[k]||0;return n;}
+function grantSkillStone(id,n){if(!G.skillStones)G.skillStones={};G.skillStones[id]=(G.skillStones[id]||0)+(n||1);}
+function devGrantStones(){ABILITIES.forEach(function(id){grantSkillStone(id,3);});if(typeof updateHUD==='function')updateHUD();if(workshopSubTab==='mutate'&&typeof renderPetTrainer==='function')renderPetTrainer();if(typeof renderInventory==='function')renderInventory();if(typeof saveGame==='function')saveGame();}
+function ownedStoneIds(){return ABILITIES.filter(function(id){return skillStoneCount(id)>0;});}
+
+var trainerSetup=null; // {petUid, slot, stoneId}
+function openPetTrainer(){
+  if(totalSkillStones()<=0){showGenericModal('🎯','No Skill Stones','Find Skill Stones on adventures, then bring them here to train your pets.');return;}
+  if(pickerEligiblePets().length===0){showGenericModal('🐾','No Pets','You have no pets available to train.');return;}
+  trainerSetup={petUid:null,slot:null,stoneId:null};renderTrainerSetup();document.getElementById('mutation-modal').classList.add('open');
+}
+function trainerPickPet(){openPetPicker(function(uid){trainerSetup.petUid=uid;trainerSetup.slot=null;trainerSetup.stoneId=null;renderTrainerSetup();});}
+function trainerPickSlot(idx){trainerSetup.slot=idx;trainerSetup.stoneId=null;renderTrainerSetup();}
+function trainerPickStone(id){
+  var s=trainerSetup;var pet=s&&s.petUid?petByUid(s.petUid):null;
+  if(pet&&pet.abilities.some(function(ab,idx){return idx!==s.slot&&ab.id===id;}))return; // dubblett-spärr
+  trainerSetup.stoneId=id;renderTrainerSetup();
+}
+function renderTrainerSetup(){
+  var s=trainerSetup;if(!s)return;
+  var pet=s.petUid?petByUid(s.petUid):null;
+  var h='<div class="setup-head"><div class="setup-title">🎯 Pet Trainer</div><div class="setup-sub">Place a Skill Stone — the value rolls in this pet&#39;s rarity range.</div></div>';
+  h+='<div class="setup-step">1 · Select Pet</div>';
+  if(!pet){h+='<div class="setup-platform" onclick="trainerPickPet()"><div class="sp-plus">＋</div><div class="sp-txt">Tap to choose a pet</div></div>';}
+  else{
+    var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+    h+='<div class="setup-platform filled" onclick="trainerPickPet()"><span class="sp-emoji">'+petIco(pet)+'</span><div class="sp-info"><div class="sp-name">'+petDisplayName(pet)+'</div><div class="sp-rar" style="color:'+rc.color+'">'+rc.icon+' '+rc.label+'</div></div><span class="sp-change">Change ›</span></div>';
+    h+='<div class="setup-step">2 · Select Ability to Replace</div>';
+    pet.abilities.forEach(function(ab,idx){var m=ABILITY_META[ab.id];if(!m)return;var sel=s.slot===idx;
+      h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="trainerPickSlot('+idx+')"><span class="ma-icon">'+abilityIconImg(ab.id)+'</span><span class="ma-name">'+m.name+'</span><span class="ma-tier" style="color:'+m.color+'">T'+ab.tier+' '+abShow(ab)+'</span><span class="setup-check">'+(sel?'✓':'')+'</span></button>';
+    });
+    if(s.slot!=null){
+      h+='<div class="setup-step">3 · Choose Skill Stone</div>';
+      var otherAbils={};pet.abilities.forEach(function(ab,idx){if(idx!==s.slot)otherAbils[ab.id]=true;});
+      var owned=ownedStoneIds();
+      if(owned.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🎯</div><p>No Skill Stones available.</p></div>';}
+      else{owned.forEach(function(id){var m=ABILITY_META[id];var sel=s.stoneId===id;var dup=!!otherAbils[id];
+        if(dup){h+='<div class="setup-ability dupdis"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:'+m.color+'">'+m.name+' Stone</span><span class="ma-dup">Already on this pet</span></div>';}
+        else{h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="trainerPickStone(\''+id+'\')"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:'+m.color+'">'+m.name+' Stone</span><span class="ma-count">×'+skillStoneCount(id)+'</span></button>';}
+      });}
+      if(s.stoneId&&pet.abilities[s.slot]){
+        var cur=pet.abilities[s.slot];var curM=ABILITY_META[cur.id]||{name:'?',color:'#fff'};var newM=ABILITY_META[s.stoneId]||{name:'?',color:'#fff'};
+        h+='<div class="setup-preview"><div class="spv-side"><div class="spv-l">Now</div><div class="spv-v" style="color:'+curM.color+'">'+abilityIconImg(cur.id)+' '+curM.name+'</div></div><div class="spv-arrow">→</div><div class="spv-side"><div class="spv-l">After</div><div class="spv-v" style="color:'+newM.color+'">'+abilityIconImg(s.stoneId)+' '+newM.name+' (T'+cur.tier+', new roll)</div></div></div>';
+        h+='<button class="setup-go purple" onclick="trainerApply()">🎯 Train</button>';
+      }
+    }
+  }
+  h+='<button class="setup-cancel" onclick="closeMutationModal()">Cancel</button>';
+  document.getElementById('mutation-modal-body').innerHTML=h;
+}
+function trainerApply(){
+  var s=trainerSetup;if(!s||s.slot==null||!s.stoneId)return;
+  var pet=petByUid(s.petUid);if(!pet||!pet.abilities[s.slot])return;
+  if(skillStoneCount(s.stoneId)<=0)return;
+  if(pet.abilities.some(function(ab,idx){return idx!==s.slot&&ab.id===s.stoneId;}))return; // dubblett-spärr
+  var tier=pet.abilities[s.slot].tier||1;
+  var roll=rollAbilityValue(tier);
+  pet.abilities[s.slot]={id:s.stoneId,tier:tier,v:roll.v,mega:roll.mega};
+  G.skillStones[s.stoneId]=(G.skillStones[s.stoneId]||0)-1;
+  if(G.skillStones[s.stoneId]<=0)delete G.skillStones[s.stoneId];
+  G.stats.totalPetsMutated=(G.stats.totalPetsMutated||0)+1;
+  trainerSetup=null;closeMutationModal();updateHUD();
+  if(typeof renderWorkshop==='function')renderWorkshop();
+  if(typeof renderInventory==='function')renderInventory();
+  if(typeof renderSlotRow==='function')renderSlotRow();
+  saveGame();
+  showTrainerResult(pet);
+}
+function showTrainerResult(pet){
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var card=document.getElementById('pet-result-card');if(card)card.style.setProperty('--rc',rc.color);
+  var bg=document.getElementById('pet-result-bg');if(bg)bg.style.display='none';
+  document.getElementById('pet-result-title').textContent='TRAINING COMPLETE!';
+  document.getElementById('pet-result-sub').textContent='You trained';
+  document.getElementById('pet-result-icon').innerHTML=petIco(pet);
+  document.getElementById('pet-result-name').textContent=petDisplayName(pet);
+  document.getElementById('pet-result-rarity').textContent=rc.label;
+  var w=document.getElementById('pet-result-world');if(w){w.style.display='';w.textContent='🎯 Pet Trainer · Lv '+(pet.level||petLevelFromXp(pet.xp||0));}
+  var abHtml='';
+  pet.abilities.forEach(function(ab){var m=ABILITY_META[ab.id];if(!m)return;
+    abHtml+='<div class="pra-row"><span class="pra-icon">'+abilityIconImg(ab.id)+'</span><span class="pra-name" style="color:'+m.color+'">'+m.name+'</span><span class="pra-val">'+abShow(ab)+'</span></div>';
+  });
+  abHtml+=explorerRowsHtml(pet);
+  document.getElementById('pet-result-abilities').innerHTML=abHtml;
+  document.getElementById('pet-result-close').innerHTML='Done';
+  var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='Its new ability is set.';inv.style.display='';}
+  openPetResultModal(pet);
+}
+function renderPetTrainer(){
+  var host=document.getElementById('mutate-wrap');if(!host)return;
+  var owned=ownedStoneIds();
+  var h='<div class="lab-head"><div class="lab-title">🎯 Pet Trainer</div><div class="lab-sub">Place a Skill Stone on a pet to reroll one of its abilities. The value rolls in the pet&#39;s rarity range — higher rarity, higher rolls.</div></div>';
+  h+='<button class="reroll-start" onclick="openPetTrainer()">🎯 Train a Pet</button>';
+  h+='<div class="lab-sectitle">🎒 My Skill Stones</div>';
+  if(owned.length===0){h+='<div class="reroll-note">You have no Skill Stones yet. They drop from adventures.</div>';}
+  else{
+    h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+    owned.forEach(function(id){var m=ABILITY_META[id];
+      h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><span style="font-size:1.35rem;width:28px;text-align:center;">'+abilityIconImg(id)+'</span><span style="flex:1;font-weight:800;font-size:0.86rem;color:'+m.color+'">'+m.name+' Stone</span><span style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+skillStoneCount(id)+'</span></div>';
+    });
+    h+='</div>';
+  }
+  host.innerHTML=h;
+}
+
 // ---- chamber-tick (1s) ----
 var extractSig='',mutateSig='';
 function chamberSig(arr,unlocked){var now=Date.now();return arr.map(function(c){return c?(now>=c.endAt?'2':'1'):'0';}).join('')+'|'+unlocked;}
@@ -6564,11 +6693,7 @@ function tickChambers(){
     var now=Date.now();
     G.extractChambers.forEach(function(c,i){if(!c||now>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now-c.startAt)/span*100)):100;var f=document.getElementById('exfill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('extime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now)/1000));});
   } else if(workshopSubTab==='mutate'){
-    var canUnlM=G.mutateUnlocked<MUTATE_CHAMBER_MAX&&G.coins>=MUTATE_CHAMBER_UNLOCK[G.mutateUnlocked-1];
-    var sig2=chamberSig(G.mutateChambers,G.mutateUnlocked)+(canUnlM?'A':'a');
-    if(sig2!==mutateSig){mutateSig=sig2;renderMutate();return;}
-    var now2=Date.now();
-    G.mutateChambers.forEach(function(c,i){if(!c||now2>=c.endAt)return;var span=c.endAt-c.startAt;var pct=span>0?Math.min(100,Math.floor((now2-c.startAt)/span*100)):100;var f=document.getElementById('mufill'+i);if(f)f.style.width=pct+'%';var t=document.getElementById('mutime'+i);if(t)t.textContent='⏱️ '+formatTime(Math.ceil((c.endAt-now2)/1000));});
+    // STEG 4b: Mutate-stationen ersatt av Pet Trainer (instant, ingen tick). Kammar-tick avstängd.
   }
 }
 function coresInvHtml(){
@@ -8013,7 +8138,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.76<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.79<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8062,7 +8187,7 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -8622,11 +8747,8 @@ function renderProfileStats(){
     ['Highest Rarity',profRarity(s.highestFusionRarity)],
     ['Cosmic Created',fmtShort(s.cosmicPetsCreated||0)]
   ],false);
-  h+=pstCard('#b388ff',statIco('stats-panel/stats-panel-mutation','🧬'),'Mutation',[
-    ['Pets Mutated',fmtShort(s.totalPetsMutated||0)],
-    ['Abilities Extracted',fmtShort(s.abilitiesExtracted||0)],
-    ['Cores Created',fmtShort(s.mutationCoresCreated||0)],
-    ['Cores Used',fmtShort(s.mutationCoresUsed||0)]
+  h+=pstCard('#b388ff',statIco('stats-panel/stats-panel-mutation','🎯'),'Pet Trainer',[
+    ['Pets Trained',fmtShort(s.totalPetsMutated||0)]
   ],true);
   h+=pstCard('#5c8aff',statIco('stats-panel/stats-panel-adventures','🗺️'),'Adventures',[
     ['Completed',fmtShort(s.adventuresCompleted||0)],
@@ -8845,7 +8967,7 @@ var DAILY_QUEST_POOL={
     {type:'adventure',name:'Pathfinder',icon:'\ud83e\udded',target:4,reward:{gems:6}},
     {type:'fusion',name:'Grand Merge',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
     {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{mountain:3}}},
-    {type:'mutate',name:'Mutator',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
+    {type:'mutate',name:'Trainer',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
     {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{gems:6}},
     {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
   ]
@@ -8924,7 +9046,7 @@ var WEEKLY_QUEST_POOL={
     {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{gems:50,cores:1}},
     {type:'adventure',name:'Grand Explorer',icon:'\ud83e\udded',target:60,reward:{gems:50}},
     {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{gems:60,cores:1}},
-    {type:'mutate',name:'Master Mutator',icon:'\ud83e\uddec',target:5,reward:{gems:50,cores:1}},
+    {type:'mutate',name:'Master Trainer',icon:'\ud83e\uddec',target:5,reward:{gems:50}},
     {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{gems:50}},
     {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{gems:50}},
     {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,cores:1}}
@@ -12245,6 +12367,7 @@ if(savedData){
   else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
   G.hatchedPets=savedData.hatchedPets||[];
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
+  G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
   G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
   while(G.extractChambers.length<3)G.extractChambers.push(null);
   G.mutateChambers=Array.isArray(savedData.mutateChambers)?savedData.mutateChambers.slice(0,3):[null,null,null];
