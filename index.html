@@ -3350,10 +3350,9 @@ function rollGearRarity(band){
   return keys[0];
 }
 function gearTypeMeta(tid){for(var i=0;i<GEAR_TYPES.length;i++)if(GEAR_TYPES[i].id===tid)return GEAR_TYPES[i];return GEAR_TYPES[0];}
-// Make one gear: random type, rarity from band, 2 abilities (lean + 1 random), values rolled by rarity tier.
-function rollGear(band){
-  var type=GEAR_TYPES[Math.floor(Math.random()*GEAR_TYPES.length)];
-  var rarity=rollGearRarity(band||'band1');
+// Build one gear of a GIVEN type + rarity: 2 abilities (lean + 1 random), values rolled by rarity tier.
+function makeGear(typeId,rarity){
+  var type=gearTypeMeta(typeId);
   var tier=GEAR_RARITY_TIER[rarity]||1;
   var lean=rollAbilityValue(tier);
   var abilities=[{id:type.lean,v:lean.v,mega:lean.mega}];
@@ -3362,6 +3361,26 @@ function rollGear(band){
   var second=rollAbilityValue(tier);
   abilities.push({id:sid,v:second.v,mega:second.mega});
   return {uid:Date.now()+Math.random(),type:type.id,rarity:rarity,abilities:abilities,equippedSlot:-1};
+}
+// Make one gear from a drop: random type, rarity from band.
+function rollGear(band){
+  var type=GEAR_TYPES[Math.floor(Math.random()*GEAR_TYPES.length)];
+  var rarity=rollGearRarity(band||'band1');
+  return makeGear(type.id,rarity);
+}
+// GEAR MERGE (STEG 6.3) — mirrors pet Merge: 5 gear of SAME rarity → 1 gear, one rarity up
+// (type = weighted by the input mix; abilities re-rolled; CAP at Legendary → reroll same rarity).
+// Reuses mergeOutputRarity/isRerollRarity so gear stays in lockstep with pet Merge.
+function mergeGear(gearArr){
+  if(!gearArr||gearArr.length!==5)return null;
+  var rarity=gearArr[0].rarity;
+  for(var i=0;i<5;i++){if(!gearArr[i]||gearArr[i].rarity!==rarity)return null;} // all same rarity
+  var outR=mergeOutputRarity(rarity);
+  var counts={};gearArr.forEach(function(g){counts[g.type]=(counts[g.type]||0)+1;});
+  var types=Object.keys(counts);
+  var roll=Math.random()*gearArr.length,acc=0,chosen=types[0];
+  for(var t=0;t<types.length;t++){acc+=counts[types[t]];if(roll<=acc){chosen=types[t];break;}}
+  return makeGear(chosen,outR);
 }
 // One ability → compact display: NAME + value only (full meaning lives in How to Play). ★ on Mega.
 function gearAbilityLine(ab){
@@ -4430,6 +4449,10 @@ function lootInvHtml(){
   h+='<button onclick="devGrantMap()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 map</button>';
   h+='<button onclick="devGrantRelic()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 relic</button>';
   h+='<button onclick="devAddGearQuiet()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 gear</button>';
+  h+='</div>';
+  h+='<div style="margin-top:6px;display:flex;gap:6px;">';
+  h+='<button onclick="devAddGearSet()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +5 gear</button>';
+  h+='<button onclick="devMergeGearTest()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) merge 5</button>';
   h+='</div>';
   return h;
 }
@@ -6702,6 +6725,46 @@ function devAddGearQuiet(){
   if(typeof saveGame==='function')saveGame();
   if(typeof renderInventory==='function')renderInventory();
 }
+function devAddGearSet(){ // 5 gear of one rarity → instantly mergeable. Climbs each press: common→uncommon→...
+  if(!Array.isArray(G.gearInv))G.gearInv=[];
+  var rord=['common','uncommon','rare','epic','legendary'];
+  // pick the lowest rarity we don't already have 5 of, so repeated presses let you climb
+  var byR={};G.gearInv.forEach(function(g){byR[g.rarity]=(byR[g.rarity]||0)+1;});
+  var r='common';for(var i=0;i<rord.length;i++){if((byR[rord[i]]||0)<5){r=rord[i];break;}}
+  for(var k=0;k<5;k++){var ty=GEAR_TYPES[Math.floor(Math.random()*GEAR_TYPES.length)];G.gearInv.push(makeGear(ty.id,r));}
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderInventory==='function')renderInventory();
+}
+function devMergeGearTest(){
+  if(!Array.isArray(G.gearInv))G.gearInv=[];
+  var byR={};G.gearInv.forEach(function(g){(byR[g.rarity]=byR[g.rarity]||[]).push(g);});
+  var rord=Object.keys(RARITY_CONFIG);
+  var pick=null;for(var i=0;i<rord.length;i++){if(byR[rord[i]]&&byR[rord[i]].length>=5){pick=rord[i];break;}}
+  if(!pick){if(typeof showGenericModal==='function')showGenericModal('🧰','Need 5 of one rarity','Use "+5 gear" or "+1 gear" until you have 5 of the SAME rarity, then merge again.');return;}
+  var group=byR[pick].slice(0,5);
+  var result=mergeGear(group);
+  if(!result)return;
+  var ids={};group.forEach(function(g){ids[g.uid]=true;});
+  G.gearInv=G.gearInv.filter(function(g){return !ids[g.uid];});
+  G.gearInv.push(result);
+  var pc=RARITY_CONFIG[pick]||{label:pick,color:'#aaa',icon:'⚪'};
+  var rc=RARITY_CONFIG[result.rarity]||{label:result.rarity,color:'#aaa',icon:'⚪'};
+  var tm=gearTypeMeta(result.type);
+  var reroll=isRerollRarity(pick);
+  var lines=result.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
+  var html='<div style="text-align:center;font-size:0.74rem;opacity:.7;margin-bottom:4px">'+(reroll?'REROLL · ':'MERGE · ')+'5× <span style="color:'+pc.color+'">'+pc.icon+' '+pc.label+'</span> &rarr;</div>'+
+    '<div style="text-align:center;font-size:2.6rem;line-height:1">'+tm.icon+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>'+
+    '<div style="text-align:center;opacity:.55;font-size:0.72rem;margin-top:10px">Gear in bag: '+G.gearInv.length+'</div>';
+  if(typeof showGenericModal==='function'){
+    showGenericModal(reroll?'🎲':'🧰',reroll?'Gear Reroll':'Gear Merge','');
+    var bodyEl=document.getElementById('generic-modal-body');
+    if(bodyEl){bodyEl.style.textAlign='center';bodyEl.innerHTML=html;}
+  }
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderInventory==='function')renderInventory();
+}
 function ownedStoneIds(){return ABILITIES.filter(function(id){return skillStoneCount(id)>0;});}
 
 var trainerSetup=null; // {petUid, slot, stoneId}
@@ -8261,7 +8324,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.82<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.84<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11064,7 +11127,9 @@ function renderHatchery(){
 var RARITY_PROGRESSION=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
 
 var fusionSlots=[null,null,null,null,null]; // pet UIDs
-var fusionMode='pets'; // 'pets' eller 'shells'
+var fusionMode='pets'; // 'pets', 'gear' eller 'shells'
+var gearFusionSlots=[null,null,null,null,null]; // gear UIDs (STEG 6.4)
+var gearFusionRarityFilter='common';
 var shellFuseSource=null; // vald källraritet
 var shellFuseQty=1; // antal högre shells att skapa (1/5/10/50 eller 'max')
 var fusionRarityFilter='common';
@@ -11280,7 +11345,7 @@ function clearFusionSlots(){
   renderFusion();
 }
 
-function setFusionMode(m){fusionMode=m;if(m==='pets')clearFusionSlots();else renderFusion();}
+function setFusionMode(m){fusionMode=m;fusionSlots=[null,null,null,null,null];gearFusionSlots=[null,null,null,null,null];renderFusion();}
 function shellMeta(id){var s=SHELL_RARITIES.find(function(x){return x.id===id;});var rc=RARITY_CONFIG[id]||{};return {icon:s?s.icon:'⚪',color:s?s.color:(rc.color||'#aaa'),label:(s?s.name:(rc.label||id))};}
 function convertShells(fromRarity,batches){
   var next=shellNext(fromRarity);if(!next)return;
@@ -11429,8 +11494,12 @@ function renderFusion(){
   // STEG 1 (2026-06-25): Shell Fusion-läget GÖMT VILANDE (reversibelt) — läges-växeln borttagen
   // ur UI:t men all shell-kod (setFusionMode/renderShellFusion/convertShells) ligger kvar orörd.
   // För att slå på igen: återställ modeTabs-strängen nedan till de två .fusion-tab-knapparna.
-  var modeTabs='';
+  var modeTabs='<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +'<button onclick="setFusionMode(\'pets\')" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid '+(fusionMode==='pets'?'#6f8ae0':'rgba(58,92,184,0.4)')+';background:'+(fusionMode==='pets'?'rgba(111,138,224,0.25)':'rgba(27,45,78,0.5)')+';color:#fff;font-weight:800;font-size:0.78rem;cursor:pointer;">🐾 Pets</button>'
+    +'<button onclick="setFusionMode(\'gear\')" style="flex:1;padding:8px;border-radius:10px;border:1.5px solid '+(fusionMode==='gear'?'#b083ff':'rgba(58,92,184,0.4)')+';background:'+(fusionMode==='gear'?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.5)')+';color:#fff;font-weight:800;font-size:0.78rem;cursor:pointer;">🧰 Gear</button>'
+    +'</div>';
   if(fusionMode==='shells'){wrap.innerHTML=modeTabs+renderShellFusion();return;}
+  if(fusionMode==='gear'){wrap.innerHTML=modeTabs+renderGearFusion();return;}
   var filledCount=fusionSlots.filter(function(s){return s!==null;}).length;
   var selectedRarity=getFusionSelectedRarity();
   var reroll=selectedRarity?isRerollRarity(selectedRarity):false;
@@ -11552,6 +11621,179 @@ document.addEventListener('click',function(e){
     }
     if(d.dataset&&d.dataset.fusionRarity!==undefined){
       fusionRarityFilter=d.dataset.fusionRarity;
+      renderFusion();
+      return;
+    }
+    d=d.parentNode;
+  }
+});
+
+// ============================================================
+// GEAR MERGE UI (STEG 6.4) — gear mode on the Merge screen. Mirrors pet Merge,
+// own state/handlers (data-gearfusion-*) so it never clashes with pet selection.
+// ============================================================
+function gearById(uid){return (G.gearInv||[]).find(function(g){return g.uid===uid;})||null;}
+function getGearFusionRarity(){
+  var filled=gearFusionSlots.filter(function(s){return s!==null;});
+  if(!filled.length)return null;
+  var g=gearById(filled[0]);
+  return g?g.rarity:null;
+}
+function addGearFusionSlot(uid){
+  var g=gearById(uid);if(!g)return;
+  if(gearFusionSlots.indexOf(uid)>=0){gearFusionSlots[gearFusionSlots.indexOf(uid)]=null;renderFusion();return;}
+  var sel=getGearFusionRarity();
+  if(sel&&g.rarity!==sel)return; // must match the rarity already selected
+  var empty=gearFusionSlots.indexOf(null);if(empty<0)return;
+  gearFusionSlots[empty]=uid;renderFusion();
+}
+function removeGearFusionSlot(idx){gearFusionSlots[idx]=null;renderFusion();}
+function clearGearFusionSlots(){gearFusionSlots=[null,null,null,null,null];if(fusionMode==='gear')renderFusion();}
+function autoSelectGearFusion(){
+  var rar=getGearFusionRarity()||gearFusionRarityFilter;
+  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0;});
+  for(var i=0;i<gearFusionSlots.length&&avail.length;i++){if(gearFusionSlots[i]===null){gearFusionSlots[i]=avail.shift().uid;}}
+  renderFusion();
+}
+function gearFusionTypeOdds(){
+  var filled=gearFusionSlots.filter(function(s){return s!==null;}).map(gearById).filter(Boolean);
+  if(!filled.length)return [];
+  var c={};filled.forEach(function(g){c[g.type]=(c[g.type]||0)+1;});
+  return Object.keys(c).map(function(t){return {type:t,pct:Math.round(c[t]/filled.length*100)};}).sort(function(a,b){return b.pct-a.pct;});
+}
+function doGearFusion(){
+  var filled=gearFusionSlots.filter(function(s){return s!==null;});
+  if(filled.length!==5)return;
+  var group=filled.map(gearById).filter(Boolean);
+  if(group.length!==5)return;
+  var rarity=group[0].rarity;
+  for(var i=0;i<5;i++){if(group[i].rarity!==rarity)return;}
+  var reroll=isRerollRarity(rarity);
+  var result=mergeGear(group);
+  if(!result)return;
+  var ids={};group.forEach(function(g){ids[g.uid]=true;});
+  G.gearInv=(G.gearInv||[]).filter(function(g){return !ids[g.uid];});
+  G.gearInv.push(result);
+  gearFusionSlots=[null,null,null,null,null];
+  showGearFusionResult(result,rarity,reroll);
+  if(typeof saveGame==='function')saveGame();
+  renderFusion();
+  if(typeof renderInventory==='function')renderInventory();
+}
+function showGearFusionResult(result,fromRarity,reroll){
+  var pc=RARITY_CONFIG[fromRarity]||{label:fromRarity,color:'#aaa',icon:'⚪'};
+  var rc=RARITY_CONFIG[result.rarity]||{label:result.rarity,color:'#aaa',icon:'⚪'};
+  var tm=gearTypeMeta(result.type);
+  var lines=result.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
+  var html='<div style="text-align:center;font-size:0.74rem;opacity:.7;margin-bottom:4px">'+(reroll?'REROLL · ':'MERGE · ')+'5&times; <span style="color:'+pc.color+'">'+pc.icon+' '+pc.label+'</span> &rarr;</div>'+
+    '<div style="text-align:center;font-size:2.8rem;line-height:1">'+tm.icon+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>';
+  if(typeof showGenericModal==='function'){
+    showGenericModal(reroll?'🎲':'🧰',reroll?'Gear Reroll!':'Gear Merge!','');
+    var bodyEl=document.getElementById('generic-modal-body');
+    if(bodyEl){bodyEl.style.textAlign='center';bodyEl.innerHTML=html;}
+  }
+}
+function renderGearFusion(){
+  var gear=Array.isArray(G.gearInv)?G.gearInv:[];
+  if(!gear.length){
+    return '<div style="text-align:center;padding:34px 16px;color:rgba(255,255,255,0.4);font-size:0.85rem;line-height:1.6;">🧰 No gear yet.<br>Find gear on adventures, then merge 5 of the same rarity here.</div>';
+  }
+  // keep the rarity filter on something you actually own
+  if(!gear.some(function(g){return g.rarity===gearFusionRarityFilter;}))gearFusionRarityFilter=gear[0].rarity;
+  var filled=gearFusionSlots.filter(function(s){return s!==null;});
+  var filledCount=filled.length;
+  var sel=getGearFusionRarity();
+  var reroll=sel?isRerollRarity(sel):false;
+  var outR=sel?mergeOutputRarity(sel):null;
+  var outRc=outR?RARITY_CONFIG[outR]:null;
+  var selRc=sel?RARITY_CONFIG[sel]:null;
+  var ready=filledCount===5;
+  var html='';
+  html+='<div class="fusion-slots-area">';
+  html+='<div class="fusion-slots-title">Select 5 Gear of the Same Rarity</div>';
+  html+='<div style="display:flex;gap:5px;flex-wrap:wrap;min-height:44px;margin-bottom:8px;">';
+  for(var i=0;i<5;i++){
+    var uid=gearFusionSlots[i];
+    var g=uid?gearById(uid):null;
+    var rc2=g?RARITY_CONFIG[g.rarity]:null;
+    if(g){
+      var tmc=gearTypeMeta(g.type);
+      html+='<div style="display:flex;align-items:center;gap:4px;background:'+(rc2?rc2.color+'22':'rgba(0,0,0,0.3)')+';border:1.5px solid '+(rc2?rc2.color+'66':'rgba(58,92,184,0.4)')+';border-radius:20px;padding:4px 10px 4px 6px;cursor:pointer;" data-gearfusion-slot="'+i+'">';
+      html+='<span style="font-size:1.1rem;">'+tmc.icon+'</span>';
+      html+='<span style="font-size:0.6rem;color:rgba(255,255,255,0.7);">'+tmc.name+'</span>';
+      html+='<span style="font-size:0.55rem;color:rgba(255,100,100,0.8);margin-left:2px;">✕</span>';
+      html+='</div>';
+    } else {
+      html+='<div style="width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.2);border:2px dashed rgba(58,92,184,0.4);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.2);">'+(i+1)+'</div>';
+    }
+  }
+  html+='</div>';
+  var fr=sel||gearFusionRarityFilter;
+  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0;}).length;
+  html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
+  html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(sel&&selRc?' · <span style="color:'+selRc.color+'">'+selRc.label+'</span>':'')+'</div>';
+  if(filledCount<5&&avail>0)html+='<button class="fusion-auto-btn" onclick="autoSelectGearFusion()">⚡ Auto</button>';
+  if(filledCount>0)html+='<button class="fusion-clear-btn" onclick="clearGearFusionSlots()">✕ Clear</button>';
+  html+='</div>';
+  if(filledCount>0&&outRc){
+    html+='<div style="text-align:center;font-size:1.2rem;color:rgba(255,255,255,0.3);margin-bottom:6px;">▼</div>';
+    html+='<div style="background:rgba(0,0,0,0.3);border-radius:12px;padding:10px 14px;margin-bottom:10px;">';
+    html+='<div style="font-family:\'Fredoka One\',cursive;font-size:0.85rem;color:'+outRc.color+';margin-bottom:4px;">'+(reroll?'🔄 ':'')+outRc.icon+' '+outRc.label+' Gear'+(reroll?' · New abilities':'')+'</div>';
+    gearFusionTypeOdds().forEach(function(o){var tm=gearTypeMeta(o.type);html+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+tm.icon+' '+tm.name+' · '+o.pct+'%</div>';});
+    html+='</div>';
+  }
+  html+='<button class="fusion-btn '+(ready?'ready':'not-ready')+'" '+(ready?'onclick="doGearFusion()"':'')+'>🧰 '+(ready?(reroll?'Reroll Gear!':'Merge Gear!'):'Select 5 gear of the same rarity')+'</button>';
+  html+='</div>';
+  html+='<div class="fusion-pets-header"><div class="fusion-pets-title">🧰 Your Gear</div></div>';
+  html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">';
+  RARITY_PROGRESSION.forEach(function(r){
+    var rc3=RARITY_CONFIG[r];if(!rc3)return;
+    var count=gear.filter(function(g){return g.rarity===r;}).length;
+    if(count===0)return;
+    html+='<div data-gearfusion-rarity="'+r+'" style="padding:4px 10px;background:rgba(27,45,78,0.5);border:1.5px solid '+(gearFusionRarityFilter===r?rc3.color:'rgba(58,92,184,0.6)')+';border-radius:20px;font-size:0.62rem;color:'+(gearFusionRarityFilter===r?rc3.color:'rgba(255,255,255,0.5)')+';cursor:pointer;">'+rc3.icon+' '+rc3.label+' ('+count+')</div>';
+  });
+  html+='</div>';
+  var eligR=sel||gearFusionRarityFilter;
+  var show=gear.filter(function(g){return g.rarity===eligR;});
+  if(!show.length){
+    html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No '+eligR+' gear — find more on adventures!</div>';
+  } else {
+    html+='<div class="fusion-pet-grid">';
+    show.forEach(function(g){
+      var rc4=RARITY_CONFIG[g.rarity]||RARITY_CONFIG.common;
+      var isSel=gearFusionSlots.indexOf(g.uid)>=0;
+      var isFull=filledCount>=5&&!isSel;
+      var wrong=sel&&g.rarity!==sel;
+      var disabled=isFull||wrong;
+      var tm=gearTypeMeta(g.type);
+      var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
+      html+='<div class="fusion-pet-card'+(isSel?' selected':disabled?' disabled':'')+'" style="border-color:'+(isSel?rc4.color+'aa':rc4.color+'33')+';background:'+(isSel?rc4.color+'15':'rgba(27,45,78,0.5)')+'" data-gearfusion-gear="'+g.uid+'">';
+      if(isSel)html+='<div class="fusion-check">✓</div>';
+      html+='<div class="fp-icon">'+tm.icon+'</div>';
+      html+='<div class="fp-name">'+tm.name+'</div>';
+      html+='<div class="fp-rarity" style="color:'+rc4.color+'">'+rc4.label+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  }
+  return html;
+}
+// Event delegation for GEAR fusion (separate from pet fusion)
+document.addEventListener('click',function(e){
+  var d=e.target;
+  while(d&&d!==document){
+    if(d.dataset&&d.dataset.gearfusionGear!==undefined){
+      if(!d.classList.contains('disabled'))addGearFusionSlot(parseFloat(d.dataset.gearfusionGear));
+      return;
+    }
+    if(d.dataset&&d.dataset.gearfusionSlot!==undefined){
+      removeGearFusionSlot(parseInt(d.dataset.gearfusionSlot));
+      return;
+    }
+    if(d.dataset&&d.dataset.gearfusionRarity!==undefined){
+      gearFusionRarityFilter=d.dataset.gearfusionRarity;
       renderFusion();
       return;
     }
