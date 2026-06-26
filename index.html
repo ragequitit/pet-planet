@@ -4582,10 +4582,9 @@ function lootInvHtml(){
   G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; G.relics=G.relics||{};
   var maps=LOST_WORLDS.filter(function(id){return (G.mapsOwned[id]||0)>0 && !G.lostUnlocked[id];});
   var rel=LOST_WORLDS.filter(function(id){return relicCount(id)>0;});
-  var stones=ownedStoneIds();
   var gear=Array.isArray(G.gearInv)?G.gearInv:[];
   var h='';
-  if(!maps.length && !rel.length && !stones.length && !gear.length){
+  if(!maps.length && !rel.length && !gear.length){
     h+='<div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here. Find <b>Secret Maps</b> and <b>Relics</b> on adventures — they land in your bag, ready to use.</p></div>';
   }else{
     if(maps.length){
@@ -4612,15 +4611,6 @@ function lootInvHtml(){
           +'<div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;">'+meta.relic+'</div><div style="font-size:0.7rem;color:rgba(255,255,255,0.5);">'+meta.world+'</div></div>'
           +'<div style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+relicCount(id)+'</div>'
           +'</div>';
-      });
-      h+='</div>';
-    }
-    if(stones.length){
-      h+='<div class="adv-sech">🎯 Skill Stones</div>';
-      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Bring these to the <b>Pet Trainer</b> (Workshop) to reroll a pet&#39;s ability.</div>';
-      h+='<div style="display:flex;flex-direction:column;gap:6px;">';
-      stones.forEach(function(id){var m=ABILITY_META[id];
-        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><span style="font-size:1.4rem;width:30px;text-align:center;">'+abilityIconImg(id)+'</span><div style="flex:1;"><div style="font-weight:800;font-size:0.86rem;color:'+m.color+'">'+m.name+' Stone</div></div><span style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+skillStoneCount(id)+'</span></div>';
       });
       h+='</div>';
     }
@@ -7067,6 +7057,18 @@ function showTrainerResult(pet){
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='Its new ability is set.';inv.style.display='';}
   openPetResultModal(pet);
 }
+function showStoneInfo(id){
+  var m=ABILITY_META[id]; if(!m||typeof showGenericModal!=='function')return;
+  var eff=m.desc('').replace(/^[+\-]?%\s*/,'');
+  var cnt=skillStoneCount(id);
+  showGenericModal(m.icon, m.name+' Stone', '');
+  var b=document.getElementById('generic-modal-body');
+  if(b){b.style.textAlign='center';b.innerHTML=
+    '<div style="font-size:2.6rem;line-height:1;margin:2px 0 10px;display:flex;align-items:center;justify-content:center;">'+abilityIconImg(id)+'</div>'
+    +'<div style="font-weight:800;font-size:0.9rem;color:'+m.color+';margin-bottom:8px;">Boosts '+eff+'</div>'
+    +'<div style="font-size:0.8rem;color:rgba(255,255,255,0.78);line-height:1.55;">Use this stone in <b>Train a Pet</b> to reroll one of a pet&#39;s abilities into <b>'+m.name+'</b>. The value rolls within the pet&#39;s rarity range — higher rarity, higher rolls.</div>'
+    +'<div style="margin-top:12px;font-weight:800;color:#cdb6ff;font-size:0.95rem;">You own \u00d7'+cnt+'</div>';}
+}
 function renderPetTrainer(){
   var host=document.getElementById('mutate-wrap');if(!host)return;
   var owned=ownedStoneIds();
@@ -7075,9 +7077,13 @@ function renderPetTrainer(){
   h+='<div class="lab-sectitle">🎒 My Skill Stones</div>';
   if(owned.length===0){h+='<div class="reroll-note">You have no Skill Stones yet. They drop from adventures.</div>';}
   else{
-    h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+    h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">';
     owned.forEach(function(id){var m=ABILITY_META[id];
-      h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid rgba(111,138,224,0.35);border-radius:12px;padding:8px 11px;"><span style="font-size:1.35rem;width:28px;text-align:center;">'+abilityIconImg(id)+'</span><span style="flex:1;font-weight:800;font-size:0.86rem;color:'+m.color+'">'+m.name+' Stone</span><span style="font-weight:800;color:#cdb6ff;font-size:0.95rem;">×'+skillStoneCount(id)+'</span></div>';
+      h+='<div onclick="showStoneInfo(\''+id+'\')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid '+m.color+'55;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;">'
+        +'<span style="position:absolute;top:3px;right:4px;font-size:0.58rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.4);border:1px solid '+m.color+'66;border-radius:8px;padding:1px 5px;">\u00d7'+skillStoneCount(id)+'</span>'
+        +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+abilityIconImg(id)+'</span>'
+        +'<span style="font-weight:800;font-size:0.6rem;color:'+m.color+';text-align:center;line-height:1.15;">'+m.name+'</span>'
+        +'</div>';
     });
     h+='</div>';
   }
@@ -7098,6 +7104,30 @@ function tickChambers(){
   } else if(workshopSubTab==='mutate'){
     // STEG 4b: Mutate-stationen ersatt av Pet Trainer (instant, ingen tick). Kammar-tick avstängd.
   }
+}
+function stonesInvHtml(){
+  var stones=ownedStoneIds();
+  var h='<div class="adv-sech">🎯 Skill Stones</div>';
+  h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Bring these to the <b>Pet Trainer</b> (Workshop) to reroll a pet&#39;s ability. Tap a stone for info.</div>';
+  if(!stones.length){
+    h+='<div class="inv-coming"><div class="ic-icon">🎯</div><p>No Skill Stones yet. They drop from <b>adventures</b>.</p></div>';
+  }else{
+    h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;">';
+    stones.forEach(function(id){var m=ABILITY_META[id];
+      h+='<div onclick="showStoneInfo(\''+id+'\')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid '+m.color+'55;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;">'
+        +'<span style="position:absolute;top:3px;right:4px;font-size:0.58rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.4);border:1px solid '+m.color+'66;border-radius:8px;padding:1px 5px;">\u00d7'+skillStoneCount(id)+'</span>'
+        +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+abilityIconImg(id)+'</span>'
+        +'<span style="font-weight:800;font-size:0.6rem;color:'+m.color+';text-align:center;line-height:1.15;">'+m.name+'</span>'
+        +'</div>';
+    });
+    h+='</div>';
+  }
+  return h;
+}
+function stonesSectionHtml(){
+  var h=stonesInvHtml();
+  if(G.mutationCores&&G.mutationCores.length){h+='<div class="adv-sech" style="margin-top:16px;">🧪 Ability Cores</div>'+coresInvHtml();}
+  return h;
 }
 function coresInvHtml(){
   var groups=groupedCores();
@@ -8544,7 +8574,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99n<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99p<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10632,7 +10662,7 @@ function renderInventory(){
   var html='<div class="inv-tabs">';
   html+='<div class="inv-tab" id="itab-shells" onclick="showInvSection(\'shells\')"><span class="it-ic"><img src="'+ASSET_BASE+'/assets/ui/shell/starter-shell.png" alt="" onerror="if(this.dataset.fb){this.replaceWith(document.createTextNode(\'🐚\'))}else{this.dataset.fb=1;this.src=\''+ASSET_BASE+'/assets/ui/shell/meadow-shell.png\'}"></span><span class="it-lb">Shells</span></div>';
   html+='<div class="inv-tab" id="itab-eggs" onclick="showInvSection(\'eggs\')"><span class="it-ic"><img src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🥚\'))"></span><span class="it-lb">Eggs</span></div>';
-  html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')"><span class="it-ic">🧪</span><span class="it-lb">Cores</span></div>';
+  html+='<div class="inv-tab" id="itab-cores" onclick="showInvSection(\'cores\')"><span class="it-ic"><img src="'+ASSET_BASE+'/assets/ui/skill%20stones/xp-boost.png" alt="" onerror="this.replaceWith(document.createTextNode(\'🎯\'))"></span><span class="it-lb">Stones</span></div>';
   html+='<div class="inv-tab" id="itab-loot" onclick="showInvSection(\'loot\')"><span class="it-ic">'+uiIco('inventory/loot','🗝️')+'</span><span class="it-lb">Loot</span></div>';
   html+='</div>';
   html+='<div id="isec-shells"><div class="inv-total"><span class="inv-total-label">Total Shells</span><span class="inv-total-val" id="inv-shell-total">'+totalShells+'</span></div><div class="inv-grid">';
@@ -10642,7 +10672,7 @@ function renderInventory(){
   ownedEventEggIds().forEach(function(_eid){var _evC=G.eggsOwned[_eid]||0;var _evM=eventEggMetaById(_eid);html+='<div class="inv-card"><div class="inv-icon">'+eventEggIconHtmlById(_eid,30)+'</div><div><div class="inv-name" style="color:var(--gold)">'+_evM.name+'</div><div class="inv-count" id="inv-e-'+_eid+'">'+_evC+'</div></div></div>';});
   EGG_SHOP.forEach(function(egg){var count=G.eggsOwned[egg.id]||0;if(count===0)return;html+='<div class="inv-card'+(count===0?' empty':'')+'"><div class="inv-icon"><img src="'+eggShopIconUrl(egg.id)+'" alt="" style="width:30px;height:30px;object-fit:contain" onerror="this.replaceWith(document.createTextNode(\''+egg.icon+'\'))"></div><div><div class="inv-name" style="color:var(--gold)">'+egg.name+'</div><div class="inv-count" id="inv-e-'+egg.id+'">'+count+'</div></div></div>';});
   html+='</div></div>';
-  html+='<div id="isec-cores" style="display:none;">'+coresInvHtml()+'</div>';
+  html+='<div id="isec-cores" style="display:none;">'+stonesSectionHtml()+'</div>';
   html+='<div id="isec-loot" style="display:none;">'+lootInvHtml()+'</div>';
   wrap.innerHTML=html;
   showInvSection(activeInvSection);
