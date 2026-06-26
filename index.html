@@ -4358,8 +4358,9 @@ function lootInvHtml(){
   var maps=LOST_WORLDS.filter(function(id){return (G.mapsOwned[id]||0)>0 && !G.lostUnlocked[id];});
   var rel=LOST_WORLDS.filter(function(id){return relicCount(id)>0;});
   var stones=ownedStoneIds();
+  var gear=Array.isArray(G.gearInv)?G.gearInv:[];
   var h='';
-  if(!maps.length && !rel.length && !stones.length){
+  if(!maps.length && !rel.length && !stones.length && !gear.length){
     h+='<div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here. Find <b>Secret Maps</b> and <b>Relics</b> on adventures — they land in your bag, ready to use.</p></div>';
   }else{
     if(maps.length){
@@ -4398,11 +4399,37 @@ function lootInvHtml(){
       });
       h+='</div>';
     }
+    if(gear.length){
+      var rord=Object.keys(RARITY_CONFIG);
+      var gs=gear.slice().sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
+      h+='<div class="adv-sech">🧰 Adventure Gear</div>';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Gear boosts your expeditions. Each has 2 abilities &mdash; higher rarity is stronger. Equip &amp; merge coming soon.</div>';
+      h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+      gs.forEach(function(g){
+        var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+        var tm=gearTypeMeta(g.type);
+        var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
+        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:8px 11px;">'
+          +'<div style="font-size:1.5rem;width:30px;text-align:center;">'+tm.icon+'</div>'
+          +'<div style="flex:1;min-width:0;">'
+            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'
+            +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.72);margin-top:2px;line-height:1.5;">'+ab+'</div>'
+          +'</div>'
+          +'</div>';
+      });
+      h+='</div>';
+      h+='<div style="margin-top:10px;background:rgba(255,255,255,0.04);border-radius:10px;padding:9px 11px;">';
+      h+='<div style="font-size:0.72rem;font-weight:800;color:rgba(255,255,255,0.7);margin-bottom:5px;">ℹ️ What gear abilities do</div>';
+      GEAR_ABILITIES.forEach(function(id){var m=GEAR_ABILITY_META[id];
+        h+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);line-height:1.7;"><b style="color:rgba(255,255,255,0.8)">'+m.name+'</b> &mdash; '+m.blurb+'</div>';});
+      h+='</div>';
+    }
   }
   // TEMP dev tools (remove before launch)
   h+='<div style="margin-top:14px;display:flex;gap:6px;">';
   h+='<button onclick="devGrantMap()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 map</button>';
   h+='<button onclick="devGrantRelic()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 relic</button>';
+  h+='<button onclick="devAddGearQuiet()" style="flex:1;background:#3a2a5e;border:1px dashed #6a4fa0;border-radius:8px;color:#cdb6ff;font-size:0.7rem;padding:7px;cursor:pointer;">🐞 (dev) +1 gear</button>';
   h+='</div>';
   return h;
 }
@@ -6668,6 +6695,13 @@ function devGiveTestGear(){
   }
   if(typeof saveGame==='function')saveGame();
 }
+function devAddGearQuiet(){
+  if(!Array.isArray(G.gearInv))G.gearInv=[];
+  var bands=['band1','band2','band3','band4','band5'];
+  G.gearInv.push(rollGear(bands[Math.floor(Math.random()*bands.length)]));
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderInventory==='function')renderInventory();
+}
 function ownedStoneIds(){return ABILITIES.filter(function(id){return skillStoneCount(id)>0;});}
 
 var trainerSetup=null; // {petUid, slot, stoneId}
@@ -8227,7 +8261,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.81<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.82<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
