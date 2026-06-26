@@ -1180,12 +1180,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .htc-meter{flex:1;height:7px;background:rgba(0,0,0,0.45);border-radius:4px;overflow:hidden;border:1px solid rgba(0,0,0,0.35);}
 .htc-fill{height:100%;background:linear-gradient(90deg,#b388ff,#7c4dff);border-radius:5px;transition:width 0.5s;}
 .htc-pct{font-family:'Fredoka One',cursive;font-size:0.62rem;color:rgba(255,255,255,0.75);flex:0 0 auto;}
-.htc-speed{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5px;border:none;border-radius:11px;padding:4px 12px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
+.htc-speed{flex:0 0 auto;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:4px;border:none;border-radius:10px;padding:4px 9px;background:linear-gradient(180deg,#3a78ff,#2456c8);color:#fff;cursor:pointer;box-shadow:0 3px 0 #163b8c;}
 .htc-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #163b8c;}
-.htc-gemline{display:flex;align-items:center;gap:4px;font-family:'Fredoka One',cursive;font-size:0.88rem;}
-.htc-gemline .gem-ic{width:1.2em;height:1.2em;}
-.htc-lbl{font-family:'Fredoka One',cursive;font-size:0.82rem;line-height:1;}
-.htc-div{font-family:'Fredoka One',cursive;font-size:0.82rem;line-height:1;color:rgba(255,255,255,0.5);}
+.htc-gemline{display:flex;align-items:center;gap:3px;font-family:'Fredoka One',cursive;font-size:0.78rem;}
+.htc-gemline .gem-ic{width:1.0em;height:1.0em;}
+.htc-lbl{font-family:'Fredoka One',cursive;font-size:0.74rem;line-height:1;}
+.htc-div{font-family:'Fredoka One',cursive;font-size:0.74rem;line-height:1;color:rgba(255,255,255,0.5);}
 .hatch-inv{font-size:0.72rem;color:rgba(255,255,255,0.55);margin-top:8px;text-align:center;}
 @media (max-height:680px){#pet-result-card{width:min(76vw,300px);}}
 /* DESKTOP-AWARE: på breda fönster (webbläsare) är scenen högre → lyft idle-petet 50px. Mobil (smalt fönster) orörd. */
@@ -8546,7 +8546,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.94<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.95<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
