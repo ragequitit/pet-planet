@@ -2923,14 +2923,17 @@ var IDLE_SLOT_MAX=1; // STEG 6.6a: idle = EN idle-pet (reversibelt — höj till
 var STAMINA_MAX=100;
 var ADV_STAMINA_COST=34;       // ~3 turer på full mätare
 var STAMINA_REGEN_PER_MIN=10;  // full vila ~10 min
-function petStamina(pet){ if(!pet)return 0; if(typeof pet.stamina!=='number')pet.stamina=STAMINA_MAX; return Math.max(0,Math.min(STAMINA_MAX,pet.stamina)); }
+function petStamina(pet){ if(!pet)return 0; var mx=staminaMax(); if(typeof pet.stamina!=='number')pet.stamina=mx; return Math.max(0,Math.min(mx,pet.stamina)); }
+function staminaMax(){ return Math.round(STAMINA_MAX*(1+((typeof gearBonuses==='function'?(gearBonuses().stamina||0):0))/100)); } // STEG 6.8c: Stamina-gear höjer max
 function tickStamina(dt){
   if(!G.hatchedPets)return;
-  var inc=STAMINA_REGEN_PER_MIN/60*dt;
+  var gb=(typeof gearBonuses==='function')?gearBonuses():{stamina:0};
+  var mx=Math.round(STAMINA_MAX*(1+(gb.stamina||0)/100));
+  var inc=STAMINA_REGEN_PER_MIN/60*dt*(1+(gb.stamina||0)/100); // Stamina-gear → kortare vila
   G.hatchedPets.forEach(function(p){
-    if(typeof p.stamina!=='number')p.stamina=STAMINA_MAX;
+    if(typeof p.stamina!=='number')p.stamina=mx;
     if(typeof isPetBusy==='function'&&isPetBusy(p.uid))return; // pets ute på uppdrag vilar inte
-    if(p.stamina<STAMINA_MAX)p.stamina=Math.min(STAMINA_MAX,p.stamina+inc);
+    if(p.stamina<mx)p.stamina=Math.min(mx,p.stamina+inc);
   });
 }
 var IDLE_SLOT_COSTS=[{cur:'coins',amt:10000},{cur:'coins',amt:100000},{cur:'gems',amt:50},{cur:'gems',amt:150}]; // PLATSHÅLLARE: kostnad för idle-slot 2..5 (Sparks/Gems) → Balance Sheet
@@ -4006,6 +4009,24 @@ function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildin
 function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
 function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
+// STEG 6.8: summera all EQUIPPAD gear (G.gearEquipped) → bonus-map. Global uppsättning på baslägret.
+function gearBonuses(){
+  var b={speed:0,haul:0,shellBoost:0,sparkBoost:0,findChance:0,affinity:0,offlineBoost:0,stamina:0};
+  if(!G.gearEquipped)return b;
+  ['backpack','compass','boots','charm','tool'].forEach(function(t){
+    var uid=G.gearEquipped[t];if(uid==null)return;
+    var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});
+    if(!g||!g.abilities)return;
+    g.abilities.forEach(function(a){ if(b[a.id]!=null)b[a.id]+=(a.v||0); });
+  });
+  return b;
+}
+// Effektiv uppdragstid efter Speed-gear (kapas vid -80%). STEG 6.8a.
+function advEffDur(adv){
+  var spd=(gearBonuses().speed||0);
+  var mult=1-Math.min(0.8,spd/100);
+  return Math.max(1000,Math.round((adv.dur||0)*mult));
+}
 function formatTime(secs){if(secs<60)return secs+'s';if(secs<3600)return Math.floor(secs/60)+'m '+(secs%60)+'s';return Math.floor(secs/3600)+'h '+Math.floor((secs%3600)/60)+'m';}
 var BOOST_MULT=2; // x2 event-boostar (tunbart)
 function boostActive(kind){return !!(G.boosts&&G.boosts[kind]&&G.boosts[kind]>Date.now());}
@@ -4137,33 +4158,36 @@ function advEffChances(adv,pet){
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS;
   var aff=!!(pet&&adv.affinity&&pet.world===adv.affinity);
   var aBonus=aff?1.5:1;
-  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult;
+  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult*(1+((gearBonuses().findChance)||0)/100);
   return {aff:aff,items:(adv.bonusLoot||[]).map(function(B){
     return {type:B.type,id:B.id,pct:Math.min(1,B.chance*luckMult)};
   })};
 }
 function rollAdvReward(adv,pet){
   var s=petAdvSum(pet);
+  var gb=gearBonuses(); // STEG 6.8b: equippad gear
+  var haulM=1+(gb.haul||0)/100, sparkM=1+(gb.sparkBoost||0)/100, shellM=1+(gb.shellBoost||0)/100, findM=1+(gb.findChance||0)/100;
   var roll=Math.random();
   roll=roll+(s.luck/100)*(1-roll);if(roll>1)roll=1; // Luck biasar GARANTI-belöningen uppåt
   // AFFINITY: pet vars värld matchar uppdraget ger extra
   var aff=pet&&adv.affinity&&pet.world===adv.affinity;
   var aCoin=aff?1.35:1, aShell=aff?1.35:1, aBonus=aff?1.5:1;
+  var expM=aff?(1+(gb.affinity||0)/100):1; // STEG 6.8c: Expedition Bonus-gear, bara på matchande värld
   // COINS: förankrade i din EPS (pet:en jobbar i coinRate× din produktion) med golv för tidig game
   var base=Math.max(adv.coinFloor,eps()*(adv.dur/1000)*adv.coinRate);
-  var coins=Math.floor(base*(1+s.coinGain/100)*aCoin);
+  var coins=Math.floor(base*(1+s.coinGain/100)*aCoin*sparkM*haulM*expM);
   // SHELLS: blandad loot, varje rad delas ut (lutar uppåt med luck + shellGain + affinity)
   var shells=[];
   if(adv.isArea){
     // LOST WORLD area-expedition: behåller sin EGEN (lost world-)shell — separat historia, oförändrad.
     adv.shellLoot.forEach(function(L){
-      var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell);
+      var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell*shellM*haulM*expM);
       if(amt>0)shells.push({type:L.type,amt:amt});
     });
   }else{
     // HEMMA-adventures: behåll den tunade TOTAL-mängden, men rulla varje shell från den viktade 6-hemma-poolen.
     var totShell=0;
-    adv.shellLoot.forEach(function(L){ totShell+=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell); });
+    adv.shellLoot.forEach(function(L){ totShell+=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell*shellM*haulM*expM); });
     var byType={};
     for(var su=0;su<totShell;su++){ var sid=rollShell().id; byType[sid]=(byType[sid]||0)+1; }
     Object.keys(byType).forEach(function(t){ if(byType[t]>0)shells.push({type:t,amt:byType[t]}); });
@@ -4171,7 +4195,7 @@ function rollAdvReward(adv,pet){
   // BONUS-LOOT: separata chans-rolls per rad (låg chans; Luck + affinity höjer chansen) — "oooh vad fick jag!"
   var lvl=pet?petLevelFromXp(pet.xp||0):1;
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS; // högre nivå → bättre chans på sällsynt loot
-  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult; // T5 Luck (15) → +30% chans, affinity → +50%, nivå → upp till +36%
+  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult*findM; // T5 Luck (15) → +30% chans, affinity → +50%, nivå → upp till +36%
   var bonus=[];
   (adv.bonusLoot||[]).forEach(function(B){
     if(Math.random()<B.chance*luckMult){
@@ -4212,7 +4236,7 @@ function startAdventure(advId,petUid){
   var eqi=G.equippedPets.indexOf(petUid);               // är pet utrustad → ta av den
   if(eqi>=0){G.equippedPets[eqi]=null;pet.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}
   var now=Date.now();
-  G.adventures.push({advId:advId,petUid:petUid,startAt:now,endAt:now+adv.dur});
+  G.adventures.push({advId:advId,petUid:petUid,startAt:now,endAt:now+advEffDur(adv)});
   G.stats.totalPetsSentOnAdventures=(G.stats.totalPetsSentOnAdventures||0)+1;
   closeAdvModal();
   if(typeof updateHUD==='function')updateHUD();
@@ -4300,7 +4324,7 @@ function openAdvPicker(advId){
       var oddsLine='<div class="app-odds"><span class="app-odds-lbl">BONUS</span>'+oddsHtml+(ec.aff?' <span class="app-aff-tag">🎯 Affinity!</span>':'')+'</div>';
       html+='<div class="adv-pick-pet'+(canSend?'':' locked')+'"'+(canSend?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+petIco(p)+'</div>';
-      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'<div style="display:flex;align-items:center;gap:5px;margin-top:3px;"><span style="font-size:0.62rem;">💪</span><div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.35);overflow:hidden;"><div style="height:100%;width:'+Math.round(stam)+'%;background:'+(tired?'#e0683a':'linear-gradient(90deg,#3aa0e0,#5ad0e0)')+';"></div></div><span style="font-size:0.58rem;color:rgba(255,255,255,0.55);">'+Math.round(stam)+'</span></div></div>';
+      html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'<div style="display:flex;align-items:center;gap:5px;margin-top:3px;"><span style="font-size:0.62rem;">💪</span><div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.35);overflow:hidden;"><div style="height:100%;width:'+Math.min(100,Math.round(stam/Math.max(1,staminaMax())*100))+'%;background:'+(tired?'#e0683a':'linear-gradient(90deg,#3aa0e0,#5ad0e0)')+';"></div></div><span style="font-size:0.58rem;color:rgba(255,255,255,0.55);">'+Math.round(stam)+'</span></div></div>';
       html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
       html+=(canSend?'<div class="app-go">Send →</div>':(!ok?'<div class="app-lock">Needs<br>Lv '+req+'</div>':'<div class="app-lock">😴<br>Resting</div>'))+'</div>';
     });
@@ -4610,7 +4634,8 @@ function renderAdventure(){
   var coinsNow=Math.max(sel.coinFloor,Math.floor(eps()*(sel.dur/1000)*sel.coinRate));
   html+='<div class="adv-detail" style="background-color:'+sel.col+';background-image:url('+advAsset(sel.id,'card')+')">';
   html+='<div class="adv-dscrim">';
-  html+='<div class="adv-dhead"><span class="adv-dic">'+sel.icon+'</span><span class="adv-dname">'+sel.name+'</span><span class="adv-dtime">⏱️ '+formatTime(Math.floor(sel.dur/1000))+'</span></div>';
+  var _eff=advEffDur(sel);var _spd=Math.round(gearBonuses().speed||0);
+  html+='<div class="adv-dhead"><span class="adv-dic">'+sel.icon+'</span><span class="adv-dname">'+sel.name+'</span><span class="adv-dtime">⏱️ '+formatTime(Math.floor(_eff/1000))+(_spd>0?' <span style="color:#7fe0ff;">⚡-'+Math.min(80,_spd)+'%</span>':'')+'</span></div>';
   html+='<div class="adv-ddesc">'+sel.desc+'</div>';
   html+='<div class="adv-dreq">'+LOCK_IMG+' Requires Lv '+advReqLevel(sel)+'+</div>';
   html+='<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin:-4px 0 8px;">Luck, pet level &amp; matching-world pets boost these — pick a pet to see its exact odds.</div>';
@@ -8426,7 +8451,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.88<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.91<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12909,7 +12934,7 @@ if(savedData){
     offlineMs=Math.min(Date.now()-savedData.savedAt,8*60*60*1000);
     if(offlineMs>30000){
       // Offline Gain (pets + bas-upgrade) höjer hur stor andel av din takt du behåller offline. Tak = 100% (aldrig bättre än online).
-      var offMult=Math.min(1,(G.offlineMult||0.5)+(getActiveBonuses().idleGain/100));
+      var offMult=Math.min(1,(G.offlineMult||0.5)+(getActiveBonuses().idleGain/100)+(((typeof gearBonuses==='function'?(gearBonuses().offlineBoost||0):0))/100));
       var offlineRate=eps()*offMult;
       offlineCoins=offlineRate*(offlineMs/1000);
       G.coins+=offlineCoins;G.total+=offlineCoins;
