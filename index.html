@@ -3322,14 +3322,14 @@ var GEAR_TYPES=[
 // Throughput pool (8) — the 2nd ability rolls from here (never the same as the lean).
 var GEAR_ABILITIES=['speed','haul','shellBoost','sparkBoost','findChance','affinity','offlineBoost','stamina'];
 var GEAR_ABILITY_META={
-  speed:       {name:'Speed',        icon:'⚡',desc:function(v){return '-'+v+'% adventure time';}},
-  haul:        {name:'Haul',         icon:'🎒',desc:function(v){return '+'+v+'% total adventure haul';}},
-  shellBoost:  {name:'Shell Boost',  icon:'🐚',desc:function(v){return '+'+v+'% shells';}},
-  sparkBoost:  {name:'Spark Boost',  icon:'🪙',desc:function(v){return '+'+v+'% Sparks';}},
-  findChance:  {name:'Find Chance',  icon:'🔍',desc:function(v){return '+'+v+'% surprise-find chance';}},
-  affinity:    {name:'Affinity',     icon:'💞',desc:function(v){return '+'+v+'% right-world affinity';}},
-  offlineBoost:{name:'Offline Boost',icon:'🌙',desc:function(v){return '+'+v+'% idle earnings';}},
-  stamina:     {name:'Stamina',      icon:'💪',desc:function(v){return '+'+v+'% stamina';}},
+  speed:       {name:'Speed',          icon:'⚡',blurb:'Adventures finish faster'},
+  haul:        {name:'Haul',           icon:'📦',blurb:'Brings home more loot'},
+  shellBoost:  {name:'Shell Boost',    icon:'🐚',blurb:'Extra shells from adventures'},
+  sparkBoost:  {name:'Spark Boost',    icon:'🪙',blurb:'Extra Sparks from adventures'},
+  findChance:  {name:'Lucky Find',     icon:'🍀',blurb:'Better chance of a surprise find'},
+  affinity:    {name:'Expedition Bonus',icon:'💞',blurb:'Bonus on its matching world'},
+  offlineBoost:{name:'Offline Boost',  icon:'🌙',blurb:'More idle earnings while away'},
+  stamina:     {name:'Stamina',        icon:'💪',blurb:'More energy, shorter rest'},
 };
 // Gear-drop rarity bands (design 2026-06-26). Band→real adventures mapped in Balance Sheet.
 var GEAR_RARITY_WEIGHTS={
@@ -3363,13 +3363,11 @@ function rollGear(band){
   abilities.push({id:sid,v:second.v,mega:second.mega});
   return {uid:Date.now()+Math.random(),type:type.id,rarity:rarity,abilities:abilities,equippedSlot:-1};
 }
-// One ability → display line (icon + name + value, ★ on Mega). Used by DEV preview now; bag UI later.
+// One ability → compact display: NAME + value only (full meaning lives in How to Play). ★ on Mega.
 function gearAbilityLine(ab){
-  var m=GEAR_ABILITY_META[ab.id]||{name:ab.id,icon:'❔',desc:function(v){return '+'+v+'%';}};
-  var val=ab.mega
-    ? '<span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">'+m.desc(ab.v)+' ★</span>'
-    : m.desc(ab.v);
-  return m.icon+' <b>'+m.name+'</b> · '+val;
+  var m=GEAR_ABILITY_META[ab.id]||{name:ab.id};
+  if(ab.mega)return '<b>'+m.name+'</b> <span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+ab.v+'% ★</span>';
+  return '<b>'+m.name+'</b> +'+ab.v+'%';
 }
 
 // ============================================================
@@ -6651,14 +6649,17 @@ function devGrantStones(){ABILITIES.forEach(function(id){grantSkillStone(id,3);}
 function devGiveTestGear(){
   if(!Array.isArray(G.gearInv))G.gearInv=[];
   var bands=['band1','band2','band3','band4','band5'];
-  var g=rollGear(bands[Math.floor(Math.random()*bands.length)]);
+  var band=bands[Math.floor(Math.random()*bands.length)];
+  var bandLbl={band1:'Band 1 · early',band2:'Band 2 · mid',band3:'Band 3 · late home',band4:'Band 4 · Lost shallow',band5:'Band 5 · Lost deep'}[band];
+  var g=rollGear(band);
   G.gearInv.push(g);
   var rc=RARITY_CONFIG[g.rarity]||{label:g.rarity,color:'#aaa',icon:'⚪'};
   var tm=gearTypeMeta(g.type);
   var lines=g.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
   var html='<div style="text-align:center;font-size:2.6rem;line-height:1">'+tm.icon+'</div>'+
     '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
-    '<div style="font-size:0.84rem;line-height:1.5;margin-top:8px;text-align:left;display:inline-block">'+lines+'</div>'+
+    '<div style="text-align:center;opacity:.5;font-size:0.66rem;margin-bottom:6px">rolled from '+bandLbl+'</div>'+
+    '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>'+
     '<div style="text-align:center;opacity:.55;font-size:0.72rem;margin-top:10px">Gear in bag: '+G.gearInv.length+'</div>';
   if(typeof showGenericModal==='function'){
     showGenericModal('🎁','Test Gear','');
@@ -8226,7 +8227,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.80<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.81<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
