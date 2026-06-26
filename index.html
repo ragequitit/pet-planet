@@ -4216,7 +4216,7 @@ function advRewItem(icon,label,val,active){
 }
 function isPetBusy(uid){return G.adventures.some(function(a){return a.petUid===uid;});}
 function petAdvSum(pet){
-  var s={coinGain:0,shellGain:0,luck:0,idleGain:0};
+  var s={stoneFind:0,eggFind:0,gemFind:0,treasureFind:0,xpBoost:0,fortune:0,rareFind:0,shellLuck:0};
   if(pet&&pet.abilities)pet.abilities.forEach(function(ab){if(s[ab.id]!=null)s[ab.id]+=abilityVal(ab);});
   return s;
 }
@@ -4228,9 +4228,10 @@ function advEffChances(adv,pet){
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS;
   var aff=!!(pet&&adv.affinity&&pet.world===adv.affinity);
   var aBonus=aff?1.5:1;
-  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult*(1+((gearBonuses().findChance)||0)/100);
+  var luckMult=(1+(s.fortune/50))*aBonus*lvlLootMult*(1+((gearBonuses().findChance)||0)/100)*(1+(s.rareFind||0)/100);
   return {aff:aff,items:(adv.bonusLoot||[]).map(function(B){
-    return {type:B.type,id:B.id,pct:Math.min(1,B.chance*luckMult)};
+    var typeMult=B.type==='gems'?(1+(s.gemFind||0)/100):B.type==='egg'?(1+(s.eggFind||0)/100):1;
+    return {type:B.type,id:B.id,pct:Math.min(1,B.chance*luckMult*typeMult)};
   })};
 }
 // STEG 6.10: vilket gear-drop-band ett äventyr använder (placeholder-trösklar → Balance Sheet).
@@ -4248,26 +4249,26 @@ function rollAdvReward(adv,pet){
   var gb=gearBonuses(); // STEG 6.8b: equippad gear
   var haulM=1+(gb.haul||0)/100, sparkM=1+(gb.sparkBoost||0)/100, shellM=1+(gb.shellBoost||0)/100, findM=1+(gb.findChance||0)/100;
   var roll=Math.random();
-  roll=roll+(s.luck/100)*(1-roll);if(roll>1)roll=1; // Luck biasar GARANTI-belöningen uppåt
+  roll=roll+(s.fortune/100)*(1-roll);if(roll>1)roll=1; // Fortune biasar GARANTI-belöningen uppåt
   // AFFINITY: pet vars värld matchar uppdraget ger extra
   var aff=pet&&adv.affinity&&pet.world===adv.affinity;
   var aCoin=aff?1.35:1, aShell=aff?1.35:1, aBonus=aff?1.5:1;
   var expM=aff?(1+(gb.affinity||0)/100):1; // STEG 6.8c: Expedition Bonus-gear, bara på matchande värld
   // COINS: förankrade i din EPS (pet:en jobbar i coinRate× din produktion) med golv för tidig game
   var base=Math.max(adv.coinFloor,eps()*(adv.dur/1000)*adv.coinRate);
-  var coins=Math.floor(base*(1+s.coinGain/100)*aCoin*sparkM*haulM*expM);
+  var coins=Math.floor(base*(1+s.treasureFind/100)*aCoin*sparkM*haulM*expM);
   // SHELLS: blandad loot, varje rad delas ut (lutar uppåt med luck + shellGain + affinity)
   var shells=[];
   if(adv.isArea){
     // LOST WORLD area-expedition: behåller sin EGEN (lost world-)shell — separat historia, oförändrad.
     adv.shellLoot.forEach(function(L){
-      var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell*shellM*haulM*expM);
+      var amt=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellLuck/100)*aShell*shellM*haulM*expM);
       if(amt>0)shells.push({type:L.type,amt:amt});
     });
   }else{
     // HEMMA-adventures: behåll den tunade TOTAL-mängden, men rulla varje shell från den viktade 6-hemma-poolen.
     var totShell=0;
-    adv.shellLoot.forEach(function(L){ totShell+=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellGain/100)*aShell*shellM*haulM*expM); });
+    adv.shellLoot.forEach(function(L){ totShell+=Math.round((L.min+(L.max-L.min)*roll)*(1+s.shellLuck/100)*aShell*shellM*haulM*expM); });
     var byType={};
     for(var su=0;su<totShell;su++){ var sid=rollShell().id; byType[sid]=(byType[sid]||0)+1; }
     Object.keys(byType).forEach(function(t){ if(byType[t]>0)shells.push({type:t,amt:byType[t]}); });
@@ -4275,10 +4276,11 @@ function rollAdvReward(adv,pet){
   // BONUS-LOOT: separata chans-rolls per rad (låg chans; Luck + affinity höjer chansen) — "oooh vad fick jag!"
   var lvl=pet?petLevelFromXp(pet.xp||0):1;
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS; // högre nivå → bättre chans på sällsynt loot
-  var luckMult=(1+(s.luck/50))*aBonus*lvlLootMult*findM; // T5 Luck (15) → +30% chans, affinity → +50%, nivå → upp till +36%
+  var luckMult=(1+(s.fortune/50))*aBonus*lvlLootMult*findM*(1+(s.rareFind||0)/100); // Fortune+Rare Find+Lucky Find-gear; affinity/nivå
   var bonus=[];
   (adv.bonusLoot||[]).forEach(function(B){
-    if(Math.random()<B.chance*luckMult){
+    var typeMult=B.type==='gems'?(1+(s.gemFind||0)/100):B.type==='egg'?(1+(s.eggFind||0)/100):1; // Gem/Egg Find
+    if(Math.random()<B.chance*luckMult*typeMult){
       if(B.type==='gems'){bonus.push({type:'gems',amt:B.min+Math.floor(Math.random()*(B.max-B.min+1))});}
       else if(B.type==='egg'){bonus.push({type:'egg',id:B.id});}
       else if(B.type==='relic'){bonus.push({type:'relic',id:B.id});}
@@ -4288,14 +4290,14 @@ function rollAdvReward(adv,pet){
   // Skill Stones (STEG 4c): droppar från ALLA äventyr — den tydliga äventyrs-belöningen.
   // Chans = placeholder → Balance Sheet. Skalar med Luck/affinity/nivå likt annan loot.
   var SKILL_STONE_DROP_CHANCE=0.15;
-  if(Math.random()<SKILL_STONE_DROP_CHANCE*luckMult){
+  if(Math.random()<SKILL_STONE_DROP_CHANCE*luckMult*(1+(s.stoneFind||0)/100)){
     bonus.push({type:'stone',id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)]});
   }
   // Gear-drop (STEG 6.10): generell drop, band styrt av äventyret, skalar med Luck. Placeholder-chans → Balance Sheet.
   if(typeof rollGear==='function'&&Math.random()<GEAR_DROP_CHANCE*luckMult){
     bonus.push({type:'gear',gear:rollGear(advGearBand(adv))});
   }
-  return {coins:coins,shells:shells,xp:adv.xp,bonus:bonus,affinity:aff};
+  return {coins:coins,shells:shells,xp:Math.round((adv.xp||0)*(1+(s.xpBoost||0)/100)),bonus:bonus,affinity:aff};
 }
 function nextAdvSlotCost(){if(G.adventureSlots>=ADVENTURE_SLOT_MAX)return null;return ADVENTURE_SLOT_COSTS[G.adventureSlots-1];}
 function buyAdventureSlot(){
@@ -4395,9 +4397,12 @@ function openAdvPicker(advId){
       var ok=lv>=req;
       var stam=petStamina(p);var tired=stam<ADV_STAMINA_COST;var canSend=ok&&!tired;
       var s=petAdvSum(p);var tags=[];
-      if(s.coinGain)tags.push('🪙+'+s.coinGain+'%');
-      if(s.shellGain)tags.push('🐚+'+s.shellGain+'%');
-      if(s.luck)tags.push('🍀+'+s.luck+'%');
+      if(s.treasureFind)tags.push('💰+'+s.treasureFind+'%');
+      if(s.shellLuck)tags.push('🐚+'+s.shellLuck+'%');
+      if(s.fortune)tags.push('🍀+'+s.fortune+'%');
+      if(s.rareFind)tags.push('✨+'+s.rareFind+'%');
+      if(s.gemFind)tags.push('💎+'+s.gemFind+'%');
+      if(s.xpBoost)tags.push('⭐+'+s.xpBoost+'%');
       var ec=advEffChances(adv,p);
       var oddsHtml=ec.items.map(function(o){
         if(o.type==='gems')return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+GEM_IMG+' '+Math.round(o.pct*100)+'%</span>';
@@ -4857,7 +4862,7 @@ function addTestPets(){
   });
   syncDiscoveredFromInventory();
 }
-function addTestCoins(){G.coins+=1e9;G.total+=1e9;}
+function addTestCoins(){G.coins+=1e11;G.total+=1e11;}
 // DEV (TAS BORT FÖRE LAUNCH): spawnar shiny + shiny2 på flera rariteter så man kan granska konst + effekter.
 function devSpawnShiny(){
   var pool=PET_POOL['starter']||{}; var made=0;
@@ -4893,12 +4898,9 @@ function renderDevMenu(){
   var pedOn=!(G.settings&&G.settings.hidePedestal);
   var bBlue='style="flex:1;padding:9px;background:#1f3d78;border:1px solid #3a5cb8;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;"';
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
-  html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
+  html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+100B Sparks</button></div>';
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="devGrantStones()" '+bBlue+'>+\ud83c\udfaf Stones</button></div>';
   html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button></div>';
-  html+='<div class="dev-row"><button onclick="devUnlockFrames()" '+bBlue+'>\ud83d\uddbc\ufe0f Unlock all frames</button></div>';
-  html+='<div class="dev-row"><button onclick="devSpawnShiny()" '+bBlue+'>\u2728 Spawn Shiny + Shiny2</button></div>';
-  html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
 }
@@ -6277,7 +6279,7 @@ function idleBonuses(){
   (G.idlePets||[]).forEach(function(uid){
     var p=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});
     if(!p)return;
-    var s=petAdvSum(p); b.shellGain+=s.shellGain||0; b.luck+=s.luck||0;
+    var s=petAdvSum(p); b.shellGain+=s.shellLuck||0; b.luck+=s.fortune||0;
   });
   if(typeof gearBonuses==='function'){ var gb=gearBonuses(); b.shellGain+=(gb.shellBoost||0)+(gb.haul||0); b.luck+=(gb.findChance||0); } // STEG 6.8d: equippad gear boostar idle-skörd
   return b;
@@ -8548,7 +8550,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.96<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.98<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
