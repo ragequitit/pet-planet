@@ -1172,7 +1172,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hha-speed .gem-ic{width:1.15em;height:1.15em;}
 .hatch-time-card{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:2;width:auto;max-width:330px;display:flex;flex-direction:column;gap:4px;background:linear-gradient(180deg,#1c2550,#141b3a);border:1px solid rgba(120,150,230,0.28);border-radius:13px;padding:6px 9px;box-shadow:0 3px 11px rgba(0,0,0,0.45);}
 .htc-top{display:flex;align-items:center;gap:8px;}
-.htc-left{display:flex;align-items:center;justify-content:center;flex:0 0 auto;width:92px;}
+.htc-left{display:flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:92px;}
 .htc-title{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#F5C842;text-align:center;}
 .htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:1.06rem;color:#fff;white-space:nowrap;}
 .htc-tic{width:1.42em;height:1.42em;object-fit:contain;}
@@ -8541,7 +8541,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99e<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99g<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11178,6 +11178,11 @@ function hatchHeroPage(dir){
   hatchView=(hatchView+dir+n)%n;
   renderHatchery();
 }
+function hatchSetView(i){ // klick på ett kö-kort → visa det ägget som hero
+  if(i<0||i>=G.hatchSlots.length||i===hatchView)return;
+  hatchView=i;
+  renderHatchery();
+}
 function openHatchInfo(){var m=document.getElementById('hatch-info-modal');if(m)m.classList.add('open');}
 function openHatchSpeed(){renderHatchSpeedModal();var m=document.getElementById('hatch-speed-modal');if(m)m.classList.add('open');}
 function closeHatchSpeed(){var m=document.getElementById('hatch-speed-modal');if(m)m.classList.remove('open');}
@@ -11295,7 +11300,7 @@ function renderHatchery(){
         var remaining=Math.max(0,Math.ceil((slot.duration-elapsed)/1000));
         var egg=isEventEggId(slot.eggId)?eventEggMetaById(slot.eggId):EGG_SHOP.find(function(e){return e.id===slot.eggId;});
         var eggImg=isEventEggId(slot.eggId)?eventEggIconHtmlById(slot.eggId,54):'<img src="'+eggShopIconUrl(slot.eggId)+'" alt="" onerror="this.replaceWith(document.createTextNode(\''+(egg?egg.icon:'\ud83e\udd5a')+'\'))">';
-        html+='<div class="hcard active" data-slot="'+i+'">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed" onclick="hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
+        html+='<div class="hcard active" data-slot="'+i+'" onclick="hatchSetView('+i+')" style="cursor:pointer;">'+num+'<div class="hcard-egg">'+eggImg+'</div><div class="hcard-name">'+(egg?egg.name.replace(' Egg',''):'Egg')+'</div><div class="hcard-time">'+(slot.done?'\u2705 Ready!':formatTime(remaining))+'</div><div class="hcard-bar"><div class="hcard-bar-fill" style="width:'+(pct*100)+'%"></div></div>'+(slot.done?'<button class="hcard-btn ready" onclick="event.stopPropagation();collectHatch('+i+')">Collect</button>':'<button class="hcard-btn speed" onclick="event.stopPropagation();hatchSpeedUp('+i+')">'+'<span class="hspeed-cost">'+hatchSpeedUpCost(slot)+'</span>'+GEM_IMG+'<span class="hspeed-lbl">Speed up!</span></button>')+'</div>';
       } else {
         html+='<div class="hcard empty-slot" data-slot="'+i+'" onclick="openEggPicker()"><div class="hcard-num">'+(i+1)+'</div><div class="hcard-egg"><img src="'+ASSET_BASE+'/assets/ui/common/hatchary-empty.png" alt="" onerror="this.replaceWith(document.createTextNode(\'\ud83e\udeb9\'))"></div><div class="hcard-name">Empty</div><div class="hcard-time hcard-tap">+ Add egg</div></div>';
       }
