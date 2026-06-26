@@ -3304,19 +3304,10 @@ function rollExplorer(){
   return {id:id,v:v,mega:mega};
 }
 function rollExplorerRows(rarity){
-  var n=(rarity==='eternal'||rarity==='cosmic')?2:1, rows=[];
-  for(var i=0;i<n;i++)rows.push(rollExplorer());
-  return rows;
+  return []; // STEG 8: utfasad (gamla adventure-abilities)
 }
 function explorerRowsHtml(pet){
-  if(!pet||!pet.explorer||!pet.explorer.length)return '';
-  var h='<div style="height:1px;background:rgba(255,255,255,0.12);margin:7px 2px 5px;"></div>';
-  pet.explorer.forEach(function(ex){
-    var m=EXPLORER_META[ex.id]||{name:ex.id,icon:'🧭'};
-    var val=ex.mega?'<span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+ex.v+'% ★</span>':'+'+ex.v+'%';
-    h+='<div class="pra-row"><span class="pra-icon">'+(m.icon||'🧭')+'</span><span class="pra-name" style="color:#7fd1c4;font-style:italic">'+m.name+' <span style="opacity:.55;font-style:normal;font-size:0.68em;letter-spacing:0.5px">· ADVENTURE</span></span><span class="pra-val">'+val+'</span></div>';
-  });
-  return h;
+  return ''; // STEG 8: gamla "adventure abilities" (Pathfinder m.fl.) utfasade — ersatta av de 8 finds + gear
 }
 // Ability-ikon = custom-PNG (id→filnamn-slug; shellGain heter shelldrop), emoji-fallback
 var ABILITY_IMG={stoneFind:'stonefind',eggFind:'eggfind',gemFind:'gemfind',treasureFind:'treasurefind',xpBoost:'xpboost',fortune:'fortune',rareFind:'rarefind',shellLuck:'shellluck'};
@@ -8550,7 +8541,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99b<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99c<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
