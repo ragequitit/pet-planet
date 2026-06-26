@@ -3310,12 +3310,12 @@ function explorerRowsHtml(pet){
   return ''; // STEG 8: gamla "adventure abilities" (Pathfinder m.fl.) utfasade — ersatta av de 8 finds + gear
 }
 // Ability-ikon = custom-PNG (id→filnamn-slug; shellGain heter shelldrop), emoji-fallback
-var ABILITY_IMG={stoneFind:'stonefind',eggFind:'eggfind',gemFind:'gemfind',treasureFind:'treasurefind',xpBoost:'xpboost',fortune:'fortune',rareFind:'rarefind',shellLuck:'shellluck'};
+var ABILITY_IMG={stoneFind:'Stone-seeker',eggFind:'egg-sniffer',gemFind:'gem-digger',treasureFind:'treasure-hunter',xpBoost:'xp-boost',fortune:'lucky-paw',rareFind:'rare-find',shellLuck:'shell-seeker'};
 function abilityIconImg(id){
   var m=ABILITY_META[id]||{icon:'❔'};
   var slug=ABILITY_IMG[id];
   if(!slug)return m.icon;
-  return '<img class="abil-img" src="'+ASSET_BASE+'/assets/ui/pet-abilities/pet-ability-'+slug+'.png" alt="" onerror="this.parentNode.textContent=\''+m.icon+'\'">';
+  return '<img class="abil-img" src="'+ASSET_BASE+'/assets/ui/skill%20stones/'+slug+'.png" alt="" onerror="this.parentNode.textContent=\''+m.icon+'\'">';
 }
 
 // ============================================================
@@ -8544,7 +8544,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99m<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99n<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
