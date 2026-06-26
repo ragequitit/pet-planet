@@ -3252,12 +3252,12 @@ var ABILITIES=['stoneFind','eggFind','gemFind','treasureFind','xpBoost','fortune
 var ABILITY_META={
   stoneFind:   {name:'Stone Seeker',  icon:'🪨', color:'#b0bec5', desc:function(v){return '+'+v+'% Skill Stone find chance';}},
   eggFind:     {name:'Egg Sniffer',   icon:'🥚', color:'#ffe082', desc:function(v){return '+'+v+'% Egg find chance';}},
-  gemFind:     {name:'Gem Find',      icon:'💎', color:'#5ad0e0', desc:function(v){return '+'+v+'% Gem find';}},
-  treasureFind:{name:'Treasure Find', icon:'💰', color:'#f5c842', desc:function(v){return '+'+v+'% Sparks from adventures';}},
+  gemFind:     {name:'Gem Digger',    icon:'💎', color:'#5ad0e0', desc:function(v){return '+'+v+'% Gem find';}},
+  treasureFind:{name:'Treasure Hunter',icon:'💰', color:'#f5c842', desc:function(v){return '+'+v+'% Sparks from adventures';}},
   xpBoost:     {name:'XP Boost',      icon:'⭐', color:'#a3e635', desc:function(v){return '+'+v+'% Pet XP';}},
   fortune:     {name:'Fortune',       icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% surprise-find chance';}},
   rareFind:    {name:'Rare Find',     icon:'✨', color:'#ce93d8', desc:function(v){return '+'+v+'% rare-loot odds';}},
-  shellLuck:   {name:'Shell Luck',    icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells';}},
+  shellLuck:   {name:'Shell Seeker',  icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
 // ── V2 §4: ABILITY VALUES ARE ROLLED RANGES (stored per pet as ab.v) ──────────────
@@ -8544,7 +8544,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99k<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99l<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
