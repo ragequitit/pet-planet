@@ -3305,6 +3305,74 @@ function abilityIconImg(id){
 }
 
 // ============================================================
+// DATA: GEAR SYSTEM (STEG 6.1 — additive; bag UI / equip / merge come later)
+// "GEAR = HUR." 5 typed Explorer slots. Every gear ALWAYS has 2 abilities:
+//   1) the TYPE's fixed lean (its job)   2) one random from the throughput pool.
+// Rarity = STRENGTH (how high the 2 abilities roll), same ladder as pets, but
+// gear caps at Heavenly (no Eternal/Cosmic gear — design 2026-06-26).
+// All numbers are PLACEHOLDERS → Balance Sheet.
+// ============================================================
+var GEAR_TYPES=[
+  {id:'backpack',name:'Backpack',icon:'🎒',lean:'haul'},
+  {id:'compass', name:'Compass', icon:'🧭',lean:'findChance'},
+  {id:'boots',   name:'Boots',   icon:'🥾',lean:'speed'},
+  {id:'charm',   name:'Charm',   icon:'💎',lean:'affinity'},
+  {id:'tool',    name:'Tool',    icon:'🧰',lean:'sparkBoost'},
+];
+// Throughput pool (8) — the 2nd ability rolls from here (never the same as the lean).
+var GEAR_ABILITIES=['speed','haul','shellBoost','sparkBoost','findChance','affinity','offlineBoost','stamina'];
+var GEAR_ABILITY_META={
+  speed:       {name:'Speed',        icon:'⚡',desc:function(v){return '-'+v+'% adventure time';}},
+  haul:        {name:'Haul',         icon:'🎒',desc:function(v){return '+'+v+'% total adventure haul';}},
+  shellBoost:  {name:'Shell Boost',  icon:'🐚',desc:function(v){return '+'+v+'% shells';}},
+  sparkBoost:  {name:'Spark Boost',  icon:'🪙',desc:function(v){return '+'+v+'% Sparks';}},
+  findChance:  {name:'Find Chance',  icon:'🔍',desc:function(v){return '+'+v+'% surprise-find chance';}},
+  affinity:    {name:'Affinity',     icon:'💞',desc:function(v){return '+'+v+'% right-world affinity';}},
+  offlineBoost:{name:'Offline Boost',icon:'🌙',desc:function(v){return '+'+v+'% idle earnings';}},
+  stamina:     {name:'Stamina',      icon:'💪',desc:function(v){return '+'+v+'% stamina';}},
+};
+// Gear-drop rarity bands (design 2026-06-26). Band→real adventures mapped in Balance Sheet.
+var GEAR_RARITY_WEIGHTS={
+  band1:{common:70,uncommon:25,rare:5},                     // early (Meadow/Forest)
+  band2:{uncommon:60,rare:30,epic:10},                      // mid (Mountain/Desert)
+  band3:{rare:50,epic:35,legendary:15},                     // late home (Ocean/Volcano)
+  band4:{epic:45,legendary:40,mythical:15},                 // Lost Worlds, shallow areas
+  band5:{legendary:35,mythical:40,artifact:20,heavenly:5},  // Lost Worlds, deep areas
+};
+// Rarity → roll tier for gear (rarity = strength). Placeholder → Balance Sheet.
+var GEAR_RARITY_TIER={common:1,uncommon:2,rare:2,epic:3,legendary:3,mythical:4,artifact:4,heavenly:5};
+function rollGearRarity(band){
+  var weights=GEAR_RARITY_WEIGHTS[band]||GEAR_RARITY_WEIGHTS.band1;
+  var keys=Object.keys(weights);
+  var total=keys.reduce(function(s,k){return s+weights[k];},0);
+  var roll=Math.random()*total,acc=0;
+  for(var i=0;i<keys.length;i++){acc+=weights[keys[i]];if(roll<=acc)return keys[i];}
+  return keys[0];
+}
+function gearTypeMeta(tid){for(var i=0;i<GEAR_TYPES.length;i++)if(GEAR_TYPES[i].id===tid)return GEAR_TYPES[i];return GEAR_TYPES[0];}
+// Make one gear: random type, rarity from band, 2 abilities (lean + 1 random), values rolled by rarity tier.
+function rollGear(band){
+  var type=GEAR_TYPES[Math.floor(Math.random()*GEAR_TYPES.length)];
+  var rarity=rollGearRarity(band||'band1');
+  var tier=GEAR_RARITY_TIER[rarity]||1;
+  var lean=rollAbilityValue(tier);
+  var abilities=[{id:type.lean,v:lean.v,mega:lean.mega}];
+  var pool=GEAR_ABILITIES.filter(function(a){return a!==type.lean;}); // 2nd ability never duplicates lean
+  var sid=pool[Math.floor(Math.random()*pool.length)];
+  var second=rollAbilityValue(tier);
+  abilities.push({id:sid,v:second.v,mega:second.mega});
+  return {uid:Date.now()+Math.random(),type:type.id,rarity:rarity,abilities:abilities,equippedSlot:-1};
+}
+// One ability → display line (icon + name + value, ★ on Mega). Used by DEV preview now; bag UI later.
+function gearAbilityLine(ab){
+  var m=GEAR_ABILITY_META[ab.id]||{name:ab.id,icon:'❔',desc:function(v){return '+'+v+'%';}};
+  var val=ab.mega
+    ? '<span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">'+m.desc(ab.v)+' ★</span>'
+    : m.desc(ab.v);
+  return m.icon+' <b>'+m.name+'</b> · '+val;
+}
+
+// ============================================================
 // PET GENERATION
 // ============================================================
 function rollRarity(eggId){
@@ -3657,7 +3725,7 @@ var G={
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
   shells:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
-  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},
+  eggsOwned:{},eggsHatched:{},lostUnlocked:{},mapsOwned:{},relics:{},areasUnlocked:{},newsSeen:{},hatchSlots:[],hatchSlotCount:1,hatchedPets:[],mutationCores:[],skillStones:{},gearInv:[],
   extractChambers:[null,null,null],extractUnlocked:1,mutateChambers:[null,null,null],mutateUnlocked:1,
   achievements:{unlocked:{},claimed:{}},
   gems:0,
@@ -4460,7 +4528,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,gearInv:G.gearInv,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -4480,7 +4548,7 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -4565,6 +4633,7 @@ function renderDevMenu(){
   var html='<div class="dev-note">Dev / Test — tas bort innan release</div>';
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+1B Eggs</button></div>';
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="devGrantStones()" '+bBlue+'>+\ud83c\udfaf Stones</button></div>';
+  html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button></div>';
   html+='<div class="dev-row"><button onclick="devUnlockFrames()" '+bBlue+'>\ud83d\uddbc\ufe0f Unlock all frames</button></div>';
   html+='<div class="dev-row"><button onclick="devSpawnShiny()" '+bBlue+'>\u2728 Spawn Shiny + Shiny2</button></div>';
   html+='<div class="dev-row"><button onclick="togglePedestal()" style="flex:1;padding:9px;background:'+(pedOn?'#2a6e4a':'#5a3a2a')+';border:1px solid '+(pedOn?'#3a9e6a':'#9e6a3a')+';border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Pedestal: '+(pedOn?'ON':'OFF')+'</button></div>';
@@ -6579,6 +6648,25 @@ function skillStoneCount(id){return (G.skillStones&&G.skillStones[id])||0;}
 function totalSkillStones(){var n=0;if(G.skillStones)for(var k in G.skillStones)n+=G.skillStones[k]||0;return n;}
 function grantSkillStone(id,n){if(!G.skillStones)G.skillStones={};G.skillStones[id]=(G.skillStones[id]||0)+(n||1);}
 function devGrantStones(){ABILITIES.forEach(function(id){grantSkillStone(id,3);});if(typeof updateHUD==='function')updateHUD();if(workshopSubTab==='mutate'&&typeof renderPetTrainer==='function')renderPetTrainer();if(typeof renderInventory==='function')renderInventory();if(typeof saveGame==='function')saveGame();}
+function devGiveTestGear(){
+  if(!Array.isArray(G.gearInv))G.gearInv=[];
+  var bands=['band1','band2','band3','band4','band5'];
+  var g=rollGear(bands[Math.floor(Math.random()*bands.length)]);
+  G.gearInv.push(g);
+  var rc=RARITY_CONFIG[g.rarity]||{label:g.rarity,color:'#aaa',icon:'⚪'};
+  var tm=gearTypeMeta(g.type);
+  var lines=g.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
+  var html='<div style="text-align:center;font-size:2.6rem;line-height:1">'+tm.icon+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="font-size:0.84rem;line-height:1.5;margin-top:8px;text-align:left;display:inline-block">'+lines+'</div>'+
+    '<div style="text-align:center;opacity:.55;font-size:0.72rem;margin-top:10px">Gear in bag: '+G.gearInv.length+'</div>';
+  if(typeof showGenericModal==='function'){
+    showGenericModal('🎁','Test Gear','');
+    var bodyEl=document.getElementById('generic-modal-body');
+    if(bodyEl){bodyEl.style.textAlign='center';bodyEl.innerHTML=html;}
+  }
+  if(typeof saveGame==='function')saveGame();
+}
 function ownedStoneIds(){return ABILITIES.filter(function(id){return skillStoneCount(id)>0;});}
 
 var trainerSetup=null; // {petUid, slot, stoneId}
@@ -8138,7 +8226,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.79<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.80<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -8187,7 +8275,7 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.gearInv=[];
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -12368,6 +12456,7 @@ if(savedData){
   G.hatchedPets=savedData.hatchedPets||[];
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
+  G.gearInv=Array.isArray(savedData.gearInv)?savedData.gearInv:[];
   G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
   while(G.extractChambers.length<3)G.extractChambers.push(null);
   G.mutateChambers=Array.isArray(savedData.mutateChambers)?savedData.mutateChambers.slice(0,3):[null,null,null];
