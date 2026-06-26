@@ -1170,8 +1170,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .hha-speed{padding:10px 6px;border:none;border-radius:11px;background:linear-gradient(180deg,#5aa9e6,#2f6ea8);color:#fff;font-family:'Fredoka One',cursive;font-size:0.92rem;cursor:pointer;box-shadow:0 3px 0 #1c456e;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
 .hha-speed:active{transform:translateY(2px);box-shadow:0 1px 0 #1c456e;}
 .hha-speed .gem-ic{width:1.15em;height:1.15em;}
-.hatch-time-card{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:2;width:auto;max-width:330px;display:flex;flex-direction:column;gap:4px;background:linear-gradient(180deg,#1c2550,#141b3a);border:1px solid rgba(120,150,230,0.28);border-radius:13px;padding:6px 9px;box-shadow:0 3px 11px rgba(0,0,0,0.45);}
-.htc-top{display:flex;align-items:center;gap:8px;}
+.hatch-time-card{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);z-index:2;width:290px;max-width:96%;display:flex;flex-direction:column;gap:4px;background:linear-gradient(180deg,#1c2550,#141b3a);border:1px solid rgba(120,150,230,0.28);border-radius:13px;padding:6px 9px;box-shadow:0 3px 11px rgba(0,0,0,0.45);}
+.htc-top{display:flex;align-items:center;gap:8px;justify-content:space-between;}
 .htc-left{display:flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:92px;}
 .htc-title{font-family:'Fredoka One',cursive;font-size:0.66rem;color:#F5C842;text-align:center;}
 .htc-time{display:flex;align-items:center;gap:5px;font-family:'Fredoka One',cursive;font-size:1.06rem;color:#fff;white-space:nowrap;}
@@ -3250,8 +3250,8 @@ var EGG_RARITY_WEIGHTS={
 // ============================================================
 var ABILITIES=['stoneFind','eggFind','gemFind','treasureFind','xpBoost','fortune','rareFind','shellLuck'];
 var ABILITY_META={
-  stoneFind:   {name:'Stone Find',    icon:'🪨', color:'#b0bec5', desc:function(v){return '+'+v+'% Skill Stone find chance';}},
-  eggFind:     {name:'Egg Find',      icon:'🥚', color:'#ffe082', desc:function(v){return '+'+v+'% Egg find chance';}},
+  stoneFind:   {name:'Stone Seeker',  icon:'🪨', color:'#b0bec5', desc:function(v){return '+'+v+'% Skill Stone find chance';}},
+  eggFind:     {name:'Egg Sniffer',   icon:'🥚', color:'#ffe082', desc:function(v){return '+'+v+'% Egg find chance';}},
   gemFind:     {name:'Gem Find',      icon:'💎', color:'#5ad0e0', desc:function(v){return '+'+v+'% Gem find';}},
   treasureFind:{name:'Treasure Find', icon:'💰', color:'#f5c842', desc:function(v){return '+'+v+'% Sparks from adventures';}},
   xpBoost:     {name:'XP Boost',      icon:'⭐', color:'#a3e635', desc:function(v){return '+'+v+'% Pet XP';}},
@@ -8544,7 +8544,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99i<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99k<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
