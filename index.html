@@ -7251,6 +7251,8 @@ function rollShinyBoosted(){ if(Math.random()<SHINY_ODDS.shiny2*8)return 2; if(M
 // DROP-RATER (PLATSHÅLLARE → Balance Sheet). Tier 1 vanligast, tier 4 ovanligast.
 var FRUIT_TIER_WEIGHT={1:60,2:25,3:12,4:3}; // relativ vikt per tier
 var FRUIT_IDLE_CHANCE=0.0015;  // chans PER SEKUND att en frukt droppar medan appen är öppen
+var FRUIT_OFFLINE_CHANCE=0.0005; // chans PER SEKUND vid offline-auto-plock (lägre än idle)
+var FRUIT_OFFLINE_CAP=10;        // max antal frukter pets samlar medan man är borta
 var FRUIT_ADV_CHANCE=0.08;     // chans att ett äventyr ÄVEN ger en frukt
 var fruitDropAcc=0;            // tick-ackumulator för idle-drops (1 roll/sek)
 function rollFruitTier(){ var tot=0,k; for(k in FRUIT_TIER_WEIGHT)tot+=FRUIT_TIER_WEIGHT[k]; var r=Math.random()*tot; for(k in FRUIT_TIER_WEIGHT){ r-=FRUIT_TIER_WEIGHT[k]; if(r<=0)return parseInt(k,10); } return 1; }
@@ -8825,7 +8827,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.07<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.08<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13360,8 +13362,8 @@ if(savedData){
       G.stats.offlineRewardsClaimed++;
       G.stats.totalCoinsEarned+=offlineCoins;trackCoins('offline',offlineCoins);
       // F6: offline-auto-plock av väsk-frukter (skärm-frukter fångas bara live)
-      var _offSec=offlineMs/1000, _exp=_offSec*FRUIT_IDLE_CHANCE;
-      var _fruitN=Math.min(20,Math.floor(_exp)+((Math.random()<(_exp-Math.floor(_exp)))?1:0));
+      var _offSec=offlineMs/1000, _exp=_offSec*FRUIT_OFFLINE_CHANCE;
+      var _fruitN=Math.min(FRUIT_OFFLINE_CAP,Math.floor(_exp)+((Math.random()<(_exp-Math.floor(_exp)))?1:0));
       if(_fruitN>0){ var _fsum={}; for(var _fi=0;_fi<_fruitN;_fi++){ var _fid2=rollFruitDrop(); grantFruit(_fid2,1); _fsum[_fid2]=(_fsum[_fid2]||0)+1; } _offlineFruitSummary=Object.keys(_fsum).map(function(k){var ff=fruitMeta(k);return {emoji:ff.emoji,name:ff.name,count:_fsum[k]};}); }
     }
   }
