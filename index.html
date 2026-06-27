@@ -4377,7 +4377,7 @@ function claimAdventure(index){
     else if(b.type==='stone'){grantSkillStone(b.id,1);parts.push(abilityIconImg(b.id)+' Skill Stone found!');}
     else if(b.type==='gear'&&b.gear){if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(b.gear);var gtm=gearTypeMeta(b.gear.type);var grc=RARITY_CONFIG[b.gear.rarity]||{label:b.gear.rarity,icon:'⚪'};parts.push(gtm.icon+' '+grc.icon+' '+grc.label+' '+gtm.name+' gear found!');}
   });
-  if(Math.random()<FRUIT_ADV_CHANCE){ var _fid=rollFruitDrop(); grantFruit(_fid,1); var _fm=fruitMeta(_fid); parts.push(_fm.emoji+' '+_fm.name+' found!'); }
+  if(Math.random()<FRUIT_ADV_CHANCE){ var _fid=rollFruitDrop(); grantFruit(_fid,1); var _fm=fruitMeta(_fid); parts.push(fruitIconImg(_fid,16)+' '+_fm.name+' found!'); }
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
   if(typeof updateHUD==='function')updateHUD();
   if(typeof softUpdateInventory==='function')softUpdateInventory();
@@ -7194,6 +7194,10 @@ var SCREEN_FRUITS=[
   {id:'sparkcherry',name:'Spark Cherry', emoji:'\ud83c\udf52', desc:'Instant Spark burst (used instantly)'}
 ];
 function fruitMeta(id){return FRUITS.find(function(f){return f.id===id;})||SCREEN_FRUITS.find(function(f){return f.id===id;})||{name:id,emoji:'\ud83c\udf4e',tier:1,desc:''};}
+// Frukt-ikoner = custom-PNG i assets/ui/fruits/ (filnamn med bindestreck), emoji-fallback.
+var FRUIT_ICON={pipberry:'pip-berry',tickleplum:'tickle-plum',munchfig:'munch-fig',snoozepeach:'snooze-peach',glowgrape:'glow-grape',zoommelon:'zoom-melon',fizzapple:'fizz-apple',cloverlime:'clover-lime',twinberry:'twin-berry',cometpear:'comet-pear',gleamplum:'gleam-plum',honeydew:'honeydew-drop',moonmelon:'moon-melon',sunmango:'sun-mango',starcoconut:'star-coconut',sundrop:'sun-drop',seaplum:'sea-plum',sparkcherry:'spark-cherry'};
+function fruitIconImg(id,px){var f=fruitMeta(id);var emoji=(f&&f.emoji)||'\ud83c\udf4e';var slug=FRUIT_ICON[id];if(!slug)return emoji;var st=px?(' style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;"'):' style="width:1em;height:1em;object-fit:contain;vertical-align:middle;"';return '<img src="'+ASSET_BASE+'/assets/ui/fruits/'+slug+'.png" alt=""'+st+' onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';}
+function chargeFruitId(kind){var f=FRUITS.filter(function(x){return (FRUIT_EFF[x.id]||{}).kind===kind;})[0];return f?f.id:null;}
 function fruitCount(id){return (G.fruits&&G.fruits[id])||0;}
 function ownedFruitIds(){return FRUITS.filter(function(f){return fruitCount(f.id)>0;}).map(function(f){return f.id;});}
 function grantFruit(id,n){if(!G.fruits)G.fruits={};G.fruits[id]=(G.fruits[id]||0)+(n||1);}
@@ -7208,7 +7212,7 @@ function fruitsSectionHtml(){
     ids.forEach(function(id){var f=fruitMeta(id);var t=FRUIT_TIERS[f.tier]||{color:'#7bdf6a'};
       h+='<div onclick="showFruitInfo(\''+id+'\')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid '+t.color+'55;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;">'
         +'<span style="position:absolute;top:3px;right:4px;font-size:0.58rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.4);border:1px solid '+t.color+'66;border-radius:8px;padding:1px 5px;">\u00d7'+fruitCount(id)+'</span>'
-        +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+f.emoji+'</span>'
+        +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+fruitIconImg(id,38)+'</span>'
         +'<span style="font-weight:800;font-size:0.6rem;color:'+t.color+';text-align:center;line-height:1.15;">'+f.name+'</span>'
         +'</div>';
     });
@@ -7258,7 +7262,7 @@ var fruitDropAcc=0;            // tick-ackumulator för idle-drops (1 roll/sek)
 function rollFruitTier(){ var tot=0,k; for(k in FRUIT_TIER_WEIGHT)tot+=FRUIT_TIER_WEIGHT[k]; var r=Math.random()*tot; for(k in FRUIT_TIER_WEIGHT){ r-=FRUIT_TIER_WEIGHT[k]; if(r<=0)return parseInt(k,10); } return 1; }
 function rollFruitDrop(){ var tier=rollFruitTier(); var pool=FRUITS.filter(function(f){return f.tier===tier;}); if(!pool.length)pool=FRUITS; return pool[Math.floor(Math.random()*pool.length)].id; }
 function dropFruitIdle(){ var id=rollFruitDrop(); grantFruit(id,1); var f=fruitMeta(id);
-  if(typeof showRewardPopup==='function')showRewardPopup([f.emoji+' A wild '+f.name+' dropped!'],false,2800);
+  if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' A wild '+f.name+' dropped!'],false,2800);
   if(typeof renderInventory==='function'&&document.getElementById('inv-wrap'))renderInventory();
 }
 // SKÄRM-FRUKTER (golden-cookie): svävar in, tap = används DIREKT, missas = borta. Effekter = PLATSHÅLLARE → Balance Sheet.
@@ -7275,7 +7279,7 @@ function spawnScreenFruit(){
   if(_screenFruitEl||!SCREEN_FRUITS.length)return;
   var f=SCREEN_FRUITS[Math.floor(Math.random()*SCREEN_FRUITS.length)];
   var el=document.createElement('div'); _screenFruitEl=el; el._fid=f.id;
-  el.className='screen-fruit'; el.innerHTML='<span class="sf-emoji">'+f.emoji+'</span>';
+  el.className='screen-fruit'; el.innerHTML='<span class="sf-emoji">'+fruitIconImg(f.id,46)+'</span>';
   var vw=window.innerWidth, vh=window.innerHeight;
   var x=40+Math.random()*(Math.min(vw,420)-120);
   var y=150+Math.random()*Math.max(60,(vh-340));
@@ -7291,7 +7295,7 @@ function applyScreenFruit(id){
   if((eff.kind==='sps'||eff.kind==='shells')&&eff.mins){ addTimedFruitBuff(id,eff.kind,eff.mult,eff.mins); msg='\u00d7'+eff.mult+' '+(eff.kind==='sps'?'SPS':'Shells')+' for '+eff.mins+' min!'; renderFruitBuffs(); }
   else if(eff.kind==='sparkburst'){ var burst=Math.max(1e6,eps()*600); G.coins+=burst; G.total+=burst; G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+burst; msg='+'+fmtShort(burst)+' Sparks!'; }
   saveGame(); if(typeof updateHUD==='function')updateHUD();
-  if(typeof showRewardPopup==='function')showRewardPopup([f.emoji+' '+f.name+' \u2014 '+msg],false,2800);
+  if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' '+f.name+' \u2014 '+msg],false,2800);
 }
 function devSpawnScreenFruit(){ if(_screenFruitEl)fadeOutScreenFruit(); spawnScreenFruit(); }
 function fruitEffShort(eff){ var k={sps:'SPS',tap:'Tap',xp:'XP',shells:'Shells'}[eff.kind]||eff.kind; var mv=(eff.mult>=2?('\u00d7'+eff.mult):('+'+Math.round((eff.mult-1)*100)+'%')); return mv+' '+k+(eff.mins?(' for '+eff.mins+' min'):''); }
@@ -7311,10 +7315,10 @@ function useFruit(id){
   } else if(eff.kind==='hatchspeed'){
     var now=Date.now(),did=false;
     for(var i=0;i<G.hatchSlots.length;i++){var s=G.hatchSlots[i]; if(s&&!s.done){ var rem=s.duration-(now-s.startTime); if(rem>0){ s.startTime-=Math.ceil(rem*0.5); did=true; } }}
-    if(!did){ if(typeof showRewardPopup==='function')showRewardPopup([f.emoji+' No hatch in progress to speed up.'],false,2200); return; } // refund (förbrukas ej)
+    if(!did){ if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' No hatch in progress to speed up.'],false,2200); return; } // refund (förbrukas ej)
     msg='Hatch sped up!'; if(typeof renderHatchery==='function')renderHatchery();
   } else {
-    if(typeof showRewardPopup==='function')showRewardPopup([f.emoji+' '+f.name+': not usable yet.'],false,2200); return;
+    if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' '+f.name+': not usable yet.'],false,2200); return;
   }
   G.fruits[id]--; if(G.fruits[id]<=0)delete G.fruits[id];
   saveGame();
@@ -7322,7 +7326,7 @@ function useFruit(id){
   if(typeof renderInventory==='function')renderInventory();
   renderFruitBuffs();
   if(typeof updateHUD==='function')updateHUD();
-  if(typeof showRewardPopup==='function')showRewardPopup([f.emoji+' '+f.name+' \u2014 '+msg],false,2600);
+  if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' '+f.name+' \u2014 '+msg],false,2600);
 }
 function renderFruitBuffs(){
   pruneFruitBuffs();
@@ -7331,17 +7335,18 @@ function renderFruitBuffs(){
     el.style.cssText='position:fixed;top:96px;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:6px;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:92vw;'; }
   var now=Date.now();
   var pills=[];
-  (G.fruitBuffs||[]).filter(function(b){return (b.until||0)>now;}).forEach(function(b){ var rem=Math.max(0,Math.round((b.until-now)/1000)); var mm=Math.floor(rem/60),ss=rem%60; pills.push({emoji:b.emoji,txt:mm+':'+(ss<10?'0':'')+ss,color:'rgba(123,223,106,0.5)'}); });
-  if(G.fruitCharges){ Object.keys(G.fruitCharges).forEach(function(k){ var n=G.fruitCharges[k]; if(n>0)pills.push({emoji:chargeEmoji(k),txt:'\u00d7'+n,color:'rgba(199,125,255,0.55)'}); }); }
+  (G.fruitBuffs||[]).filter(function(b){return (b.until||0)>now;}).forEach(function(b){ var rem=Math.max(0,Math.round((b.until-now)/1000)); var mm=Math.floor(rem/60),ss=rem%60; pills.push({ico:fruitIconImg(b.fid,14),txt:mm+':'+(ss<10?'0':'')+ss,color:'rgba(123,223,106,0.5)'}); });
+  if(G.fruitCharges){ Object.keys(G.fruitCharges).forEach(function(k){ var n=G.fruitCharges[k]; if(n>0)pills.push({ico:fruitIconImg(chargeFruitId(k),14),txt:'\u00d7'+n,color:'rgba(199,125,255,0.55)'}); }); }
   if(!pills.length){ el.innerHTML=''; el.style.display='none'; return; }
   el.style.display='flex';
   el.innerHTML=pills.map(function(p){
-    return '<span style="background:rgba(12,18,32,0.82);border:1px solid '+p.color+';border-radius:20px;padding:3px 9px;font-size:0.66rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(0,0,0,0.4);">'+p.emoji+' '+p.txt+'</span>';
+    return '<span style="background:rgba(12,18,32,0.82);border:1px solid '+p.color+';border-radius:20px;padding:3px 9px;font-size:0.66rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(0,0,0,0.4);">'+p.ico+' '+p.txt+'</span>';
   }).join('');
 }
 function showFruitInfo(id){
   var f=fruitMeta(id);var t=FRUIT_TIERS[f.tier]||{name:'',color:'#7bdf6a'};
   showGenericModal(f.emoji,f.name,'');
+  var _fiIco=document.getElementById('generic-modal-icon'); if(_fiIco)_fiIco.innerHTML=fruitIconImg(id,40);
   var body=document.getElementById('generic-modal-body');
   if(body){
     var eff=FRUIT_EFF[id]||{};
@@ -8827,7 +8832,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.08<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.09<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13153,7 +13158,7 @@ function showOfflineModal(ms,coins){
   });
   if(_offlineFruitSummary&&_offlineFruitSummary.length){
     var dh=document.createElement('div');dh.className='ob-row';dh.style.cssText='border-top:1px solid rgba(255,255,255,0.12);margin-top:4px;padding-top:7px;';dh.innerHTML='<span class="ob-label">\ud83c\udf4e Treats your pets gathered</span><span class="ob-val"></span>';r.appendChild(dh);
-    _offlineFruitSummary.forEach(function(fr){var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+fr.emoji+' '+fr.name+'</span><span class="ob-val">\u00d7'+fr.count+'</span>';r.appendChild(d);});
+    _offlineFruitSummary.forEach(function(fr){var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+fruitIconImg(fr.id,16)+' '+fr.name+'</span><span class="ob-val">\u00d7'+fr.count+'</span>';r.appendChild(d);});
   }
   document.getElementById('offline-modal').classList.add('open');
 }
@@ -13364,7 +13369,7 @@ if(savedData){
       // F6: offline-auto-plock av väsk-frukter (skärm-frukter fångas bara live)
       var _offSec=offlineMs/1000, _exp=_offSec*FRUIT_OFFLINE_CHANCE;
       var _fruitN=Math.min(FRUIT_OFFLINE_CAP,Math.floor(_exp)+((Math.random()<(_exp-Math.floor(_exp)))?1:0));
-      if(_fruitN>0){ var _fsum={}; for(var _fi=0;_fi<_fruitN;_fi++){ var _fid2=rollFruitDrop(); grantFruit(_fid2,1); _fsum[_fid2]=(_fsum[_fid2]||0)+1; } _offlineFruitSummary=Object.keys(_fsum).map(function(k){var ff=fruitMeta(k);return {emoji:ff.emoji,name:ff.name,count:_fsum[k]};}); }
+      if(_fruitN>0){ var _fsum={}; for(var _fi=0;_fi<_fruitN;_fi++){ var _fid2=rollFruitDrop(); grantFruit(_fid2,1); _fsum[_fid2]=(_fsum[_fid2]||0)+1; } _offlineFruitSummary=Object.keys(_fsum).map(function(k){var ff=fruitMeta(k);return {id:k,emoji:ff.emoji,name:ff.name,count:_fsum[k]};}); }
     }
   }
 }
