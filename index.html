@@ -8825,7 +8825,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.06<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.07<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13142,12 +13142,17 @@ function updateHUD(){
   // (Den gamla mörkblå pet-bonus-raden är borttagen — alla bonusar visas nu i stats-panelen via 📊-knappen.)
 }
 
+var _offlineFruitSummary=null;
 function showOfflineModal(ms,coins){
   document.getElementById('ob-time').textContent='You were away for '+formatDuration(ms);
   var r=document.getElementById('offline-rewards');r.innerHTML='';
   [{label:COIN_IMG+' Eggs earned',val:'+'+fmt(coins)},{label:'⚡ Rate',val:fmt(eps())+'/s'},{label:'⏱️ Time',val:formatDuration(ms)}].forEach(function(row){
     var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+row.label+'</span><span class="ob-val">'+row.val+'</span>';r.appendChild(d);
   });
+  if(_offlineFruitSummary&&_offlineFruitSummary.length){
+    var dh=document.createElement('div');dh.className='ob-row';dh.style.cssText='border-top:1px solid rgba(255,255,255,0.12);margin-top:4px;padding-top:7px;';dh.innerHTML='<span class="ob-label">\ud83c\udf4e Treats your pets gathered</span><span class="ob-val"></span>';r.appendChild(dh);
+    _offlineFruitSummary.forEach(function(fr){var d=document.createElement('div');d.className='ob-row';d.innerHTML='<span class="ob-label">'+fr.emoji+' '+fr.name+'</span><span class="ob-val">\u00d7'+fr.count+'</span>';r.appendChild(d);});
+  }
   document.getElementById('offline-modal').classList.add('open');
 }
 
@@ -13354,6 +13359,10 @@ if(savedData){
       G.coins+=offlineCoins;G.total+=offlineCoins;
       G.stats.offlineRewardsClaimed++;
       G.stats.totalCoinsEarned+=offlineCoins;trackCoins('offline',offlineCoins);
+      // F6: offline-auto-plock av väsk-frukter (skärm-frukter fångas bara live)
+      var _offSec=offlineMs/1000, _exp=_offSec*FRUIT_IDLE_CHANCE;
+      var _fruitN=Math.min(20,Math.floor(_exp)+((Math.random()<(_exp-Math.floor(_exp)))?1:0));
+      if(_fruitN>0){ var _fsum={}; for(var _fi=0;_fi<_fruitN;_fi++){ var _fid2=rollFruitDrop(); grantFruit(_fid2,1); _fsum[_fid2]=(_fsum[_fid2]||0)+1; } _offlineFruitSummary=Object.keys(_fsum).map(function(k){var ff=fruitMeta(k);return {emoji:ff.emoji,name:ff.name,count:_fsum[k]};}); }
     }
   }
 }
@@ -13365,7 +13374,7 @@ ensureEventState();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 requestAnimationFrame(tick);
-if(offlineCoins>0)setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
+if(offlineCoins>0||(_offlineFruitSummary&&_offlineFruitSummary.length))setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
 else if(typeof maybeShowNewsPopup==='function')setTimeout(maybeShowNewsPopup,900); // ingen offline → visa ev. stor-nyhet direkt; med offline visas den efter Collect (se offline-claim)
 if(typeof badgesUpdate==='function')badgesUpdate(); // visa ev. röd olästa-nyheter-badge på ⋯
 
