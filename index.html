@@ -21,7 +21,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #scene-wrap{position:relative;width:100%;height:340px;overflow:hidden;flex-shrink:0;}
 #scene-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
 #scene-fade{display:none;position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to bottom,transparent,var(--bg));z-index:2;pointer-events:none;}
-.side-btns{position:absolute;top:57px;display:flex;flex-direction:column;gap:18px;z-index:10;}
+.side-btns{position:absolute;top:77px;display:flex;flex-direction:column;gap:18px;z-index:10;}
 #left-btns{left:8px;}
 #right-btns{right:8px;}
 .side-btn{position:relative;width:65px;padding:34px 3px 6px;background:rgba(12,18,32,0.5);border:1px solid rgba(255,255,255,0.13);border-radius:15px;display:flex;flex-direction:column;align-items:center;cursor:pointer;box-shadow:none;overflow:visible;}
@@ -62,7 +62,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-pos:nth-child(5) .pp-pet{animation-duration:4.5s;animation-delay:-2.8s;}
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
-#egg-stage{position:absolute;bottom:78px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;pointer-events:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#egg-stage{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;pointer-events:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #egg-glow{position:absolute;width:173px;height:203px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 #egg-glow2{position:absolute;width:240px;height:270px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
@@ -1089,7 +1089,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pa-icon{font-size:0.7rem;width:16px;text-align:center;}
 .abil-img{width:1.4em;height:1.4em;object-fit:contain;vertical-align:middle;display:inline-block;}
 .pa-icon .abil-img{width:16px;height:16px;}
-.pra-icon .abil-img{width:21px;height:21px;}
+.pra-icon .abil-img{width:32px;height:32px;}
 .ma-icon .abil-img{width:23px;height:23px;}
 .bchip-ico .abil-img{width:1.1em;height:1.1em;}
 .pa-name{color:rgba(255,255,255,0.6);flex:1;}
@@ -1108,9 +1108,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-empty p{font-size:0.8rem;}
 
 /* Pet Result Modal */
-.pet-result-abilities{display:flex;flex-direction:column;gap:6px;margin:12px 0;background:rgba(0,0,0,0.2);border-radius:12px;padding:10px;}
+.pet-result-abilities{display:flex;flex-direction:column;gap:3px;margin:12px 0;background:rgba(0,0,0,0.2);border-radius:12px;padding:7px 10px;}
 .pra-row{display:flex;align-items:center;gap:8px;font-size:0.8rem;}
-.pra-icon{font-size:1rem;width:20px;text-align:center;}
+.pra-icon{font-size:1.6rem;width:32px;flex:0 0 32px;text-align:center;}
 .pra-name{flex:1;text-align:left;}
 .pra-tier{font-weight:900;}
 .pra-val{color:rgba(255,255,255,0.82);font-size:0.92rem;font-weight:800;}
@@ -1910,7 +1910,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .side-btn:active .sb-icon{transform:translateY(2px);}
 
 /* ===== HOME-FLIP SWITCH — laser-glow pill med glidande kula ===== */
-.flip-pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:3px 11px;border-radius:24px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;}
+.flip-pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:3px 11px;border-radius:24px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;transform:scale(1.2);transform-origin:center center;}
 .flip-pill::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1.5px;background:linear-gradient(90deg,#36a8ff,#6f5bff,#a64bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
 .flip-lbl{background:transparent;border:none;font-family:inherit;font-weight:800;font-size:0.73rem;letter-spacing:0.3px;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;align-items:center;gap:4px;padding:3px 2px;white-space:nowrap;transition:color .2s,text-shadow .2s;}
 .flip-knob{position:relative;width:41px;height:20px;flex:0 0 auto;border-radius:12px;background:rgba(8,12,30,0.9);border:1px solid rgba(150,170,230,0.45);cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);}
@@ -1990,7 +1990,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     </div>
   </div>
   <div id="main">
-    <div id="home-flip" style="display:none;position:absolute;top:5px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
+    <div id="home-flip" style="display:none;position:absolute;top:10px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
       <div id="flip-pill" class="flip-pill build-on">
         <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
         <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
@@ -2549,7 +2549,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .gms-earn-desc{font-size:0.66rem;color:rgba(255,255,255,0.55);margin-top:1px;line-height:1.35;}
 .gms-note{font-size:0.64rem;color:rgba(255,255,255,0.4);text-align:center;line-height:1.45;margin-top:14px;}
 /* ===== PET DETAIL CARD (v7.17) ===== */
-#pet-detail-modal .modal-box{position:relative;padding:0;width:340px;max-width:94vw;background:none;border:none;overflow:visible;text-align:left;}
+#pet-detail-modal{align-items:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 0;}
+@keyframes pdSwipe{from{opacity:0.35;transform:translateY(5px);}to{opacity:1;transform:none;}}
+#pet-detail-modal .modal-box{position:relative;padding:0;width:340px;max-width:94vw;max-height:none;margin:auto;background:none;border:none;overflow:visible;text-align:left;}
 #pet-detail-close{position:absolute;top:9px;right:9px;z-index:8;float:none;background:rgba(11,21,48,0.65);border:1px solid rgba(255,255,255,0.18);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;padding:0;}
 .pdx2{position:relative;border:2px solid var(--rc,#f5c842);border-radius:20px;overflow:hidden;background:linear-gradient(160deg,#1a2f57,#0d1a38);box-shadow:0 0 22px -4px var(--rc,#f5c842),inset 0 0 42px -16px var(--rc,#f5c842);}
 .pdx2-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;opacity:0.92;}
@@ -3728,6 +3730,21 @@ function generatePet(eggId){
   };
 }
 
+// LUCKY HATCH (STEG 9): liten chans att en kläckning ger TVILLINGAR (×2), extremt liten för TRILLINGAR (×3).
+// Tvilling = samma art/raritet/värld men EGNA ability-rolls (registerPet rullar dess egen shiny). PLATSHÅLLARE → Balance Sheet.
+var LUCKY_HATCH={twin:0.02,triplet:0.002};
+function makeTwinOf(pet){
+  var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
+  var abilities=[];
+  for(var i=0;i<rc.slots;i++){
+    var abilityId=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];
+    var tier=rc.tiers[i];
+    var rv=rollAbilityValue(tier);
+    abilities.push({id:abilityId,tier:tier,v:rv.v,mega:rv.mega});
+  }
+  return {uid:Date.now()+Math.random(),name:pet.name,e:pet.e,rarity:pet.rarity,world:pet.world,abilities:abilities,explorer:rollExplorerRows(pet.rarity),equippedSlot:-1,level:1,xp:0};
+}
+
 // ── PET-BILDER: custom-PNG per pet i assets/pets/<world>/<namn>.png, med emoji som reserv.
 // Bilden skalar med textstorleken (1em) sa den passar dar emojin tidigare stod.
 function petSlug(name){return String(name||'').toLowerCase().trim().replace(/\s+/g,'-');}
@@ -4327,7 +4344,7 @@ function claimAdventure(index){
   var rw=rollAdvReward(adv,pet);
   G.coins+=rw.coins;G.total+=rw.coins;G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;trackCoins('adventure',rw.coins);
   if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
-  var parts=['+'+fmtShort(rw.coins)+' Sparks'];
+  var parts=[uiIco('currency/egg-coin','\u2728',16)+' +'+fmtShort(rw.coins)+' Sparks'];
   rw.shells.forEach(function(sh){
     G.shells[sh.type]=(G.shells[sh.type]||0)+sh.amt;
     G.stats.totalShellsCollected=(G.stats.totalShellsCollected||0)+sh.amt;
@@ -4347,7 +4364,7 @@ function claimAdventure(index){
     else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
     else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
-    else if(b.type==='stone'){grantSkillStone(b.id,1);var sm=ABILITY_META[b.id]||{name:'Skill'};parts.push('🎯 '+sm.name+' Stone found!');}
+    else if(b.type==='stone'){grantSkillStone(b.id,1);parts.push(abilityIconImg(b.id)+' Skill Stone found!');}
     else if(b.type==='gear'&&b.gear){if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(b.gear);var gtm=gearTypeMeta(b.gear.type);var grc=RARITY_CONFIG[b.gear.rarity]||{label:b.gear.rarity,icon:'⚪'};parts.push(gtm.icon+' '+grc.icon+' '+grc.label+' '+gtm.name+' gear found!');}
   });
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
@@ -4356,7 +4373,7 @@ function claimAdventure(index){
   saveGame();renderAdventure();
   parts.push(uiIco('stats/pet-xp','⭐',14)+' +'+rw.xp+' Pet XP');
   if(advLvUp)parts.push('⭐ '+(pet?petDisplayName(pet):'Pet')+' reached Lv '+pet.level+'!');
-  if(typeof showRewardPopup==='function')showRewardPopup(parts,true);
+  if(typeof showRewardPopup==='function')showRewardPopup(parts,true,null,'Adventure Loot!');
 }
 function openAdvPicker(advId){
   if(G.adventures.length>=G.adventureSlots)return;
@@ -5982,8 +5999,10 @@ function petRenamePrompt(uid){
     p.nick=v;saveGame();petRenameAfter(uid);
   });
 }
+var petDetailUid=null;
 function openPetDetail(uid){
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});if(!pet)return;
+  petDetailUid=uid;
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var isEquipped=G.equippedPets.some(function(u){return u!=null&&String(u)===String(pet.uid);});
   var lp=petXpProgress(pet);
@@ -6064,6 +6083,30 @@ function quickEquipPet(uid){
 }
 document.getElementById('pet-detail-close').onclick=function(){document.getElementById('pet-detail-modal').classList.remove('open');};
 document.getElementById('pet-detail-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+// Svajpa vänster/höger inne i pet-kortet → nästa/föregående pet (i visad ordning). Clampar i ändarna.
+function petDetailSwipe(dir){
+  if(!petDetailUid)return;
+  var list=(typeof _petGridSorted!=='undefined'&&_petGridSorted&&_petGridSorted.length)?_petGridSorted:G.hatchedPets;
+  if(!list||!list.length)return;
+  var idx=-1;
+  for(var i=0;i<list.length;i++){ if(String(list[i].uid)===String(petDetailUid)){idx=i;break;} }
+  if(idx<0)return;
+  var ni=idx+dir;
+  if(ni<0||ni>=list.length)return; // inga fler åt det hållet
+  var box=document.querySelector('#pet-detail-modal .modal-box');
+  openPetDetail(list[ni].uid);
+  if(box){ box.style.animation='none'; void box.offsetWidth; box.style.animation='pdSwipe .22s ease'; }
+}
+(function(){
+  var el=document.getElementById('pet-detail-modal'); if(!el)return;
+  var sx=0,sy=0,track=false;
+  el.addEventListener('touchstart',function(e){ if(e.touches.length!==1){track=false;return;} sx=e.touches[0].clientX; sy=e.touches[0].clientY; track=true; },{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(!track)return; track=false;
+    var t=e.changedTouches[0]; var dx=t.clientX-sx, dy=t.clientY-sy;
+    if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.6){ petDetailSwipe(dx<0?1:-1); } // vänster → nästa
+  },{passive:true});
+})();
 document.getElementById('shell-info-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
 
 // ============================================================
@@ -8199,6 +8242,7 @@ function showGenericModal(icon,title,body){
   document.getElementById('generic-modal-body').textContent=body;
   document.getElementById('generic-modal').classList.add('open');
 }
+var epsInfoStacked=false; // STEG-fix: när SPS/Sparks-raden staplat sig låses den (hoppar ej tillbaka)
 function updateEpsInfoNums(){
   var bodyEl=document.getElementById('generic-modal-body');
   var maxw=bodyEl?bodyEl.clientWidth:0;
@@ -8209,14 +8253,18 @@ function updateEpsInfoNums(){
   spsEl.textContent=fmtFull(spsVal);                            // full siffra med tusentalsavgränsare
   sparksEl.textContent=fmtFull(sparksVal);
   var rowEl=document.getElementById('eps-info-row');
-  if(rowEl&&maxw){                                              // ryms båda (fulla) bredvid varandra? annars stapla vertikalt
-    rowEl.style.flexDirection='row';
-    if(spsEl.scrollWidth+sparksEl.scrollWidth+24>maxw)rowEl.style.flexDirection='column';
+  if(rowEl&&maxw){                                              // ryms båda bredvid varandra? annars stapla — och LÅS staplat (hoppar ej tillbaka)
+    if(!epsInfoStacked){
+      rowEl.style.flexDirection='row';
+      if(spsEl.scrollWidth+sparksEl.scrollWidth+24>maxw)epsInfoStacked=true;
+    }
+    if(epsInfoStacked)rowEl.style.flexDirection='column';
   }
   if(maxw&&spsEl.scrollWidth>maxw)spsEl.textContent=fmtCompact(spsVal);       // ännu bredare än rutan på egen rad → korta just den
   if(maxw&&sparksEl.scrollWidth>maxw)sparksEl.textContent=fmtCompact(sparksVal);
 }
 function showEpsInfo(){
+  epsInfoStacked=false; // ny öppning → utvärdera layout på nytt
   var icon=document.getElementById('generic-modal-icon');
   var title=document.getElementById('generic-modal-title');
   var body=document.getElementById('generic-modal-body');
@@ -8574,7 +8622,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v8.99p<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.01<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11123,8 +11171,17 @@ function collectHatch(idx){
   G.eggsHatched[slot.eggId]=true;
   G.hatchSlots.splice(idx,1);
   buzz([12,40,18]);
+  // LUCKY HATCH: liten chans på tvillingar (×2), extremt liten på trillingar (×3). Samma art/raritet, egna abilities.
+  var luckyCount=1, _lr=Math.random();
+  if(_lr<LUCKY_HATCH.triplet)luckyCount=3; else if(_lr<LUCKY_HATCH.twin)luckyCount=2;
+  if(luckyCount>1){
+    for(var _t=1;_t<luckyCount;_t++){
+      var _twin=makeTwinOf(pet); registerPet(_twin);
+      G.stats.totalPetsCollected++; trackPets('egg',1);
+    }
+  }
   // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
-  showPetResult(pet,function(){renderHatchery();});
+  showPetResult(pet,function(){renderHatchery();},luckyCount);
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
 function openPetResultModal(pet,onShown){
@@ -11145,7 +11202,7 @@ function preloadHatchBgs(){
   });
 }
 setTimeout(preloadHatchBgs,2000);
-function showPetResult(pet,onShown){
+function showPetResult(pet,onShown,luckyCount){
   var rc=RARITY_CONFIG[pet.rarity]||RARITY_CONFIG.common;
   var eggInfo=EGG_SHOP.find(function(e){return e.id===pet.world;})||((pet.evid&&typeof ACTIVE_EVENT!=='undefined'&&ACTIVE_EVENT)?{name:ACTIVE_EVENT.name,icon:(ACTIVE_EVENT.emoji||'❄️')}:{name:pet.world,icon:'🥚'});
   var card=document.getElementById('pet-result-card');
@@ -11154,6 +11211,11 @@ function showPetResult(pet,onShown){
   if(bg){bg.style.display='';bg.onerror=function(){this.style.display='none';};bg.src=ASSET_BASE+'/assets/ui/hatch/hatch-bg-'+pet.rarity+'.png';}
   document.getElementById('pet-result-title').textContent='HATCH SUCCESSFUL!';
   document.getElementById('pet-result-sub').textContent="You've hatched a";
+  var _lc=luckyCount||1;
+  if(_lc>1){
+    var _tEl=document.getElementById('pet-result-title');if(_tEl)_tEl.textContent='\u2728 LUCKY HATCH!';
+    var _sEl=document.getElementById('pet-result-sub');if(_sEl)_sEl.textContent=(_lc>=3?'TRIPLETS! \u00d73 of a kind':'TWINS! \u00d72 of a kind');
+  }
   document.getElementById('pet-result-icon').innerHTML=petIco(pet);
   document.getElementById('pet-result-name').textContent=petDisplayName(pet);
   document.getElementById('pet-result-rarity').textContent=rc.label;
@@ -12490,7 +12552,7 @@ function rewardShortText(id){
   if(r.perm)Object.keys(r.perm).forEach(function(st){p.push('+'+r.perm[st]+'% '+PERM_LABELS[st]);});
   return p.join(' · ');
 }
-function showRewardPopup(parts,sticky,autoMs){
+function showRewardPopup(parts,sticky,autoMs,title){
   if(sticky){ // ta bort ev. tidigare sticky-rutor så de inte staplas
     var olds=document.querySelectorAll('.ach-popup.reward-sticky');
     for(var i=0;i<olds.length;i++){if(olds[i].parentNode)olds[i].parentNode.removeChild(olds[i]);}
@@ -12498,7 +12560,7 @@ function showRewardPopup(parts,sticky,autoMs){
   var pop=document.createElement('div');pop.className='ach-popup'+(sticky?' reward-sticky':'');
   var x=sticky?'<div class="ach-popup-x" style="position:absolute;top:6px;right:9px;font-size:0.8rem;color:rgba(255,255,255,0.6);">✕</div>':'';
   var tap=sticky?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:5px;">Tap to dismiss</div>':'';
-  pop.innerHTML=x+'<div class="ach-popup-icon">'+REWARD_IMG+'</div><div class="ach-popup-text"><div class="ach-popup-title">Reward Claimed!</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
+  pop.innerHTML=x+'<div class="ach-popup-icon">'+REWARD_IMG+'</div><div class="ach-popup-text"><div class="ach-popup-title">'+(title||'Reward Claimed!')+'</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
   document.body.appendChild(pop);
   if(sticky){
     pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
