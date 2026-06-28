@@ -6289,7 +6289,7 @@ function applyHomeMode(){
   var inv=(currentTab==='inventory');
   var adv=(G.homeMode==='adventures');
   var flip=document.getElementById('home-flip');
-  if(flip)flip.style.display=(onHome&&!inv)?'block':'none';
+  if(flip){flip.style.display=(onHome&&!inv)?'block':'none';flip.style.top=adv?'52px':'10px';}
   var sw=document.getElementById('scene-wrap');
   var sh=document.getElementById('home-sheet');
   var ha=document.getElementById('home-adventures');
@@ -6347,10 +6347,11 @@ function openPetStatsPopup(uid){
   var p=(G.hatchedPets||[]).find(function(x){return String(x.uid)===String(uid);});
   if(!p)return;
   var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
-  var h='<div style="background:linear-gradient(180deg,#0e1530,#0a0f24);border:1px solid '+rc.color+'88;border-radius:18px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);min-width:230px;max-width:86vw;">';
-  h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;margin-bottom:11px;white-space:nowrap;">'+petDisplayName(p)+'</div>';
+  var h='<div style="background:linear-gradient(180deg,#0e1530,#0a0f24);border:1px solid '+rc.color+'88;border-radius:18px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,0.6);min-width:240px;max-width:86vw;">';
+  h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;margin-bottom:10px;white-space:nowrap;">'+petDisplayName(p)+'</div>';
+  h+='<button onclick="closePetStatsPopup();openPetSlotModal('+(idleViewIdx||0)+',\'idle\')" style="display:block;width:100%;margin-bottom:12px;background:rgba(124,77,255,0.22);border:1.5px solid rgba(179,136,255,0.6);border-radius:12px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.78rem;padding:9px;cursor:pointer;">\u21c4 Change Pet</button>';
   if(p.abilities&&p.abilities.length){
-    p.abilities.forEach(function(a,ai){var m=ABILITY_META[a.id];if(!m)return;h+='<div style="display:flex;align-items:center;gap:11px;padding:7px 2px;font-size:0.9rem;white-space:nowrap;'+(ai>0?'border-top:1px solid rgba(255,255,255,0.08);':'')+'">'+abilityIconImg(a.id)+'<span style="flex:1;color:#fff;font-weight:600;text-align:left;">'+m.name+'</span><span style="color:#7fe0b0;font-weight:800;">'+abShow(a)+'</span></div>';});
+    p.abilities.forEach(function(a){h+=praRowHtml(a);});
   }else{
     h+='<div style="font-size:0.82rem;color:rgba(255,255,255,0.6);padding:4px 0;text-align:center;">No abilities yet</div>';
   }
@@ -6419,7 +6420,7 @@ function renderHomeAdventures(){
   h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.28) 60%,rgba(8,12,30,0.50));"></div>';
   // v9.57 idle-redesign — topp-rad: PET IDLE (i) (vänster) + Change Pet (höger)
-  h+='<div style="position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;">'
+  h+='<div style="position:absolute;top:0;left:0;right:0;z-index:8;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:linear-gradient(180deg,rgba(8,12,30,0.94),rgba(8,12,30,0.5));border-bottom:1px solid rgba(255,255,255,0.08);">'
     +'<div onclick="openIdleInfo()" style="display:flex;align-items:center;gap:6px;cursor:pointer;">'
       +'<span style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:#f5c842;text-shadow:0 2px 5px rgba(0,0,0,0.85);letter-spacing:0.3px;">\ud83d\udc3e PET IDLE</span>'
       +'<span style="width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.6);color:rgba(255,255,255,0.85);font-size:0.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:serif;">i</span>'
@@ -9187,7 +9188,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.61<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.62<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
