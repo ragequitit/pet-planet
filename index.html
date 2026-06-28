@@ -2010,7 +2010,6 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       </div>
       <div class="side-btns" id="right-btns">
         <div class="side-btn" id="inv-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent='🎒'"></span><span class="sb-label">Bag</span></div>
-        <div class="side-btn" id="stats-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent='📊'"></span><span class="sb-label">Stats</span></div>
         <div class="side-btn" id="events-btn" style="display:none" onclick="openEvents()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/event.png" alt="" onerror="this.parentNode.textContent='🎉'"></span><span class="sb-label">Events</span></div>
       </div>
       <div id="stage-group">
@@ -3902,32 +3901,50 @@ var STAT_PANEL_GROUPS=[
   {cat:'Collection',ico:'🐾', items:[{id:'shellGain',name:'Shell Gain'}]}
 ];
 function renderStatsPanel(){
-  var bd=getBonusBreakdown();
   var gb=(typeof gearBonuses==='function')?gearBonuses():{};
+  var idle=(G.idlePets||[]);
+  // summera idle-petsens förmågor per id (samma som idle/adventure-uträkningarna)
+  var petT={stoneFind:0,eggFind:0,gemFind:0,treasureFind:0,xpBoost:0,fortune:0,rareFind:0,shellLuck:0};
+  idle.forEach(function(uid){
+    var pp=G.hatchedPets.find(function(x){return String(x.uid)===String(uid);});
+    if(!pp)return; var s=petAdvSum(pp); for(var k in s){ if(petT[k]!=null)petT[k]+=s[k]; }
+  });
+  var nPets=idle.length;
+  var nGear=0; if(G.gearEquipped){['backpack','compass','boots','charm','tool'].forEach(function(t){if(G.gearEquipped[t]!=null)nGear++;});}
+  var ib=(typeof idleBonuses==='function')?idleBonuses():{shellGain:0,luck:0};
+  var perHr=(typeof idleEstPerHr==='function')?idleEstPerHr(ib):0;
   var asc=G.ascensions||0;
-  var petsEq=(G.equippedPets||[]).filter(function(u){return u!=null;}).length;
-  var gearEq=0; if(G.gearEquipped){['backpack','compass','boots','charm','tool'].forEach(function(t){if(G.gearEquipped[t]!=null)gearEq++;});}
+
+  var IDLE_PET=['shellLuck','fortune'], IDLE_GEAR=['shellBoost','haul','findChance'];
+  var ADV_PET=['stoneFind','eggFind','gemFind','treasureFind','xpBoost','rareFind'], ADV_GEAR=['speed','sparkBoost','affinity','offlineBoost','stamina'];
+
+  function petRow(id){ var m=ABILITY_META[id]||{name:id,color:'#fff'}; var v=petT[id]||0;
+    return '<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+abilityIconImg(id)+' '+m.name+'</span><span class="stats-total" style="color:'+(v?m.color:'rgba(255,255,255,0.35)')+'">+'+v+'%</span></div></div>'; }
+  function gearRow(id){ var m=GEAR_ABILITY_META[id]||{name:id,icon:'\u2754'}; var v=gb[id]||0;
+    return '<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+m.icon+' '+m.name+'</span><span class="stats-total" style="color:'+(v?'#b388ff':'rgba(255,255,255,0.35)')+'">+'+v+'%</span></div></div>'; }
+  function subLabel(t){ return '<div style="font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.42);text-transform:uppercase;letter-spacing:0.4px;padding:7px 2px 2px;">'+t+'</div>'; }
+
   var html='<div class="stats-asc"><img src="'+ASSET_BASE+'/assets/ui/menu/ascension.png" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:-0.2em;" onerror="this.replaceWith(document.createTextNode(\'\u{1F53C}\'))"> Ascensions: <b>'+asc+'</b> &nbsp;\u00b7&nbsp; \u2728 <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
-  // \u2014\u2014 PET ABILITIES \u2014\u2014
-  html+='<div class="stats-cat"><span class="stats-cat-ico"><img src="'+ASSET_BASE+'/assets/ui/menu/pets.png" alt="" onerror="this.parentNode.textContent=\'\u{1F43E}\'"></span>Pet Abilities</div>';
-  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);padding:0 2px 6px;line-height:1.4;">Totals from your '+petsEq+' equipped pet'+(petsEq===1?'':'s')+' (plus achievements &amp; ascension).</div>';
-  ABILITIES.forEach(function(id){
-    var m=ABILITY_META[id]||{name:id,color:'#fff'};
-    var d=bd[id]||{pets:0,ach:0,asc:0,total:0};
-    var src=[]; if(d.pets)src.push('\u{1F43E} +'+d.pets+'%'); if(d.ach)src.push('\u{1F3C6} +'+d.ach+'%'); if(d.asc)src.push('\u{1F53C} +'+d.asc+'%');
-    html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+abilityIconImg(id)+' '+m.name+'</span><span class="stats-total" style="color:'+(d.total?m.color:'rgba(255,255,255,0.35)')+'">+'+d.total+'%</span></div>';
-    html+='<div class="stats-src">'+(src.length?src.join(' &nbsp;\u00b7&nbsp; '):'<span style="opacity:0.5">Not active yet</span>')+'</div></div>';
-  });
-  // \u2014\u2014 GEAR ABILITIES \u2014\u2014
-  html+='<div class="stats-cat"><span class="stats-cat-ico">\u{1F9F0}</span>Gear Abilities</div>';
-  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);padding:0 2px 6px;line-height:1.4;">Totals from your '+gearEq+' equipped gear piece'+(gearEq===1?'':'s')+' (equipped under your idling pet on the Adventure screen).</div>';
-  GEAR_ABILITIES.forEach(function(id){
-    var m=GEAR_ABILITY_META[id]||{name:id,icon:'\u2754',blurb:''};
-    var v=gb[id]||0;
-    html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+m.icon+' '+m.name+'</span><span class="stats-total" style="color:'+(v?'#b388ff':'rgba(255,255,255,0.35)')+'">+'+v+'%</span></div>';
-    html+='<div class="stats-src" style="opacity:0.72">'+m.blurb+'</div></div>';
-  });
-  html+='<div class="stats-foot">Pet abilities come from your equipped pets; gear abilities from the gear equipped under your idling pet on the Adventure screen.</div>';
+  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.55);padding:0 2px 8px;line-height:1.45;">From your <b>'+nPets+'</b> idling pet'+(nPets===1?'':'s')+' + <b>'+nGear+'</b> equipped gear. Pets out on active missions aren\u2019t counted here.</div>';
+
+  // \u2014\u2014 IDLE \u2014\u2014
+  html+='<div class="stats-cat"><span class="stats-cat-ico">\u{1F41A}</span>Idle Gathering</div>';
+  html+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);padding:0 2px 4px;line-height:1.4;">What your idling pets + gear earn passively right now.</div>';
+  html+='<div class="stats-row" style="background:rgba(120,200,120,0.12);border:1px solid rgba(120,200,120,0.3);"><div class="stats-row-top"><span class="stats-name">\u23f3 Est. passive Shells</span><span class="stats-total" style="color:#9be870">~'+fmtShort(perHr)+'/hr</span></div></div>';
+  html+=subLabel('From pets');
+  IDLE_PET.forEach(function(id){html+=petRow(id);});
+  html+=subLabel('From gear');
+  IDLE_GEAR.forEach(function(id){html+=gearRow(id);});
+
+  // \u2014\u2014 ADVENTURE \u2014\u2014
+  html+='<div class="stats-cat" style="margin-top:12px;"><span class="stats-cat-ico">\u{1F9ED}</span>On Adventures</div>';
+  html+='<div style="font-size:0.66rem;color:rgba(255,255,255,0.45);padding:0 2px 4px;line-height:1.4;">What these pets + gear add when you send them on an active mission.</div>';
+  html+=subLabel('From pets');
+  ADV_PET.forEach(function(id){html+=petRow(id);});
+  html+=subLabel('From gear');
+  ADV_GEAR.forEach(function(id){html+=gearRow(id);});
+
+  html+='<div class="stats-foot">Idle = passive Shell gathering on this screen. Adventures = active missions you send pets on. Egg-screen buildings have their own flat bonuses (shown elsewhere).</div>';
   document.getElementById('stats-modal-body').innerHTML=html;
 }
 function openStatsPanel(){renderStatsPanel();document.getElementById('stats-modal').classList.add('open');}
@@ -6581,7 +6598,7 @@ function closeQuestsIfOpen(){var m=document.getElementById('quests-modal');if(m&
 function selectBuildTab(name){
   switchTab(name);
   var m=document.getElementById('main');
-  if(m)m.scrollTo({top:Math.round(m.clientHeight*0.3),behavior:'smooth'});
+  if(m)m.scrollTo({top:Math.round(m.clientHeight*0.5),behavior:'smooth'});
 }
 function navTab(name){
   closeQuestsIfOpen();
@@ -9064,7 +9081,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.42<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.45<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
