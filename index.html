@@ -2385,7 +2385,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="adv-modal-body"></div>
   </div>
 </div>
-<div id="generic-modal" class="modal-overlay" style="align-items:center;justify-content:center;">
+<div id="generic-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box centered">
     <button class="modal-close" onclick="document.getElementById('generic-modal').classList.remove('open')" style="float:right"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     <div id="generic-modal-icon" style="font-size:2.5rem;margin-bottom:6px;"></div>
@@ -4686,25 +4686,18 @@ function lootInvHtml(){
       var rord=Object.keys(RARITY_CONFIG);
       var gs=gear.slice().sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
       h+='<div class="adv-sech">🧰 Adventure Gear</div>';
-      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Gear boosts your expeditions. Each has 2 abilities &mdash; higher rarity is stronger. Equip it under your idling pet on the <b>Adventure</b> screen. Merge coming soon.</div>';
-      h+='<div style="display:flex;flex-direction:column;gap:6px;">';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Gear boosts your expeditions \u2014 tap a piece for its abilities. Equip it under your idling pet on the <b>Adventure</b> screen.</div>';
+      h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;">';
       gs.forEach(function(g){
         var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
         var tm=gearTypeMeta(g.type);
-        var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
-        h+='<div style="display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid rgba(150,120,220,0.35);border-radius:12px;padding:8px 11px;">'
-          +'<div style="font-size:1.5rem;width:30px;text-align:center;">'+gearIconImg(g,30)+'</div>'
-          +'<div style="flex:1;min-width:0;">'
-            +'<div style="font-weight:800;font-size:0.86rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+(isGearLocked(g.uid)?' <span style="font-size:0.6rem;color:#f5c842;background:rgba(245,200,66,0.14);border:1px solid rgba(245,200,66,0.4);border-radius:6px;padding:1px 5px;vertical-align:middle;">🔒 '+loEsc(gearLockName(g.uid))+'</span>':'')+'</div>'
-            +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.72);margin-top:2px;line-height:1.5;">'+ab+'</div>'
-          +'</div>'
+        var lock=isGearLocked(g.uid)?'<span style="position:absolute;top:3px;left:5px;font-size:0.62rem;">🔒</span>':'';
+        h+='<div onclick="showGearInfo('+g.uid+')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
+          +lock
+          +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+gearIconImg(g,38)+'</span>'
+          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+tm.name+'</span>'
           +'</div>';
       });
-      h+='</div>';
-      h+='<div style="margin-top:10px;background:rgba(255,255,255,0.04);border-radius:10px;padding:9px 11px;">';
-      h+='<div style="font-size:0.72rem;font-weight:800;color:rgba(255,255,255,0.7);margin-bottom:5px;">ℹ️ What gear abilities do</div>';
-      GEAR_ABILITIES.forEach(function(id){var m=GEAR_ABILITY_META[id];
-        h+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);line-height:1.7;"><b style="color:rgba(255,255,255,0.8)">'+m.name+'</b> &mdash; '+m.blurb+'</div>';});
       h+='</div>';
     }
   }
@@ -7292,8 +7285,12 @@ var FRUIT_ADV_CHANCE=0.08;     // chans att ett äventyr ÄVEN ger en frukt
 var fruitDropAcc=0;            // tick-ackumulator för idle-drops (1 roll/sek)
 function rollFruitTier(){ var tot=0,k; for(k in FRUIT_TIER_WEIGHT)tot+=FRUIT_TIER_WEIGHT[k]; var r=Math.random()*tot; for(k in FRUIT_TIER_WEIGHT){ r-=FRUIT_TIER_WEIGHT[k]; if(r<=0)return parseInt(k,10); } return 1; }
 function rollFruitDrop(){ var tier=rollFruitTier(); var pool=FRUITS.filter(function(f){return f.tier===tier;}); if(!pool.length)pool=FRUITS; return pool[Math.floor(Math.random()*pool.length)].id; }
+function openTreatsTab(){
+  if(typeof openBag==='function')openBag();
+  if(typeof showInvSection==='function')showInvSection('fruits');
+}
 function dropFruitIdle(){ var id=rollFruitDrop(); grantFruit(id,1); var f=fruitMeta(id);
-  if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' A wild '+f.name+' dropped!'],false,2800);
+  if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' A wild '+f.name+' dropped!','<span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">Tap to open Treats</span>'],false,4000,'Treat Dropped!',openTreatsTab);
   if(typeof renderInventory==='function'&&document.getElementById('inv-wrap'))renderInventory();
 }
 // SKÄRM-FRUKTER (golden-cookie): svävar in, tap = används DIREKT, missas = borta. Effekter = PLATSHÅLLARE → Balance Sheet.
@@ -7502,6 +7499,27 @@ function renderFruitBuffs(){
   el.innerHTML=pills.map(function(p,i){
     return '<span onclick="showBuffTipIdx(event,'+i+')" style="pointer-events:auto;cursor:pointer;background:rgba(12,18,32,0.82);border:1px solid '+p.color+';border-radius:20px;padding:3px 9px;font-size:0.66rem;font-weight:800;color:#fff;display:inline-flex;align-items:center;gap:4px;box-shadow:0 2px 6px rgba(0,0,0,0.4);">'+p.ico+' '+p.txt+'</span>';
   }).join('');
+}
+function showGearInfo(uid){
+  var g=(G.gearInv||[]).find(function(x){return x.uid===uid;}); if(!g)return;
+  var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'\u26aa'};
+  var tm=gearTypeMeta(g.type);
+  showGenericModal(tm.icon, rc.label+' '+tm.name, '');
+  var ico=document.getElementById('generic-modal-icon'); if(ico)ico.innerHTML=gearIconImg(g,46);
+  var body=document.getElementById('generic-modal-body');
+  if(body){
+    var abil=(g.abilities||[]).map(function(a){
+      var m=GEAR_ABILITY_META[a.id]||{name:a.id,icon:'',blurb:''};
+      return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;text-align:left;">'
+        +'<span style="font-size:1.15rem;flex:0 0 auto;line-height:1;">'+(m.icon||'')+'</span>'
+        +'<span style="flex:1;min-width:0;"><b style="color:#fff;">'+m.name+'</b> <span style="color:'+rc.color+';font-weight:800;">+'+a.v+'%'+(a.mega?' \u2605':'')+'</span><br><span style="font-size:0.7rem;color:rgba(255,255,255,0.6);line-height:1.4;">'+m.blurb+'</span></span>'
+        +'</div>';
+    }).join('');
+    var lock=isGearLocked(uid)?'<div style="margin-top:6px;font-size:0.7rem;color:#f5c842;text-align:left;">\ud83d\udd12 Locked to loadout: '+loEsc(gearLockName(uid))+'</div>':'';
+    body.innerHTML='<div style="color:'+rc.color+';font-weight:800;font-size:0.8rem;margin-bottom:10px;">'+rc.icon+' '+rc.label+' \u00b7 '+tm.name+'</div>'
+      +abil
+      +'<div style="font-size:0.66rem;color:rgba(255,255,255,0.42);margin-top:6px;line-height:1.4;text-align:left;">Equip it under your idling pet on the <b>Adventure</b> screen.</div>'+lock;
+  }
 }
 function showFruitInfo(id){
   var f=fruitMeta(id);var t=FRUIT_TIERS[f.tier]||{name:'',color:'#7bdf6a'};
@@ -8992,7 +9010,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.33<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.36<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12933,7 +12951,7 @@ function rewardShortText(id){
   if(r.perm)Object.keys(r.perm).forEach(function(st){p.push('+'+r.perm[st]+'% '+PERM_LABELS[st]);});
   return p.join(' · ');
 }
-function showRewardPopup(parts,sticky,autoMs,title){
+function showRewardPopup(parts,sticky,autoMs,title,onClick){
   if(sticky){ // ta bort ev. tidigare sticky-rutor så de inte staplas
     var olds=document.querySelectorAll('.ach-popup.reward-sticky');
     for(var i=0;i<olds.length;i++){if(olds[i].parentNode)olds[i].parentNode.removeChild(olds[i]);}
@@ -12943,9 +12961,13 @@ function showRewardPopup(parts,sticky,autoMs,title){
   var tap=sticky?'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:5px;">Tap to dismiss</div>':'';
   pop.innerHTML=x+'<div class="ach-popup-icon">'+REWARD_IMG+'</div><div class="ach-popup-text"><div class="ach-popup-title">'+(title||'Reward Claimed!')+'</div><div class="ach-popup-name" style="font-size:0.76rem;line-height:1.35">'+parts.join('<br>')+'</div>'+tap+'</div>';
   document.body.appendChild(pop);
+  if(onClick){
+    pop.style.cursor='pointer';
+    pop.onclick=function(){ if(pop.parentNode)pop.parentNode.removeChild(pop); try{onClick();}catch(e){} };
+  }
   if(sticky){
-    pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
-    pop.onclick=function(){if(pop.parentNode)pop.parentNode.removeChild(pop);};
+    if(!onClick){ pop.style.cursor='pointer';pop.style.position=pop.style.position||'';
+      pop.onclick=function(){if(pop.parentNode)pop.parentNode.removeChild(pop);}; }
   }else{
     setTimeout(function(){if(pop.parentNode)pop.parentNode.removeChild(pop);},autoMs||3500);
   }
