@@ -6359,6 +6359,7 @@ function openPetStatsPopup(uid){
   if(m){var inner=m.querySelector('.petstats-inner');if(inner)inner.innerHTML=h;m.classList.add('open');}
 }
 function closePetStatsPopup(){var m=document.getElementById('petstats-modal');if(m)m.classList.remove('open');}
+function openIdleInfo(){ if(typeof showGenericModal==='function')showGenericModal('\ud83d\udc3e','Pet Idle','Your idling pet gathers Shells and finds over time \u2014 even while you\u2019re away. Choose which world it explores, equip gear, and swap pets to boost what it brings home.'); }
 function renderHomeAdventures(){
   var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
   var worlds=unlockedIdleWorlds();
@@ -6374,6 +6375,14 @@ function renderHomeAdventures(){
   h+='<div id="idleadv-stage" style="position:relative;height:calc(100dvh - var(--top-h) - var(--nav-h) - 76px);overflow:hidden;margin:-6px -13px 12px;background:#101a38;">';
   h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.28) 60%,rgba(8,12,30,0.50));"></div>';
+  // v9.57 idle-redesign — topp-rad: PET IDLE (i) (vänster) + Change Pet (höger)
+  h+='<div style="position:absolute;top:0;left:0;right:0;z-index:6;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;">'
+    +'<div onclick="openIdleInfo()" style="display:flex;align-items:center;gap:6px;cursor:pointer;">'
+      +'<span style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:#f5c842;text-shadow:0 2px 5px rgba(0,0,0,0.85);letter-spacing:0.3px;">\ud83d\udc3e PET IDLE</span>'
+      +'<span style="width:17px;height:17px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.6);color:rgba(255,255,255,0.85);font-size:0.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:serif;">i</span>'
+    +'</div>'
+    +'<button onclick="openPetSlotModal('+(idleViewIdx||0)+',\'idle\')" style="display:flex;align-items:center;gap:5px;background:rgba(12,18,40,0.78);border:1.5px solid rgba(120,150,230,0.55);border-radius:20px;color:#cfe0ff;font-family:\'Fredoka One\',cursive;font-size:0.66rem;padding:6px 12px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.4);">\u21c4 Change Pet</button>'
+  +'</div>';
   // floating bag + stats (top-right) = SAME column/position as main page
   h+='<div class="side-btns" style="top:100px;right:8px;left:auto;z-index:4;">'
     +'<div class="side-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>'
@@ -9126,7 +9135,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.55<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.57<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11622,8 +11631,10 @@ function renderWorkforceModal(){
   html+='</div>';box.innerHTML=html;
 }
 function renderWfPicker(i,box){
+  var rord=Object.keys(RARITY_CONFIG);
   var avail=(G.hatchedPets||[]).filter(function(p){return petPlacedBuilding(p.uid)===-1;});
-  var html='<button class="wf-back" onclick="wfBackToSlots()">\u2190 Back</button>';
+  avail.sort(function(a,b){var d=rord.indexOf(b.rarity)-rord.indexOf(a.rarity);return d!==0?d:String(a.name||'').localeCompare(String(b.name||''));}); // bästa raritet först, sen namn
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><button class="wf-back" onclick="wfBackToSlots()" style="margin-bottom:0;">\u2190 Back</button><span style="color:rgba(255,255,255,0.5);font-size:0.72rem;font-family:\'Fredoka One\',cursive;">'+avail.length+' free</span></div>';
   if(avail.length===0){html+='<div class="egp-empty">No free pets to place.<br>Hatch more eggs, or remove a pet from another building first.</div>';box.innerHTML=html;return;}
   html+='<div class="wf-grid">';
   avail.forEach(function(p){html+=wfCellHtml(i,p,false);});
