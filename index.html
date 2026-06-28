@@ -2561,6 +2561,18 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .buff-tip .bt-b{color:rgba(255,255,255,0.88);}
 .buff-tip .bt-t{margin-top:5px;font-size:0.64rem;color:rgba(255,255,255,0.5);}
 .buff-tip .abil-img{width:22px;height:22px;object-fit:contain;vertical-align:middle;}
+/* ===== Mega Fruit Boost FX (skärm-frukt staplad på väsk-frukt) ===== */
+#mega-fx{position:absolute;inset:-60px;z-index:6;pointer-events:none;}
+#mega-fx .mega-rays{position:absolute;left:50%;top:54%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;background:repeating-conic-gradient(from 0deg, rgba(255,225,90,0.32) 0deg 7deg, transparent 7deg 22deg, rgba(199,125,255,0.32) 22deg 29deg, transparent 29deg 45deg);-webkit-mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mix-blend-mode:screen;animation:megaSpin 10s linear infinite;}
+#mega-fx .mega-glow{position:absolute;left:50%;top:54%;width:250px;height:250px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle, rgba(255,228,110,0.6) 0%, rgba(199,125,255,0.42) 42%, rgba(199,125,255,0) 70%);mix-blend-mode:screen;filter:blur(3px);animation:megaGlowPulse 1.4s ease-in-out infinite;}
+#mega-fx .mega-text{position:absolute;left:50%;top:-6px;width:236px;height:96px;transform:translateX(-50%);animation:megaTextBob 2s ease-in-out infinite;}
+#mega-fx .mega-text svg{width:100%;height:100%;overflow:visible;}
+#mega-fx .mega-text text{font-family:'Fredoka One','Baloo 2',cursive;font-weight:900;font-size:21px;}
+@keyframes megaGlowPulse{0%,100%{opacity:0.55;transform:translate(-50%,-50%) scale(0.82);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.18);}}
+@keyframes megaSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
+@keyframes megaTextBob{0%,100%{transform:translateX(-50%) translateY(0);}50%{transform:translateX(-50%) translateY(-4px);}}
+.mega-sparkle{position:absolute;pointer-events:none;border-radius:50%;background:radial-gradient(circle, #fff 0%, rgba(255,236,150,0.95) 35%, rgba(199,125,255,0.55) 62%, transparent 72%);will-change:transform,opacity;animation:megaSparkle 1.5s ease-out forwards;z-index:12;}
+@keyframes megaSparkle{0%{opacity:0;transform:scale(0.2) translateY(0);}22%{opacity:1;transform:scale(1) translateY(-3px);}100%{opacity:0;transform:scale(0.35) translateY(-22px);}}
 @keyframes sfBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes sfGlow{from{transform:scale(1)}to{transform:scale(1.13)}}
 #pet-detail-modal .modal-box{position:relative;padding:0;width:340px;max-width:94vw;max-height:none;margin:auto;background:none;border:none;overflow:visible;text-align:left;}
@@ -4399,7 +4411,7 @@ function claimAdventure(index){
   // Bonus-loot (chans-baserad)
   (rw.bonus||[]).forEach(function(b){
     if(b.type==='gems'){G.gems=(G.gems||0)+b.amt;parts.push(GEM_IMG+' +'+b.amt+' Gems');}
-    else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push(REWARD_IMG+' '+(em?em.icon+' '+em.name:b.id)+'!');}
+    else if(b.type==='egg'){G.eggsOwned[b.id]=(G.eggsOwned[b.id]||0)+1;var em=EGG_SHOP.find(function(e){return e.id===b.id;});var _eimg='<img src="'+eggShopIconUrl(b.id)+'" alt="" style="width:1.4em;height:1.4em;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+(em?em.icon:'🥚')+'\'))">';parts.push(_eimg+' '+(em?em.name:b.id)+'!');}
     else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
     else if(b.type==='stone'){grantSkillStone(b.id,1);parts.push(abilityIconImg(b.id)+' Skill Stone found!');}
@@ -7197,25 +7209,22 @@ var FRUIT_TIERS={
   4:{name:'Mythic', color:'#ffd24d'}
 };
 var FRUITS=[
-  {id:'pipberry',   name:'Pip Berry',    emoji:'\ud83e\uded0', tier:1, desc:'+50% Sparks per second for 10 min'},
   {id:'tickleplum', name:'Tickle Plum',  emoji:'\ud83d\udfe3', tier:1, desc:'+100% tap Sparks for 5 min'},
-  {id:'munchfig',   name:'Munch Fig',    emoji:'\ud83d\udfe4', tier:1, desc:'+50% Pet XP for 15 min'},
   {id:'snoozepeach',name:'Snooze Peach', emoji:'\ud83c\udf51', tier:1, desc:'Instantly speeds up your current hatch'},
   {id:'glowgrape',  name:'Glow Grape',   emoji:'\ud83c\udf47', tier:2, desc:'\u00d72 Shells from adventures for 20 min'},
-  {id:'zoommelon',  name:'Zoom Melon',   emoji:'\ud83c\udf48', tier:2, desc:'-30% adventure time for your next 3 adventures'},
-  {id:'fizzapple',  name:'Fizz Apple',   emoji:'\ud83c\udf4f', tier:2, desc:'\u00d72 Sparks per second for 15 min'},
   {id:'cloverlime', name:'Clover Lime',  emoji:'\ud83d\udfe2', tier:2, desc:'\u00d72 rare loot chance on adventures for 20 min'},
-  {id:'twinberry',  name:'Twinberry',    emoji:'\ud83c\udf52', tier:3, desc:'Greatly boosts Lucky Hatch (twins) for your next 5 hatches'},
+  {id:'zoommelon',  name:'Zoom Melon',   emoji:'\ud83c\udf48', tier:2, desc:'-30% adventure time for your next 3 adventures'},
+  {id:'fizzapple',  name:'Fizz Apple',   emoji:'\ud83c\udf4f', tier:2, desc:'Gem-find chance on your next 5 adventures'},
   {id:'cometpear',  name:'Comet Pear',   emoji:'\ud83c\udf50', tier:3, desc:'\u00d73 Pet XP for 20 min'},
-  {id:'gleamplum',  name:'Gleam Plum',   emoji:'\ud83d\udd2e', tier:3, desc:'Gem-find chance on your next 5 adventures'},
   {id:'honeydew',   name:'Honeydew Drop',emoji:'\ud83d\udca7', tier:3, desc:'\u00d73 Sparks per second for 20 min'},
-  {id:'moonmelon',  name:'Moon Melon',   emoji:'\ud83c\udf19', tier:4, desc:'MEGA Lucky Hatch: guaranteed twins + real triplet chance, next 3 hatches'},
-  {id:'sunmango',   name:'Sun Mango',    emoji:'\ud83e\udd6d', tier:4, desc:'Festival: \u00d72 Sparks, \u00d72 Shells & \u00d72 XP at once for 15 min'},
-  {id:'starcoconut',name:'Star Coconut', emoji:'\ud83e\udd65', tier:4, desc:'Greatly boosts shiny chance for your next 3 hatches'}
+  {id:'twinberry',  name:'Twinberry',    emoji:'\ud83c\udf53', tier:3, desc:'Greatly boosts Lucky Hatch (twins) for your next 5 hatches'},
+  {id:'munchfig',   name:'Munch Fig',    emoji:'\ud83d\udfe4', tier:4, desc:'MEGA Lucky Hatch: guaranteed twins + real triplet chance, next 3 hatches'},
+  {id:'starcoconut',name:'Star Coconut', emoji:'\ud83e\udd65', tier:4, desc:'Greatly boosts shiny chance for your next 3 hatches'},
+  {id:'sunmango',   name:'Sun Mango',    emoji:'\ud83e\udd6d', tier:4, desc:'Festival: \u00d72 Sparks, \u00d72 Shells & \u00d72 XP at once for 15 min'}
 ];
 var SCREEN_FRUITS=[
-  {id:'sundrop',    name:'Sun Drop',     emoji:'\ud83d\udfe0', desc:'\u00d72 Sparks per second for 10 min (used instantly)'},
-  {id:'seaplum',    name:'Sea Plum',     emoji:'\ud83d\udd35', desc:'\u00d72 Shells from adventures for 10 min (used instantly)'},
+  {id:'sundrop',    name:'Sun Drop',     emoji:'\ud83d\udfe0', desc:'\u00d72 Sparks per second for 2 min (used instantly)'},
+  {id:'pipberry',   name:'Pip Berry',    emoji:'\ud83e\uded0', desc:'\u00d72 Shells from adventures for 2 min (used instantly)'},
   {id:'sparkcherry',name:'Spark Cherry', emoji:'\ud83c\udf52', desc:'Instant Spark burst (used instantly)'}
 ];
 function fruitMeta(id){return FRUITS.find(function(f){return f.id===id;})||SCREEN_FRUITS.find(function(f){return f.id===id;})||{name:id,emoji:'\ud83c\udf4e',tier:1,desc:''};}
@@ -7247,21 +7256,18 @@ function fruitsSectionHtml(){
 }
 // Effekt-tabell (F2 kopplar 'sps'; övriga kinds inkopplas i F3). Magnituder/min = PLATSHÅLLARE → Balance Sheet.
 var FRUIT_EFF={
-  pipberry:{kind:'sps',mult:1.5,mins:10},
   tickleplum:{kind:'tap',mult:2,mins:5},
-  munchfig:{kind:'xp',mult:1.5,mins:15},
   snoozepeach:{kind:'hatchspeed'},
   glowgrape:{kind:'shells',mult:2,mins:20},
-  zoommelon:{kind:'advtime',mult:0.7,charges:3},
-  fizzapple:{kind:'sps',mult:2,mins:15},
   cloverlime:{kind:'advloot',mult:2,mins:20},
-  twinberry:{kind:'twinboost',charges:5},
+  zoommelon:{kind:'advtime',mult:0.7,charges:3},
+  fizzapple:{kind:'gemfind',charges:5},
   cometpear:{kind:'xp',mult:3,mins:20},
-  gleamplum:{kind:'gemfind',charges:5},
   honeydew:{kind:'sps',mult:3,mins:20},
-  moonmelon:{kind:'megahatch',charges:3},
-  sunmango:{kind:'festival',mult:2,mins:15},
-  starcoconut:{kind:'shinyboost',charges:3}
+  twinberry:{kind:'twinboost',charges:5},
+  munchfig:{kind:'megahatch',charges:3},
+  starcoconut:{kind:'shinyboost',charges:3},
+  sunmango:{kind:'festival',mult:2,mins:15}
 };
 var buffAcc=0; // tick-ackumulator för buff-indikatorn
 function pruneFruitBuffs(){ if(!Array.isArray(G.fruitBuffs))G.fruitBuffs=[]; var now=Date.now(); G.fruitBuffs=G.fruitBuffs.filter(function(b){return (b.until||0)>now;}); }
@@ -7292,9 +7298,9 @@ function dropFruitIdle(){ var id=rollFruitDrop(); grantFruit(id,1); var f=fruitM
 }
 // SKÄRM-FRUKTER (golden-cookie): svävar in, tap = används DIREKT, missas = borta. Effekter = PLATSHÅLLARE → Balance Sheet.
 var SCREEN_FRUIT_EFF={
-  sundrop:{kind:'sps',mult:2,mins:10},
-  seaplum:{kind:'shells',mult:2,mins:10},
-  sparkcherry:{kind:'sparkburst'} // direkt Spark-klick (10 min av din SPS på en gång)
+  sundrop:{kind:'sps',mult:2,mins:1},
+  pipberry:{kind:'shells',mult:2,mins:2},
+  sparkcherry:{kind:'sparkburst'}
 };
 var SCREEN_FRUIT_CHANCE=0.0008; // chans PER SEKUND att en skärm-frukt dyker upp
 var SCREEN_FRUIT_LIFE=16000;    // ms den svävar innan den försvinner
@@ -7331,8 +7337,14 @@ function applyScreenFruit(id){
   saveGame(); if(typeof updateHUD==='function')updateHUD();
   if(typeof showRewardPopup==='function')showRewardPopup([fruitIconImg(id,16)+' '+f.name+' \u2014 '+msg],false,2800);
 }
-function devSpawnScreenFruit(){ if(_screenFruitEl)fadeOutScreenFruit(); spawnScreenFruit(); }
-function fruitEffShort(eff){ var k={sps:'SPS',tap:'Tap',xp:'XP',shells:'Shells'}[eff.kind]||eff.kind; var mv=(eff.mult>=2?('\u00d7'+eff.mult):('+'+Math.round((eff.mult-1)*100)+'%')); return mv+' '+k+(eff.mins?(' for '+eff.mins+' min'):''); }
+function devSpawnScreenFruit(){
+  var dm=document.getElementById('dev-modal'); if(dm)dm.classList.remove('open');
+  // hoppa till hemscenen om vi inte redan är där, annars syns inte frukten
+  if(typeof SCENE_TABS!=='undefined' && typeof currentTab!=='undefined' && SCENE_TABS.indexOf(currentTab)<0 && typeof switchTab==='function'){ switchTab('buildings'); }
+  if(_screenFruitEl)fadeOutScreenFruit();
+  setTimeout(function(){ spawnScreenFruit(); }, 80);
+}
+function fruitEffShort(eff){ var k={sps:'SPS',tap:'Tap',xp:'XP',shells:'Shells',advloot:'rare loot'}[eff.kind]||eff.kind; var mv=(eff.mult>=2?('\u00d7'+eff.mult):('+'+Math.round((eff.mult-1)*100)+'%')); return mv+' '+k+(eff.mins?(' for '+eff.mins+' min'):''); }
 function useFruit(id){
   if(fruitCount(id)<=0)return;
   var f=fruitMeta(id); var eff=FRUIT_EFF[id]||{}; var msg='';
@@ -7420,6 +7432,32 @@ function showAllAbilitiesTip(ev){
   }).join('');
   showBuffTip(ev,'<div class="bt-h" style="margin-bottom:7px;">What this pet gives you</div>'+rows);
 }
+// ===== Mega Fruit Boost: gul/lila glow-puls, roterande strålar + böjd text ut från ägget, glitter på scenen =====
+var MEGA_FX_HTML='<div class="mega-rays"></div><div class="mega-glow"></div><div class="mega-text"><svg viewBox="0 0 236 96" preserveAspectRatio="xMidYMid meet"><defs><path id="megaArc" d="M16,82 Q118,2 220,82" fill="none"></path><linearGradient id="megaGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd84a"></stop><stop offset="0.5" stop-color="#fff3b0"></stop><stop offset="1" stop-color="#c77dff"></stop></linearGradient></defs><text fill="url(#megaGrad)" stroke="#3a1a5c" stroke-width="0.9" paint-order="stroke" style="letter-spacing:0.5px"><textPath href="#megaArc" startOffset="50%" text-anchor="middle">MegaFruitBoost!</textPath></text></svg></div>';
+var _megaOn=false;
+function setMegaFruitBoost(on){
+  var stage=document.getElementById('egg-stage');
+  var fx=document.getElementById('mega-fx');
+  if(on){
+    if(!fx){ if(!stage)return; fx=document.createElement('div'); fx.id='mega-fx'; fx.innerHTML=MEGA_FX_HTML; stage.appendChild(fx); }
+    fx.style.display='block';
+    megaSparkleBurst();
+  } else if(fx){ fx.style.display='none'; }
+  _megaOn=on;
+}
+function megaSparkleBurst(){
+  var wrap=document.getElementById('scene-wrap'); if(!wrap||wrap.offsetParent===null)return;
+  var w=wrap.clientWidth||360, h=wrap.clientHeight||340;
+  for(var i=0;i<6;i++){
+    var s=document.createElement('div'); s.className='mega-sparkle';
+    var sz=6+Math.random()*9;
+    s.style.left=(Math.random()*w)+'px'; s.style.top=(Math.random()*h)+'px';
+    s.style.width=sz+'px'; s.style.height=sz+'px';
+    s.style.animationDelay=(Math.random()*0.5)+'s';
+    wrap.appendChild(s);
+    (function(el){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},2100);})(s);
+  }
+}
 function renderFruitBuffs(){
   pruneFruitBuffs();
   var el=document.getElementById('fruit-buffs');
@@ -7431,6 +7469,10 @@ function renderFruitBuffs(){
   var onScene=(typeof SCENE_TABS==='undefined')||(typeof currentTab==='undefined')||(SCENE_TABS.indexOf(currentTab)>=0);
   if(!onScene){ el.style.display='none'; hideBuffTip(); return; }
   var now=Date.now();
+  // Mega-boost = minst 2 aktiva buffar av samma sort (en skärm-frukt staplad på en väsk-frukt).
+  var _kc={}; (G.fruitBuffs||[]).forEach(function(b){ if((b.until||0)>now)_kc[b.kind]=(_kc[b.kind]||0)+1; });
+  var _mega=false; for(var _k in _kc){ if(_kc[_k]>=2){_mega=true;break;} }
+  setMegaFruitBoost(_mega);
   var pills=[];
   (G.fruitBuffs||[]).filter(function(b){return (b.until||0)>now;}).forEach(function(b){
     var rem=Math.max(0,Math.round((b.until-now)/1000)); var mm=Math.floor(rem/60),ss=rem%60; var tm=mm+':'+(ss<10?'0':'')+ss;
@@ -8939,7 +8981,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.22<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.28<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
