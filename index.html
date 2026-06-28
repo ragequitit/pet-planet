@@ -807,6 +807,18 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .egp-ic img{width:46px;height:46px;object-fit:contain;}
 .egp-nm{font-family:'Fredoka One',cursive;font-size:0.74rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
 .egp-ct{font-size:0.72rem;color:rgba(255,255,255,0.6);font-family:'Fredoka One',cursive;}
+.bld-wf{margin-top:5px;background:linear-gradient(160deg,#3a2f5c,#241a40);border:1.5px solid #6a4fb0;border-radius:10px;color:#d9c8ff;font-family:'Fredoka One',cursive;font-size:0.6rem;padding:3px 8px;cursor:pointer;align-self:flex-start;}
+.bld-wf:active{transform:scale(0.95);}
+.wf-bonus{text-align:center;color:#c6a8ff;font-family:'Fredoka One',cursive;font-size:0.82rem;margin:2px 0 10px;}
+.wf-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;}
+.wf-cell{background:linear-gradient(160deg,#22325c,#152340);border:2px solid #3a5cb8;border-radius:14px;padding:9px 6px;min-height:54px;cursor:pointer;display:flex;align-items:center;gap:7px;transition:transform 0.1s ease;}
+.wf-cell:active{transform:scale(0.96);}
+.wf-cell.empty{justify-content:center;color:rgba(255,255,255,0.45);font-family:'Fredoka One',cursive;font-size:0.72rem;border-style:dashed;}
+.wf-ic{font-size:1.8rem;line-height:1;flex-shrink:0;display:flex;align-items:center;}
+.wf-nm{font-family:'Fredoka One',cursive;font-size:0.7rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wf-fl{font-size:0.62rem;color:#9be08b;font-family:'Fredoka One',cursive;}
+.wf-rm{margin-left:auto;color:rgba(255,255,255,0.4);font-size:0.85rem;flex-shrink:0;}
+.wf-back{background:none;border:none;color:#9bb6ff;font-family:'Fredoka One',cursive;font-size:0.78rem;cursor:pointer;padding:4px 2px;margin-bottom:6px;}
 .hspd-mid{display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1;}
 .hspd-price{font-family:'Baloo 2',cursive;font-weight:800;font-size:0.72rem;color:#fff;display:flex;align-items:center;gap:2px;white-space:nowrap;}
 .hspd-price .coin-ic{width:13px;height:13px;}
@@ -2201,6 +2213,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-body" id="egg-picker-body"></div>
 <button class="hatch-info-close" onclick="closeEggPicker()">Cancel</button>
 </div></div>
+<div id="workforce-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeWorkforce()">
+<div class="hatch-info-card">
+<div class="hatch-info-head" id="wf-head">&#128101; Workforce</div>
+<div class="hatch-info-body" id="workforce-body"></div>
+<button class="hatch-info-close" onclick="closeWorkforce()">Close</button>
+</div></div>
 <div id="loadout-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -2917,6 +2935,9 @@ var CLICK_UPGRADES=[
 ];
 function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
+// ── BUILDING WORKFORCE (Pets as Production, slice 1) ── placerade pets ger en PLATT raritets-skalad spark-bonus per byggnad (inga abilities). Värden = PLATSHÅLLARE → Balance Sheet.
+var WORKFORCE_SLOTS=10; // pet-platser per byggnad
+var WORKFORCE_FLAT={common:1,uncommon:2,rare:3,epic:4,legendary:5,mythical:6,artifact:7,heavenly:8,eternal:9,cosmic:10};
 function clickUpgOwned(id){return !!(G.clickUpgrades&&G.clickUpgrades[id]);}
 function clickEpsBonus(){var s=0;CLICK_UPGRADES.forEach(function(u){if(u.epsAdd&&clickUpgOwned(u.id))s+=u.epsAdd;});return s;}
 function clickFingerPer(){var per=0,started=false;CLICK_UPGRADES.forEach(function(u){if(u.line!=='finger'||!clickUpgOwned(u.id))return;if(u.fingerBase!=null){per=u.fingerBase;started=true;}else if(u.fingerMult!=null&&started)per*=u.fingerMult;});return per;}
@@ -3284,7 +3305,7 @@ var ABILITY_META={
   gemFind:     {name:'Gem Digger',    icon:'💎', color:'#5ad0e0', desc:function(v){return '+'+v+'% Gem find';}},
   treasureFind:{name:'Treasure Hunter',icon:'💰', color:'#f5c842', desc:function(v){return '+'+v+'% Sparks from adventures';}},
   xpBoost:     {name:'XP Boost',      icon:'⭐', color:'#a3e635', desc:function(v){return '+'+v+'% Pet XP';}},
-  fortune:     {name:'Lucky Paw',     icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% surprise-find chance';}},
+  fortune:     {name:'Lucky Paw',     icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% bonus loot chance';}},
   rareFind:    {name:'Rare Find',     icon:'✨', color:'#ce93d8', desc:function(v){return '+'+v+'% rare-loot odds';}},
   shellLuck:   {name:'Shell Seeker',  icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells';}},
 };
@@ -3404,7 +3425,7 @@ var GEAR_ABILITY_META={
   haul:        {name:'Haul',           icon:'📦',blurb:'Brings home more loot'},
   shellBoost:  {name:'Shell Boost',    icon:'🐚',blurb:'Extra shells from adventures'},
   sparkBoost:  {name:'Spark Boost',    icon:'🪙',blurb:'Extra Sparks from adventures'},
-  findChance:  {name:'Lucky Find',     icon:'🍀',blurb:'Better chance of a surprise find'},
+  findChance:  {name:'Loot Luck',      icon:'🍀',blurb:'More bonus loot from adventures and idle'},
   affinity:    {name:'Expedition Bonus',icon:'💞',blurb:'Bonus on its matching world'},
   offlineBoost:{name:'Offline Boost',  icon:'🌙',blurb:'More idle earnings while away'},
   stamina:     {name:'Stamina',        icon:'💪',blurb:'More energy, shorter rest'},
@@ -4032,6 +4053,7 @@ var G={
   equippedPets:[null,null,null,null,null],
   loadouts:[],
   owned:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  workforce:{},
   buildingDoublings:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   clickUpgrades:{},
   ulvl:{craft:0,hatch:0},
@@ -4198,7 +4220,14 @@ function fmtShort(n){return fmtNum(n);}
 function fmt(n){return fmtNum(n);}
 function bcost(i){return Math.ceil(BUILDINGS[i].b*Math.pow(1.15,G.owned[i]));}
 function buildingMult(i){return Math.pow(2,(G.buildingDoublings&&G.buildingDoublings[i])||0);}
-function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildingMult(i);return s*getEpsMultiplier();}
+// ── Workforce-hjälpare (Pets as Production) ──
+function petByUid(uid){if(!G.hatchedPets)return null;for(var _i=0;_i<G.hatchedPets.length;_i++){if(String(G.hatchedPets[_i].uid)===String(uid))return G.hatchedPets[_i];}return null;}
+function workforceArr(i){if(!G.workforce)G.workforce={};if(!Array.isArray(G.workforce[i]))G.workforce[i]=[];return G.workforce[i];}
+function workforcePets(i){return workforceArr(i).map(petByUid).filter(function(p){return !!p;});}
+function petPlacedBuilding(uid){if(!G.workforce)return -1;for(var _i=0;_i<20;_i++){if((G.workforce[_i]||[]).some(function(u){return String(u)===String(uid);}))return _i;}return -1;}
+function workforceFlatForBuilding(i){var t=0;workforcePets(i).forEach(function(p){t+=WORKFORCE_FLAT[p.rarity]||0;});return t;}
+function workforceFlatTotal(){var t=0;for(var _i=0;_i<20;_i++)t+=workforceFlatForBuilding(_i);return t;}
+function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildingMult(i);s+=workforceFlatTotal();return s*getEpsMultiplier();}
 function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
 function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
@@ -4399,7 +4428,7 @@ function rollAdvReward(adv,pet){
   // BONUS-LOOT: separata chans-rolls per rad (låg chans; Luck + affinity höjer chansen) — "oooh vad fick jag!"
   var lvl=pet?petLevelFromXp(pet.xp||0):1;
   var lvlLootMult=1+Math.max(0,lvl-1)*PET_LEVEL_LOOT_BONUS; // högre nivå → bättre chans på sällsynt loot
-  var luckMult=(1+(s.fortune/50))*aBonus*lvlLootMult*findM*(1+(s.rareFind||0)/100)*fruitBuffMult('advloot'); // Fortune+Rare Find+Lucky Find-gear; affinity/nivå; + Clover Lime-buff
+  var luckMult=(1+(s.fortune/50))*aBonus*lvlLootMult*findM*(1+(s.rareFind||0)/100)*fruitBuffMult('advloot'); // Fortune+Rare Find+Loot Luck-gear; affinity/nivå; + Clover Lime-buff
   var _gemChargeMult=consumeFruitCharge('gemfind')?6:1; // Gleam Plum: kraftig gem-chans detta äventyr
   var bonus=[];
   (adv.bonusLoot||[]).forEach(function(B){
@@ -4913,7 +4942,7 @@ function saveGame(){
   try{ppStore.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
-    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
+    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,workforce:G.workforce,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,
@@ -4936,7 +4965,7 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -6502,7 +6531,7 @@ function idleGearTap(){
   var lines=[];
   if(gb.shellBoost)lines.push('🐚 Shell Boost +'+gb.shellBoost+'%');
   if(gb.haul)lines.push('📦 Haul +'+gb.haul+'%');
-  if(gb.findChance)lines.push('🍀 Lucky Find +'+gb.findChance+'%');
+  if(gb.findChance)lines.push('🍀 Loot Luck +'+gb.findChance+'%');
   if(gb.offlineBoost)lines.push('🌙 Offline Boost +'+gb.offlineBoost+'% (while away)');
   var msg=lines.length?['Your equipped Explorer Gear is boosting this pet\'s idle haul:'].concat(lines):['No Explorer Gear equipped yet.','Equip gear in your bag (Loot tab) to boost idle haul.'];
   if(typeof showRewardPopup==='function')showRewardPopup(msg,false);
@@ -7495,7 +7524,7 @@ function abilityBlurb(id){return {
   gemFind:'Better chance to find Gems.',
   treasureFind:'Earns extra Sparks from adventures.',
   xpBoost:'Your pets gain more XP.',
-  fortune:'Better chance of a surprise find.',
+  fortune:'Better chance for bonus loot on adventures and while idling.',
   rareFind:'Better odds of rare loot.',
   shellLuck:'Brings home more Shells.'
 }[id]||'A helpful bonus.';}
@@ -9095,7 +9124,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.49<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.52<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9144,7 +9173,7 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -10804,7 +10833,7 @@ function renderBuildings(){
     var c=bcost(i);var canAfford=G.coins>=c;
     if(i<unlocked){
       d.className='bld '+(canAfford?'buyable':'poor');
-      d.innerHTML='<div class="bld-img">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+buildingBpText(i)+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
+      d.innerHTML='<div class="bld-img">'+buildingIconImg(BUILDINGS[i])+'</div><div class="bld-info"><div class="bn">'+BUILDINGS[i].n+'</div><div class="bp" id="bp'+i+'">'+buildingBpText(i)+'</div><div class="bld-price"><span class="bld-price-ic">'+COIN_IMG+'</span><span id="bc'+i+'">'+fmtShort(c)+'</span></div><button class="bld-wf" onclick="event.stopPropagation();openWorkforce('+i+')">\ud83d\udc65 '+workforcePets(i).length+'/'+WORKFORCE_SLOTS+'</button></div><div class="bld-count" id="bo'+i+'">'+G.owned[i]+'</div>';
     } else if(i===unlocked){
       d.className='bld semi';d.innerHTML='<div class="bld-img">'+LOCK_IMG+'</div><div class="bld-info"><div class="bn">???</div><div class="bp">Buy previous to unlock</div></div>';
     } else {
@@ -11563,6 +11592,37 @@ function startHatching(eggId){
   G.eggsOwned[eggId]--;
   G.hatchSlots.push({eggId:eggId,startTime:Date.now(),duration:getHatchDuration(eggId),done:false});
   renderHatchery();
+}
+// ── BUILDING WORKFORCE UI (Pets as Production, slice 1) ──
+var _wfBuilding=-1,_wfPicking=false;
+function openWorkforce(i){_wfBuilding=i;_wfPicking=false;renderWorkforceModal();var m=document.getElementById('workforce-modal');if(m)m.classList.add('open');}
+function closeWorkforce(){var m=document.getElementById('workforce-modal');if(m)m.classList.remove('open');}
+function wfOpenPicker(){_wfPicking=true;renderWorkforceModal();}
+function wfBackToSlots(){_wfPicking=false;renderWorkforceModal();}
+function placeInWorkforce(i,uid){var arr=workforceArr(i);if(arr.length>=WORKFORCE_SLOTS)return;if(petPlacedBuilding(uid)!==-1)return;arr.push(uid);_wfPicking=false;saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
+function removeFromWorkforce(i,uid){var arr=workforceArr(i);var k=arr.findIndex(function(u){return String(u)===String(uid);});if(k>=0)arr.splice(k,1);saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
+function wfCellHtml(i,p,removable){var rc=RARITY_CONFIG[p.rarity]||RARITY_CONFIG.common;var act=removable?('removeFromWorkforce('+i+',\''+p.uid+'\')'):('placeInWorkforce('+i+',\''+p.uid+'\')');
+  return '<div class="wf-cell" style="border-color:'+rc.color+'" onclick="'+act+'"><span class="wf-ic">'+petIco(p)+'</span><span style="min-width:0;display:flex;flex-direction:column"><span class="wf-nm">'+p.name+'</span><span class="wf-fl">'+rc.label+' \u00b7 +'+(WORKFORCE_FLAT[p.rarity]||0)+'/s</span></span>'+(removable?'<span class="wf-rm">\u2715</span>':'')+'</div>';}
+function renderWorkforceModal(){
+  var head=document.getElementById('wf-head');var box=document.getElementById('workforce-body');if(!box)return;
+  var i=_wfBuilding;var bname=(BUILDINGS[i]&&BUILDINGS[i].n)||'Building';
+  if(head)head.innerHTML='\ud83d\udc65 '+bname+' \u2014 Workforce';
+  if(_wfPicking){renderWfPicker(i,box);return;}
+  var pets=workforcePets(i);
+  var html='<div class="wf-bonus">Bonus: +'+fmt(workforceFlatForBuilding(i))+' /s &nbsp;\u00b7&nbsp; '+pets.length+'/'+WORKFORCE_SLOTS+' slots</div><div class="wf-grid">';
+  for(var s=0;s<WORKFORCE_SLOTS;s++){
+    if(s<pets.length)html+=wfCellHtml(i,pets[s],true);
+    else html+='<div class="wf-cell empty" onclick="wfOpenPicker()">+ Add pet</div>';
+  }
+  html+='</div>';box.innerHTML=html;
+}
+function renderWfPicker(i,box){
+  var avail=(G.hatchedPets||[]).filter(function(p){return petPlacedBuilding(p.uid)===-1;});
+  var html='<button class="wf-back" onclick="wfBackToSlots()">\u2190 Back</button>';
+  if(avail.length===0){html+='<div class="egp-empty">No free pets to place.<br>Hatch more eggs, or remove a pet from another building first.</div>';box.innerHTML=html;return;}
+  html+='<div class="wf-grid">';
+  avail.forEach(function(p){html+=wfCellHtml(i,p,false);});
+  html+='</div>';box.innerHTML=html;
 }
 function openEggPicker(){
   if(G.hatchSlots.length>=G.hatchSlotCount)return; // ingen ledig slot
@@ -13534,6 +13594,7 @@ if(savedData){
   G.offlineMult=savedData.offlineMult||0.5;
   G.petSlots=savedData.petSlots||1;G.currentWorld=savedData.currentWorld||0;
   G.owned=savedData.owned||new Array(20).fill(0);
+  G.workforce=(savedData.workforce&&typeof savedData.workforce==='object'&&!Array.isArray(savedData.workforce))?savedData.workforce:{};
   G.buildingDoublings=Array.isArray(savedData.buildingDoublings)?savedData.buildingDoublings.slice(0,20):new Array(20).fill(0);
   while(G.buildingDoublings.length<20)G.buildingDoublings.push(0);
   G.clickUpgrades=(savedData.clickUpgrades&&typeof savedData.clickUpgrades==='object')?savedData.clickUpgrades:{};
@@ -13553,6 +13614,8 @@ if(savedData){
   if(typeof savedData.hatchSlotCount==='number')G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.hatchSlotCount));
   else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
   G.hatchedPets=savedData.hatchedPets||[];
+  // Workforce: rensa bort placerade uids vars pet inte längre finns (extraherad/fuserad)
+  if(G.workforce&&typeof G.workforce==='object'){for(var _wb in G.workforce){if(Array.isArray(G.workforce[_wb]))G.workforce[_wb]=G.workforce[_wb].filter(function(u){return !!petByUid(u);});}}
   if(typeof migratePetAbilities==='function')migratePetAbilities(); // reparera gamla förmåge-id:n → nya systemet (kör bara på pets med ogiltiga id:n)
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
