@@ -2006,7 +2006,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     </div>
   </div>
   <div id="main">
-    <div id="home-flip" style="display:none;position:absolute;top:10px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
+    <div id="home-flip" style="display:none;position:absolute;top:25px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
       <div id="flip-pill" class="flip-pill build-on">
         <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
         <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
@@ -6360,6 +6360,27 @@ function openPetStatsPopup(uid){
 }
 function closePetStatsPopup(){var m=document.getElementById('petstats-modal');if(m)m.classList.remove('open');}
 function openIdleInfo(){ if(typeof showGenericModal==='function')showGenericModal('\ud83d\udc3e','Pet Idle','Your idling pet gathers Shells and finds over time \u2014 even while you\u2019re away. Choose which world it explores, equip gear, and swap pets to boost what it brings home.'); }
+// v9.58 — loadout-piller (namn + 5 prickar) under gearen, ersätter den gamla flytande Loadouts-knappen.
+function idleLoadoutPillHtml(){
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
+  var active=G.activeLoadout||0;
+  var nm=(G.gearLoadouts&&G.gearLoadouts[active]&&G.gearLoadouts[active].name)||'Loadout 1';
+  var dots='';
+  for(var i=0;i<5;i++){
+    var lo=G.gearLoadouts&&G.gearLoadouts[i];var isA=(i===active);var bt=lo&&lo.bought;
+    var oc=bt?('switchLoadout('+i+');renderHomeAdventures()'):('buyLoadout('+i+');renderHomeAdventures()');
+    var bg=isA?'#f5c842':(bt?'rgba(245,200,66,0.30)':'transparent');
+    var bd=isA?'#f5c842':(bt?'rgba(245,200,66,0.55)':'rgba(255,255,255,0.4)');
+    var gl=isA?'box-shadow:0 0 7px rgba(245,200,66,0.9);':'';
+    dots+='<span onclick="'+oc+'" style="width:13px;height:13px;border-radius:50%;background:'+bg+';border:1.6px solid '+bd+';'+gl+'cursor:pointer;display:inline-block;"></span>';
+  }
+  return '<div style="display:flex;align-items:center;justify-content:center;margin-bottom:12px;">'
+    +'<div style="display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,#1a2750,#101a38);border:1.5px solid rgba(120,150,230,0.5);border-radius:22px;padding:8px 15px;box-shadow:0 2px 7px rgba(0,0,0,0.35);">'
+      +'<span onclick="renameActiveLoadout();renderHomeAdventures()" style="font-family:\'Fredoka One\',cursive;font-size:0.8rem;color:#cfe0ff;cursor:pointer;display:flex;align-items:center;gap:5px;">\ud83c\udf9b\ufe0f '+loEsc(nm)+' <span style="font-size:0.58rem;opacity:0.6;">\u270f\ufe0f</span></span>'
+      +'<span style="display:flex;gap:7px;align-items:center;">'+dots+'</span>'
+    +'</div>'
+  +'</div>';
+}
 function renderHomeAdventures(){
   var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
   var worlds=unlockedIdleWorlds();
@@ -6388,7 +6409,6 @@ function renderHomeAdventures(){
     +'<div class="side-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>'
     +'<div class="side-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent=\'📊\'"></span><span class="sb-label">Stats</span></div>'
     +'</div>';
-  h+='<div class="side-btn" onclick="openGearLoadouts()" style="position:absolute;top:100px;left:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/common/loadout.png" alt="" onerror="this.parentNode.textContent=\'🎚️\'"></span><span class="sb-label">Loadouts</span></div>';
   if(!pets.length){
     h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
   }else{
@@ -6409,6 +6429,8 @@ function renderHomeAdventures(){
   h+='</div>';
   // STEG 5: Explorer Gear (5 typade platser) flyttat hit, UNDER petet — fylls med gear man hittar.
   h+='<div style="margin-bottom:12px;">'+renderExplorerSlots()+'</div>';
+  // v9.58: loadout-piller direkt under gearen (ersätter gamla flytande Loadouts-knappen)
+  h+=idleLoadoutPillHtml();
   // choose idle world card (opens the world-picker popup)
   var _cw=EGG_SHOP.find(function(e){return e.id===G.idleWorld;})||{name:'',icon:'🌍'};
   h+='<div onclick="openIdleWorldPicker()" style="display:flex;align-items:center;gap:11px;background:linear-gradient(180deg,#16234c,#101a38);border:1px solid rgba(120,150,230,0.4);border-radius:12px;padding:9px 12px;margin-bottom:12px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.3);">';
@@ -9135,7 +9157,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.57<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.59<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
