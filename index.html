@@ -6423,6 +6423,14 @@ function renderHomeAdventures(){
     }
     h+='</div>';
     h+='<div style="font-family:\'Fredoka One\',cursive;font-size:1.15rem;color:'+rc.color+';text-align:center;text-shadow:0 1px 3px #000;white-space:nowrap;margin-top:-4px;">'+petDisplayName(p)+'</div>';
+    var _xp=petXpProgress(p);
+    h+='<div style="display:flex;align-items:center;gap:6px;justify-content:center;margin-top:6px;">'
+      +'<span style="font-family:\'Fredoka One\',cursive;font-size:0.66rem;color:#fff;background:rgba(124,77,255,0.5);border:1px solid rgba(179,136,255,0.7);border-radius:7px;padding:2px 8px;text-shadow:0 1px 2px #000;white-space:nowrap;">Lv. '+_xp.level+'</span>'
+      +'<div style="position:relative;width:min(46vw,170px);height:15px;border-radius:8px;background:rgba(8,12,30,0.78);border:1px solid rgba(255,255,255,0.18);overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.4);">'
+        +'<div style="position:absolute;left:0;top:0;bottom:0;width:'+_xp.pct+'%;background:linear-gradient(90deg,#7c4dff,#b388ff);"></div>'
+        +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.54rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.95);white-space:nowrap;">'+(_xp.max?'MAX':(fmtShort(_xp.into)+' / '+fmtShort(_xp.need)+' XP'))+'</div>'
+      +'</div>'
+    +'</div>';
     if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe \u2039 \u203a</div>';
     h+='</div>';
   }
@@ -9157,7 +9165,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.59<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.60<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
