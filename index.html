@@ -2937,7 +2937,8 @@ function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;ret
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
 // ── BUILDING WORKFORCE (Pets as Production, slice 1) ── placerade pets ger en PLATT raritets-skalad spark-bonus per byggnad (inga abilities). Värden = PLATSHÅLLARE → Balance Sheet.
 var WORKFORCE_SLOTS=10; // pet-platser per byggnad
-var WORKFORCE_FLAT={common:1,uncommon:2,rare:3,epic:4,legendary:5,mythical:6,artifact:7,heavenly:8,eternal:9,cosmic:10};
+// Hur många "extra byggnader" en placerad pet räknas som, per raritet (raritets-skalad). PLATSHÅLLARE → Balance Sheet.
+var WORKFORCE_UNITS={common:0.25,uncommon:0.5,rare:0.8,epic:1.1,legendary:1.5,mythical:1.9,artifact:2.3,heavenly:2.6,eternal:2.8,cosmic:3.0};
 function clickUpgOwned(id){return !!(G.clickUpgrades&&G.clickUpgrades[id]);}
 function clickEpsBonus(){var s=0;CLICK_UPGRADES.forEach(function(u){if(u.epsAdd&&clickUpgOwned(u.id))s+=u.epsAdd;});return s;}
 function clickFingerPer(){var per=0,started=false;CLICK_UPGRADES.forEach(function(u){if(u.line!=='finger'||!clickUpgOwned(u.id))return;if(u.fingerBase!=null){per=u.fingerBase;started=true;}else if(u.fingerMult!=null&&started)per*=u.fingerMult;});return per;}
@@ -4225,9 +4226,10 @@ function petByUid(uid){if(!G.hatchedPets)return null;for(var _i=0;_i<G.hatchedPe
 function workforceArr(i){if(!G.workforce)G.workforce={};if(!Array.isArray(G.workforce[i]))G.workforce[i]=[];return G.workforce[i];}
 function workforcePets(i){return workforceArr(i).map(petByUid).filter(function(p){return !!p;});}
 function petPlacedBuilding(uid){if(!G.workforce)return -1;for(var _i=0;_i<20;_i++){if((G.workforce[_i]||[]).some(function(u){return String(u)===String(uid);}))return _i;}return -1;}
-function workforceFlatForBuilding(i){var t=0;workforcePets(i).forEach(function(p){t+=WORKFORCE_FLAT[p.rarity]||0;});return t;}
-function workforceFlatTotal(){var t=0;for(var _i=0;_i<20;_i++)t+=workforceFlatForBuilding(_i);return t;}
-function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*G.owned[i]*buildingMult(i);s+=workforceFlatTotal();return s*getEpsMultiplier();}
+function workforceUnits(i){var t=0;workforcePets(i).forEach(function(p){t+=WORKFORCE_UNITS[p.rarity]||0;});return t;} // summa "extra byggnads-ekvivalenter" från placerade pets
+function workforceBonusSps(i){return BUILDINGS[i].p*workforceUnits(i)*buildingMult(i)*getEpsMultiplier();} // faktiska sparks/sek byggnaden får av sin workforce
+function petWorkforceSps(i,p){return (WORKFORCE_UNITS[p.rarity]||0)*BUILDINGS[i].p*buildingMult(i)*getEpsMultiplier();} // en placerad pets bidrag på byggnad i
+function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*(G.owned[i]+workforceUnits(i))*buildingMult(i);return s*getEpsMultiplier();}
 function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
 function formatDuration(ms){var s=Math.floor(ms/1000);if(s<60)return s+' seconds';var m=Math.floor(s/60);if(m<60)return m+' minute'+(m===1?'':'s');var h=Math.floor(m/60),rm=m%60;return h+' hour'+(h===1?'':'s')+(rm>0?' '+rm+' min':'');}
@@ -9124,7 +9126,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.53<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.54<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11602,14 +11604,14 @@ function wfBackToSlots(){_wfPicking=false;renderWorkforceModal();}
 function placeInWorkforce(i,uid){var arr=workforceArr(i);if(arr.length>=WORKFORCE_SLOTS)return;if(petPlacedBuilding(uid)!==-1)return;arr.push(uid);_wfPicking=false;saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
 function removeFromWorkforce(i,uid){var arr=workforceArr(i);var k=arr.findIndex(function(u){return String(u)===String(uid);});if(k>=0)arr.splice(k,1);saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
 function wfCellHtml(i,p,removable){var rc=RARITY_CONFIG[p.rarity]||RARITY_CONFIG.common;var act=removable?('removeFromWorkforce('+i+',\''+p.uid+'\')'):('placeInWorkforce('+i+',\''+p.uid+'\')');
-  return '<div class="wf-cell" style="border-color:'+rc.color+'" onclick="'+act+'"><span class="wf-ic">'+petIco(p)+'</span><span style="min-width:0;display:flex;flex-direction:column"><span class="wf-nm">'+p.name+'</span><span class="wf-fl">'+rc.label+' \u00b7 +'+(WORKFORCE_FLAT[p.rarity]||0)+'/s</span></span>'+(removable?'<span class="wf-rm">\u2715</span>':'')+'</div>';}
+  return '<div class="wf-cell" style="border-color:'+rc.color+'" onclick="'+act+'"><span class="wf-ic">'+petIco(p)+'</span><span style="min-width:0;display:flex;flex-direction:column"><span class="wf-nm">'+p.name+'</span><span class="wf-fl">'+rc.label+' \u00b7 +'+fmt(petWorkforceSps(i,p))+'/s</span></span>'+(removable?'<span class="wf-rm">\u2715</span>':'')+'</div>';}
 function renderWorkforceModal(){
   var head=document.getElementById('wf-head');var box=document.getElementById('workforce-body');if(!box)return;
   var i=_wfBuilding;var bname=(BUILDINGS[i]&&BUILDINGS[i].n)||'Building';
   if(head)head.innerHTML='\ud83d\udc65 '+bname+' \u2014 Workforce';
   if(_wfPicking){renderWfPicker(i,box);return;}
   var pets=workforcePets(i);
-  var html='<div class="wf-bonus">Bonus: +'+fmt(workforceFlatForBuilding(i))+' /s &nbsp;\u00b7&nbsp; '+pets.length+'/'+WORKFORCE_SLOTS+' slots</div><div class="wf-grid">';
+  var html='<div class="wf-bonus">Bonus: +'+fmt(workforceBonusSps(i))+' /s &nbsp;\u00b7&nbsp; '+pets.length+'/'+WORKFORCE_SLOTS+' slots</div><div class="wf-grid">';
   for(var s=0;s<WORKFORCE_SLOTS;s++){
     if(s<pets.length)html+=wfCellHtml(i,pets[s],true);
     else html+='<div class="wf-cell empty" onclick="wfOpenPicker()">+ Add pet</div>';
