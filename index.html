@@ -2563,8 +2563,8 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .buff-tip .abil-img{width:22px;height:22px;object-fit:contain;vertical-align:middle;}
 /* ===== Mega Fruit Boost FX (skärm-frukt staplad på väsk-frukt) ===== */
 #mega-fx{position:absolute;inset:-60px;z-index:1;pointer-events:none;opacity:1;transition:opacity 0.55s ease;}
-#mega-fx .mega-rays{position:absolute;left:50%;top:54%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;background:repeating-conic-gradient(from 0deg, rgba(255,225,90,0.32) 0deg 7deg, transparent 7deg 22deg, rgba(199,125,255,0.32) 22deg 29deg, transparent 29deg 45deg);-webkit-mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mix-blend-mode:screen;animation:megaSpin 10s linear infinite;}
-#mega-fx .mega-glow{position:absolute;left:50%;top:54%;width:250px;height:250px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle, rgba(255,228,110,0.6) 0%, rgba(199,125,255,0.42) 42%, rgba(199,125,255,0) 70%);mix-blend-mode:screen;filter:blur(3px);animation:megaGlowPulse 1.4s ease-in-out infinite;}
+#mega-fx .mega-rays{position:absolute;left:50%;top:54%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;background:repeating-conic-gradient(from 0deg, rgba(255,225,90,0.34) 0deg 7deg, transparent 7deg 22deg, rgba(255,150,55,0.32) 22deg 29deg, transparent 29deg 45deg);-webkit-mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mask:radial-gradient(circle, transparent 28%, #000 46%, transparent 74%);mix-blend-mode:screen;animation:megaSpin 10s linear infinite;}
+#mega-fx .mega-glow{position:absolute;left:50%;top:54%;width:250px;height:250px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle, rgba(255,250,215,0.7) 0%, rgba(255,216,90,0.5) 38%, rgba(255,150,50,0.36) 60%, rgba(255,150,50,0) 72%);mix-blend-mode:screen;filter:blur(3px);animation:megaGlowPulse 1.4s ease-in-out infinite;}
 #mega-fx .mega-text{position:absolute;left:50%;bottom:4px;width:236px;height:96px;transform:translateX(-50%);animation:megaTextBob 2s ease-in-out infinite;}
 #mega-fx .mega-text svg{width:100%;height:100%;overflow:visible;}
 #mega-fx .mega-text text{font-family:'Fredoka One','Baloo 2',cursive;font-weight:900;font-size:21px;}
@@ -7433,7 +7433,7 @@ function showAllAbilitiesTip(ev){
   showBuffTip(ev,'<div class="bt-h" style="margin-bottom:7px;">What this pet gives you</div>'+rows);
 }
 // ===== Mega Fruit Boost: gul/lila glow-puls, roterande strålar + böjd text ut från ägget, glitter på scenen =====
-var MEGA_FX_HTML='<div class="mega-rays"></div><div class="mega-glow"></div><div class="mega-text"><svg viewBox="0 0 236 96" preserveAspectRatio="xMidYMid meet"><defs><path id="megaArc" d="M16,16 Q118,90 220,16" fill="none"></path><linearGradient id="megaGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd84a"></stop><stop offset="0.5" stop-color="#fff3b0"></stop><stop offset="1" stop-color="#c77dff"></stop></linearGradient></defs><text fill="url(#megaGrad)" stroke="#3a1a5c" stroke-width="0.9" paint-order="stroke" style="letter-spacing:0.5px"><textPath href="#megaArc" startOffset="50%" text-anchor="middle">MegaFruitBoost!</textPath></text></svg></div>';
+var MEGA_FX_HTML='<div class="mega-rays"></div><div class="mega-glow"></div><div class="mega-text"><svg viewBox="0 0 236 96" preserveAspectRatio="xMidYMid meet"><defs><path id="megaArc" d="M16,16 Q118,90 220,16" fill="none"></path><linearGradient id="megaGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffd84a"></stop><stop offset="0.5" stop-color="#fff3b0"></stop><stop offset="1" stop-color="#ff9a3c"></stop></linearGradient></defs><text fill="url(#megaGrad)" stroke="#3a1a5c" stroke-width="0.9" paint-order="stroke" style="letter-spacing:0.5px"><textPath href="#megaArc" startOffset="50%" text-anchor="middle">MegaFruitBoost!</textPath></text></svg></div>';
 var _megaOn=false;
 function setMegaFruitBoost(on){
   var stage=document.getElementById('egg-stage');
@@ -7478,7 +7478,7 @@ function renderFruitBuffs(){
     el.style.cssText='position:absolute;top:54px;left:50%;transform:translateX(-50%);z-index:40;display:flex;gap:6px;pointer-events:none;flex-wrap:wrap;justify-content:center;max-width:92%;'; }
   // Boostsen visas BARA på main egg-skärmen + idle pet adventure-skärmen (= hemscenen). På alla andra flikar göms de.
   var onScene=(typeof SCENE_TABS==='undefined')||(typeof currentTab==='undefined')||(SCENE_TABS.indexOf(currentTab)>=0);
-  if(!onScene){ el.style.display='none'; hideBuffTip(); return; }
+  if(!onScene){ el.style.display='none'; return; }
   var now=Date.now();
   // Mega-boost = minst 2 aktiva buffar av samma sort (en skärm-frukt staplad på en väsk-frukt).
   var _kc={}; (G.fruitBuffs||[]).forEach(function(b){ if((b.until||0)>now)_kc[b.kind]=(_kc[b.kind]||0)+1; });
@@ -7496,7 +7496,7 @@ function renderFruitBuffs(){
     var tip='<div class="bt-h">'+fruitIconImg(fid,20)+' '+nm+'</div><div class="bt-b">'+fruitBuffExplain(k,0,n)+'</div>';
     pills.push({ico:fruitIconImg(fid,14),txt:'\u00d7'+n,color:'rgba(199,125,255,0.55)',tip:tip});
   } }); }
-  if(!pills.length){ el.innerHTML=''; el.style.display='none'; _buffTipData=[]; hideBuffTip(); return; }
+  if(!pills.length){ el.innerHTML=''; el.style.display='none'; _buffTipData=[]; return; }
   el.style.display='flex';
   _buffTipData=pills.map(function(p){return p.tip;});
   el.innerHTML=pills.map(function(p,i){
@@ -8992,7 +8992,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.31<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.33<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
