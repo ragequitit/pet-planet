@@ -2948,7 +2948,8 @@ var IDLE_SLOT_MAX=1; // STEG 6.6a: idle = EN idle-pet (reversibelt — höj till
 // STEG 6.7a: STAMINA/ENERGY (alla siffror PLATSHÅLLARE → Balance Sheet). Pet tröttnar vid deploy, vilar tillbaka över tid.
 var STAMINA_MAX=100;
 var ADV_STAMINA_COST=34;       // ~3 turer på full mätare
-var STAMINA_REGEN_PER_MIN=10;  // full vila ~10 min
+var STAMINA_REGEN_PER_MIN=5;   // full vila ~20 min (halverad regen — vilan tar dubbelt så lång tid)
+var STAMINA_REFILL_GEM_COST=5; // PLATSHÅLLARE → Balance Sheet: gems för att fylla en trött pet till full energi direkt
 function petStamina(pet){ if(!pet)return 0; var mx=staminaMax(); if(typeof pet.stamina!=='number')pet.stamina=mx; return Math.max(0,Math.min(mx,pet.stamina)); }
 function staminaMax(){ return Math.round(STAMINA_MAX*(1+((typeof gearBonuses==='function'?(gearBonuses().stamina||0):0))/100)); } // STEG 6.8c: Stamina-gear höjer max
 function tickStamina(dt){
@@ -3305,6 +3306,30 @@ function rollAbilityValue(tier){
 }
 // Live value of a pet ability: rolled value if present, else flat tier value (legacy pets / cores).
 function abilityVal(ab){ return (ab&&typeof ab.v==='number') ? ab.v : (TIER_VALUES[(ab&&ab.tier)||1]||0); }
+// Reparera pets vars förmågor använder gamla/utfasade ability-id:n (efter ability-systemets ombyggnad).
+// Triggar BARA om någon förmåga har ett id som inte finns i nya ABILITIES. Bevarar antal slots + tier
+// per förmåga (så styrkan behålls); rerollar id (nytt giltigt, distinkt) + värde/mega via spelets egen roll.
+function migratePetAbilities(){
+  if(!Array.isArray(G.hatchedPets)||!G.hatchedPets.length)return 0;
+  var fixed=0;
+  G.hatchedPets.forEach(function(p){
+    var abs=p&&p.abilities;
+    var needs=!Array.isArray(abs)||abs.length===0||abs.some(function(a){return !a||ABILITIES.indexOf(a.id)<0;});
+    if(!needs)return;
+    var rc=RARITY_CONFIG[p.rarity]||RARITY_CONFIG.common;
+    var tiers=(Array.isArray(abs)&&abs.length)?abs.map(function(a){return (a&&a.tier)||1;}):rc.tiers.slice();
+    var pool=ABILITIES.slice();
+    for(var i=pool.length-1;i>0;i--){var k=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[k];pool[k]=t;}
+    p.abilities=tiers.map(function(tier,idx){
+      var rv=rollAbilityValue(tier);
+      var o={id:pool[idx%pool.length],tier:tier,v:rv.v,mega:rv.mega};
+      if(abs&&abs[idx]&&abs[idx].locked)o.locked=true;
+      return o;
+    });
+    fixed++;
+  });
+  return fixed;
+}
 // Display string for an ability value. Mega rolls show ORANGE + a ★ (V2 god-roll styling).
 function abShow(ab){
   var v=abilityVal(ab);
@@ -3878,18 +3903,31 @@ var STAT_PANEL_GROUPS=[
 ];
 function renderStatsPanel(){
   var bd=getBonusBreakdown();
+  var gb=(typeof gearBonuses==='function')?gearBonuses():{};
   var asc=G.ascensions||0;
-  var html='<div class="stats-asc"><img src="'+ASSET_BASE+'/assets/ui/menu/ascension.png" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:-0.2em;" onerror="this.replaceWith(document.createTextNode(\'🔼\'))"> Ascensions: <b>'+asc+'</b> &nbsp;·&nbsp; ✨ <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
-  STAT_PANEL_GROUPS.forEach(function(g){
-    html+='<div class="stats-cat"><span class="stats-cat-ico"><img src="'+ASSET_BASE+'/assets/ui/stats-panel/stats-panel-'+g.cat.toLowerCase()+'.png" alt="" onerror="this.parentNode.textContent=\''+g.ico+'\'"></span>'+g.cat+'</div>';
-    g.items.forEach(function(it){
-      var d=bd[it.id]||{pets:0,ach:0,asc:0,total:0};
-      var s=it.invert?'-':'+';
-      html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+it.name+'</span><span class="stats-total">'+s+d.total+'%</span></div>';
-      html+='<div class="stats-src"><span><img src="'+ASSET_BASE+'/assets/ui/menu/pets.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🐾\'))"> Pets '+s+d.pets+'%</span><span><img src="'+ASSET_BASE+'/assets/ui/menu/achievements.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🏆\'))"> Achievements '+s+d.ach+'%</span><span><img src="'+ASSET_BASE+'/assets/ui/menu/ascension.png" alt="" style="width:1em;height:1em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode(\'🔼\'))"> Ascension '+s+d.asc+'%</span></div></div>';
-    });
+  var petsEq=(G.equippedPets||[]).filter(function(u){return u!=null;}).length;
+  var gearEq=0; if(G.gearEquipped){['backpack','compass','boots','charm','tool'].forEach(function(t){if(G.gearEquipped[t]!=null)gearEq++;});}
+  var html='<div class="stats-asc"><img src="'+ASSET_BASE+'/assets/ui/menu/ascension.png" alt="" style="width:1.1em;height:1.1em;object-fit:contain;vertical-align:-0.2em;" onerror="this.replaceWith(document.createTextNode(\'\u{1F53C}\'))"> Ascensions: <b>'+asc+'</b> &nbsp;\u00b7&nbsp; \u2728 <b>'+fmtShort(G.stardust||0)+'</b> Stardust</div>';
+  // \u2014\u2014 PET ABILITIES \u2014\u2014
+  html+='<div class="stats-cat"><span class="stats-cat-ico"><img src="'+ASSET_BASE+'/assets/ui/menu/pets.png" alt="" onerror="this.parentNode.textContent=\'\u{1F43E}\'"></span>Pet Abilities</div>';
+  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);padding:0 2px 6px;line-height:1.4;">Totals from your '+petsEq+' equipped pet'+(petsEq===1?'':'s')+' (plus achievements &amp; ascension).</div>';
+  ABILITIES.forEach(function(id){
+    var m=ABILITY_META[id]||{name:id,color:'#fff'};
+    var d=bd[id]||{pets:0,ach:0,asc:0,total:0};
+    var src=[]; if(d.pets)src.push('\u{1F43E} +'+d.pets+'%'); if(d.ach)src.push('\u{1F3C6} +'+d.ach+'%'); if(d.asc)src.push('\u{1F53C} +'+d.asc+'%');
+    html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+abilityIconImg(id)+' '+m.name+'</span><span class="stats-total" style="color:'+(d.total?m.color:'rgba(255,255,255,0.35)')+'">+'+d.total+'%</span></div>';
+    html+='<div class="stats-src">'+(src.length?src.join(' &nbsp;\u00b7&nbsp; '):'<span style="opacity:0.5">Not active yet</span>')+'</div></div>';
   });
-  html+='<div class="stats-foot">More abilities (Adventure, XP, Utility, Rare and more) appear here automatically as they are built into the game.</div>';
+  // \u2014\u2014 GEAR ABILITIES \u2014\u2014
+  html+='<div class="stats-cat"><span class="stats-cat-ico">\u{1F9F0}</span>Gear Abilities</div>';
+  html+='<div style="font-size:0.68rem;color:rgba(255,255,255,0.5);padding:0 2px 6px;line-height:1.4;">Totals from your '+gearEq+' equipped gear piece'+(gearEq===1?'':'s')+' (equipped under your idling pet on the Adventure screen).</div>';
+  GEAR_ABILITIES.forEach(function(id){
+    var m=GEAR_ABILITY_META[id]||{name:id,icon:'\u2754',blurb:''};
+    var v=gb[id]||0;
+    html+='<div class="stats-row"><div class="stats-row-top"><span class="stats-name">'+m.icon+' '+m.name+'</span><span class="stats-total" style="color:'+(v?'#b388ff':'rgba(255,255,255,0.35)')+'">+'+v+'%</span></div>';
+    html+='<div class="stats-src" style="opacity:0.72">'+m.blurb+'</div></div>';
+  });
+  html+='<div class="stats-foot">Pet abilities come from your equipped pets; gear abilities from the gear equipped under your idling pet on the Adventure screen.</div>';
   document.getElementById('stats-modal-body').innerHTML=html;
 }
 function openStatsPanel(){renderStatsPanel();document.getElementById('stats-modal').classList.add('open');}
@@ -4057,7 +4095,7 @@ var ACTIVE_EVENT={
   collection:{total:10, milestones:[
     {at:3,  reward:{shells:{mountain:15}}},
     {at:6,  reward:{gems:75}},
-    {at:9,  reward:{cores:1, coreTier:3}},
+    {at:9,  reward:{gems:120}},
     {at:10, reward:{gems:250, title:'Winter Champion', cosmetic:'frame_winter'}}
   ]},
   // EVENT SHOP (data-styrt; spenderar Snowflakes-SALDOT, inte matararen). status:'live'|'soon'.
@@ -4475,7 +4513,7 @@ function openAdvPicker(advId){
       html+='<div class="app-emoji">'+petIco(p)+'</div>';
       html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'<div style="display:flex;align-items:center;gap:5px;margin-top:3px;"><span style="font-size:0.62rem;">💪</span><div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.35);overflow:hidden;"><div style="height:100%;width:'+Math.min(100,Math.round(stam/Math.max(1,staminaMax())*100))+'%;background:'+(tired?'#e0683a':'linear-gradient(90deg,#3aa0e0,#5ad0e0)')+';"></div></div><span style="font-size:0.58rem;color:rgba(255,255,255,0.55);">'+Math.round(stam)+'</span></div></div>';
       html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
-      html+=(canSend?'<div class="app-go">Send →</div>':(!ok?'<div class="app-lock">Needs<br>Lv '+req+'</div>':'<div class="app-lock">😴<br>Resting</div>'))+'</div>';
+      html+=(canSend?'<div class="app-go">Send →</div>':(!ok?'<div class="app-lock">Needs<br>Lv '+req+'</div>':'<button class="app-refill" onclick="event.stopPropagation();refillStaminaGems('+p.uid+')" style="background:linear-gradient(180deg,#b388ff,#7c4dff);border:none;border-radius:9px;color:#fff;font-weight:800;font-size:0.58rem;padding:6px 7px;cursor:pointer;line-height:1.3;box-shadow:0 2px 0 #4a148c;text-align:center;white-space:nowrap;">😴 Rest<br>'+GEM_IMG+STAMINA_REFILL_GEM_COST+'</button>'))+'</div>';
     });
     html+='</div>';
   }
@@ -4483,6 +4521,18 @@ function openAdvPicker(advId){
   document.getElementById('adv-modal').classList.add('open');
 }
 function closeAdvModal(){var m=document.getElementById('adv-modal');if(m)m.classList.remove('open');}
+function refillStaminaGems(uid){
+  var pet=G.hatchedPets.find(function(p){return p.uid===uid;}); if(!pet)return;
+  var mx=staminaMax();
+  if(petStamina(pet)>=mx)return; // redan full
+  var cost=STAMINA_REFILL_GEM_COST;
+  if((G.gems||0)<cost){ if(typeof noGemsPopup==='function')noGemsPopup(); return; }
+  G.gems-=cost; pet.stamina=mx;
+  if(typeof updateHUD==='function')updateHUD();
+  saveGame();
+  if(typeof pendingAdvId!=='undefined'&&pendingAdvId)openAdvPicker(pendingAdvId); // rita om väljaren → knappen blir "Send →"
+  if(typeof renderAdventure==='function')renderAdventure();
+}
 function setAdvPickSort(v){advPickSort=v;if(pendingAdvId)openAdvPicker(pendingAdvId);}
 // ── LOST WORLD MAPS (overhaul step 3a): find Secret Maps on adventures → place to unlock a Lost World.
 function grantMap(id){ if(!isLostWorld(id))return; G.mapsOwned=G.mapsOwned||{}; G.lostUnlocked=G.lostUnlocked||{}; if(G.lostUnlocked[id])return; G.mapsOwned[id]=(G.mapsOwned[id]||0)+1; }
@@ -4941,7 +4991,7 @@ function renderDevMenu(){
   html+='<div class="dev-row"><button onclick="addTestShells()" '+bBlue+'>+300 Shells</button><button onclick="addTestPets()" '+bBlue+'>+10 Pets</button><button onclick="addTestCoins()" '+bBlue+'>+100B Sparks</button></div>';
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="devGrantStones()" '+bBlue+'>+\ud83c\udfaf Stones</button></div>';
   html+='<div class="dev-row"><button onclick="devGrantFruits()" '+bBlue+'>+\ud83c\udf4e Treats</button><button onclick="devSpawnScreenFruit()" '+bBlue+'>\ud83c\udf52 Screen Fruit</button></div>';
-  html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button></div>';
+  html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button><button onclick="devGiveGems()" '+bBlue+'>+2000 \ud83d\udc8e Gems</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
 }
@@ -6262,8 +6312,11 @@ function renderHomeAdventures(){
   h+='<div id="idleadv-stage" style="position:relative;height:calc(100dvh - var(--top-h) - var(--nav-h) - 76px);overflow:hidden;margin:-6px -13px 12px;background:#101a38;">';
   h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.28) 60%,rgba(8,12,30,0.50));"></div>';
-  // floating bag (top-right) = SAME as main page (inventory icon + opens the main inventory)
-  h+='<div class="side-btn" onclick="toggleInventory()" style="position:absolute;top:100px;right:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>';
+  // floating bag + stats (top-right) = SAME column/position as main page
+  h+='<div class="side-btns" style="top:100px;right:8px;left:auto;z-index:4;">'
+    +'<div class="side-btn" onclick="toggleInventory()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/menu/inventory.png" alt="" onerror="this.parentNode.textContent=\'🎒\'"></span><span class="sb-label">Bag</span></div>'
+    +'<div class="side-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent=\'📊\'"></span><span class="sb-label">Stats</span></div>'
+    +'</div>';
   h+='<div class="side-btn" onclick="openGearLoadouts()" style="position:absolute;top:100px;left:8px;z-index:4;"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/common/loadout.png" alt="" onerror="this.parentNode.textContent=\'🎚️\'"></span><span class="sb-label">Loadouts</span></div>';
   if(!pets.length){
     h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
@@ -6988,6 +7041,7 @@ function skillStoneCount(id){return (G.skillStones&&G.skillStones[id])||0;}
 function totalSkillStones(){var n=0;if(G.skillStones)for(var k in G.skillStones)n+=G.skillStones[k]||0;return n;}
 function grantSkillStone(id,n){if(!G.skillStones)G.skillStones={};G.skillStones[id]=(G.skillStones[id]||0)+(n||1);}
 function devGrantStones(){ABILITIES.forEach(function(id){grantSkillStone(id,3);});if(typeof updateHUD==='function')updateHUD();if(workshopSubTab==='mutate'&&typeof renderPetTrainer==='function')renderPetTrainer();if(typeof renderInventory==='function')renderInventory();if(typeof saveGame==='function')saveGame();}
+function devGiveGems(){G.gems=(G.gems||0)+2000;if(typeof updateHUD==='function')updateHUD();if(typeof saveGame==='function')saveGame();if(typeof showRewardPopup==='function')showRewardPopup(['\ud83d\udc8e +2000 Gems (dev)'],false,2000);}
 function devGiveTestGear(){
   if(!Array.isArray(G.gearInv))G.gearInv=[];
   var bands=['band1','band2','band3','band4','band5'];
@@ -9010,7 +9064,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.36<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.42<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9840,7 +9894,7 @@ var DAILY_QUEST_POOL={
     {type:'fusion',name:'Grand Merge',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
     {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{mountain:3}}},
     {type:'mutate',name:'Trainer',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
-    {type:'extract',name:'Extractor',icon:'\ud83e\uddea',target:1,reward:{gems:6}},
+    {type:'craft',name:'Egg Tycoon',icon:'\ud83d\udee0\ufe0f',target:8,reward:{gems:6}},
     {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
   ]
 };
@@ -9911,17 +9965,17 @@ var WEEKLY_QUEST_POOL={
     {type:'fusion',name:'Merge Master',icon:'\u2697\ufe0f',target:50,reward:{shells:{desert:3}}},
     {type:'shells',name:'Shell Collector',icon:'\ud83d\udc1a',target:400,reward:{gems:25}},
     {type:'send',name:'Adventure Captain',icon:'\ud83d\ude80',target:20,reward:{gems:25}},
-    {type:'extract',name:'Lab Worker',icon:'\ud83e\uddea',target:3,reward:{gems:25}}
+    {type:'mutate',name:'Stone Trainer',icon:'\ud83e\uddec',target:3,reward:{gems:25}}
   ],
   hard:[
-    {type:'tap',name:'Tap Legend',icon:'\ud83d\udc46',target:12000,reward:{gems:40,cores:1}},
-    {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{gems:50,cores:1}},
+    {type:'tap',name:'Tap Legend',icon:'\ud83d\udc46',target:12000,reward:{gems:40,stones:1}},
+    {type:'hatch',name:'Hatch Legend',icon:'\ud83e\udd5a',target:300,reward:{gems:50,stones:1}},
     {type:'adventure',name:'Grand Explorer',icon:'\ud83e\udded',target:60,reward:{gems:50}},
-    {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{gems:60,cores:1}},
+    {type:'fusion',name:'Grand Fuser',icon:'\u2697\ufe0f',target:120,reward:{gems:60,stones:1}},
     {type:'mutate',name:'Master Trainer',icon:'\ud83e\uddec',target:5,reward:{gems:50}},
-    {type:'extract',name:'Master Extractor',icon:'\ud83e\uddea',target:5,reward:{gems:50}},
+    {type:'craft',name:'Master Crafter',icon:'\ud83d\udee0\ufe0f',target:20,reward:{gems:50}},
     {type:'send',name:'Grand Expedition',icon:'\ud83d\ude80',target:40,reward:{gems:50}},
-    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,cores:1}}
+    {type:'shells',name:'Shell Baron',icon:'\ud83d\udc1a',target:800,reward:{gems:60,stones:1}}
   ]
 };
 function weeklyCycleMs(){return WEEKLY_QUEST_CYCLE_HOURS*3600000;}
@@ -10357,6 +10411,7 @@ function grantEventReward(rw){
   if(rw.gems){G.gems+=rw.gems;parts.push('+'+rw.gems+' \ud83d\udc8e Gems');}
   if(rw.shells){for(var r in rw.shells){G.shells[r]=(G.shells[r]||0)+rw.shells[r];parts.push('+'+rw.shells[r]+' '+r.charAt(0).toUpperCase()+r.slice(1)+' Shells');}}
   if(rw.cores){var _ct=rw.coreTier||1,_i;for(_i=0;_i<rw.cores;_i++){G.mutationCores.push({id:ABILITIES[Math.floor(Math.random()*ABILITIES.length)],tier:_ct});}if(G.stats)G.stats.mutationCoresCreated=(G.stats.mutationCoresCreated||0)+rw.cores;parts.push('+'+rw.cores+' Mutation Core'+(rw.cores>1?'s':''));}
+  if(rw.stones){var _sn=rw.stones,_si;for(_si=0;_si<_sn;_si++){grantSkillStone(ABILITIES[Math.floor(Math.random()*ABILITIES.length)],1);}parts.push('+'+_sn+' Skill Stone'+(_sn>1?'s':''));}
   if(rw.title){if(!G.titlesEarned)G.titlesEarned={};G.titlesEarned[rw.title]=true;parts.push('Title: '+rw.title);}
   if(rw.cosmetic){if(!G.cosmeticsOwned)G.cosmeticsOwned={};G.cosmeticsOwned[rw.cosmetic]=true;parts.push('Cosmetic unlocked!');}
   return parts;
@@ -10398,6 +10453,7 @@ function eventQuestRewardText(rw){
   if(rw.coins)return fmtShort(rw.coins)+' \ud83e\ude99';
   if(rw.gems)return rw.gems+' \ud83d\udc8e';
   if(rw.cores)return '\u00d7'+rw.cores+' \u2b21';
+  if(rw.stones)return '\u00d7'+rw.stones+' '+uiIco('skill%20stones/stone-seeker','\ud83c\udfaf',14);
   if(rw.shells){for(var r in rw.shells)return '\u00d7'+rw.shells[r]+' '+rewardShellIcon(r);}
   return '';
 }
@@ -10408,6 +10464,7 @@ function eventRewardTextFull(rw){
   if(rw.gems)out.push(rw.gems+' '+GEM_IMG);
   if(rw.shells){for(var r in rw.shells)out.push('\u00d7'+rw.shells[r]+' '+rewardShellIcon(r));}
   if(rw.cores)out.push('\u00d7'+rw.cores+' \u2b21');
+  if(rw.stones)out.push('\u00d7'+rw.stones+' '+uiIco('skill%20stones/stone-seeker','\ud83c\udfaf',14));
   if(rw.title)out.push('Title');
   if(rw.cosmetic)out.push('Frame');
   return out.join(' + ');
@@ -10603,6 +10660,7 @@ function collMilestoneText(m){
   if(r.title)return 'Title + '+(r.gems?r.gems+' \ud83d\udc8e':'')+(r.cosmetic?' + Frame':'');
   if(r.gems)return r.gems+' \ud83d\udc8e';
   if(r.cores)return '\u00d7'+r.cores+' \u2b21';
+  if(r.stones)return '\u00d7'+r.stones+' '+uiIco('skill%20stones/stone-seeker','\ud83c\udfaf',14);
   if(r.shells){for(var k in r.shells)return '\u00d7'+r.shells[k]+' '+rewardShellIcon(k);}
   if(r.coins)return fmtShort(r.coins)+' \ud83e\ude99';
   return '\u2605';
@@ -13461,6 +13519,7 @@ if(savedData){
   if(typeof savedData.hatchSlotCount==='number')G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.hatchSlotCount));
   else G.hatchSlotCount=Math.max(1,Math.min(HATCH_SLOT_MAX,savedData.petSlots||1));
   G.hatchedPets=savedData.hatchedPets||[];
+  if(typeof migratePetAbilities==='function')migratePetAbilities(); // reparera gamla förmåge-id:n → nya systemet (kör bara på pets med ogiltiga id:n)
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
   G.fruits=(savedData.fruits&&typeof savedData.fruits==='object'&&!Array.isArray(savedData.fruits))?savedData.fruits:{};
