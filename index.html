@@ -9126,7 +9126,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.54<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.55<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10790,10 +10790,11 @@ function ensureBldTip(){var t=document.getElementById('bldTip');if(!t){t=documen
 function closeBldTip(){_bldTipIdx=null;var t=document.getElementById('bldTip');if(t)t.classList.remove('open');}
 function bldTipHtml(i){
   var b=BUILDINGS[i];var owned=G.owned[i]||0;var mult=buildingMult(i);
-  var each=b.p*mult;var totalThis=each*owned;
-  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*(G.owned[k]||0)*buildingMult(k);
+  var each=b.p*mult;var wf=b.p*workforceUnits(i)*mult;var totalThis=each*owned+wf;
+  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*((G.owned[k]||0)+workforceUnits(k))*buildingMult(k);
   var share=rawTotal>0?(totalThis/rawTotal*100):0;
   return '<div class="btip-row">Production each: <b>'+fmt(each)+'/s</b></div>'+
+    (wf>0?'<div class="btip-row">From workforce: <b>+'+fmt(wf)+'/s</b></div>':'')+
     '<div class="btip-row">Total from this building: <b>'+fmt(totalThis)+'/s</b></div>'+
     '<div class="btip-row">Share of your SPS: <b>'+share.toFixed(1)+'%</b></div>';
 }
@@ -10821,11 +10822,13 @@ function refreshBldTip(){
 function buildingBpText(i){
   var each=BUILDINGS[i].p*buildingMult(i);
   var owned=G.owned[i]||0;
-  if(owned<=0)return fmt(each)+'/s each';
-  var totalThis=each*owned;
-  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*(G.owned[k]||0)*buildingMult(k);
+  var wf=BUILDINGS[i].p*workforceUnits(i)*buildingMult(i);
+  if(owned<=0&&wf<=0)return fmt(each)+'/s each';
+  var totalThis=each*owned+wf;
+  var rawTotal=0;for(var k=0;k<20;k++)rawTotal+=BUILDINGS[k].p*((G.owned[k]||0)+workforceUnits(k))*buildingMult(k);
   var share=rawTotal>0?(totalThis/rawTotal*100):0;
-  return fmt(each)+'/s each · '+fmt(totalThis)+'/s · '+share.toFixed(1)+'% of total';
+  var wfTxt=wf>0?(' · \ud83d\udc65 +'+fmt(wf)+'/s'):'';
+  return fmt(each)+'/s each · '+fmt(totalThis)+'/s'+wfTxt+' · '+share.toFixed(1)+'% of total';
 }
 function renderBuildings(){
   var bl=document.getElementById('blist');bl.innerHTML='';
