@@ -6381,6 +6381,28 @@ function idleLoadoutPillHtml(){
     +'</div>'
   +'</div>';
 }
+// v9.61 — kompakta gear-rutor för idle-skärmen (boots+tool topp, compass/charm/backpack botten), referens-stil. renderExplorerSlots lämnad orörd för loadouts-popupen.
+function idleGearTile(tid){
+  var t=null;for(var i=0;i<GEAR_TYPES.length;i++){if(GEAR_TYPES[i].id===tid)t=GEAR_TYPES[i];}
+  if(!t)return '';
+  var g=getEquippedGear(tid);
+  var rc=g?(RARITY_CONFIG[g.rarity]||{color:'#aaa'}):null;
+  var bd=g?rc.color:'rgba(150,120,220,0.45)';
+  var bg=g?'linear-gradient(180deg,#221c44,#15112e)':'rgba(0,0,0,0.30)';
+  var inner=g?gearIconImg(g,34):('<span style="font-size:1.55rem;opacity:0.4;">'+t.icon+'</span>');
+  return '<div onclick="openGearSlotPicker(\''+tid+'\')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;">'
+    +'<div style="width:52px;height:52px;border-radius:13px;border:2px solid '+bd+';background:'+bg+';display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);'+(g?'':'border-style:dashed;')+'">'+inner+'</div>'
+    +'<div style="font-size:0.52rem;font-weight:800;letter-spacing:0.04em;color:rgba(255,255,255,0.62);text-transform:uppercase;text-shadow:0 1px 2px #000;">'+t.name+'</div>'
+  +'</div>';
+}
+function idleGearTilesHtml(){
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
+  var h='<div style="display:flex;flex-direction:column;align-items:center;gap:9px;margin-bottom:12px;">';
+  h+='<div style="display:flex;gap:46px;">'+idleGearTile('boots')+idleGearTile('tool')+'</div>';
+  h+='<div style="display:flex;gap:14px;">'+idleGearTile('compass')+idleGearTile('charm')+idleGearTile('backpack')+'</div>';
+  h+='</div>';
+  return h;
+}
 function renderHomeAdventures(){
   var wrap=document.getElementById('homeadv-wrap'); if(!wrap)return;
   var worlds=unlockedIdleWorlds();
@@ -6435,8 +6457,8 @@ function renderHomeAdventures(){
     h+='</div>';
   }
   h+='</div>';
-  // STEG 5: Explorer Gear (5 typade platser) flyttat hit, UNDER petet — fylls med gear man hittar.
-  h+='<div style="margin-bottom:12px;">'+renderExplorerSlots()+'</div>';
+  // STEG 5: Explorer Gear (5 typade platser) UNDER petet — kompakta rutor (referens-stil); detaljvyn finns i loadouts-popupen.
+  h+=idleGearTilesHtml();
   // v9.58: loadout-piller direkt under gearen (ersätter gamla flytande Loadouts-knappen)
   h+=idleLoadoutPillHtml();
   // choose idle world card (opens the world-picker popup)
@@ -9165,7 +9187,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.60<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.61<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
