@@ -2062,10 +2062,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="tab-pets" class="tab-content">
       <div class="pets-subnav">
         <button class="psub-btn active" id="psub-pets" onclick="petsSub('pets')"><span>🐾</span> Pets</button>
-        <button class="psub-btn" id="psub-fusion" onclick="petsSub('fusion')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Merge</button>
+        <button class="psub-btn" id="psub-active" onclick="petsSub('active')"><span>💼</span> Active Pets</button>
       </div>
       <div id="psub-panel-pets" class="psub-panel"><div id="pets-wrap"></div></div>
-      <div id="psub-panel-fusion" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
+      <div id="psub-panel-active" class="psub-panel" style="display:none"><div id="active-wrap"></div></div>
     </div>
     <div id="tab-petdex" class="tab-content"><div id="petdex-wrap" style="padding:0"></div></div>
     <div id="tab-more" class="tab-content"><div id="ach-wrap"></div></div>
@@ -2076,10 +2076,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
         <button class="psub-btn" id="wsub-extract" onclick="workshopSub('extract')" style="display:none"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
         <button class="psub-btn active" id="wsub-mutate" onclick="workshopSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Pet Trainer</button>
         <button class="psub-btn" id="wsub-reroll" onclick="workshopSub('reroll')" style="display:none"><span>🎲</span> Reroll</button>
+        <button class="psub-btn" id="wsub-merge" onclick="workshopSub('merge')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Merge</button>
       </div>
       <div id="wsub-panel-extract" class="psub-panel"><div id="extract-wrap"></div></div>
       <div id="wsub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
       <div id="wsub-panel-reroll" class="psub-panel" style="display:none"><div id="reroll-wrap"></div></div>
+      <div id="wsub-panel-merge" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
     </div>
     <div id="tab-quests" class="tab-content"><div class="placeholder"><div class="phi">📋</div><h2>Quests</h2><p>Daily, weekly and event quests are coming in a later update.</p></div></div>
   </div>
@@ -6144,7 +6146,7 @@ function closePetSkin(){var m=document.getElementById('petskin-modal');if(m)m.cl
 function petDetailGoto(action){
   var m=document.getElementById('pet-detail-modal');if(m)m.classList.remove('open');
   if(action==='adventure'){if(typeof switchTab==='function')switchTab('adventure');}
-  else if(action==='fusion'){if(typeof switchTab==='function')switchTab('pets');if(typeof petsSub==='function')petsSub('fusion');}
+  else if(action==='fusion'){if(typeof navTab==='function')navTab('shop');if(typeof workshopSub==='function')workshopSub('merge');}
   else if(action==='mutate'){if(typeof navTab==='function')navTab('shop');if(typeof workshopSub==='function')workshopSub('mutate');}
 }
 function petRenamePrompt(uid){
@@ -6762,29 +6764,73 @@ function goHome(){
 // Pets-hubbens underflikar (nav rebuild — step 4): Pets / Fusion / Extract
 var petsSubTab='pets';
 function petsSub(sub){
-  if(sub!=='pets'&&sub!=='fusion')sub='pets'; // Extract/Mutate/Reroll bor nu i Workshop
+  if(sub==='fusion'){if(typeof navTab==='function')navTab('shop');if(typeof workshopSub==='function')workshopSub('merge');return;} // Merge flyttad till Workshop
+  if(sub!=='pets'&&sub!=='active')sub='pets';
   petsSubTab=sub;
-  ['pets','fusion'].forEach(function(s){
+  ['pets','active'].forEach(function(s){
     var p=document.getElementById('psub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('psub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='pets')renderPets();
-  else if(sub==='fusion')renderFusion();
+  else if(sub==='active')renderActivePets();
 }
 function showPetsHub(){petsSub(petsSubTab);}
+// v9.72 — Active Pets: alla pets som har ett jobb (äventyr / idle / production building) och därför inte kan användas annars.
+var _activePetsSig='';
+function activePetsSignature(){
+  var parts=[];
+  (G.hatchedPets||[]).forEach(function(p){
+    var job='';
+    if(typeof isPetIdling==='function'&&isPetIdling(p.uid))job='i';
+    else if(typeof isPetBusy==='function'&&isPetBusy(p.uid))job='a';
+    else {var bi=(typeof petPlacedBuilding==='function')?petPlacedBuilding(p.uid):-1;if(bi!==-1)job='b'+bi;}
+    if(job)parts.push(p.uid+':'+job);
+  });
+  return parts.join('|');
+}
+function renderActivePets(){
+  var wrap=document.getElementById('active-wrap'); if(!wrap)return;
+  _activePetsSig=activePetsSignature();
+  var rows=[];
+  (G.hatchedPets||[]).forEach(function(p){
+    var job=null,jc='#9bb6ff',rank=9;
+    if(typeof isPetIdling==='function'&&isPetIdling(p.uid)){job='💤 Idle';jc='#8fd6ff';rank=1;}
+    else if(typeof isPetBusy==='function'&&isPetBusy(p.uid)){job='🗺️ Adventure';jc='#f5c842';rank=0;}
+    else {var bi=(typeof petPlacedBuilding==='function')?petPlacedBuilding(p.uid):-1;if(bi!==-1){job='👥 '+((BUILDINGS[bi]&&BUILDINGS[bi].n)||'Building');jc='#b083ff';rank=2;}}
+    if(job)rows.push({p:p,job:job,jc:jc,rank:rank});
+  });
+  if(!rows.length){wrap.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.55);font-size:0.85rem;padding:42px 20px;line-height:1.6;">No pets are working right now.<br>Send pets on adventures, set them to idle, or place them in production buildings.</div>';return;}
+  rows.sort(function(a,b){return a.rank-b.rank;});
+  var h='<div style="font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:11px;text-align:center;line-height:1.5;">'+rows.length+' pet'+(rows.length>1?'s':'')+' currently have a job — they can\'t be used elsewhere until freed.</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:8px;">';
+  rows.forEach(function(r){
+    var rc=RARITY_CONFIG[r.p.rarity]||RARITY_CONFIG.common;
+    h+='<div style="display:flex;align-items:center;gap:11px;background:rgba(27,45,78,0.5);border:1.5px solid '+rc.color+'66;border-radius:13px;padding:10px 13px;">'
+      +'<span style="font-size:1.9rem;flex-shrink:0;display:flex;align-items:center;">'+petIco(r.p)+'</span>'
+      +'<span style="flex:1;min-width:0;display:flex;flex-direction:column;">'
+        +'<span style="font-family:\'Fredoka One\',cursive;font-size:0.86rem;color:'+rc.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(r.p)+'</span>'
+        +'<span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+rc.label+'</span>'
+      +'</span>'
+      +'<span style="flex-shrink:0;font-family:\'Fredoka One\',cursive;font-size:0.72rem;color:'+r.jc+';white-space:nowrap;">'+r.job+'</span>'
+    +'</div>';
+  });
+  h+='</div>';
+  wrap.innerHTML=h;
+}
 // WORKSHOP: Extract / Mutate / Reroll (flyttade hit fran Pets-hubben). Fusion ar separat (kvar i Pets).
 var workshopSubTab='mutate'; // STEG 3: Extract/Reroll gömda → Mutate är standard
 function workshopSub(sub){
   // STEG 3 (2026-06-25): Extract + Reroll gömda vilande. Omdirigera ev. anrop till Mutate.
   if(sub==='extract'||sub==='reroll')sub='mutate';
   workshopSubTab=sub;
-  ['extract','mutate','reroll'].forEach(function(s){
+  ['extract','mutate','reroll','merge'].forEach(function(s){
     var p=document.getElementById('wsub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('wsub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
   if(sub==='extract')renderExtract();
   else if(sub==='mutate')renderPetTrainer();
   else if(sub==='reroll')renderReroll();
+  else if(sub==='merge')renderFusion();
 }
 function renderWorkshop(){workshopSub(workshopSubTab);}
 
@@ -9227,7 +9273,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.69<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.73<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13653,7 +13699,7 @@ function tick(now){
   if(smoothClickRate<0.05)smoothClickRate=0;
   // EPS-siffran uppdateras bara några gånger per sekund så den inte "swooshar" förbi
   epsDispTimer+=dt;
-  if(epsDispTimer>=0.3){epsDispVal=eps()+smoothClickRate*(G.clickPower*getClickMultiplier());epsDispTimer=0;}
+  if(epsDispTimer>=0.3){epsDispVal=eps();epsDispTimer=0;}
   clickRateTimer+=dt;
   if(clickRateTimer>=1){
     if(clicksThisSecond>G.stats.highestClicksPerSecond)G.stats.highestClicksPerSecond=clicksThisSecond;
@@ -13708,6 +13754,7 @@ function softUpdateShop(){
   if(sig!==_shopSig){_shopSig=sig;renderShop();}
 }
 setInterval(function(){if(document.getElementById('tab-shop').style.display==='block')softUpdateShop();},700);
+setInterval(function(){var t=document.getElementById('tab-pets');if(t&&t.style.display==='block'&&petsSubTab==='active'&&activePetsSignature()!==_activePetsSig)renderActivePets();},1000);
 setInterval(function(){if(document.getElementById('tab-hatch').style.display==='block')updateHatchTimers();},1000);
 setInterval(function(){if(document.getElementById('tab-adventure').style.display==='block')tickAdventures();},1000);
 setInterval(function(){if(G.homeMode==='adventures'){var ha=document.getElementById('home-adventures');if(ha&&ha.style.display!=='none')softUpdateIdle();}},1000);
