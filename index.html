@@ -63,6 +63,11 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pp-pet img{width:1em;height:1em;object-fit:contain;display:block;}
 .pp-shadow{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);width:37px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,0.5),transparent 72%);z-index:1;pointer-events:none;}
 #egg-stage{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;pointer-events:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+#nestgear-ring{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);width:210px;height:240px;z-index:8;pointer-events:none;}
+.nest-slot{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:auto;cursor:pointer;}
+.nest-slot-box{width:34px;height:34px;border-radius:10px;border:2px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.45);}
+.nest-slot-box img{width:24px;height:24px;object-fit:contain;}
+.nest-slot-lbl{font-size:0.42rem;font-weight:800;letter-spacing:0.03em;color:rgba(255,255,255,0.72);text-transform:uppercase;text-shadow:0 1px 2px #000;}
 #egg-glow{position:absolute;width:173px;height:203px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 #egg-glow2{position:absolute;width:240px;height:270px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(160,80,255,0.45) 0%,rgba(120,40,220,0.2) 40%,transparent 70%);animation:pulse2 3s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
 @keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:0.85;}}
@@ -2039,6 +2044,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
           <img id="egg-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" draggable="false">
           <div id="egg-shadow"></div>
         </div>
+        <div id="nestgear-ring"></div>
       </div>
     </div>
     <div id="home-sheet">
@@ -3531,10 +3537,10 @@ function gearAbilityLine(ab){
 // ============================================================
 var NEST_GEAR_TYPES=[
   {id:'incubator',name:'Incubator',icon:'🔥',lean:'hatchSpeed'},
-  {id:'prism',    name:'Prism',    icon:'✨',lean:'shinyLuck'},
-  {id:'gauntlet', name:'Gauntlet', icon:'👊',lean:'tapPower'},
-  {id:'engine',   name:'Engine',   icon:'⚙️',lean:'production'},
-  {id:'idol',     name:'Idol',     icon:'🗿',lean:'workforce'},
+  {id:'crown',    name:'Crown',    icon:'👑',lean:'tapPower'},
+  {id:'gem',      name:'Gem',      icon:'💎',lean:'production'},
+  {id:'trinket',  name:'Trinket',  icon:'🧿',lean:'shinyLuck'},
+  {id:'feather',  name:'Feather',  icon:'🪶',lean:'workforce'},
 ];
 var NEST_GEAR_ABILITIES=['tapPower','production','hatchSpeed','hatchLuck','shinyLuck','workforce','sparkGain','xpGain'];
 var NEST_GEAR_ABILITY_META={
@@ -3565,28 +3571,84 @@ function makeNestGear(typeId,rarity){
   abilities.push({id:sid,v:second.v,mega:second.mega});
   return {uid:Date.now()+Math.random(),type:type.id,rarity:rarity,abilities:abilities};
 }
+// STEG 4: Nest Gear droppar sällsynt vid kläckning. Chans = PLATSHÅLLARE → Balance Sheet.
+var NEST_GEAR_DROP_CHANCE=0.12;
+// Raritets-band per ägg/värld (djupare ägg = bättre nest gear). Återanvänder GEAR_RARITY_WEIGHTS-banden.
+function nestDropBand(eggId){
+  if(eggId==='starter'||eggId==='forest')return 'band1';
+  if(eggId==='mountain'||eggId==='desert')return 'band2';
+  if(eggId==='ocean'||eggId==='volcano')return 'band3';
+  if(eggId==='jungle'||eggId==='arctic')return 'band4';
+  if(eggId==='mystic'||eggId==='celestial'||eggId==='cosmic')return 'band5';
+  return 'band1'; // event/okänt ägg
+}
+function rollNestGearDrop(eggId){
+  return makeNestGear(NEST_GEAR_TYPES[Math.floor(Math.random()*NEST_GEAR_TYPES.length)].id, rollGearRarity(nestDropBand(eggId)));
+}
+// STEG 5: MERGE — 5 nest gear av SAMMA rarity → 1 (en rarity upp; vid taket reroll). Speglar mergeGear.
+function nestIsEquipped(uid){if(!G.nestEquipped)return false;for(var t in G.nestEquipped){if(G.nestEquipped[t]===uid)return true;}return false;}
+function nestFreeOf(rarity){return (G.nestGear||[]).filter(function(g){return g.rarity===rarity&&!nestIsEquipped(g.uid);});}
+function mergeNestGear(arr){
+  if(!arr||arr.length!==5)return null;
+  var rarity=arr[0].rarity;
+  for(var i=0;i<5;i++){if(!arr[i]||arr[i].rarity!==rarity)return null;}
+  var outR=mergeOutputRarity(rarity);
+  var counts={};arr.forEach(function(g){counts[g.type]=(counts[g.type]||0)+1;});
+  var types=Object.keys(counts);
+  var roll=Math.random()*arr.length,acc=0,chosen=types[0];
+  for(var t=0;t<types.length;t++){acc+=counts[types[t]];if(roll<=acc){chosen=types[t];break;}}
+  return makeNestGear(chosen,outR);
+}
+function doNestMerge(rarity){
+  var free=nestFreeOf(rarity);if(free.length<5)return;
+  var five=free.slice(0,5);
+  var result=mergeNestGear(five);if(!result)return;
+  var rm={};five.forEach(function(g){rm[g.uid]=true;});
+  G.nestGear=(G.nestGear||[]).filter(function(g){return !rm[g.uid];});
+  G.nestGear.push(result);
+  if(typeof saveGame==='function')saveGame();
+  if(typeof buzz==='function')buzz(12);
+  if(typeof renderNestRing==='function')renderNestRing();
+  var rc=RARITY_CONFIG[result.rarity]||{label:result.rarity};
+  if(typeof showRewardPopup==='function')showRewardPopup([nestGearIconImg(result,18)+' Merged into '+rc.label+' '+nestTypeMeta(result.type).name+'!'],false,2600);
+  openNestGear();
+}
 function nestAbilityLine(ab){
   var m=NEST_GEAR_ABILITY_META[ab.id]||{name:ab.id};
   if(ab.mega)return '<b>'+m.name+'</b> <span style="color:#ff9a2e;font-weight:900;">+'+ab.v+'% ★</span>';
   return '<b>'+m.name+'</b> +'+ab.v+'%';
 }
 function getEquippedNest(type){if(!G.nestEquipped)return null;var uid=G.nestEquipped[type];if(uid==null)return null;return (G.nestGear||[]).find(function(g){return g.uid===uid;})||null;}
+// Summerar equippad Nest Gears abilities → {tapPower,production,hatchSpeed,hatchLuck,shinyLuck,workforce,sparkGain,xpGain} (i %). Speglar gearBonuses().
+function nestBonuses(){
+  var b={tapPower:0,production:0,hatchSpeed:0,hatchLuck:0,shinyLuck:0,workforce:0,sparkGain:0,xpGain:0};
+  if(!G.nestEquipped)return b;
+  ['incubator','crown','gem','trinket','feather'].forEach(function(t){
+    var uid=G.nestEquipped[t];if(uid==null)return;
+    var g=(G.nestGear||[]).find(function(x){return x.uid===uid;});
+    if(!g||!g.abilities)return;
+    g.abilities.forEach(function(a){if(b[a.id]!=null)b[a.id]+=(a.v||0);});
+  });
+  return b;
+}
 function equipNestGear(type,uid){
   if(!G.nestEquipped)G.nestEquipped={};
   var g=(G.nestGear||[]).find(function(x){return x.uid===uid;});
   if(!g||g.type!==type)return; // typ-låst
   G.nestEquipped[type]=uid;
   if(typeof saveGame==='function')saveGame();
+  if(typeof renderNestRing==='function')renderNestRing();
   openNestSlotPicker(type);
 }
 function unequipNestGear(type){
   if(!G.nestEquipped)G.nestEquipped={};
   G.nestEquipped[type]=null;
   if(typeof saveGame==='function')saveGame();
+  if(typeof renderNestRing==='function')renderNestRing();
   openNestSlotPicker(type);
 }
 function nestGearOverviewHtml(){
-  var h='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:10px;">Equip one of each type. These boost your <b>main loop</b> \u2014 tapping, hatching &amp; production \u2014 not adventures. <i>(Effects come online in a later step.)</i></div>';
+  var h='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:10px;">Equip one of each type. These boost your <b>main loop</b> \u2014 tapping, hatching &amp; production \u2014 not adventures.</div>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">';
   NEST_GEAR_TYPES.forEach(function(t){
     var g=getEquippedNest(t.id);
@@ -3604,6 +3666,17 @@ function nestGearOverviewHtml(){
     }
   });
   h+='</div>';
+  // STEG 5: MERGE-sektion — visar rariteter där du har 5+ lediga (ej equippade) pjäser.
+  var rord=Object.keys(RARITY_CONFIG);var mrows='';
+  rord.forEach(function(rr){
+    var cnt=nestFreeOf(rr).length;if(cnt<5)return;
+    var rc=RARITY_CONFIG[rr]||{color:'#aaa',label:rr};
+    var outR=mergeOutputRarity(rr);var orc=RARITY_CONFIG[outR]||{label:outR};
+    var lbl=(outR===rr)?('Reroll 5 '+rc.label):('Merge 5 '+rc.label+' \u2192 '+orc.label);
+    mrows+='<button onclick="doNestMerge(\''+rr+'\')" style="width:100%;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(124,77,255,0.16);border:1.5px solid '+rc.color+'66;border-radius:11px;padding:9px 11px;margin-bottom:6px;color:#e9deff;font-family:\'Fredoka One\',cursive;font-size:0.72rem;cursor:pointer;"><span>'+lbl+'</span><span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+cnt+' free</span></button>';
+  });
+  if(mrows)h+='<div style="margin-top:14px;font-family:\'Fredoka One\',cursive;font-size:0.8rem;color:#cdb6ff;margin-bottom:7px;">\u2697\ufe0f Merge</div>'+mrows;
+  else h+='<div style="margin-top:14px;font-size:0.64rem;color:rgba(255,255,255,0.4);line-height:1.5;text-align:center;">Collect 5 Nest Gear of the same rarity (not equipped) to merge them into a stronger one.</div>';
   return h;
 }
 function openNestGear(){
@@ -3642,7 +3715,30 @@ function devGiveNestGear(){
   var rars=['common','uncommon','rare','epic','legendary'];
   NEST_GEAR_TYPES.forEach(function(t,idx){G.nestGear.push(makeNestGear(t.id,rars[idx%rars.length]));});
   if(typeof saveGame==='function')saveGame();
+  if(typeof renderNestRing==='function')renderNestRing();
   openNestGear();
+}
+// NEST GEAR STEG 2 — 5 slots runt ägget på huvudskärmen (#nestgear-ring inuti #stage-group, följer äggets skala).
+function nestRingSlotHtml(typeId,pos){
+  var t=nestTypeMeta(typeId);
+  var g=getEquippedNest(typeId);
+  var rc=g?(RARITY_CONFIG[g.rarity]||{color:'#aaa'}):null;
+  var bd=g?rc.color:'rgba(150,120,220,0.55)';
+  var bg=g?'linear-gradient(180deg,#221c44,#15112e)':'rgba(8,12,28,0.6)';
+  var inner=g?nestGearIconImg(g,24):('<span style="font-size:1.1rem;opacity:0.55;">'+t.icon+'</span>');
+  return '<div class="nest-slot" style="'+pos+'" onclick="openNestSlotPicker(\''+typeId+'\')">'
+    +'<div class="nest-slot-box" style="border-color:'+bd+';background:'+bg+';'+(g?'':'border-style:dashed;')+'">'+inner+'</div>'
+    +'<div class="nest-slot-lbl">'+t.name+'</div></div>';
+}
+function renderNestRing(){
+  var ring=document.getElementById('nestgear-ring');if(!ring)return;
+  // Levers (eyeball-tunbara): ±108px sidled, top 40 / bottom 34, crown top:-16.
+  ring.innerHTML=
+     nestRingSlotHtml('crown',   'top:-16px;left:50%;transform:translateX(-50%);')
+    +nestRingSlotHtml('incubator','top:40px;left:50%;transform:translateX(calc(-50% - 108px));')
+    +nestRingSlotHtml('gem',      'top:40px;left:50%;transform:translateX(calc(-50% + 108px));')
+    +nestRingSlotHtml('feather',  'bottom:34px;left:50%;transform:translateX(calc(-50% - 108px));')
+    +nestRingSlotHtml('trinket',  'bottom:34px;left:50%;transform:translateX(calc(-50% + 108px));');
 }
 
 // GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
@@ -3814,10 +3910,13 @@ function renderExplorerSlots(){
 // ============================================================
 function rollRarity(eggId){
   var weights=EGG_RARITY_WEIGHTS[eggId]||{common:100};
+  var luck=((typeof nestBonuses==='function')?(nestBonuses().hatchLuck||0):0)/100; // Nest Gear: boostar högre rariteter
   var keys=Object.keys(weights);
-  var total=keys.reduce(function(s,k){return s+weights[k];},0);
+  var rord=Object.keys(RARITY_CONFIG);var maxRank=Math.max(1,rord.length-1);
+  var eff={};keys.forEach(function(k){var rank=rord.indexOf(k);if(rank<0)rank=0;eff[k]=weights[k]*(1+luck*(rank/maxRank));}); // ju högre raritet, desto mer boost
+  var total=keys.reduce(function(s,k){return s+eff[k];},0);
   var roll=Math.random()*total,acc=0;
-  for(var i=0;i<keys.length;i++){acc+=weights[keys[i]];if(roll<=acc)return keys[i];}
+  for(var i=0;i<keys.length;i++){acc+=eff[keys[i]];if(roll<=acc)return keys[i];}
   return keys[0];
 }
 
@@ -4008,7 +4107,7 @@ function petSlug(name){return String(name||'').toLowerCase().trim().replace(/\s+
 // Filnamn: <namn>.png / <namn>-shiny.png / <namn>-shiny2.png. Oddsen är PLATSHÅLLARE → Balance Sheet.
 var SHINY_ODDS={shiny:1/500,shiny2:1/2000};
 function shinySuffix(s){return s===2?'-shiny2':(s===1?'-shiny':'');}
-function rollShiny(){if(Math.random()<SHINY_ODDS.shiny2)return 2;if(Math.random()<SHINY_ODDS.shiny)return 1;return 0;}
+function rollShiny(){var m=1+(((typeof nestBonuses==='function')?(nestBonuses().shinyLuck||0):0)/100);if(Math.random()<SHINY_ODDS.shiny2*m)return 2;if(Math.random()<SHINY_ODDS.shiny*m)return 1;return 0;}
 function isShiny(pet){return !!(pet&&(pet.shiny===1||pet.shiny===2));}
 function petImgUrl(world,name,shiny){return ASSET_BASE+'/assets/pets/'+world+'/'+petSlug(name)+shinySuffix(shiny)+'.png';}
 function petBgUrl(world){return ASSET_BASE+'/assets/pets/'+world+'/card-bg.png';}
@@ -4138,7 +4237,8 @@ function closeStatsPanel(){var m=document.getElementById('stats-modal');if(m)m.c
 
 function getEpsMultiplier(){
   var b=getActiveBonuses();
-  return (1+(b.coinGain/100))*boostCoinMult()*fruitBuffMult('sps');
+  var nb=(typeof nestBonuses==='function')?nestBonuses():{production:0,sparkGain:0};
+  return (1+(b.coinGain/100))*boostCoinMult()*fruitBuffMult('sps')*(1+((nb.production||0)+(nb.sparkGain||0))/100);
 }
 function getClickMultiplier(){
   var b=getActiveBonuses();
@@ -4376,7 +4476,7 @@ function petByUid(uid){if(!G.hatchedPets)return null;for(var _i=0;_i<G.hatchedPe
 function workforceArr(i){if(!G.workforce)G.workforce={};if(!Array.isArray(G.workforce[i]))G.workforce[i]=[];return G.workforce[i];}
 function workforcePets(i){return workforceArr(i).map(petByUid).filter(function(p){return !!p;});}
 function petPlacedBuilding(uid){if(!G.workforce)return -1;for(var _i=0;_i<20;_i++){if((G.workforce[_i]||[]).some(function(u){return String(u)===String(uid);}))return _i;}return -1;}
-function workforceUnits(i){var t=0;workforcePets(i).forEach(function(p,idx){t+=(WORKFORCE_UNITS[p.rarity]||0)*slotPowerMult(idx);});return t;} // summa "extra byggnads-ekvivalenter" från placerade pets (med kraft-stege per plats)
+function workforceUnits(i){var t=0;workforcePets(i).forEach(function(p,idx){t+=(WORKFORCE_UNITS[p.rarity]||0)*slotPowerMult(idx);});var nbw=(typeof nestBonuses==='function')?(nestBonuses().workforce||0):0;return t*(1+nbw/100);} // summa "extra byggnads-ekvivalenter" (kraft-stege per plats + Nest Gear workforce-bonus)
 function workforceBonusSps(i){return BUILDINGS[i].p*workforceUnits(i)*buildingMult(i)*getEpsMultiplier();} // faktiska sparks/sek byggnaden får av sin workforce
 function petWorkforceSps(i,p,s){return (WORKFORCE_UNITS[p.rarity]||0)*slotPowerMult(s)*BUILDINGS[i].p*buildingMult(i)*getEpsMultiplier();} // en placerad pets bidrag på byggnad i, plats s
 // Kostnad i Sparks för att låsa upp plats nummer s (0-baserat) i byggnad i.
@@ -4653,7 +4753,7 @@ function claimAdventure(index){
   if(!adv){G.adventures.splice(index,1);renderAdventure();return;}
   var pet=G.hatchedPets.find(function(p){return p.uid===a.petUid;});
   var rw=rollAdvReward(adv,pet);
-  var _xpM=fruitBuffMult('xp'); if(_xpM!==1)rw.xp=Math.round(rw.xp*_xpM);
+  var _xpM=fruitBuffMult('xp')*(1+(((typeof nestBonuses==='function')?(nestBonuses().xpGain||0):0))/100); if(_xpM!==1)rw.xp=Math.round(rw.xp*_xpM);
   var _shM=fruitBuffMult('shells'); if(_shM!==1)rw.shells.forEach(function(_s){_s.amt=Math.max(1,Math.round(_s.amt*_shM));});
   G.coins+=rw.coins;G.total+=rw.coins;G.stats.totalCoinsEarned=(G.stats.totalCoinsEarned||0)+rw.coins;trackCoins('adventure',rw.coins);
   if(!G.stats.shellsCollectedByRarity)G.stats.shellsCollectedByRarity={};
@@ -5132,7 +5232,7 @@ function resetGame(){
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -5477,7 +5577,8 @@ function initParticles(){
 // EGG CLICK
 // ============================================================
 function eggTap(clientX,clientY,quiet){
-  var clickVal=(G.clickPower*getClickMultiplier()+eps()*(CLICK_EPS_SHARE+clickEpsBonus())+clickFingerBonus())*tapMultBonus();
+  var _nbTap=(typeof nestBonuses==='function')?nestBonuses():{tapPower:0,sparkGain:0};
+  var clickVal=(G.clickPower*getClickMultiplier()+eps()*(CLICK_EPS_SHARE+clickEpsBonus())+clickFingerBonus())*tapMultBonus()*(1+((_nbTap.tapPower||0)+(_nbTap.sparkGain||0))/100);
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
   clickWindowAccum++;
@@ -9445,7 +9546,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.84<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.90<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9496,7 +9597,7 @@ function resetFromSettings(){
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -11859,7 +11960,8 @@ function getHatchDuration(eggId){
   var base=isEventEggId(eggId)?((eventEggDef(eggId).hatchSeconds)||90):(EGG_HATCH_TIMES[eggId]||30);
   var upgMult=G.hatchDiscount;
   var petMult=getHatchSpeedMult();
-  return Math.floor(base*upgMult*petMult)*1000;
+  var nestMult=1/(1+((typeof nestBonuses==='function')?(nestBonuses().hatchSpeed||0):0)/100); // Nest Gear: snabbare kläckning
+  return Math.floor(base*upgMult*petMult*nestMult)*1000;
 }
 function showEggInfo(eggId){
   var egg=EGG_SHOP.find(function(e){return e.id===eggId;});if(!egg)return;
@@ -12117,8 +12219,14 @@ function collectHatch(idx){
     }
   }
   _hatchShinyBoost=false; // släpp shiny-boosten efter att alla pets i kläckningen registrerats
+  // STEG 4: sällsynt Nest Gear-drop (raritet skalar med ägget). Notis visas EFTER att peten samlats in.
+  var _nestDrop=null;
+  if(Math.random()<NEST_GEAR_DROP_CHANCE){ if(!Array.isArray(G.nestGear))G.nestGear=[]; _nestDrop=rollNestGearDrop(slot.eggId); G.nestGear.push(_nestDrop); }
   // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
-  showPetResult(pet,function(){renderHatchery();},luckyCount);
+  showPetResult(pet,function(){
+    renderHatchery();
+    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity};showRewardPopup([nestGearIconImg(_nestDrop,16)+' '+_nrc.label+' '+nestTypeMeta(_nestDrop.type).name+' Nest Gear found!'],false,2800);}
+  },luckyCount);
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
 function openPetResultModal(pet,onShown){
@@ -14037,7 +14145,7 @@ if(savedData){
   G.fruitCharges=(savedData.fruitCharges&&typeof savedData.fruitCharges==='object'&&!Array.isArray(savedData.fruitCharges))?savedData.fruitCharges:{};
   G.gearInv=Array.isArray(savedData.gearInv)?savedData.gearInv:[];
   G.nestGear=Array.isArray(savedData.nestGear)?savedData.nestGear:[];
-  G.nestEquipped=(savedData.nestEquipped&&typeof savedData.nestEquipped==='object'&&!Array.isArray(savedData.nestEquipped))?savedData.nestEquipped:{incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
+  G.nestEquipped=(savedData.nestEquipped&&typeof savedData.nestEquipped==='object'&&!Array.isArray(savedData.nestEquipped))?savedData.nestEquipped:{incubator:null,crown:null,gem:null,trinket:null,feather:null};
   G.gearEquipped=(savedData.gearEquipped&&typeof savedData.gearEquipped==='object'&&!Array.isArray(savedData.gearEquipped))?savedData.gearEquipped:{};
   ['backpack','compass','boots','charm','tool'].forEach(function(t){if(!(t in G.gearEquipped))G.gearEquipped[t]=null;});
   G.gearLoadouts=Array.isArray(savedData.gearLoadouts)?savedData.gearLoadouts:null;
@@ -14131,6 +14239,7 @@ applySettings();
 ensureEventState();
 refreshHomeButtons();
 renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+if(typeof renderNestRing==='function')renderNestRing();
 requestAnimationFrame(tick);
 if(offlineCoins>0||(_offlineFruitSummary&&_offlineFruitSummary.length))setTimeout(function(){showOfflineModal(offlineMs,offlineCoins);},800);
 else if(typeof maybeShowNewsPopup==='function')setTimeout(maybeShowNewsPopup,900); // ingen offline → visa ev. stor-nyhet direkt; med offline visas den efter Collect (se offline-claim)
@@ -14416,6 +14525,9 @@ function cloudFlush(){
 function cloudWipe(){
   if(!sb||!cloudUser)return;
   try{sb.from('saves').delete().eq('user_id',cloudUser.id).then(function(){},function(){});}catch(e){}
+  try{sb.rpc('pp_pets_wipe').then(function(){},function(){});}catch(e){} // MANUELL RESET: töm serverns pets-tabell, annars återuppstår djuren via tradeReconcile vid nästa inloggning. (Ascension anropar EJ detta → djur behålls.)
+  try{cloudPersistVer(null);}catch(e){} // nolla det lokala versionsnumret så nästa inloggning jämför rent mot molnet
+  _petsSyncSig=null; // tvinga nästa pets-sync att faktiskt köra
   try{ppStore.removeItem(OWNER_KEY);}catch(e){}
 }
 
