@@ -3732,13 +3732,16 @@ function nestRingSlotHtml(typeId,pos){
 }
 function renderNestRing(){
   var ring=document.getElementById('nestgear-ring');if(!ring)return;
-  // Levers (eyeball-tunbara): ±108px sidled, top 40 / bottom 34, crown top:-16.
+  // U-KURVA (leende) UNDER ägget — undviker krock med de flytande sidoknapparna.
+  // Eyeball-tunbart: SP/IN = hur brett ut åt sidorna (ytter/inner), bOut/bIn/bMid = höjd (ytterst högst, mitten lägst = U).
+  var SP=120, IN=64;
+  var bOut=64, bIn=22, bMid=2;
   ring.innerHTML=
-     nestRingSlotHtml('crown',   'top:-16px;left:50%;transform:translateX(-50%);')
-    +nestRingSlotHtml('incubator','top:40px;left:50%;transform:translateX(calc(-50% - 108px));')
-    +nestRingSlotHtml('gem',      'top:40px;left:50%;transform:translateX(calc(-50% + 108px));')
-    +nestRingSlotHtml('feather',  'bottom:34px;left:50%;transform:translateX(calc(-50% - 108px));')
-    +nestRingSlotHtml('trinket',  'bottom:34px;left:50%;transform:translateX(calc(-50% + 108px));');
+     nestRingSlotHtml('incubator','left:50%;bottom:'+bOut+'px;transform:translateX(calc(-50% - '+SP+'px));')
+    +nestRingSlotHtml('gem',      'left:50%;bottom:'+bIn +'px;transform:translateX(calc(-50% - '+IN+'px));')
+    +nestRingSlotHtml('crown',    'left:50%;bottom:'+bMid+'px;transform:translateX(-50%);')
+    +nestRingSlotHtml('trinket',  'left:50%;bottom:'+bIn +'px;transform:translateX(calc(-50% + '+IN+'px));')
+    +nestRingSlotHtml('feather',  'left:50%;bottom:'+bOut+'px;transform:translateX(calc(-50% + '+SP+'px));');
 }
 
 // GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
@@ -5220,6 +5223,7 @@ function saveGame(){
 function loadGame(){try{var r=ppStore.getItem(SAVE_KEY);return r?JSON.parse(r):null;}catch(e){return null;}}
 function resetGame(){
   if(!confirm('Reset all progress?'))return;
+  var _sc=resetScorchedCheck(); // mät Account Score INNAN rensning (reset-achievement)
   if(typeof cloudWipe==='function')cloudWipe();
   G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
   G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
@@ -5258,6 +5262,7 @@ function resetGame(){
   G.settings=Object.assign({},DEFAULT_SETTINGS);
   applySettings();
   try{ppStore.removeItem(SAVE_KEY);}catch(e){}
+  grantScorchedIfEarned(_sc); // dela ut den dolda achievementen om kontot var stort nog (efter att G.achievements rensats)
   switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
 }
 function addTestShells(){SHELL_RARITIES.forEach(function(r){G.shells[r.id]=(G.shells[r.id]||0)+300;});}
@@ -5320,6 +5325,7 @@ function renderDevMenu(){
   html+='<div class="dev-row"><button onclick="devGrantFruits()" '+bBlue+'>+\ud83c\udf4e Treats</button><button onclick="devSpawnScreenFruit()" '+bBlue+'>\ud83c\udf52 Screen Fruit</button></div>';
   html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button><button onclick="devGiveGems()" '+bBlue+'>+2000 \ud83d\udc8e Gems</button></div>';
   html+='<div class="dev-row"><button onclick="openNestGear()" '+bBlue+'>\ud83e\udd5a Nest Gear</button><button onclick="devGiveNestGear()" '+bBlue+'>+Nest Gear</button></div>';
+  html+='<div class="dev-row"><button onclick="devShowAccountScore()" '+bBlue+'>\ud83d\udcca Account Score</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
 }
@@ -9546,7 +9552,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.90<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.93<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9585,6 +9591,7 @@ function doImportSave(){
 // Reset via den snygga bekräftelse-rutan (ersätter den gamla webbläsar-confirm i Dev/Test)
 function resetFromSettings(){
   showConfirm('Reset Everything?','This permanently wipes ALL your coins, pets, shells, achievements and progress. There is no undo. Are you absolutely sure?','Reset Everything',function(){
+    var _sc=resetScorchedCheck(); // mät Account Score INNAN rensning (reset-achievement)
     if(typeof cloudWipe==='function')cloudWipe();
     G.coins=0;G.total=0;G.clicks=0;G.clickPower=1;G.luck=0;G.petSlots=1;G.currentWorld=0;
     G.craftDiscount=1;G.hatchDiscount=1;G.offlineMult=0.5;
@@ -9614,6 +9621,7 @@ function resetFromSettings(){
     try{ppStore.removeItem(SAVE_KEY);}catch(e){}
     closeSettings();
     switchTab('buildings');renderBuildings();renderUpgrades();renderSlotRow();updateHUD();
+    grantScorchedIfEarned(_sc); // dela ut den dolda achievementen om kontot var stort nog
     showGenericModal('🌱','Fresh Start','All progress has been reset. Welcome back to the beginning!');
   });
 }
@@ -13164,6 +13172,58 @@ document.addEventListener('click',function(e){
     d=d.parentNode;
   }
 });
+// ============================================================
+// ACCOUNT SCORE — ett ögonblicks-tal för hur stort/värt kontot är.
+// Läser bara G när det anropas (reset-check, ev. leaderboard/profil senare). Ingen tick-kostnad.
+// ALLA VÄRDEN = PLATSHÅLLARE → Balance Sheet. Se Account_Score_System.docx.
+// ============================================================
+var ACCOUNT_SCORE_RARITY={common:1,uncommon:3,rare:10,epic:30,legendary:100,mythical:300,artifact:1000,heavenly:2000,eternal:3500,cosmic:5000};
+var ACCOUNT_SCORE_SHINY_MULT={1:5,2:25};       // shiny ×5, rainbow ×25
+var ACCOUNT_SCORE_PER_ASCENSION=500;
+var ACCOUNT_SCORE_PER_ACHIEVEMENT=25;
+var ACCOUNT_SCORE_PER_PETDEX=25;
+var ACCOUNT_SCORE_BUILDING_MULT=2;             // poäng = ägda × (index+1) × denna (djupare byggnad = mer)
+var ACCOUNT_SCORE_RESET_THRESHOLD=100000;      // tröskel för den dolda reset-achievementen
+function accountScore(){
+  var s=0;
+  (G.hatchedPets||[]).forEach(function(p){
+    var base=ACCOUNT_SCORE_RARITY[p.rarity]||0;var m=1;
+    if(p.shiny&&ACCOUNT_SCORE_SHINY_MULT[p.shiny])m*=ACCOUNT_SCORE_SHINY_MULT[p.shiny];
+    s+=base*m;
+  });
+  (G.gearInv||[]).forEach(function(g){s+=ACCOUNT_SCORE_RARITY[g.rarity]||0;});
+  (G.nestGear||[]).forEach(function(g){s+=ACCOUNT_SCORE_RARITY[g.rarity]||0;});
+  s+=(G.ascensions||0)*ACCOUNT_SCORE_PER_ASCENSION;
+  var au=(G.achievements&&G.achievements.unlocked)?Object.keys(G.achievements.unlocked).length:0;
+  s+=au*ACCOUNT_SCORE_PER_ACHIEVEMENT;
+  var pdx=(G._discoveredPets)?Object.keys(G._discoveredPets).length:0;
+  s+=pdx*ACCOUNT_SCORE_PER_PETDEX;
+  if(Array.isArray(G.owned)){for(var i=0;i<G.owned.length;i++){s+=(G.owned[i]||0)*(i+1)*ACCOUNT_SCORE_BUILDING_MULT;}}
+  return Math.floor(s);
+}
+function devShowAccountScore(){
+  var sc=accountScore();
+  var pets=(G.hatchedPets||[]).length,gear=(G.gearInv||[]).length,nest=(G.nestGear||[]).length,asc=(G.ascensions||0);
+  var body='<div style="text-align:center;font-size:2rem;font-family:\'Fredoka One\',cursive;color:#cdb6ff;margin:6px 0;">'+fmtShort(sc)+'</div>'
+    +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.62);line-height:1.7;text-align:center;">'
+    +'Pets: '+pets+' \u00b7 Gear: '+gear+' \u00b7 Nest: '+nest+' \u00b7 Ascensions: '+asc+'<br>'
+    +'Reset threshold: '+fmtShort(ACCOUNT_SCORE_RESET_THRESHOLD)+'<br>'
+    +'A reset now would '+(sc>=ACCOUNT_SCORE_RESET_THRESHOLD?'<b style="color:#7CFFB0;">unlock</b>':'<b style="color:#ff9d9d;">NOT unlock</b>')+' Scorched Earth.'
+    +'</div>';
+  showGenericModal('\ud83d\udcca','Account Score',body);
+}
+// Reset-achievement: mät INNAN rensning (annars är allt 0). Anropas i båda reset-vägarna.
+function resetScorchedCheck(){return (typeof accountScore==='function')?(accountScore()>=ACCOUNT_SCORE_RESET_THRESHOLD):false;}
+function grantScorchedIfEarned(earned){
+  if(!earned)return;
+  if(!G.achievements)G.achievements={unlocked:{},claimed:{}};
+  if(!G.achievements.unlocked['scorched_earth']){
+    G.achievements.unlocked['scorched_earth']=true;
+    if(G.stats)G.stats.achievementsCompleted=(G.stats.achievementsCompleted||0)+1;
+    try{var _sa=ACHIEVEMENTS.filter(function(a){return a.id==='scorched_earth';})[0];if(_sa&&typeof showAchievementPopups==='function')showAchievementPopups([_sa]);}catch(e){}
+  }
+  if(typeof saveGame==='function')saveGame();
+}
 var ACHIEVEMENTS=[
   // HATCHING
   {id:'first_hatch',cat:'Collection',icon:'🥚',name:'First Hatch',desc:'Hatch your first Egg',check:function(){return G.stats.eggsHatched>=1;},progress:function(){return {cur:Math.min(G.stats.eggsHatched,1),max:1};}},
@@ -13295,6 +13355,7 @@ var ACHIEVEMENTS=[
   {id:'cosmic_destiny',cat:'Secret',icon:'🌌',name:'Cosmic Destiny',desc:'Hatch a Cosmic Pet from a Cosmic Egg',check:function(){return G.stats.cosmicPetsCreated>=1;},progress:function(){return {cur:Math.min(G.stats.cosmicPetsCreated,1),max:1};}},
   {id:'tier5_jackpot',cat:'Secret',icon:'✨',name:'Tier 5 Jackpot',desc:'Hatch a pet with a Tier 5 Ability',check:function(){return G.stats.tier5AbilitiesHatched>=1;},progress:function(){return {cur:Math.min(G.stats.tier5AbilitiesHatched,1),max:1};}},
   {id:'pure_luck',cat:'Secret',icon:'🍀',name:'Pure Luck',desc:'Obtain a Cosmic Shell from a click',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'scorched_earth',cat:'Secret',icon:'🔥',name:'Scorched Earth',desc:'Manually reset a large account (100,000+ Account Score)',check:function(){return !!(G.achievements&&G.achievements.unlocked&&G.achievements.unlocked['scorched_earth']);},progress:function(){var u=!!(G.achievements&&G.achievements.unlocked&&G.achievements.unlocked['scorched_earth']);return {cur:u?1:0,max:1};}},
 ];
 
 // Achievement state
@@ -13361,7 +13422,7 @@ var ACH_GROUPS=[
   {label:'🔧 Upgrades',ids:['first_upgrade','fully_optimized']},
   {label:'🐾 Pet Slots',ids:['second_companion','full_squad']},
   {label:'⏱️ Time Played',ids:['first_hour','dedicated_player','long_nap']},
-  {label:'🌌 Secret',ids:['cosmic_destiny','tier5_jackpot','pure_luck']}
+  {label:'🌌 Secret',ids:['cosmic_destiny','tier5_jackpot','pure_luck','scorched_earth']}
 ];
 function achCardHtml(a){
   var isUnlocked=G.achievements&&G.achievements.unlocked&&G.achievements.unlocked[a.id];
