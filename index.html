@@ -3176,7 +3176,7 @@ var PET_POOL={
   },
   mountain:{
     common:[
-      {name:'Ram',e:'🐏'},{name:'Marmot',e:'🦫'},{name:'Llama',e:'🦙'}
+      {name:'Ibex',e:'🐐'},{name:'Thunderbird',e:'🦅'},{name:'Snow Sabertooth',e:'🐅'}
     ],
     uncommon:[
       {name:'Yak',e:'🦬'},{name:'Cougar',e:'🐆'},{name:'Condor',e:'🦅'}
@@ -3571,6 +3571,18 @@ var NEST_GEAR_ABILITY_META={
   sparkGain: {name:'Spark Gain',  icon:'🪙',blurb:'More Sparks earned'},
   xpGain:    {name:'XP Gain',     icon:'⭐',blurb:'Pets gain XP faster'},
 };
+// Nest Gear NAMING (Stil 2) - forled = ability[0] (typens lean), efterled 'of X' = ability[1].
+// Ex: Incubator(hatchSpeed)+production -> 'Quickening Incubator of Bounty'. Raritet via farg.
+var NEST_GEAR_NAME_PREFIX={tapPower:'Mighty',production:'Bountiful',hatchSpeed:'Quickening',hatchLuck:'Fated',shinyLuck:'Radiant',workforce:'Commanding',sparkGain:'Gleaming',xpGain:'Sage'};
+var NEST_GEAR_NAME_SUFFIX={tapPower:'of Power',production:'of Bounty',hatchSpeed:'of Hatching',hatchLuck:'of Fate',shinyLuck:'of Radiance',workforce:'of Command',sparkGain:'of Sparks',xpGain:'of Wisdom'};
+function nestGearName(g){
+  if(!g)return 'Nest Gear';
+  var base=(nestTypeMeta(g.type)||{name:'Nest Gear'}).name;
+  var ab=g.abilities||[];
+  var pre=(ab[0]&&NEST_GEAR_NAME_PREFIX[ab[0].id])?NEST_GEAR_NAME_PREFIX[ab[0].id]:'';
+  var suf=(ab[1]&&NEST_GEAR_NAME_SUFFIX[ab[1].id])?NEST_GEAR_NAME_SUFFIX[ab[1].id]:'';
+  return ((pre?pre+' ':'')+base+(suf?' '+suf:'')).trim();
+}
 function nestTypeMeta(tid){for(var i=0;i<NEST_GEAR_TYPES.length;i++)if(NEST_GEAR_TYPES[i].id===tid)return NEST_GEAR_TYPES[i];return NEST_GEAR_TYPES[0];}
 function nestGearIconImg(g,px){
   if(!g)return '';
@@ -3628,7 +3640,7 @@ function doNestMerge(rarity){
   if(typeof buzz==='function')buzz(12);
   if(typeof renderNestRing==='function')renderNestRing();
   var rc=RARITY_CONFIG[result.rarity]||{label:result.rarity};
-  if(typeof showRewardPopup==='function')showRewardPopup([nestGearIconImg(result,18)+' Merged into '+rc.label+' '+nestTypeMeta(result.type).name+'!'],false,2600);
+  if(typeof showRewardPopup==='function')showRewardPopup([nestGearIconImg(result,18)+' Merged into '+nestGearName(result)+'!'],false,2600);
   openNestGear();
 }
 function nestAbilityLine(ab){
@@ -3675,7 +3687,7 @@ function nestGearOverviewHtml(){
       var ab=(g.abilities||[]).map(function(a){return nestAbilityLine(a);}).join('<br>');
       h+='<div onclick="openNestSlotPicker(\''+t.id+'\')" style="background:linear-gradient(180deg,#2a2350,#1a1636);border:1.5px solid '+rc.color+'88;border-radius:12px;padding:8px 10px;cursor:pointer;">'
         +'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">'+t.icon+' '+t.name+'</div>'
-        +'<div style="font-weight:800;font-size:0.76rem;color:'+rc.color+';margin-top:3px;display:flex;align-items:center;gap:5px;">'+nestGearIconImg(g,20)+' '+rc.label+'</div>'
+        +'<div style="font-weight:800;font-size:0.76rem;color:'+rc.color+';margin-top:3px;display:flex;align-items:center;gap:5px;">'+nestGearIconImg(g,20)+' '+nestGearName(g)+'</div>'
         +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.6);margin-top:3px;line-height:1.45;">'+ab+'</div></div>';
     }else{
       h+='<div onclick="openNestSlotPicker(\''+t.id+'\')" style="background:rgba(0,0,0,0.2);border:1.5px dashed rgba(150,120,220,0.4);border-radius:12px;padding:8px 10px;cursor:pointer;min-height:62px;display:flex;flex-direction:column;justify-content:center;">'
@@ -3719,7 +3731,7 @@ function openNestSlotPicker(type){
       var ab=(g.abilities||[]).map(function(a){return nestAbilityLine(a);}).join(' &nbsp;\u00b7&nbsp; ');
       html+='<div onclick="equipNestGear(\''+type+'\','+g.uid+')" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">'
         +'<div style="font-size:1.3rem;">'+nestGearIconImg(g,28)+'</div>'
-        +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' \u00b7 equipped':'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
+        +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+nestGearName(g)+(on?' \u00b7 equipped':'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
     });
   }
   if(typeof showGenericModal==='function'){
@@ -3884,7 +3896,7 @@ function openGearSlotPicker(type){
     var ab=(g.abilities||[]).map(function(a){return gearAbilityLine(a);}).join(' &nbsp;·&nbsp; ');
     return '<div onclick="'+onclick+'" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">'
       +'<div style="font-size:1.3rem;">'+gearIconImg(g,28)+'</div>'
-      +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' · equipped':'')+(note?' '+note:'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
+      +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+gearName(g)+(on?' · equipped':'')+(note?' '+note:'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
   }
   if(!free.length&&!elsewhere.length){
     html+='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.8rem;padding:16px;">No '+tm.name+' gear in your bag yet.</div>';
@@ -5124,7 +5136,7 @@ function lootInvHtml(){
         h+='<div onclick="openNestGear()" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#221c44,#15112e);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
           +eq
           +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+nestGearIconImg(g,38)+'</span>'
-          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+tm.name+'</span>'
+          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+nestGearName(g)+'</span>'
           +'</div>';
       });
       h+='</div>';
@@ -6355,12 +6367,12 @@ var PET_FLAVOR={
 "jaguar":{title:"Vale the Jaguar",motto:"Flawless by instinct, deadly by design.",quotes:["One leap. That's all it ever takes.", "Perfection isn't practiced. It's born.", "I don't miss. The jungle can confirm."]},
 "king lobster":{title:"Reginald the King Lobster",motto:"Mind the claws \u2014 you're in the presence of royalty.",quotes:["One does not simply scuttle past the king.", "These claws are ceremonial. And functional.", "The seafloor is my throne room."]},
 "lava lizard":{title:"Blaze the Lava Lizard",motto:"Short fuse, big flame, no regrets.",quotes:["Say that again. I DARE you.", "I'm not angry, I'm just\u2014 okay, I'm a little angry.", "Small lizard, large temper, handle with care."]},
-"llama":{title:"Gus the Llama",motto:"Normal is boring. Be the weird one they remember.",quotes:["I don't know what I'm doing but I'm doing it with flair.", "Was that weird? Good.", "Spit? I would never. \u2026Probably."]},
+"thunderbird":{title:"Volt the Thunderbird",motto:"Where my wings beat, the storm follows.",quotes:["Thunder isn't a warning. It's an entrance.", "I ride the storm. It doesn't ride me.", "One beat of my wings and the sky answers."]},
 "lunar lynx":{title:"Selene the Lunar Lynx",motto:"Rare as a blue moon, watchful as its light.",quotes:["I guard the moonlight so your dreams stay safe.", "Magic this rare is worth protecting.", "You'll only meet me when the moon allows it."]},
 "magma golem":{title:"Basalt the Magma Golem",motto:"Enormous power, even bigger gentleness.",quotes:["I crush mountains. I will not crush you. Promise.", "Slow steps. Careful hands. Warm heart.", "Big and burning, but never to my friends."]},
 "mammoth":{title:"Magnus the Mammoth",motto:"I am older than the ice itself \u2014 and I guard it still.",quotes:["I have walked since before these glaciers froze.", "Legends don't fade. They keep watch.", "Lean on me; I have held up worlds."]},
 "manta ray":{title:"Mara the Manta Ray",motto:"Glide gently and the whole sea moves with you.",quotes:["Be still. Feel the current carry you.", "I don't swim. I drift like a thought.", "Serenity is the ocean's deepest power."]},
-"marmot":{title:"Whistle the Marmot",motto:"I see the whole world from up here \u2014 come look!",quotes:["Whistle if you see me waving \u2014 I'm always waving!", "Best view on the mountain, and I'm sharing it.", "Eyes up, friends, I'll spot trouble first."]},
+"snow sabertooth":{title:"Frost the Snow Sabertooth",motto:"Silent in the snow, until I'm not.",quotes:["You won't hear me coming. That's the point.", "Cold patience, warm heart. Ask my pack.", "Old fangs, older instincts. Both still sharp."]},
 "mitten cat":{title:"Olive the Mitten Cat",motto:"Stay warm, stay cute, stay one step ahead.",quotes:["I found the warmest spot in the house. No, I won't tell you where.", "My paws look like mittens, and I know exactly how charming that is.", "Chaos is fun \u2014 but warm chaos is better."]},
 "molten kitty":{title:"Scarlett the Molten Kitty",motto:"Darling, I don't do ordinary.",quotes:["Is that a smudge of ash on me? The HORROR.", "I'm not arrogant, I'm just usually right.", "Make way \u2014 fabulous coming through."]},
 "moon dragon":{title:"Lunaris the Moon Dragon",motto:"The cosmos has an emperor \u2014 and I wear no smaller crown.",quotes:["Galaxies turn at my command.", "Prestige isn't given. It orbits me.", "Bow if you wish; the stars already have."]},
@@ -6386,7 +6398,7 @@ var PET_FLAVOR={
 "poison dart frog":{title:"Bolt the Poison Dart Frog",motto:"Small, bright, and absolutely fearless.",quotes:["Bet I can leap that. Watch.", "Tiny? Sure. Stoppable? Never.", "Bright colors mean \"don't underestimate me."]},
 "polar bear":{title:"Nanook the Polar Bear",motto:"Nothing crosses the ice I haven't allowed.",quotes:["Sleep easy. The night is mine to watch.", "Power is for protecting, never frightening.", "You're safe on my ice. All of you."]},
 "rabbit":{title:"Clover the Rabbit",motto:"Around every corner is something new to sniff.",quotes:["What's that? What's THAT? Ooh, what's that?!", "I can't sit still, there's too much world.", "Let's go just a little further \u2014 promise it's worth it."]},
-"ram":{title:"Boulder the Ram",motto:"I don't back down. I head-butt forward.",quotes:["Move the mountain? No. I'll go through it.", "Stubborn is just determined with better aim.", "I've never lost a staring contest with a cliff."]},
+"ibex":{title:"Cliff the Ibex",motto:"If there's a ledge, I'm already standing on it.",quotes:["Straight up is my favourite direction.", "No path? Watch me make one.", "Don't look down. Look up, that's where I'm going."]},
 "sand cat":{title:"Pebble the Sand Cat",motto:"Small, sandy, and absolutely up to something.",quotes:["I didn't take it. \u2026Okay, I took it. It's mine now.", "Cute is the perfect disguise.", "You'll never catch me. I'm camouflaged AND fast."]},
 "scorpion":{title:"Sting the Scorpion",motto:"Small operation, big reputation.",quotes:["Nothing happens in this desert without me knowing.", "Underestimate me. It's the last mistake people make.", "Cool under pressure \u2014 literally, I live under a rock."]},
 "seal":{title:"Pudge the Seal",motto:"Life's better belly-up and snuggled close.",quotes:["Come here, you. Cuddle quota isn't met.", "I flopped all this way just to be near you.", "Happiness is a sunny rock and a friend."]},
@@ -9629,7 +9641,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.07<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.09<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12313,7 +12325,7 @@ function collectHatch(idx){
   // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
   showPetResult(pet,function(){
     renderHatchery();
-    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity,color:'#cdb6ff'};showRewardPopup([nestGearIconImg(_nestDrop,30)+'<br><b style="color:'+(_nrc.color||'#cdb6ff')+'">'+_nrc.label+' '+nestTypeMeta(_nestDrop.type).name+'</b><br><span style="font-size:0.64rem;color:rgba(255,255,255,0.5)">Tap to equip it around your egg</span>'],false,4200,'🪺 Nest Gear Found!',openNestGear);}
+    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity,color:'#cdb6ff'};showRewardPopup([nestGearIconImg(_nestDrop,30)+'<br><b style="color:'+(_nrc.color||'#cdb6ff')+'">'+nestGearName(_nestDrop)+'</b><br><span style="font-size:0.64rem;color:rgba(255,255,255,0.5)">Tap to equip it around your egg</span>'],false,4200,'🪺 Nest Gear Found!',openNestGear);}
   },luckyCount);
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
