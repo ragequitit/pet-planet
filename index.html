@@ -6782,7 +6782,8 @@ function renderHomeAdventures(){
   // STAGE — world background, full-bleed edge-to-edge up to the top nav (no frame), like the main page
   var bgUrl=idleWorldBg(G.idleWorld);
   h+='<div id="idleadv-stage" style="position:relative;height:calc(100dvh - var(--top-h) - var(--nav-h) - 76px);overflow:hidden;margin:-6px -13px 12px;background:#101a38;">';
-  h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
+  h+='<img src="'+bgUrl+'" alt="" aria-hidden="true" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(20px) brightness(0.72);transform:scale(1.12);" onerror="this.style.display=\'none\'">';
+  h+='<img src="'+bgUrl+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;" onerror="this.style.display=\'none\'">';
   h+='<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,12,30,0.10),rgba(8,12,30,0.28) 60%,rgba(8,12,30,0.50));"></div>';
   // floating bag + stats (top-right) = SAME column/position as main page
   h+='<div class="side-btns" style="top:100px;right:8px;left:auto;z-index:4;">'
@@ -9616,7 +9617,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.03<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.04<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
