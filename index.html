@@ -3523,6 +3523,128 @@ function gearAbilityLine(ab){
   if(ab.mega)return '<b>'+m.name+'</b> <span style="color:#ff9a2e;font-weight:900;text-shadow:0 0 6px rgba(255,154,46,.55)">+'+ab.v+'% ★</span>';
   return '<b>'+m.name+'</b> +'+ab.v+'%';
 }
+
+// ============================================================
+// NEST GEAR (v9.84, STEG 1: data + state + equip-meny) — egen gear-kategori för MAIN-LOOPEN
+// (tap, kläckning, produktion, workforce) — påverkar EJ äventyr. Speglar Explorer Gear men utan
+// loadouts/lås. Effekter/drops/merge + slots-runt-ägget kommer i senare steg. ALLT PLATSHÅLLARE.
+// ============================================================
+var NEST_GEAR_TYPES=[
+  {id:'incubator',name:'Incubator',icon:'🔥',lean:'hatchSpeed'},
+  {id:'prism',    name:'Prism',    icon:'✨',lean:'shinyLuck'},
+  {id:'gauntlet', name:'Gauntlet', icon:'👊',lean:'tapPower'},
+  {id:'engine',   name:'Engine',   icon:'⚙️',lean:'production'},
+  {id:'idol',     name:'Idol',     icon:'🗿',lean:'workforce'},
+];
+var NEST_GEAR_ABILITIES=['tapPower','production','hatchSpeed','hatchLuck','shinyLuck','workforce','sparkGain','xpGain'];
+var NEST_GEAR_ABILITY_META={
+  tapPower:  {name:'Tap Power',  icon:'👊',blurb:'More Sparks per tap'},
+  production:{name:'Production',  icon:'⚙️',blurb:'More building SPS'},
+  hatchSpeed:{name:'Hatch Speed', icon:'🔥',blurb:'Eggs hatch faster'},
+  hatchLuck: {name:'Hatch Luck',  icon:'🍀',blurb:'Better rarity odds when hatching'},
+  shinyLuck: {name:'Shiny Luck',  icon:'✨',blurb:'Higher shiny chance'},
+  workforce: {name:'Workforce',   icon:'👥',blurb:'More workforce output'},
+  sparkGain: {name:'Spark Gain',  icon:'🪙',blurb:'More Sparks earned'},
+  xpGain:    {name:'XP Gain',     icon:'⭐',blurb:'Pets gain XP faster'},
+};
+function nestTypeMeta(tid){for(var i=0;i<NEST_GEAR_TYPES.length;i++)if(NEST_GEAR_TYPES[i].id===tid)return NEST_GEAR_TYPES[i];return NEST_GEAR_TYPES[0];}
+function nestGearIconImg(g,px){
+  if(!g)return '';
+  var tm=nestTypeMeta(g.type)||{icon:'🥚'};var emoji=tm.icon||'🥚';
+  var st=px?(' style="width:'+px+'px;height:'+px+'px;object-fit:contain;vertical-align:middle;"'):' style="width:1em;height:1em;object-fit:contain;vertical-align:middle;"';
+  return '<img src="'+ASSET_BASE+'/assets/ui/nestgear/'+g.type+'/'+g.rarity+'-'+g.type+'.png" alt=""'+st+' onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';
+}
+function makeNestGear(typeId,rarity){
+  var type=nestTypeMeta(typeId);
+  var tier=GEAR_RARITY_TIER[rarity]||1;
+  var lean=rollAbilityValue(tier);
+  var abilities=[{id:type.lean,v:lean.v,mega:lean.mega}];
+  var pool=NEST_GEAR_ABILITIES.filter(function(a){return a!==type.lean;});
+  var sid=pool[Math.floor(Math.random()*pool.length)];
+  var second=rollAbilityValue(tier);
+  abilities.push({id:sid,v:second.v,mega:second.mega});
+  return {uid:Date.now()+Math.random(),type:type.id,rarity:rarity,abilities:abilities};
+}
+function nestAbilityLine(ab){
+  var m=NEST_GEAR_ABILITY_META[ab.id]||{name:ab.id};
+  if(ab.mega)return '<b>'+m.name+'</b> <span style="color:#ff9a2e;font-weight:900;">+'+ab.v+'% ★</span>';
+  return '<b>'+m.name+'</b> +'+ab.v+'%';
+}
+function getEquippedNest(type){if(!G.nestEquipped)return null;var uid=G.nestEquipped[type];if(uid==null)return null;return (G.nestGear||[]).find(function(g){return g.uid===uid;})||null;}
+function equipNestGear(type,uid){
+  if(!G.nestEquipped)G.nestEquipped={};
+  var g=(G.nestGear||[]).find(function(x){return x.uid===uid;});
+  if(!g||g.type!==type)return; // typ-låst
+  G.nestEquipped[type]=uid;
+  if(typeof saveGame==='function')saveGame();
+  openNestSlotPicker(type);
+}
+function unequipNestGear(type){
+  if(!G.nestEquipped)G.nestEquipped={};
+  G.nestEquipped[type]=null;
+  if(typeof saveGame==='function')saveGame();
+  openNestSlotPicker(type);
+}
+function nestGearOverviewHtml(){
+  var h='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:10px;">Equip one of each type. These boost your <b>main loop</b> \u2014 tapping, hatching &amp; production \u2014 not adventures. <i>(Effects come online in a later step.)</i></div>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;">';
+  NEST_GEAR_TYPES.forEach(function(t){
+    var g=getEquippedNest(t.id);
+    if(g){
+      var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'\u26aa'};
+      var ab=(g.abilities||[]).map(function(a){return nestAbilityLine(a);}).join('<br>');
+      h+='<div onclick="openNestSlotPicker(\''+t.id+'\')" style="background:linear-gradient(180deg,#2a2350,#1a1636);border:1.5px solid '+rc.color+'88;border-radius:12px;padding:8px 10px;cursor:pointer;">'
+        +'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">'+t.icon+' '+t.name+'</div>'
+        +'<div style="font-weight:800;font-size:0.76rem;color:'+rc.color+';margin-top:3px;display:flex;align-items:center;gap:5px;">'+nestGearIconImg(g,20)+' '+rc.label+'</div>'
+        +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.6);margin-top:3px;line-height:1.45;">'+ab+'</div></div>';
+    }else{
+      h+='<div onclick="openNestSlotPicker(\''+t.id+'\')" style="background:rgba(0,0,0,0.2);border:1.5px dashed rgba(150,120,220,0.4);border-radius:12px;padding:8px 10px;cursor:pointer;min-height:62px;display:flex;flex-direction:column;justify-content:center;">'
+        +'<div style="font-size:0.62rem;color:rgba(255,255,255,0.45);font-weight:700;text-transform:uppercase;letter-spacing:.04em;">'+t.icon+' '+t.name+'</div>'
+        +'<div style="font-size:0.7rem;color:rgba(255,255,255,0.35);margin-top:4px;">+ Equip</div></div>';
+    }
+  });
+  h+='</div>';
+  return h;
+}
+function openNestGear(){
+  if(typeof showGenericModal!=='function')return;
+  showGenericModal('🥚','Nest Gear','');
+  var b=document.getElementById('generic-modal-body');
+  if(b){b.style.textAlign='left';b.innerHTML=nestGearOverviewHtml();}
+}
+function openNestSlotPicker(type){
+  var tm=nestTypeMeta(type);
+  var rord=Object.keys(RARITY_CONFIG);
+  var all=(G.nestGear||[]).filter(function(g){return g.type===type;}).sort(function(a,b){return rord.indexOf(b.rarity)-rord.indexOf(a.rarity);});
+  var equippedUid=G.nestEquipped?G.nestEquipped[type]:null;
+  var html='<button onclick="openNestGear()" style="width:100%;margin-bottom:8px;padding:7px;border-radius:9px;border:1px solid rgba(150,120,220,0.4);background:rgba(150,120,220,0.12);color:#cdb6ff;font-weight:700;font-size:0.74rem;cursor:pointer;">\u2190 All slots</button>';
+  if(equippedUid!=null)html+='<button onclick="unequipNestGear(\''+type+'\')" style="width:100%;margin-bottom:8px;padding:8px;border-radius:10px;border:1px solid rgba(255,120,120,0.5);background:rgba(255,120,120,0.12);color:#ffb0b0;font-weight:700;font-size:0.78rem;cursor:pointer;">\u2715 Unequip</button>';
+  if(!all.length){
+    html+='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.8rem;padding:16px;">No '+tm.name+' gear in your bag yet.</div>';
+  }else{
+    all.forEach(function(g){
+      var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'\u26aa'};
+      var on=g.uid===equippedUid;
+      var ab=(g.abilities||[]).map(function(a){return nestAbilityLine(a);}).join(' &nbsp;\u00b7&nbsp; ');
+      html+='<div onclick="equipNestGear(\''+type+'\','+g.uid+')" style="display:flex;align-items:center;gap:9px;background:'+(on?rc.color+'1f':'rgba(27,45,78,0.5)')+';border:1.5px solid '+(on?rc.color+'aa':'rgba(150,120,220,0.3)')+';border-radius:11px;padding:8px 10px;margin-bottom:6px;cursor:pointer;">'
+        +'<div style="font-size:1.3rem;">'+nestGearIconImg(g,28)+'</div>'
+        +'<div style="flex:1;min-width:0;"><div style="font-weight:800;font-size:0.8rem;color:'+rc.color+'">'+rc.icon+' '+rc.label+(on?' \u00b7 equipped':'')+'</div><div style="font-size:0.68rem;color:rgba(255,255,255,0.6);margin-top:1px;">'+ab+'</div></div></div>';
+    });
+  }
+  if(typeof showGenericModal==='function'){
+    showGenericModal(tm.icon,tm.name+' Slot','');
+    var b=document.getElementById('generic-modal-body');
+    if(b){b.style.textAlign='left';b.innerHTML=html;}
+  }
+}
+function devGiveNestGear(){
+  if(!Array.isArray(G.nestGear))G.nestGear=[];
+  var rars=['common','uncommon','rare','epic','legendary'];
+  NEST_GEAR_TYPES.forEach(function(t,idx){G.nestGear.push(makeNestGear(t.id,rars[idx%rars.length]));});
+  if(typeof saveGame==='function')saveGame();
+  openNestGear();
+}
+
 // GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
 // ====== GEAR LOADOUTS (STEG 6.9) — 5 set; #1 gratis, #2–5 köps med Gems. Aktiv loadouts slots = G.gearEquipped. ======
 function loadoutGemCost(i){return [0,75,150,300,600][i]||0;} // PLATSHÅLLARE → Balance Sheet
@@ -4988,7 +5110,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,workforce:G.workforce,wfSlots:G.wfSlots,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,nestGear:G.nestGear,nestEquipped:G.nestEquipped,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -5010,7 +5132,7 @@ function resetGame(){
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -5097,6 +5219,7 @@ function renderDevMenu(){
   html+='<div class="dev-row"><button onclick="addTestEventPoints()" '+bBlue+'>+1000 \u2744\ufe0f Event</button><button onclick="devResetEventDay()" '+bBlue+'>\u21bb Event Day</button><button onclick="devGrantStones()" '+bBlue+'>+\ud83c\udfaf Stones</button></div>';
   html+='<div class="dev-row"><button onclick="devGrantFruits()" '+bBlue+'>+\ud83c\udf4e Treats</button><button onclick="devSpawnScreenFruit()" '+bBlue+'>\ud83c\udf52 Screen Fruit</button></div>';
   html+='<div class="dev-row"><button onclick="devGiveTestGear()" '+bBlue+'>\ud83c\udf81 +Test Gear</button><button onclick="devGiveGems()" '+bBlue+'>+2000 \ud83d\udc8e Gems</button></div>';
+  html+='<div class="dev-row"><button onclick="openNestGear()" '+bBlue+'>\ud83e\udd5a Nest Gear</button><button onclick="devGiveNestGear()" '+bBlue+'>+Nest Gear</button></div>';
   html+='<div class="dev-row"><button id="world-test-btn" onclick="cycleWorld()" style="flex:2;padding:9px;background:#2a6e4a;border:1px solid #3a9e6a;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">🌍 World: '+(w?w.id:'starter')+' ('+(G.currentWorld+1)+'/'+EGG_WORLDS.length+')</button><button onclick="resetGame()" style="flex:1;padding:9px;background:#c0392b;border:none;border-radius:8px;color:#fff;font-size:0.74rem;font-family:inherit;cursor:pointer;">Reset</button></div>';
   document.getElementById('dev-modal-body').innerHTML=html;
 }
@@ -9322,7 +9445,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.83<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.84<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9373,7 +9496,7 @@ function resetFromSettings(){
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -13913,6 +14036,8 @@ if(savedData){
   G.fruitBuffs=Array.isArray(savedData.fruitBuffs)?savedData.fruitBuffs:[];
   G.fruitCharges=(savedData.fruitCharges&&typeof savedData.fruitCharges==='object'&&!Array.isArray(savedData.fruitCharges))?savedData.fruitCharges:{};
   G.gearInv=Array.isArray(savedData.gearInv)?savedData.gearInv:[];
+  G.nestGear=Array.isArray(savedData.nestGear)?savedData.nestGear:[];
+  G.nestEquipped=(savedData.nestEquipped&&typeof savedData.nestEquipped==='object'&&!Array.isArray(savedData.nestEquipped))?savedData.nestEquipped:{incubator:null,prism:null,gauntlet:null,engine:null,idol:null};
   G.gearEquipped=(savedData.gearEquipped&&typeof savedData.gearEquipped==='object'&&!Array.isArray(savedData.gearEquipped))?savedData.gearEquipped:{};
   ['backpack','compass','boots','charm','tool'].forEach(function(t){if(!(t in G.gearEquipped))G.gearEquipped[t]=null;});
   G.gearLoadouts=Array.isArray(savedData.gearLoadouts)?savedData.gearLoadouts:null;
