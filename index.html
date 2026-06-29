@@ -3470,6 +3470,19 @@ var GEAR_ABILITY_META={
   offlineBoost:{name:'Offline Boost',  icon:'🌙',blurb:'More idle earnings while away'},
   stamina:     {name:'Stamina',        icon:'💪',blurb:'More energy, shorter rest'},
 };
+// Gear NAMING (Stil 2 - beskrivande namn fran formagorna). Forled = ability[0] (typens huvudformaga/lean),
+// efterled 'of X' = ability[1] (andra formagan). Ex: Boots(speed)+haul -> 'Swift Boots of Hauling'.
+// Raritet visas via farg/badge, ej i namnet. Robust: saknade abilities -> faller tillbaka till typnamnet.
+var GEAR_NAME_PREFIX={speed:'Swift',haul:'Vast',shellBoost:'Tidal',sparkBoost:'Gilded',findChance:'Keen',affinity:'Wild',offlineBoost:'Moonlit',stamina:'Tireless'};
+var GEAR_NAME_SUFFIX={speed:'of Swiftness',haul:'of Hauling',shellBoost:'of Tides',sparkBoost:'of Riches',findChance:'of Fortune',affinity:'of the Wild',offlineBoost:'of the Moon',stamina:'of Endurance'};
+function gearName(g){
+  if(!g)return 'Gear';
+  var base=(gearTypeMeta(g.type)||{name:'Gear'}).name;
+  var ab=g.abilities||[];
+  var pre=(ab[0]&&GEAR_NAME_PREFIX[ab[0].id])?GEAR_NAME_PREFIX[ab[0].id]:'';
+  var suf=(ab[1]&&GEAR_NAME_SUFFIX[ab[1].id])?GEAR_NAME_SUFFIX[ab[1].id]:'';
+  return ((pre?pre+' ':'')+base+(suf?' '+suf:'')).trim();
+}
 // Gear-drop rarity bands (design 2026-06-26). Band→real adventures mapped in Balance Sheet.
 var GEAR_RARITY_WEIGHTS={
   band1:{common:70,uncommon:25,rare:5},                     // early (Meadow/Forest)
@@ -4800,7 +4813,7 @@ function claimAdventure(index){
     else if(b.type==='relic'){grantRelic(b.id,1);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var rm=LOST_WORLD_META[b.id]||{relic:'Relic',relicIcon:'🗝️'};parts.push(rm.relicIcon+' '+rm.relic+' found!');}
     else if(b.type==='map'){grantMap(b.id);G.stats.discoveryItemsFound=(G.stats.discoveryItemsFound||0)+1;var mm=EGG_SHOP.find(function(e){return e.id===b.id;});parts.push('🗺️ Secret Map found — '+(mm?mm.name.replace(' Egg',''):b.id)+'!');}
     else if(b.type==='stone'){grantSkillStone(b.id,1);parts.push(abilityIconImg(b.id)+' Skill Stone found!');}
-    else if(b.type==='gear'&&b.gear){if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(b.gear);var gtm=gearTypeMeta(b.gear.type);var grc=RARITY_CONFIG[b.gear.rarity]||{label:b.gear.rarity,icon:'⚪'};parts.push(gearIconImg(b.gear,16)+' '+grc.label+' '+gtm.name+' gear found!');}
+    else if(b.type==='gear'&&b.gear){if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(b.gear);var gtm=gearTypeMeta(b.gear.type);var grc=RARITY_CONFIG[b.gear.rarity]||{label:b.gear.rarity,icon:'⚪'};parts.push(gearIconImg(b.gear,16)+' '+gearName(b.gear)+' found!');}
   });
   if(Math.random()<FRUIT_ADV_CHANCE){ var _fid=rollFruitDrop(); grantFruit(_fid,1); var _fm=fruitMeta(_fid); parts.push(fruitIconImg(_fid,16)+' '+_fm.name+' found!'); }
   G.adventures.splice(index,1);                          // pet återvänder (busy-flaggan släpps)
@@ -5093,7 +5106,7 @@ function lootInvHtml(){
         h+='<div onclick="showGearInfo('+g.uid+')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
           +lock
           +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+gearIconImg(g,38)+'</span>'
-          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+tm.name+'</span>'
+          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+gearName(g)+'</span>'
           +'</div>';
       });
       h+='</div>';
@@ -7588,7 +7601,7 @@ function devGiveTestGear(){
   var tm=gearTypeMeta(g.type);
   var lines=g.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
   var html='<div style="text-align:center;font-size:2.6rem;line-height:1">'+gearIconImg(g,52)+'</div>'+
-    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+gearName(g)+'</div>'+
     '<div style="text-align:center;opacity:.5;font-size:0.66rem;margin-bottom:6px">rolled from '+bandLbl+'</div>'+
     '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>'+
     '<div style="text-align:center;opacity:.55;font-size:0.72rem;margin-top:10px">Gear in bag: '+G.gearInv.length+'</div>';
@@ -7635,7 +7648,7 @@ function devMergeGearTest(){
   var lines=result.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
   var html='<div style="text-align:center;font-size:0.74rem;opacity:.7;margin-bottom:4px">'+(reroll?'REROLL · ':'MERGE · ')+'5× <span style="color:'+pc.color+'">'+pc.icon+' '+pc.label+'</span> &rarr;</div>'+
     '<div style="text-align:center;font-size:2.6rem;line-height:1">'+gearIconImg(result,52)+'</div>'+
-    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+gearName(result)+'</div>'+
     '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>'+
     '<div style="text-align:center;opacity:.55;font-size:0.72rem;margin-top:10px">Gear in bag: '+G.gearInv.length+'</div>';
   if(typeof showGenericModal==='function'){
@@ -8105,7 +8118,7 @@ function showGearInfo(uid){
   var g=(G.gearInv||[]).find(function(x){return x.uid===uid;}); if(!g)return;
   var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'\u26aa'};
   var tm=gearTypeMeta(g.type);
-  showGenericModal(tm.icon, rc.label+' '+tm.name, '');
+  showGenericModal(tm.icon, gearName(g), '');
   var ico=document.getElementById('generic-modal-icon'); if(ico)ico.innerHTML=gearIconImg(g,46);
   var body=document.getElementById('generic-modal-body');
   if(body){
@@ -8117,7 +8130,7 @@ function showGearInfo(uid){
         +'</div>';
     }).join('');
     var lock=isGearLocked(uid)?'<div style="margin-top:6px;font-size:0.7rem;color:#f5c842;text-align:left;">\ud83d\udd12 Locked to loadout: '+loEsc(gearLockName(uid))+'</div>':'';
-    body.innerHTML='<div style="color:'+rc.color+';font-weight:800;font-size:0.8rem;margin-bottom:10px;">'+rc.icon+' '+rc.label+' \u00b7 '+tm.name+'</div>'
+    body.innerHTML='<div style="color:'+rc.color+';font-weight:800;font-size:0.8rem;margin-bottom:10px;">'+rc.icon+' '+gearName(g)+'</div>'
       +abil
       +'<div style="font-size:0.66rem;color:rgba(255,255,255,0.42);margin-top:6px;line-height:1.4;text-align:left;">Equip it under your idling pet on the <b>Adventure</b> screen.</div>'+lock;
   }
@@ -9616,7 +9629,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.06<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.07<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13126,7 +13139,7 @@ function showGearFusionResult(result,fromRarity,reroll){
   var lines=result.abilities.map(function(ab){return '<div style="margin:3px 0">• '+gearAbilityLine(ab)+'</div>';}).join('');
   var html='<div style="text-align:center;font-size:0.74rem;opacity:.7;margin-bottom:4px">'+(reroll?'REROLL · ':'MERGE · ')+'5&times; <span style="color:'+pc.color+'">'+pc.icon+' '+pc.label+'</span> &rarr;</div>'+
     '<div style="text-align:center;font-size:2.8rem;line-height:1">'+gearIconImg(result,56)+'</div>'+
-    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+rc.label+' '+tm.name+'</div>'+
+    '<div style="text-align:center;font-weight:800;margin:6px 0 2px;color:'+rc.color+'">'+rc.icon+' '+gearName(result)+'</div>'+
     '<div style="font-size:0.84rem;line-height:1.5;margin-top:4px;text-align:left;display:inline-block">'+lines+'</div>';
   if(typeof showGenericModal==='function'){
     showGenericModal(reroll?'🎲':'🧰',reroll?'Gear Reroll!':'Gear Merge!','');
@@ -13211,7 +13224,7 @@ function renderGearFusion(){
       html+='<div class="fusion-pet-card'+(isSel?' selected':disabled?' disabled':'')+'" style="border-color:'+(isSel?rc4.color+'aa':rc4.color+'33')+';background:'+(isSel?rc4.color+'15':'rgba(27,45,78,0.5)')+'" data-gearfusion-gear="'+g.uid+'">';
       if(isSel)html+='<div class="fusion-check">✓</div>';
       html+='<div class="fp-icon">'+gearIconImg(g,30)+'</div>';
-      html+='<div class="fp-name">'+tm.name+'</div>';
+      html+='<div class="fp-name">'+gearName(g)+'</div>';
       html+='<div class="fp-rarity" style="color:'+rc4.color+'">'+rc4.label+'</div>';
       html+='</div>';
     });
