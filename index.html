@@ -6465,7 +6465,13 @@ function renderHomeAdventures(){
     +'<div class="side-btn" onclick="openStatsPanel()"><span class="sb-icon"><img class="sb-img" src="'+ASSET_BASE+'/assets/ui/stats/ability-stats.png" alt="" onerror="this.parentNode.textContent=\'📊\'"></span><span class="sb-label">Stats</span></div>'
     +'</div>';
   if(!pets.length){
-    h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;z-index:2;"><div style="font-size:3rem;opacity:0.8;">🐾</div><div style="font-size:0.82rem;color:#fff;margin-top:8px;line-height:1.6;text-shadow:0 1px 3px #000;">No pets are idling yet.<br>Assign a pet below to start gathering <b style="color:#cdb6ff">Shells</b>.</div></div>';
+    h+='<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px;z-index:3;">'
+      +'<div onclick="openPetSlotModal(0,\'idle\')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;width:148px;height:148px;background:rgba(12,18,40,0.72);border:2.5px dashed rgba(140,165,235,0.6);border-radius:22px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.4);">'
+        +'<div style="font-size:3.1rem;line-height:1;color:#9fb6ef;">\uFF0B</div>'
+        +'<div style="font-family:\'Fredoka One\',cursive;font-size:0.92rem;color:#fff;">Assign a Pet</div>'
+      +'</div>'
+      +'<div style="font-size:0.76rem;color:rgba(255,255,255,0.72);margin-top:14px;line-height:1.5;text-shadow:0 1px 3px #000;max-width:240px;">Send a pet to idle and search this world for <b style="color:#cdb6ff">treasure &amp; loot</b>.</div>'
+    +'</div>';
   }else{
     var p=pets[idleViewIdx]; var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
     // pet + caption anchored to the BOTTOM of the tall scene (pet stands on the grass), like the main egg page
@@ -6632,6 +6638,8 @@ function idleGearTap(){
   if(typeof showRewardPopup==='function')showRewardPopup(msg,false);
 }
 function assignIdlePet(uid){
+  // Självläk: rensa idle-slots från pets som inte längre finns (t.ex. efter reset/extract/fusion) så slot-räkningen blir korrekt
+  if(Array.isArray(G.idlePets))G.idlePets=G.idlePets.filter(function(u){return G.hatchedPets.some(function(p){return String(p.uid)===String(u);});});
   if((G.idlePets||[]).length>=G.idleSlots)return;
   if(isPetIdling(uid))return;
   var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);}); if(!pet)return;
@@ -9219,7 +9227,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.67<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.69<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13742,6 +13750,8 @@ if(savedData){
   G.hatchedPets=savedData.hatchedPets||[];
   // Workforce: rensa bort placerade uids vars pet inte längre finns (extraherad/fuserad)
   if(G.workforce&&typeof G.workforce==='object'){for(var _wb in G.workforce){if(Array.isArray(G.workforce[_wb]))G.workforce[_wb]=G.workforce[_wb].filter(function(u){return !!petByUid(u);});}}
+  // Idle-pets: rensa bort spök-uids vars pet inte längre finns (annars räknas slots som fulla → går ej att assigna)
+  if(Array.isArray(G.idlePets))G.idlePets=G.idlePets.filter(function(u){return !!petByUid(u);});
   if(typeof migratePetAbilities==='function')migratePetAbilities(); // reparera gamla förmåge-id:n → nya systemet (kör bara på pets med ogiltiga id:n)
   G.mutationCores=Array.isArray(savedData.mutationCores)?savedData.mutationCores:[];
   G.skillStones=(savedData.skillStones&&typeof savedData.skillStones==='object'&&!Array.isArray(savedData.skillStones))?savedData.skillStones:{};
