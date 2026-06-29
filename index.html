@@ -263,6 +263,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .ev-quest-ic{width:46px;height:46px;border-radius:50%;background:linear-gradient(180deg,#2a3c6c,#172643);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;}
 .ev-quest-mid{flex:1;min-width:0;}
 .ev-quest-name{font-size:0.68rem;font-weight:800;color:#fff;}
+.ev-quest-desc{font-size:0.56rem;color:rgba(255,255,255,0.5);margin-top:1px;line-height:1.25;}
 .ev-quest-bar{height:6px;border-radius:4px;background:rgba(0,0,0,0.4);overflow:hidden;margin:4px 0 3px;}
 .ev-quest-bar-fill{height:100%;background:linear-gradient(90deg,#6cc24a,#9be86c);}
 .ev-quest-prog{font-size:0.55rem;color:rgba(255,255,255,0.6);}
@@ -1136,23 +1137,23 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
   display:flex;flex-direction:column;align-items:center;padding:16px 16px 18px;
   background:radial-gradient(circle at 50% 30%, #ffffff 0%, var(--rc) 14%, rgba(10,17,36,0) 44%), #0a1124;
   box-shadow:0 18px 50px rgba(0,0,0,0.6);}
-.hatch-rays{position:absolute;left:50%;top:42%;width:170%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
+.hatch-rays{position:absolute;left:50%;top:52%;width:170%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:0;pointer-events:none;
   background:repeating-conic-gradient(from 0deg, var(--rc) 0deg 3.5deg, transparent 3.5deg 9deg);
   -webkit-mask:radial-gradient(circle,#000 8%,rgba(0,0,0,0.5) 32%,transparent 60%);mask:radial-gradient(circle,#000 8%,rgba(0,0,0,0.5) 32%,transparent 60%);
   opacity:0.5;animation:hatchSpin 20s linear infinite;}
 .hatch-bg{position:absolute;top:0;left:0;width:100%;height:auto;z-index:1;}
-.hatch-glow-big{position:absolute;left:50%;top:54%;width:min(99vw,360px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;pointer-events:none;
+.hatch-glow-big{position:absolute;left:50%;top:52%;width:min(99vw,360px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;pointer-events:none;
   background:radial-gradient(circle,#ffffff 0%,var(--rc) 26%,transparent 62%),repeating-conic-gradient(from 0deg,var(--rc) 0deg 4deg,transparent 4deg 11deg);
   -webkit-mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);
   opacity:0.6;animation:hatchSpinRev 20.25s linear infinite, hatchPulse 3s ease-in-out infinite;}
-.hatch-glow{position:absolute;left:50%;top:54%;width:min(66vw,240px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none;
+.hatch-glow{position:absolute;left:50%;top:52%;width:min(66vw,240px);aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none;
   background:radial-gradient(circle,#ffffff 0%,var(--rc) 26%,transparent 62%),repeating-conic-gradient(from 0deg,var(--rc) 0deg 4deg,transparent 4deg 11deg);
   -webkit-mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);mask:radial-gradient(circle,#000 0%,#000 22%,transparent 60%);
   opacity:0.8;animation:hatchSpin 13.5s linear infinite, hatchPulse 2.6s ease-in-out infinite;}
 @keyframes hatchSpin{to{transform:translate(-50%,-50%) rotate(360deg);}}
 @keyframes hatchSpinRev{to{transform:translate(-50%,-50%) rotate(-360deg);}}
 @keyframes hatchPulse{0%,100%{opacity:0.5;}50%{opacity:0.9;}}
-.hatch-pet{position:relative;z-index:4;font-size:150px;line-height:1;margin:6px 0 4px;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn2 0.5s ease;}
+.hatch-pet{position:relative;z-index:4;font-size:150px;line-height:1;margin:-4px 0 4px;filter:drop-shadow(0 7px 11px rgba(0,0,0,0.5));animation:hatchPetIn2 0.5s ease;}
 .hatch-top{position:relative;z-index:5;text-align:center;padding:0 10px;width:100%;min-height:128px;flex-shrink:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;}
 .hatch-title{font-family:'Fredoka One',cursive;font-size:1.55rem;line-height:1.05;color:#ffd34d;text-shadow:0 2px 0 #a76f00,0 0 10px rgba(255,205,70,0.35);}
 @keyframes hatchTitleGlow{0%,100%{text-shadow:0 2px 0 #a76f00,0 0 8px rgba(255,205,70,0.3);}50%{text-shadow:0 2px 0 #a76f00,0 0 28px rgba(255,212,82,0.9);}}
@@ -2866,7 +2867,7 @@ function uiIco(path,emoji,px){
 function statIco(path,emoji){return '<img src="'+ASSET_BASE+'/assets/ui/'+path+'.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\''+emoji+'\'))">';}
 // Klick-upgrades använder en gemensam click power-ikon (ligger i buildings-mappen); emoji-fallback per linje.
 function clickUpgIconImg(u){
-  var e=(u&&u.line==='finger')?'👆':'🖱️';
+  var e=(u&&u.line==='finger')?'👆':(u&&u.line==='tapmult'?'💥':'🖱️');
   return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/common/clicking-power.png" alt="" onerror="this.parentNode.textContent=\''+e+'\'">';
 }
 var UPGRADES=[
@@ -2943,28 +2944,43 @@ var CLICK_UPGRADES=[
   {id:'eps4',line:'eps',name:'Master Tapper',desc:'Clicking gains +2% of your SPS.',epsAdd:0.02,unlockClicks:50000,cost:1e9},
   {id:'tf1',line:'finger',name:'Helping Paws',desc:'+0.1 per other building, per tap.',fingerBase:0.1,unlockBuildings:25,cost:100000},
   {id:'tf2',line:'finger',name:'Pack Instinct',desc:'+0.5 per other building, per tap (Helping Paws ×5).',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
-  {id:'tf3',line:'finger',name:'Stampede',desc:'+5 per other building, per tap (Pack Instinct ×10).',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9}
+  {id:'tf3',line:'finger',name:'Stampede',desc:'+5 per other building, per tap (Pack Instinct ×10).',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9},
+  // TAP-DOUBLERS ("Mighty Tap") — varje steg DUBBLAR sparks per tapp (×2, upp till ×32). Speglar Egg Tapper Boost-doublingarna: laass upp naar man aager 1/10/25/50/100 Egg Tappers, kostar 50% mer (PLATSHAALLARE -> Balance Sheet).
+  {id:'tm1',line:'tapmult',name:'Mighty Tap',desc:'Doubles your Sparks per tap (×2).',tapMult:2,unlockEggTappers:1,cost:153},
+  {id:'tm2',line:'tapmult',name:'Mighty Tap II',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm1',unlockEggTappers:10,cost:918},
+  {id:'tm3',line:'tapmult',name:'Mighty Tap III',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm2',unlockEggTappers:25,cost:5508},
+  {id:'tm4',line:'tapmult',name:'Mighty Tap IV',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm3',unlockEggTappers:50,cost:33048},
+  {id:'tm5',line:'tapmult',name:'Mighty Tap V',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm4',unlockEggTappers:100,cost:198288}
 ];
 function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
 // ── BUILDING WORKFORCE (Pets as Production, slice 1) ── placerade pets ger en PLATT raritets-skalad spark-bonus per byggnad (inga abilities). Värden = PLATSHÅLLARE → Balance Sheet.
 var WORKFORCE_SLOTS=10; // pet-platser per byggnad
+// WORKFORCE-SLOT-KOSTNAD (v9.81): varje plats köps med Sparks. Pris = byggnadens baskostnad × GROWTH^(platsnummer 0-baserat).
+// Dyrare byggnad = dyrare platser (auto-skalar via b), och varje plats inom en byggnad blir dyrare. ALLT PLATSHÅLLARE → Balance Sheet.
+var WF_SLOT_BASE_MULT=1;   // multiplikator på byggnadens baskostnad för FÖRSTA platsen
+var WF_SLOT_GROWTH=1.9;    // hur mycket dyrare varje nästa plats i samma byggnad blir
+var WF_SLOT_POWER_STEP=0.10; // KRAFT-STEGE: varje senare plats ger mer. Plats s (0-baserat) ger ×(1 + STEP×s). +10% per plats → plats 10 = 190%. PLATSHÅLLARE.
+function slotPowerMult(s){return 1+WF_SLOT_POWER_STEP*(s||0);}
 // Hur många "extra byggnader" en placerad pet räknas som, per raritet (raritets-skalad). PLATSHÅLLARE → Balance Sheet.
 var WORKFORCE_UNITS={common:0.25,uncommon:0.5,rare:0.8,epic:1.1,legendary:1.5,mythical:1.9,artifact:2.3,heavenly:2.6,eternal:2.8,cosmic:3.0};
 function clickUpgOwned(id){return !!(G.clickUpgrades&&G.clickUpgrades[id]);}
 function clickEpsBonus(){var s=0;CLICK_UPGRADES.forEach(function(u){if(u.epsAdd&&clickUpgOwned(u.id))s+=u.epsAdd;});return s;}
 function clickFingerPer(){var per=0,started=false;CLICK_UPGRADES.forEach(function(u){if(u.line!=='finger'||!clickUpgOwned(u.id))return;if(u.fingerBase!=null){per=u.fingerBase;started=true;}else if(u.fingerMult!=null&&started)per*=u.fingerMult;});return per;}
 function clickFingerBonus(){return clickFingerPer()*nonClickBuildingsOwned();}
+function tapMultBonus(){var m=1;CLICK_UPGRADES.forEach(function(u){if(u.tapMult&&clickUpgOwned(u.id))m*=u.tapMult;});return m;} // Mighty Tap: ×2 per ägt steg (upp till ×32)
 function isClickUpgradeUnlocked(u){
   if(u.req&&!clickUpgOwned(u.req))return false;
   if(u.unlockClicks!=null&&(G.stats.totalClicks||0)<u.unlockClicks)return false;
   if(u.unlockBuildings!=null&&totalBuildingsOwned()<u.unlockBuildings)return false;
+  if(u.unlockEggTappers!=null&&(G.owned[0]||0)<u.unlockEggTappers)return false;
   return true;
 }
 function clickUpgradeReqText(u){
   if(u.req&&!clickUpgOwned(u.req)){var r=CLICK_UPGRADES.find(function(x){return x.id===u.req;});return 'Requires '+(r?r.name:u.req);}
   if(u.unlockClicks!=null)return 'Reach '+fmtShort(u.unlockClicks)+' total clicks';
   if(u.unlockBuildings!=null)return 'Own '+u.unlockBuildings+' buildings';
+  if(u.unlockEggTappers!=null)return 'Own '+u.unlockEggTappers+' Egg Tapper'+(u.unlockEggTappers>1?'s':'');
   return 'Locked';
 }
 function buyClickUpgrade(id){
@@ -4238,9 +4254,22 @@ function petByUid(uid){if(!G.hatchedPets)return null;for(var _i=0;_i<G.hatchedPe
 function workforceArr(i){if(!G.workforce)G.workforce={};if(!Array.isArray(G.workforce[i]))G.workforce[i]=[];return G.workforce[i];}
 function workforcePets(i){return workforceArr(i).map(petByUid).filter(function(p){return !!p;});}
 function petPlacedBuilding(uid){if(!G.workforce)return -1;for(var _i=0;_i<20;_i++){if((G.workforce[_i]||[]).some(function(u){return String(u)===String(uid);}))return _i;}return -1;}
-function workforceUnits(i){var t=0;workforcePets(i).forEach(function(p){t+=WORKFORCE_UNITS[p.rarity]||0;});return t;} // summa "extra byggnads-ekvivalenter" från placerade pets
+function workforceUnits(i){var t=0;workforcePets(i).forEach(function(p,idx){t+=(WORKFORCE_UNITS[p.rarity]||0)*slotPowerMult(idx);});return t;} // summa "extra byggnads-ekvivalenter" från placerade pets (med kraft-stege per plats)
 function workforceBonusSps(i){return BUILDINGS[i].p*workforceUnits(i)*buildingMult(i)*getEpsMultiplier();} // faktiska sparks/sek byggnaden får av sin workforce
-function petWorkforceSps(i,p){return (WORKFORCE_UNITS[p.rarity]||0)*BUILDINGS[i].p*buildingMult(i)*getEpsMultiplier();} // en placerad pets bidrag på byggnad i
+function petWorkforceSps(i,p,s){return (WORKFORCE_UNITS[p.rarity]||0)*slotPowerMult(s)*BUILDINGS[i].p*buildingMult(i)*getEpsMultiplier();} // en placerad pets bidrag på byggnad i, plats s
+// Kostnad i Sparks för att låsa upp plats nummer s (0-baserat) i byggnad i.
+function wfSlotCost(i,s){var b=(BUILDINGS[i]&&BUILDINGS[i].b)||10;return Math.ceil(b*WF_SLOT_BASE_MULT*Math.pow(WF_SLOT_GROWTH,s));}
+// Hur många platser som är UPPLÅSTA i byggnad i (golv = redan placerade pets, så gamla saves aldrig tappar pets).
+function wfUnlockedSlots(i){if(!G.wfSlots)G.wfSlots={};var stored=G.wfSlots[i]||0;var placed=workforcePets(i).length;return Math.min(WORKFORCE_SLOTS,Math.max(stored,placed));}
+function buyWorkforceSlot(i){
+  var u=wfUnlockedSlots(i);if(u>=WORKFORCE_SLOTS)return;
+  var cost=wfSlotCost(i,u);
+  if((G.coins||0)<cost){if(typeof showRewardPopup==='function')showRewardPopup([COIN_IMG+' Not enough Sparks yet — need '+fmtShort(cost)+'.'],false,2200);return;}
+  G.coins-=cost;if(!G.wfSlots)G.wfSlots={};G.wfSlots[i]=u+1;
+  if(typeof buzz==='function')buzz(12);
+  if(typeof updateHUD==='function')updateHUD();
+  saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();
+}
 function eps(){var s=0;for(var i=0;i<20;i++)s+=BUILDINGS[i].p*(G.owned[i]+workforceUnits(i))*buildingMult(i);return s*getEpsMultiplier();}
 function numUnlocked(){var v=1;for(var i=0;i<19;i++){if(G.owned[i]>0)v=i+2;else break;}return Math.min(v,20);}
 function dots(l,max){var s='';for(var i=0;i<max;i++)s+='<div class="dot'+(i<l?' on':'')+'"></div>';return s;}
@@ -4956,7 +4985,7 @@ function saveGame(){
   try{ppStore.setItem(SAVE_KEY,JSON.stringify({
     coins:G.coins,total:G.total,clicks:G.clicks,clickPower:G.clickPower,luck:G.luck,
     craftDiscount:G.craftDiscount,hatchDiscount:G.hatchDiscount,offlineMult:G.offlineMult,
-    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,workforce:G.workforce,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
+    petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,workforce:G.workforce,wfSlots:G.wfSlots,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
     eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,
@@ -4981,7 +5010,7 @@ function resetGame(){
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -5325,7 +5354,7 @@ function initParticles(){
 // EGG CLICK
 // ============================================================
 function eggTap(clientX,clientY,quiet){
-  var clickVal=G.clickPower*getClickMultiplier()+eps()*(CLICK_EPS_SHARE+clickEpsBonus())+clickFingerBonus();
+  var clickVal=(G.clickPower*getClickMultiplier()+eps()*(CLICK_EPS_SHARE+clickEpsBonus())+clickFingerBonus())*tapMultBonus();
   G.coins+=clickVal;G.total+=clickVal;G.clicks++;
   clicksThisSecond++;
   clickWindowAccum++;
@@ -6408,11 +6437,12 @@ function idleGearTilesHtml(){
 function idleGearPosTile(tid,pos){return '<div style="position:absolute;'+pos+'z-index:4;">'+idleGearTile(tid)+'</div>';}
 function idleGearAroundHtml(){
   if(typeof ensureLoadouts==='function')ensureLoadouts();
-  return idleGearPosTile('charm','top:-50px;left:50%;transform:translateX(-50%);')
-    +idleGearPosTile('boots','top:0;left:0;')
-    +idleGearPosTile('compass','bottom:0;left:0;')
-    +idleGearPosTile('tool','top:0;right:0;')
-    +idleGearPosTile('backpack','bottom:0;right:0;');
+  // Centrum-ankrade kring peten (peten är centrerad). De 4 hörnen dras in mot kroppen via translateX-offset; charm sitter strax ovanför huvudet.
+  return idleGearPosTile('charm','top:-15px;left:50%;transform:translateX(-50%);')
+    +idleGearPosTile('boots','top:22px;left:50%;transform:translateX(calc(-50% - 105px));')
+    +idleGearPosTile('compass','bottom:22px;left:50%;transform:translateX(calc(-50% - 105px));')
+    +idleGearPosTile('tool','top:22px;left:50%;transform:translateX(calc(-50% + 105px));')
+    +idleGearPosTile('backpack','bottom:22px;left:50%;transform:translateX(calc(-50% + 105px));');
 }
 // v9.64 — enkel Loadouts-popup: 5 slots (1 gratis + 4 gem-låsta med LOCK_IMG), Save current & name överst.
 function openLoadoutsPopup(){ if(typeof ensureLoadouts==='function')ensureLoadouts(); renderLoadoutsPopup(); var m=document.getElementById('loadouts-modal'); if(m)m.classList.add('open'); }
@@ -9292,7 +9322,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.75<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.83<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9343,7 +9373,7 @@ function resetFromSettings(){
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -10315,6 +10345,23 @@ function questIcon(q){
   if(t==='send')   return '<img src="'+ASSET_BASE+'/assets/ui/nav/nav-adventures.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'🚀\'))">';
   return e;
 }
+// Klartext-förklaring av en quest från dess typ + mål (in-game-text på engelska).
+function questDesc(q){
+  if(!q)return '';
+  var n=fmtShort(q.target);
+  switch(q.type){
+    case 'tap':       return 'Tap the egg '+n+' times';
+    case 'hatch':     return 'Hatch '+n+' egg'+(q.target>1?'s':'');
+    case 'adventure': return 'Complete '+n+' adventure'+(q.target>1?'s':'');
+    case 'send':      return 'Send pets on '+n+' adventure'+(q.target>1?'s':'');
+    case 'fusion':    return 'Merge pets '+n+' time'+(q.target>1?'s':'');
+    case 'mutate':    return 'Train a pet '+n+' time'+(q.target>1?'s':'');
+    case 'extract':   return 'Extract '+n+' abilit'+(q.target>1?'ies':'y');
+    case 'craft':     return 'Craft '+n+' egg'+(q.target>1?'s':'');
+    case 'shells':    return 'Collect '+n+' Shells';
+    default:          return q.desc||'';
+  }
+}
 function questRowHtml(q,Q,claimFn,allowReroll){
   var prog=dailyQuestProgress(q,Q),done=prog>=q.target,claimed=!!Q.claimed[q.id];
   var shown=Math.min(prog,q.target),pct=Math.min(100,(prog/q.target)*100);
@@ -10322,6 +10369,7 @@ function questRowHtml(q,Q,claimFn,allowReroll){
     '<div class="ev-quest-ic">'+questIcon(q)+'</div>'+
     '<div class="ev-quest-mid">'+
       '<div class="ev-quest-name">'+q.name+'</div>'+
+      '<div class="ev-quest-desc">'+questDesc(q)+'</div>'+
       '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+pct+'%"></div></div>'+
       '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
     '</div>'+
@@ -10760,6 +10808,7 @@ function renderEventOverview(){
          '<div class="ev-quest-ic">'+questIcon(q)+'</div>'+
          '<div class="ev-quest-mid">'+
            '<div class="ev-quest-name">'+q.name+'</div>'+
+           '<div class="ev-quest-desc">'+questDesc(q)+'</div>'+
            '<div class="ev-quest-bar"><div class="ev-quest-bar-fill" style="width:'+qpct+'%"></div></div>'+
            '<div class="ev-quest-prog">'+fmtShort(shown)+' / '+fmtShort(q.target)+'</div>'+
          '</div>'+
@@ -11775,20 +11824,57 @@ function openWorkforce(i){_wfBuilding=i;_wfPicking=false;renderWorkforceModal();
 function closeWorkforce(){var m=document.getElementById('workforce-modal');if(m)m.classList.remove('open');}
 function wfOpenPicker(){_wfPicking=true;renderWorkforceModal();}
 function wfBackToSlots(){_wfPicking=false;renderWorkforceModal();}
-function placeInWorkforce(i,uid){var arr=workforceArr(i);if(arr.length>=WORKFORCE_SLOTS)return;if(petPlacedBuilding(uid)!==-1)return;arr.push(uid);_wfPicking=false;saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
+function placeInWorkforce(i,uid){var arr=workforceArr(i);if(arr.length>=wfUnlockedSlots(i))return;if(petPlacedBuilding(uid)!==-1)return;arr.push(uid);_wfPicking=false;saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
+// Vilket "jobb" har peten just nu? '' = ledig. (String-jämför för att vara robust mot tal/sträng-uid.)
+function petActiveJob(uid){
+  var su=String(uid);
+  if(G.adventures&&G.adventures.some(function(a){return String(a.petUid)===su;}))return 'adventure';
+  if(G.idlePets&&G.idlePets.some(function(u){return String(u)===su;}))return 'idle';
+  if(G.equippedPets&&G.equippedPets.some(function(u){return String(u)===su;}))return 'active';
+  return '';
+}
+// Plocka bort peten från sin nuvarande plats (idle eller aktiv-slot). Äventyr hanteras EJ här (blockeras i wfTryPlace).
+function wfFreePet(uid){
+  var su=String(uid);
+  if(G.idlePets&&G.idlePets.some(function(u){return String(u)===su;})){if(typeof removeIdlePet==='function')removeIdlePet(uid);return;}
+  if(G.equippedPets){var k=G.equippedPets.findIndex(function(u){return String(u)===su;});if(k>=0){G.equippedPets[k]=null;var pp=(typeof petByUid==='function')?petByUid(uid):null;if(pp)pp.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}}
+}
+// Tilldela med varning: äventyr blockeras, idle/aktiv kräver bekräftelse, ledig placeras direkt.
+function wfTryPlace(i,uid){
+  if(workforceArr(i).length>=wfUnlockedSlots(i))return;
+  if(petPlacedBuilding(uid)!==-1)return;
+  var job=petActiveJob(uid);
+  if(job==='adventure'){
+    if(typeof showRewardPopup==='function')showRewardPopup(['This pet is on an adventure.','Collect it before assigning it to work.'],false,2600);
+    return;
+  }
+  if(job==='idle'||job==='active'){
+    var where=(job==='idle')?'idling on Pet Adventures':'set as an Active Pet';
+    showConfirm('Reassign this pet?','This pet is currently '+where+'. Move it to this building\u2019s workforce and stop that?','Move here',function(){wfFreePet(uid);placeInWorkforce(i,uid);});
+    return;
+  }
+  placeInWorkforce(i,uid);
+}
 function removeFromWorkforce(i,uid){var arr=workforceArr(i);var k=arr.findIndex(function(u){return String(u)===String(uid);});if(k>=0)arr.splice(k,1);saveGame();renderWorkforceModal();if(typeof renderBuildings==='function')renderBuildings();if(typeof updateHUD==='function')updateHUD();}
-function wfCellHtml(i,p,removable){var rc=RARITY_CONFIG[p.rarity]||RARITY_CONFIG.common;var act=removable?('removeFromWorkforce('+i+',\''+p.uid+'\')'):('placeInWorkforce('+i+',\''+p.uid+'\')');
-  return '<div class="wf-cell" style="border-color:'+rc.color+'" onclick="'+act+'"><span class="wf-ic">'+petIco(p)+'</span><span style="min-width:0;display:flex;flex-direction:column"><span class="wf-nm">'+p.name+'</span><span class="wf-fl">'+rc.label+' \u00b7 +'+fmt(petWorkforceSps(i,p))+'/s</span></span>'+(removable?'<span class="wf-rm">\u2715</span>':'')+'</div>';}
+function wfCellHtml(i,p,removable,s){var rc=RARITY_CONFIG[p.rarity]||RARITY_CONFIG.common;var act=removable?('removeFromWorkforce('+i+',\''+p.uid+'\')'):('wfTryPlace('+i+',\''+p.uid+'\')');
+  var jobTag='';
+  if(!removable){var jb=petActiveJob(p.uid);if(jb){var jl=(jb==='adventure'?'On adventure':(jb==='idle'?'Idling':'Active'));jobTag='<span style="flex-shrink:0;font-size:0.5rem;font-weight:800;color:#1a1205;background:#f5c842;border-radius:6px;padding:2px 5px;white-space:nowrap;">'+jl+'</span>';}}
+  var powPct=Math.round(WF_SLOT_POWER_STEP*(s||0)*100);
+  var powTag=powPct>0?(' \u00b7 <span style="color:#9be86c;">+'+powPct+'%</span>'):'';
+  return '<div class="wf-cell" style="border-color:'+rc.color+'" onclick="'+act+'"><span class="wf-ic">'+petIco(p)+'</span><span style="min-width:0;display:flex;flex-direction:column"><span class="wf-nm">'+p.name+'</span><span class="wf-fl">'+rc.label+' \u00b7 +'+fmt(petWorkforceSps(i,p,s||0))+'/s'+powTag+'</span></span>'+(removable?'<span class="wf-rm">\u2715</span>':jobTag)+'</div>';}
 function renderWorkforceModal(){
   var head=document.getElementById('wf-head');var box=document.getElementById('workforce-body');if(!box)return;
   var i=_wfBuilding;var bname=(BUILDINGS[i]&&BUILDINGS[i].n)||'Building';
   if(head)head.innerHTML='\ud83d\udc65 '+bname+' \u2014 Workforce';
   if(_wfPicking){renderWfPicker(i,box);return;}
   var pets=workforcePets(i);
-  var html='<div class="wf-bonus">Bonus: +'+fmt(workforceBonusSps(i))+' /s &nbsp;\u00b7&nbsp; '+pets.length+'/'+WORKFORCE_SLOTS+' slots</div><div class="wf-grid">';
+  var unlocked=wfUnlockedSlots(i);
+  var html='<div class="wf-bonus">Bonus: +'+fmt(workforceBonusSps(i))+' /s &nbsp;\u00b7&nbsp; '+pets.length+'/'+unlocked+' slots &nbsp;\u00b7&nbsp; '+unlocked+'/'+WORKFORCE_SLOTS+' unlocked</div><div class="wf-grid">';
   for(var s=0;s<WORKFORCE_SLOTS;s++){
-    if(s<pets.length)html+=wfCellHtml(i,pets[s],true);
-    else html+='<div class="wf-cell empty" onclick="wfOpenPicker()">+ Add pet</div>';
+    if(s<pets.length)html+=wfCellHtml(i,pets[s],true,s);
+    else if(s<unlocked)html+='<div class="wf-cell empty" onclick="wfOpenPicker()">+ Add pet</div>';
+    else if(s===unlocked)html+='<div class="wf-cell empty" onclick="buyWorkforceSlot('+i+')" style="border-style:solid;border-color:#f5c842;color:#f5c842;flex-direction:column;gap:2px;"><span style="font-size:0.74rem;font-weight:800;">\ud83d\udd13 Unlock slot</span><span style="font-size:0.66rem;display:flex;align-items:center;gap:4px;">'+COIN_IMG+' '+fmtShort(wfSlotCost(i,unlocked))+'</span><span style="font-size:0.56rem;color:#9be86c;">+'+Math.round(WF_SLOT_POWER_STEP*unlocked*100)+'% power</span></div>';
+    else html+='<div class="wf-cell empty" style="opacity:0.4;cursor:default;">\ud83d\udd12</div>';
   }
   html+='</div>';box.innerHTML=html;
 }
@@ -11799,7 +11885,8 @@ function renderWfPicker(i,box){
   var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><button class="wf-back" onclick="wfBackToSlots()" style="margin-bottom:0;">\u2190 Back</button><span style="color:rgba(255,255,255,0.5);font-size:0.72rem;font-family:\'Fredoka One\',cursive;">'+avail.length+' free</span></div>';
   if(avail.length===0){html+='<div class="egp-empty">No free pets to place.<br>Hatch more eggs, or remove a pet from another building first.</div>';box.innerHTML=html;return;}
   html+='<div class="wf-grid">';
-  avail.forEach(function(p){html+=wfCellHtml(i,p,false);});
+  var nextSlot=workforcePets(i).length;
+  avail.forEach(function(p){html+=wfCellHtml(i,p,false,nextSlot);});
   html+='</div>';box.innerHTML=html;
 }
 function openEggPicker(){
@@ -12891,28 +12978,28 @@ var ACHIEVEMENTS=[
   {id:'shell_collector',cat:'Gameplay',icon:'🐚',name:'Shell Collector',desc:'Collect 1,000 Shells',check:function(){return G.stats.totalShellsCollected>=1000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,1000),max:1000};}},
   {id:'shell_hoarder',cat:'Gameplay',icon:'🐚',name:'Shell Hoarder',desc:'Collect 10,000 Shells',check:function(){return G.stats.totalShellsCollected>=10000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,10000),max:10000};}},
   {id:'shell_empire',cat:'Gameplay',icon:'🐚',name:'Shell Empire',desc:'Collect 100,000 Shells',check:function(){return G.stats.totalShellsCollected>=100000;},progress:function(){return {cur:Math.min(G.stats.totalShellsCollected,100000),max:100000};}},
-  {id:'first_meadow_shell',cat:'Gameplay',icon:'⚪',name:'First Meadow Shell',desc:'Obtain your first Meadow Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1),max:1};}},
-  {id:'first_forest_shell',cat:'Gameplay',icon:'🟢',name:'First Forest Shell',desc:'Obtain your first Forest Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,1),max:1};}},
-  {id:'first_mountain_shell',cat:'Gameplay',icon:'🔵',name:'First Mountain Shell',desc:'Obtain your first Mountain Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,1),max:1};}},
-  {id:'first_desert_shell',cat:'Gameplay',icon:'🟣',name:'First Desert Shell',desc:'Obtain your first Desert Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,1),max:1};}},
-  {id:'first_ocean_shell',cat:'Gameplay',icon:'🟠',name:'First Ocean Shell',desc:'Obtain your first Ocean Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,1),max:1};}},
-  {id:'first_volcano_shell',cat:'Gameplay',icon:'🔴',name:'First Volcano Shell',desc:'Obtain your first Volcano Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,1),max:1};}},
-  {id:'first_jungle_shell',cat:'Gameplay',icon:'🟡',name:'First Jungle Shell',desc:'Obtain your first Jungle Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,1),max:1};}},
-  {id:'first_arctic_shell',cat:'Gameplay',icon:'❄️',name:'First Arctic Shell',desc:'Obtain your first Arctic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,1),max:1};}},
-  {id:'first_mystic_shell',cat:'Gameplay',icon:'💎',name:'First Mystic Shell',desc:'Obtain your first Mystic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,1),max:1};}},
-  {id:'first_celestial_shell',cat:'Gameplay',icon:'✨',name:'First Celestial Shell',desc:'Obtain your first Celestial Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,1),max:1};}},
-  {id:'first_cosmic_shell',cat:'Gameplay',icon:'🌌',name:'First Cosmic Shell',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
-  {id:'meadow_collector',cat:'Gameplay',icon:'⚪',name:'Meadow Collector',desc:'Collect 1,000 Meadow Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1000;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1000),max:1000};}},
-  {id:'forest_collector',cat:'Gameplay',icon:'🟢',name:'Forest Collector',desc:'Collect 750 Forest Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=750;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,750),max:750};}},
-  {id:'mountain_collector',cat:'Gameplay',icon:'🔵',name:'Mountain Collector',desc:'Collect 500 Mountain Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=500;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,500),max:500};}},
-  {id:'desert_collector',cat:'Gameplay',icon:'🟣',name:'Desert Collector',desc:'Collect 300 Desert Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=300;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,300),max:300};}},
-  {id:'ocean_collector',cat:'Gameplay',icon:'🟠',name:'Ocean Collector',desc:'Collect 200 Ocean Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=200;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,200),max:200};}},
-  {id:'volcano_collector',cat:'Gameplay',icon:'🔴',name:'Volcano Collector',desc:'Collect 100 Volcano Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=100;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,100),max:100};}},
-  {id:'jungle_collector',cat:'Gameplay',icon:'🟡',name:'Jungle Collector',desc:'Collect 75 Jungle Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=75;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,75),max:75};}},
-  {id:'arctic_collector',cat:'Gameplay',icon:'❄️',name:'Arctic Collector',desc:'Collect 50 Arctic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=50;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,50),max:50};}},
-  {id:'mystic_collector',cat:'Gameplay',icon:'💎',name:'Mystic Collector',desc:'Collect 30 Mystic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=30;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,30),max:30};}},
-  {id:'celestial_collector',cat:'Gameplay',icon:'✨',name:'Celestial Collector',desc:'Collect 15 Celestial Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=15;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,15),max:15};}},
-  {id:'cosmic_collector',cat:'Gameplay',icon:'🌌',name:'Cosmic Collector',desc:'Collect 5 Cosmic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=5;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,5),max:5};}},
+  {id:'first_meadow_shell',cat:'Gameplay',icon:shellIcon('meadow'),name:'First Meadow Shell',desc:'Obtain your first Meadow Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1),max:1};}},
+  {id:'first_forest_shell',cat:'Gameplay',icon:shellIcon('forest'),name:'First Forest Shell',desc:'Obtain your first Forest Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,1),max:1};}},
+  {id:'first_mountain_shell',cat:'Gameplay',icon:shellIcon('mountain'),name:'First Mountain Shell',desc:'Obtain your first Mountain Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,1),max:1};}},
+  {id:'first_desert_shell',cat:'Gameplay',icon:shellIcon('desert'),name:'First Desert Shell',desc:'Obtain your first Desert Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,1),max:1};}},
+  {id:'first_ocean_shell',cat:'Gameplay',icon:shellIcon('ocean'),name:'First Ocean Shell',desc:'Obtain your first Ocean Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,1),max:1};}},
+  {id:'first_volcano_shell',cat:'Gameplay',icon:shellIcon('volcano'),name:'First Volcano Shell',desc:'Obtain your first Volcano Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,1),max:1};}},
+  {id:'first_jungle_shell',cat:'Gameplay',icon:shellIcon('jungle'),name:'First Jungle Shell',desc:'Obtain your first Jungle Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,1),max:1};}},
+  {id:'first_arctic_shell',cat:'Gameplay',icon:shellIcon('arctic'),name:'First Arctic Shell',desc:'Obtain your first Arctic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,1),max:1};}},
+  {id:'first_mystic_shell',cat:'Gameplay',icon:shellIcon('mystic'),name:'First Mystic Shell',desc:'Obtain your first Mystic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,1),max:1};}},
+  {id:'first_celestial_shell',cat:'Gameplay',icon:shellIcon('celestial'),name:'First Celestial Shell',desc:'Obtain your first Celestial Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,1),max:1};}},
+  {id:'first_cosmic_shell',cat:'Gameplay',icon:shellIcon('cosmic'),name:'First Cosmic Shell',desc:'Obtain your first Cosmic Shell',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=1;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,1),max:1};}},
+  {id:'meadow_collector',cat:'Gameplay',icon:shellIcon('meadow'),name:'Meadow Collector',desc:'Collect 1,000 Meadow Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.meadow||0)>=1000;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.meadow)||0,1000),max:1000};}},
+  {id:'forest_collector',cat:'Gameplay',icon:shellIcon('forest'),name:'Forest Collector',desc:'Collect 750 Forest Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.forest||0)>=750;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.forest)||0,750),max:750};}},
+  {id:'mountain_collector',cat:'Gameplay',icon:shellIcon('mountain'),name:'Mountain Collector',desc:'Collect 500 Mountain Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mountain||0)>=500;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mountain)||0,500),max:500};}},
+  {id:'desert_collector',cat:'Gameplay',icon:shellIcon('desert'),name:'Desert Collector',desc:'Collect 300 Desert Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.desert||0)>=300;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.desert)||0,300),max:300};}},
+  {id:'ocean_collector',cat:'Gameplay',icon:shellIcon('ocean'),name:'Ocean Collector',desc:'Collect 200 Ocean Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.ocean||0)>=200;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.ocean)||0,200),max:200};}},
+  {id:'volcano_collector',cat:'Gameplay',icon:shellIcon('volcano'),name:'Volcano Collector',desc:'Collect 100 Volcano Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.volcano||0)>=100;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.volcano)||0,100),max:100};}},
+  {id:'jungle_collector',cat:'Gameplay',icon:shellIcon('jungle'),name:'Jungle Collector',desc:'Collect 75 Jungle Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.jungle||0)>=75;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.jungle)||0,75),max:75};}},
+  {id:'arctic_collector',cat:'Gameplay',icon:shellIcon('arctic'),name:'Arctic Collector',desc:'Collect 50 Arctic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.arctic||0)>=50;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.arctic)||0,50),max:50};}},
+  {id:'mystic_collector',cat:'Gameplay',icon:shellIcon('mystic'),name:'Mystic Collector',desc:'Collect 30 Mystic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.mystic||0)>=30;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.mystic)||0,30),max:30};}},
+  {id:'celestial_collector',cat:'Gameplay',icon:shellIcon('celestial'),name:'Celestial Collector',desc:'Collect 15 Celestial Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.celestial||0)>=15;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.celestial)||0,15),max:15};}},
+  {id:'cosmic_collector',cat:'Gameplay',icon:shellIcon('cosmic'),name:'Cosmic Collector',desc:'Collect 5 Cosmic Shells',check:function(){return G.stats.shellsCollectedByRarity&&(G.stats.shellsCollectedByRarity.cosmic||0)>=5;},progress:function(){return {cur:Math.min((G.stats.shellsCollectedByRarity&&G.stats.shellsCollectedByRarity.cosmic)||0,5),max:5};}},
 
   // BUILDINGS
   {id:'entrepreneur',cat:'Progression',icon:'🏗️',name:'Entrepreneur',desc:'Buy your first Building',check:function(){return G.stats.totalBuildingsPurchased>=1;},progress:function(){return {cur:Math.min(G.stats.totalBuildingsPurchased,1),max:1};}},
@@ -13795,6 +13882,7 @@ if(savedData){
   G.petSlots=savedData.petSlots||1;G.currentWorld=savedData.currentWorld||0;
   G.owned=savedData.owned||new Array(20).fill(0);
   G.workforce=(savedData.workforce&&typeof savedData.workforce==='object'&&!Array.isArray(savedData.workforce))?savedData.workforce:{};
+  G.wfSlots=(savedData.wfSlots&&typeof savedData.wfSlots==='object'&&!Array.isArray(savedData.wfSlots))?savedData.wfSlots:{};
   G.buildingDoublings=Array.isArray(savedData.buildingDoublings)?savedData.buildingDoublings.slice(0,20):new Array(20).fill(0);
   while(G.buildingDoublings.length<20)G.buildingDoublings.push(0);
   G.clickUpgrades=(savedData.clickUpgrades&&typeof savedData.clickUpgrades==='object')?savedData.clickUpgrades:{};
