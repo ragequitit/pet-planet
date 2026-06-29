@@ -4026,7 +4026,7 @@ function freshStats(){
     coinsBySource:{click:0,idle:0,offline:0,adventure:0,rewards:0},
     highestEpsReached:0,biggestSingleClick:0,offlineRewardsClaimed:0,
     // CLICKING
-    totalClicks:0,highestClicksPerSecond:0,mostClicksInSession:0,
+    totalClicks:0,tapClicks:0,holdClicks:0,swirlClicks:0,highestClicksPerSecond:0,mostClicksInSession:0,
     // SHELLS
     totalShellsCollected:0,totalShellsSpent:0,
     shellsCollectedByRarity:{meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0},
@@ -4973,6 +4973,8 @@ function resetGame(){
   G.clickUpgrades={};
   G.ulvl={craft:0,hatch:0};
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
+  G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
+  G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
   G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
@@ -5356,7 +5358,7 @@ function eggTap(clientX,clientY,quiet){
     if(now-pressStart>=HOLD_DELAY){
       var moving=(now-lastMove)<MOVE_GRACE;        // rör sig nyligen → cirkel-läge
       var intv=moving?CIRCLE_INT:HOLD_INT;         // 4/sek vid rörelse, annars 2/sek
-      if(now-lastTap>=intv){ lastTap=now; eggTap(0,0,true); }
+      if(now-lastTap>=intv){ lastTap=now; eggTap(0,0,true); if(moving){G.stats.swirlClicks=(G.stats.swirlClicks||0)+1;}else{G.stats.holdClicks=(G.stats.holdClicks||0)+1;} }
     }
     raf=requestAnimationFrame(loop);
   }
@@ -5370,6 +5372,7 @@ function eggTap(clientX,clientY,quiet){
     if(e.button>0)return;
     e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
+    G.stats.tapClicks=(G.stats.tapClicks||0)+1; // diskret tap (utöver totalClicks)
     if(holdId===null){ try{egg.setPointerCapture(e.pointerId);}catch(_){ } start(e); }
   });
   egg.addEventListener('pointermove',function(e){
@@ -9216,7 +9219,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.64<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.67<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9265,6 +9268,8 @@ function resetFromSettings(){
     G.clickUpgrades={};
     G.ulvl={craft:0,hatch:0};
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
+  G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
+  G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
     G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
@@ -9794,6 +9799,9 @@ function renderProfileStats(){
     ['Highest SPS',fmtShort(s.highestEpsReached||0)],
     ['Biggest Click',fmtShort(s.biggestSingleClick||0)],
     ['Total Clicks',fmtShort(s.totalClicks||0)],
+    ['Taps',fmtShort(s.tapClicks||0)],
+    ['Holds',fmtShort(s.holdClicks||0)],
+    ['Swirls',fmtShort(s.swirlClicks||0)],
     ['Offline Collects',fmtShort(s.offlineRewardsClaimed||0)]
   ],false);
   h+=pstCard('#4caf50',statIco('stats-panel/stats-panel-collection','🐾'),'Pet Stats',[
@@ -12856,6 +12864,27 @@ var ACHIEVEMENTS=[
   {id:'click_apprentice',cat:'Gameplay',icon:'👆',name:'Click Apprentice',desc:'Click 1,000 times',check:function(){return G.stats.totalClicks>=1000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,1000),max:1000};}},
   {id:'click_expert',cat:'Gameplay',icon:'👆',name:'Click Expert',desc:'Click 10,000 times',check:function(){return G.stats.totalClicks>=10000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,10000),max:10000};}},
   {id:'click_master',cat:'Gameplay',icon:'👆',name:'Click Master',desc:'Click 100,000 times',check:function(){return G.stats.totalClicks>=100000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,100000),max:100000};}},
+
+  // TAP POOL (diskreta tryck — tapClicks)
+  {id:'tap_500',cat:'Gameplay',icon:'👇',name:'Tap Novice',desc:'Tap the egg 500 times',check:function(){return (G.stats.tapClicks||0)>=500;},progress:function(){return {cur:Math.min(G.stats.tapClicks||0,500),max:500};}},
+  {id:'tap_5k',cat:'Gameplay',icon:'👇',name:'Tap Adept',desc:'Tap the egg 5,000 times',check:function(){return (G.stats.tapClicks||0)>=5000;},progress:function(){return {cur:Math.min(G.stats.tapClicks||0,5000),max:5000};}},
+  {id:'tap_25k',cat:'Gameplay',icon:'👇',name:'Tap Veteran',desc:'Tap the egg 25,000 times',check:function(){return (G.stats.tapClicks||0)>=25000;},progress:function(){return {cur:Math.min(G.stats.tapClicks||0,25000),max:25000};}},
+  {id:'tap_100k',cat:'Gameplay',icon:'👇',name:'Tap Master',desc:'Tap the egg 100,000 times',check:function(){return (G.stats.tapClicks||0)>=100000;},progress:function(){return {cur:Math.min(G.stats.tapClicks||0,100000),max:100000};}},
+  {id:'tap_500k',cat:'Gameplay',icon:'👇',name:'Tap Legend',desc:'Tap the egg 500,000 times',check:function(){return (G.stats.tapClicks||0)>=500000;},progress:function(){return {cur:Math.min(G.stats.tapClicks||0,500000),max:500000};}},
+
+  // HOLD POOL (auto-tick medan man håller still — holdClicks)
+  {id:'hold_1k',cat:'Gameplay',icon:'✊',name:'Hold Novice',desc:'Charge the egg 1,000 times by holding',check:function(){return (G.stats.holdClicks||0)>=1000;},progress:function(){return {cur:Math.min(G.stats.holdClicks||0,1000),max:1000};}},
+  {id:'hold_10k',cat:'Gameplay',icon:'✊',name:'Hold Adept',desc:'Charge the egg 10,000 times by holding',check:function(){return (G.stats.holdClicks||0)>=10000;},progress:function(){return {cur:Math.min(G.stats.holdClicks||0,10000),max:10000};}},
+  {id:'hold_50k',cat:'Gameplay',icon:'✊',name:'Hold Veteran',desc:'Charge the egg 50,000 times by holding',check:function(){return (G.stats.holdClicks||0)>=50000;},progress:function(){return {cur:Math.min(G.stats.holdClicks||0,50000),max:50000};}},
+  {id:'hold_250k',cat:'Gameplay',icon:'✊',name:'Hold Master',desc:'Charge the egg 250,000 times by holding',check:function(){return (G.stats.holdClicks||0)>=250000;},progress:function(){return {cur:Math.min(G.stats.holdClicks||0,250000),max:250000};}},
+  {id:'hold_1m',cat:'Gameplay',icon:'✊',name:'Hold Legend',desc:'Charge the egg 1,000,000 times by holding',check:function(){return (G.stats.holdClicks||0)>=1000000;},progress:function(){return {cur:Math.min(G.stats.holdClicks||0,1000000),max:1000000};}},
+
+  // SWIRL POOL (auto-tick medan man swirlar — swirlClicks)
+  {id:'swirl_1k',cat:'Gameplay',icon:'🌀',name:'Swirl Novice',desc:'Swirl the egg 1,000 times',check:function(){return (G.stats.swirlClicks||0)>=1000;},progress:function(){return {cur:Math.min(G.stats.swirlClicks||0,1000),max:1000};}},
+  {id:'swirl_10k',cat:'Gameplay',icon:'🌀',name:'Swirl Adept',desc:'Swirl the egg 10,000 times',check:function(){return (G.stats.swirlClicks||0)>=10000;},progress:function(){return {cur:Math.min(G.stats.swirlClicks||0,10000),max:10000};}},
+  {id:'swirl_50k',cat:'Gameplay',icon:'🌀',name:'Swirl Veteran',desc:'Swirl the egg 50,000 times',check:function(){return (G.stats.swirlClicks||0)>=50000;},progress:function(){return {cur:Math.min(G.stats.swirlClicks||0,50000),max:50000};}},
+  {id:'swirl_250k',cat:'Gameplay',icon:'🌀',name:'Swirl Master',desc:'Swirl the egg 250,000 times',check:function(){return (G.stats.swirlClicks||0)>=250000;},progress:function(){return {cur:Math.min(G.stats.swirlClicks||0,250000),max:250000};}},
+  {id:'swirl_1m',cat:'Gameplay',icon:'🌀',name:'Swirl Legend',desc:'Swirl the egg 1,000,000 times',check:function(){return (G.stats.swirlClicks||0)>=1000000;},progress:function(){return {cur:Math.min(G.stats.swirlClicks||0,1000000),max:1000000};}},
   {id:'click_monster',cat:'Gameplay',icon:'👆',name:'Click Monster',desc:'Click 1,000,000 times',check:function(){return G.stats.totalClicks>=1000000;},progress:function(){return {cur:Math.min(G.stats.totalClicks,1000000),max:1000000};}},
 
   // UPGRADES
