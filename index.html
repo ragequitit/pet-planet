@@ -863,6 +863,9 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .placeholder p{font-size:0.8rem;line-height:1.5;}
 #bottomnav{flex-shrink:0;height:var(--nav-h);background:linear-gradient(180deg,#1e2c52,#141f3c);border-top:2px solid #0e1830;display:flex;align-items:center;padding:4px 3px;gap:4px;z-index:100;}
 .nav-btn{flex:1;height:100%;background:linear-gradient(180deg,#2a3c6c,#172643);border:1.5px solid #0f1a33;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:3px 2px;cursor:pointer;box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4);transition:transform 0.1s;}
+@keyframes hatchReadyPulse{0%,100%{box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4),0 0 6px 1px rgba(245,200,66,0.45);}50%{box-shadow:0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.22),inset 0 -5px 8px rgba(0,0,0,0.4),0 0 17px 5px rgba(245,200,66,0.95);}}
+.nav-btn.hatch-ready{animation:hatchReadyPulse 1.2s ease-in-out infinite;border-color:#f5c842;}
+.nav-btn.hatch-ready .ni-img{filter:drop-shadow(0 0 5px rgba(245,200,66,0.95));}
 .nav-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.18),inset 0 -4px 7px rgba(0,0,0,0.4);}
 .nav-btn.active{background:linear-gradient(180deg,#324272,#1c2c4e);border:2.5px solid #ffce4a;box-shadow:0 0 16px rgba(245,200,66,0.65),0 0 5px rgba(245,200,66,0.9),0 3px 0 #0b1326,inset 0 2px 0 rgba(255,255,255,0.28);}
 .nav-btn .ni{font-size:3rem;line-height:1;}
@@ -3342,7 +3345,7 @@ var ABILITY_META={
   xpBoost:     {name:'XP Boost',      icon:'⭐', color:'#a3e635', desc:function(v){return '+'+v+'% Pet XP';}},
   fortune:     {name:'Lucky Paw',     icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% bonus loot chance';}},
   rareFind:    {name:'Rare Find',     icon:'✨', color:'#ce93d8', desc:function(v){return '+'+v+'% rare-loot odds';}},
-  shellLuck:   {name:'Shell Seeker',  icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells';}},
+  shellLuck:   {name:'Shell Seeker',  icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells from adventures';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
 // ── V2 §4: ABILITY VALUES ARE ROLLED RANGES (stored per pet as ab.v) ──────────────
@@ -3732,16 +3735,15 @@ function nestRingSlotHtml(typeId,pos){
 }
 function renderNestRing(){
   var ring=document.getElementById('nestgear-ring');if(!ring)return;
-  // U-KURVA (leende) UNDER ägget — undviker krock med de flytande sidoknapparna.
-  // Eyeball-tunbart: SP/IN = hur brett ut åt sidorna (ytter/inner), bOut/bIn/bMid = höjd (ytterst högst, mitten lägst = U).
-  var SP=115, IN=64;
-  var bOut=39, bIn=-3, bMid=-23;
-  ring.innerHTML=
-     nestRingSlotHtml('incubator','left:50%;bottom:'+bOut+'px;transform:translateX(calc(-50% - '+SP+'px));')
-    +nestRingSlotHtml('gem',      'left:50%;bottom:'+bIn +'px;transform:translateX(calc(-50% - '+IN+'px));')
-    +nestRingSlotHtml('crown',    'left:50%;bottom:'+bMid+'px;transform:translateX(-50%);')
-    +nestRingSlotHtml('trinket',  'left:50%;bottom:'+bIn +'px;transform:translateX(calc(-50% + '+IN+'px));')
-    +nestRingSlotHtml('feather',  'left:50%;bottom:'+bOut+'px;transform:translateX(calc(-50% + '+SP+'px));');
+  // RAK RAD med 5 under ägget. Eyeball-tunbart: B = höjd (bottom-offset), STEP = avstånd mellan slots.
+  var B=-23, STEP=50;
+  var order=['incubator','gem','crown','trinket','feather'];
+  var html='';
+  order.forEach(function(tid,i){
+    var x=(i-2)*STEP; // -100,-50,0,50,100 från mitten
+    html+=nestRingSlotHtml(tid,'left:50%;bottom:'+B+'px;transform:translateX(calc(-50% + '+x+'px));');
+  });
+  ring.innerHTML=html;
 }
 
 // GEAR EQUIP (STEG 6.5) — 5 type-locked Explorer slots. G.gearEquipped[type]=uid|null.
@@ -3762,7 +3764,7 @@ function ensureLoadouts(){
 }
 function isGearLocked(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});return !!(g&&typeof g.lockedTo==='number'&&g.lockedTo>=0);}
 function gearLockName(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});if(!g||typeof g.lockedTo!=='number'||g.lockedTo<0)return '';ensureLoadouts();var lo=G.gearLoadouts[g.lockedTo];return lo?lo.name:'';}
-function switchLoadout(i){ensureLoadouts();if(!G.gearLoadouts[i]||!G.gearLoadouts[i].bought)return;G.activeLoadout=i;G.gearEquipped=G.gearLoadouts[i].slots;if(typeof saveGame==='function')saveGame();if(typeof renderInventory==='function')renderInventory();if(typeof refreshGearViews==='function')refreshGearViews();}
+function switchLoadout(i){ensureLoadouts();if(!G.gearLoadouts[i]||!G.gearLoadouts[i].bought)return;G.activeLoadout=i;G.gearEquipped=G.gearLoadouts[i].slots;if(typeof recomputeAdventureSpeeds==='function')recomputeAdventureSpeeds();if(typeof saveGame==='function')saveGame();if(typeof renderInventory==='function')renderInventory();if(typeof refreshGearViews==='function')refreshGearViews();}
 function buyLoadout(i){
   ensureLoadouts();var lo=G.gearLoadouts[i];if(!lo||lo.bought)return;
   var cost=loadoutGemCost(i);
@@ -3825,6 +3827,7 @@ function equipGear(type,uid){
   var prevUid=G.gearEquipped[type];
   if(prevUid!=null&&prevUid!==uid){var pg=gearById(prevUid);if(pg)pg.lockedTo=-1;} // gammalt gear i sloten frigörs
   G.gearEquipped[type]=uid; g.lockedTo=G.activeLoadout;
+  if(typeof recomputeAdventureSpeeds==='function')recomputeAdventureSpeeds(); // Speed-gear påverkar pågående äventyr live
   if(typeof saveGame==='function')saveGame();
   if(typeof renderInventory==='function')renderInventory();
   if(typeof refreshGearViews==='function')refreshGearViews();
@@ -3842,6 +3845,7 @@ function unequipGear(type){
   var uid=G.gearEquipped[type];
   if(uid!=null){var g=gearById(uid);if(g)g.lockedTo=-1;}
   G.gearEquipped[type]=null;
+  if(typeof recomputeAdventureSpeeds==='function')recomputeAdventureSpeeds(); // Speed-gear påverkar pågående äventyr live
   if(typeof saveGame==='function')saveGame();
   if(typeof renderInventory==='function')renderInventory();
   if(typeof refreshGearViews==='function')refreshGearViews();
@@ -4512,10 +4516,23 @@ function gearBonuses(){
   return b;
 }
 // Effektiv uppdragstid efter Speed-gear (kapas vid -80%). STEG 6.8a.
+function currentAdvSpeedMult(){var spd=(gearBonuses().speed||0);return 1-Math.min(0.8,spd/100);}
 function advEffDur(adv){
-  var spd=(gearBonuses().speed||0);
-  var mult=1-Math.min(0.8,spd/100);
-  return Math.max(1000,Math.round((adv.dur||0)*mult));
+  return Math.max(1000,Math.round((adv.dur||0)*currentAdvSpeedMult()));
+}
+// Live-omräkning: när gear ändras skalas ÅTERSTÅENDE tid på pågående äventyr om efter ny Speed
+// (bara resterande tid → man kan inte equippa halvvägs för att fuska fram ett direkt-klart äventyr).
+function recomputeAdventureSpeeds(){
+  if(!G.adventures||!G.adventures.length)return;
+  var now=Date.now(), newMult=currentAdvSpeedMult(), changed=false;
+  G.adventures.forEach(function(a){
+    if(!a||now>=a.endAt)return;                 // redan klar → rör inte
+    var oldMult=(typeof a.speedMult==='number'&&a.speedMult>0)?a.speedMult:1;
+    if(oldMult===newMult){a.speedMult=newMult;return;}
+    var remaining=Math.max(1000,Math.round((a.endAt-now)*(newMult/oldMult)));
+    a.endAt=now+remaining; a.speedMult=newMult; changed=true;
+  });
+  if(changed){if(typeof renderAdventure==='function')renderAdventure();if(typeof saveGame==='function')saveGame();}
 }
 function formatTime(secs){if(secs<60)return secs+'s';if(secs<3600)return Math.floor(secs/60)+'m '+(secs%60)+'s';return Math.floor(secs/3600)+'h '+Math.floor((secs%3600)/60)+'m';}
 var BOOST_MULT=2; // x2 event-boostar (tunbart)
@@ -4744,7 +4761,7 @@ function startAdventure(advId,petUid){
   if(eqi>=0){G.equippedPets[eqi]=null;pet.equippedSlot=-1;if(typeof renderSlotRow==='function')renderSlotRow();}
   var now=Date.now();
   var _adur=advEffDur(adv); if(consumeFruitCharge('advtime'))_adur=Math.round(_adur*0.7); // Zoom Melon: -30% tid
-  G.adventures.push({advId:advId,petUid:petUid,startAt:now,endAt:now+_adur});
+  G.adventures.push({advId:advId,petUid:petUid,startAt:now,endAt:now+_adur,speedMult:currentAdvSpeedMult()});
   G.stats.totalPetsSentOnAdventures=(G.stats.totalPetsSentOnAdventures||0)+1;
   closeAdvModal();
   if(typeof updateHUD==='function')updateHUD();
@@ -5029,8 +5046,9 @@ function lootInvHtml(){
   var maps=LOST_WORLDS.filter(function(id){return (G.mapsOwned[id]||0)>0 && !G.lostUnlocked[id];});
   var rel=LOST_WORLDS.filter(function(id){return relicCount(id)>0;});
   var gear=Array.isArray(G.gearInv)?G.gearInv:[];
+  var nest=Array.isArray(G.nestGear)?G.nestGear:[];
   var h='';
-  if(!maps.length && !rel.length && !gear.length){
+  if(!maps.length && !rel.length && !gear.length && !nest.length){
     h+='<div class="inv-coming"><div class="ic-icon">🗝️</div><p>Adventure loot appears here. Find <b>Secret Maps</b> and <b>Relics</b> on adventures — they land in your bag, ready to use.</p></div>';
   }else{
     if(maps.length){
@@ -5073,6 +5091,24 @@ function lootInvHtml(){
         h+='<div onclick="showGearInfo('+g.uid+')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
           +lock
           +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+gearIconImg(g,38)+'</span>'
+          +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+tm.name+'</span>'
+          +'</div>';
+      });
+      h+='</div>';
+    }
+    if(nest.length){
+      var rordN=Object.keys(RARITY_CONFIG);
+      var ns=nest.slice().sort(function(a,b){return rordN.indexOf(b.rarity)-rordN.indexOf(a.rarity);});
+      h+='<div class="adv-sech">🪺 Nest Gear</div>';
+      h+='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;padding:0 2px 8px;">Nest Gear boosts your <b>main loop</b> \u2014 tapping, hatching &amp; production. Tap to manage &amp; equip it around your egg.</div>';
+      h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;">';
+      ns.forEach(function(g){
+        var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+        var tm=nestTypeMeta(g.type);
+        var eq=(typeof nestIsEquipped==='function'&&nestIsEquipped(g.uid))?'<span style="position:absolute;top:3px;left:5px;font-size:0.62rem;">✅</span>':'';
+        h+='<div onclick="openNestGear()" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#221c44,#15112e);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
+          +eq
+          +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+nestGearIconImg(g,38)+'</span>'
           +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+tm.name+'</span>'
           +'</div>';
       });
@@ -6674,6 +6710,15 @@ function idleGearAroundHtml(){
     +idleGearPosTile('tool','top:22px;left:50%;transform:translateX(calc(-50% + 105px));')
     +idleGearPosTile('backpack','bottom:22px;left:50%;transform:translateX(calc(-50% + 105px));');
 }
+// v9.98 — explorer-gear på en RAK RAD under peten (ersätter gear-runt-peten).
+function idleGearRowHtml(){
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
+  var order=['boots','compass','charm','tool','backpack'];
+  var h='<div style="display:flex;justify-content:center;align-items:flex-start;gap:7px;margin-top:14px;">';
+  order.forEach(function(tid){h+=idleGearTile(tid);});
+  h+='</div>';
+  return h;
+}
 // v9.64 — enkel Loadouts-popup: 5 slots (1 gratis + 4 gem-låsta med LOCK_IMG), Save current & name överst.
 function openLoadoutsPopup(){ if(typeof ensureLoadouts==='function')ensureLoadouts(); renderLoadoutsPopup(); var m=document.getElementById('loadouts-modal'); if(m)m.classList.add('open'); }
 function closeLoadoutsPopup(){ var m=document.getElementById('loadouts-modal'); if(m)m.classList.remove('open'); }
@@ -6756,7 +6801,6 @@ function renderHomeAdventures(){
     h+='<div class="idleadv-stage-pet" style="position:absolute;left:0;right:0;bottom:35px;z-index:2;display:flex;flex-direction:column;align-items:center;padding-bottom:16px;">';
     h+='<div style="position:relative;width:100%;display:flex;justify-content:center;">';
     h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:14rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
-    h+=idleGearAroundHtml();
     if(pets.length>1){
       h+='<button onclick="idleSwipe(-1)" aria-label="Previous pet" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:none;border:none;padding:12px 16px;color:#38B6FF;font-size:2.4rem;line-height:1;cursor:pointer;z-index:5;text-shadow:0 0 5px #38B6FF,0 0 11px rgba(56,182,255,0.75),0 1px 2px rgba(0,0,0,0.65);-webkit-tap-highlight-color:transparent;">‹</button>';
       h+='<button onclick="idleSwipe(1)" aria-label="Next pet" style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:none;border:none;padding:12px 16px;color:#38B6FF;font-size:2.4rem;line-height:1;cursor:pointer;z-index:5;text-shadow:0 0 5px #38B6FF,0 0 11px rgba(56,182,255,0.75),0 1px 2px rgba(0,0,0,0.65);-webkit-tap-highlight-color:transparent;">›</button>';
@@ -6771,6 +6815,7 @@ function renderHomeAdventures(){
         +'<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.54rem;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.95);white-space:nowrap;">'+(_xp.max?'MAX':(fmtShort(_xp.into)+' / '+fmtShort(_xp.need)+' XP'))+'</div>'
       +'</div>'
     +'</div>';
+    h+=idleGearRowHtml();
     h+=idleLoadoutPillHtml();
     if(pets.length>1)h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.7);margin-top:6px;text-shadow:0 1px 2px #000;">'+(idleViewIdx+1)+' / '+pets.length+'  ·  swipe \u2039 \u203a</div>';
     h+='</div>';
@@ -9552,7 +9597,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.94<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.99<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12051,6 +12096,9 @@ function startHatching(eggId){
   G.hatchSlots.push({eggId:eggId,startTime:Date.now(),duration:getHatchDuration(eggId),done:false});
   renderHatchery();
 }
+// Pulserande gul glow på Hatchery-nav-knappen när minst ett ägg är klart att hämta.
+function anyHatchReady(){return Array.isArray(G.hatchSlots)&&G.hatchSlots.some(function(s){return s&&Date.now()>=(s.startTime+s.duration);});}
+function updateHatchNavGlow(){var b=document.getElementById('nb-hatch');if(b)b.classList.toggle('hatch-ready',anyHatchReady());}
 // ── BUILDING WORKFORCE UI (Pets as Production, slice 1) ──
 var _wfBuilding=-1,_wfPicking=false;
 function openWorkforce(i){_wfBuilding=i;_wfPicking=false;renderWorkforceModal();var m=document.getElementById('workforce-modal');if(m)m.classList.add('open');}
@@ -12233,7 +12281,7 @@ function collectHatch(idx){
   // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
   showPetResult(pet,function(){
     renderHatchery();
-    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity};showRewardPopup([nestGearIconImg(_nestDrop,16)+' '+_nrc.label+' '+nestTypeMeta(_nestDrop.type).name+' Nest Gear found!'],false,2800);}
+    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity,color:'#cdb6ff'};showRewardPopup([nestGearIconImg(_nestDrop,30)+'<br><b style="color:'+(_nrc.color||'#cdb6ff')+'">'+_nrc.label+' '+nestTypeMeta(_nestDrop.type).name+'</b><br><span style="font-size:0.64rem;color:rgba(255,255,255,0.5)">Tap to equip it around your egg</span>'],false,4200,'🪺 Nest Gear Found!',openNestGear);}
   },luckyCount);
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
@@ -14109,7 +14157,7 @@ function tick(now){
   tickStamina(dt); // STEG 6.7a: pets som inte är ute vilar tillbaka energi
   // HUD skrivs bara ~10 ggr/sek (inte varje bildruta) — siffran tickar fortfarande men belastar huvudtråden 6× mindre
   hudAcc+=dt;
-  if(hudAcc>=0.1){updateHUD();hudAcc=0;}
+  if(hudAcc>=0.1){updateHUD();updateHatchNavGlow();hudAcc=0;}
   buffAcc+=dt;
   if(buffAcc>=1){pruneFruitBuffs();renderFruitBuffs();buffAcc=0;}
   fruitDropAcc+=dt;
