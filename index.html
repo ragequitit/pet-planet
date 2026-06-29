@@ -8215,6 +8215,9 @@ document.getElementById('more-drawer').onclick=function(e){if(e.target===this)cl
 // NÄR VI PUSHAR NYTT: lägg ett objekt med UNIKT id ÖVERST. (id används för "läst"-spårning, byt aldrig ett gammalt id.)
 // ============================================================
 var NEWS=[
+  {id:'2026-06-29-v1003', date:'Jun 29, 2026', tag:'update', popup:true,
+   title:'v10.03 — Nest Gear, Fruit Rework & More',
+   body:'This session is packed:<br>• <b>Nest Gear</b> — a new gear type that powers your main loop (tapping, hatching, production &amp; workforce); equip 5 around your egg.<br>• <b>Nest Gear drops &amp; merge</b> — find it by hatching eggs, and merge 5 of a kind into a stronger piece.<br>• <b>Cleaner gear layout</b> — all 5 gear slots now sit in a neat row under your egg and under your idle pet.<br>• <b>Loot tab &amp; pop-ups</b> — Nest Gear shows in the Bag Loot tab, with a clear pop-up when you find one.<br>• <b>Hatchery glow</b> — the Hatchery button pulses gold when an egg is ready to collect.<br>• <b>Live Speed gear</b> — equipping Boots now speeds up adventures that are already running.<br>• <b>Account Score</b> — a new measure of how big your account is, plus a hidden achievement for the bold.<br>• <b>Fruit timing reworked</b> — screen fruits arrive every 25\u201330 min (after 30 min of play); idle fruits start after 15 min.<br>• <b>Fruit Forager</b> — a new Ascension upgrade that makes screen fruits appear faster.<br>• <b>Balance &amp; fixes</b> — retuned Spark Cherry, a clearer Shell Seeker tooltip, and a major save/reset fix that keeps your progress safe.'},
   {id:'2026-06-26-bigupdate', date:'Jun 26, 2026', tag:'update', popup:true,
    title:'v8.99 — Gear, Loadouts & New Pet Skills',
    body:'A big batch of new systems just landed:<br>• <b>Adventure Gear</b> — equip 5 gear types on your explorers to power up every adventure.<br>• <b>Gear drops</b> from adventures, with rarer gear from tougher expeditions.<br>• <b>Merge gear</b> — combine 5 of the same rarity into one stronger piece.<br>• <b>Gear Loadouts</b> — save themed gear sets and switch any time; unlock more with Gems.<br>• <b>8 new pet skills</b> — Treasure, Shell Luck, Gem, Egg and Stone Find, plus Rare Find, Fortune and XP Boost, all boosting adventure and idle rewards.<br>• <b>Stamina</b> — pets rest between adventures, and the right gear gives them more energy.<br>• <b>Faster trips, bigger hauls</b> — Speed gear shortens adventures while Haul, Spark and Shell gear pile on the loot.<br>• <b>Tap to focus</b> — tap a hatching egg in the queue to bring it to the center nest.<br>• <b>Sharper Hatchery egg</b> — bigger, crisper egg art with a gentle slow rock.<br>• <b>Polish</b> — fixed the Speed Up button sticking out, plus other tidy-ups.'},
@@ -9613,7 +9616,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.02<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.03<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
