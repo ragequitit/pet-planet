@@ -65,7 +65,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #egg-stage{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);transform-origin:bottom center;width:210px;height:240px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:6;pointer-events:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
 #nestgear-ring{position:absolute;bottom:58px;left:50%;transform:translateX(-50%);width:210px;height:240px;z-index:8;pointer-events:none;}
 .nest-slot{position:absolute;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:auto;cursor:pointer;}
-.nest-slot-box{width:34px;height:34px;border-radius:10px;border:2px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.45);}
+.nest-slot-box{width:34px;height:34px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.45);}
 .nest-slot-box img{width:24px;height:24px;object-fit:contain;}
 .nest-slot-lbl{font-size:0.42rem;font-weight:800;letter-spacing:0.03em;color:rgba(255,255,255,0.72);text-transform:uppercase;text-shadow:0 1px 2px #000;}
 #egg-glow{position:absolute;width:173px;height:203px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(ellipse at center,rgba(255,255,255,0.8) 0%,rgba(255,255,255,0.25) 35%,transparent 70%);animation:pulse 2.4s ease-in-out infinite;pointer-events:none;z-index:1;will-change:transform,opacity;}
@@ -3734,8 +3734,8 @@ function renderNestRing(){
   var ring=document.getElementById('nestgear-ring');if(!ring)return;
   // U-KURVA (leende) UNDER ägget — undviker krock med de flytande sidoknapparna.
   // Eyeball-tunbart: SP/IN = hur brett ut åt sidorna (ytter/inner), bOut/bIn/bMid = höjd (ytterst högst, mitten lägst = U).
-  var SP=120, IN=64;
-  var bOut=64, bIn=22, bMid=2;
+  var SP=115, IN=64;
+  var bOut=39, bIn=-3, bMid=-23;
   ring.innerHTML=
      nestRingSlotHtml('incubator','left:50%;bottom:'+bOut+'px;transform:translateX(calc(-50% - '+SP+'px));')
     +nestRingSlotHtml('gem',      'left:50%;bottom:'+bIn +'px;transform:translateX(calc(-50% - '+IN+'px));')
@@ -9552,7 +9552,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.93<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.94<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
