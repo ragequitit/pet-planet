@@ -2072,13 +2072,17 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="tab-hatch" class="tab-content"><div id="hatch-wrap"></div></div>
     <div id="tab-adventure" class="tab-content"><div id="adv-wrap" style="padding:14px 13px 90px;"></div></div>
     <div id="tab-shop" class="tab-content">
-      <div class="pets-subnav">
-        <button class="psub-btn" id="wsub-extract" onclick="workshopSub('extract')" style="display:none"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/extraction.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧪'))"></span> Extract</button>
-        <button class="psub-btn active" id="wsub-mutate" onclick="workshopSub('mutate')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/mutate.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('🧬'))"></span> Pet Trainer</button>
-        <button class="psub-btn" id="wsub-reroll" onclick="workshopSub('reroll')" style="display:none"><span>🎲</span> Reroll</button>
-        <button class="psub-btn" id="wsub-merge" onclick="workshopSub('merge')"><span><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/lab/fusion.png" alt="" style="width:1.05em;height:1.05em;object-fit:contain;vertical-align:-0.12em;" onerror="this.replaceWith(document.createTextNode('⚗️'))"></span> Merge</button>
+      <div id="wsub-back" style="display:none;margin-bottom:10px;">
+        <button onclick="workshopSub('home')" style="background:rgba(27,45,78,0.6);border:1.5px solid rgba(120,150,230,0.5);border-radius:20px;color:#cfe0ff;font-family:'Fredoka One',cursive;font-size:0.74rem;padding:7px 16px;cursor:pointer;">← Workshop</button>
       </div>
-      <div id="wsub-panel-extract" class="psub-panel"><div id="extract-wrap"></div></div>
+      <div id="wsub-panel-home" class="psub-panel">
+        <div style="display:flex;flex-direction:column;gap:14px;padding:4px 0 8px;">
+          <div onclick="workshopSub('mutate')" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/train-a-pet.png" alt="Train a Pet" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Train a Pet'))"></div>
+          <div onclick="workshopPetMerge()" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/pet-merge.png" alt="Pet Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Pet Merge'))"></div>
+          <div onclick="workshopGearMerge()" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/gear-merge.png" alt="Gear Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Gear Merge'))"></div>
+        </div>
+      </div>
+      <div id="wsub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
       <div id="wsub-panel-mutate" class="psub-panel" style="display:none"><div id="mutate-wrap"></div></div>
       <div id="wsub-panel-reroll" class="psub-panel" style="display:none"><div id="reroll-wrap"></div></div>
       <div id="wsub-panel-merge" class="psub-panel" style="display:none"><div id="fusion-wrap"></div></div>
@@ -6416,25 +6420,37 @@ function closeLoadoutsPopup(){ var m=document.getElementById('loadouts-modal'); 
 function loadoutPopupSwitch(i){ switchLoadout(i); renderLoadoutsPopup(); if(typeof renderHomeAdventures==='function')renderHomeAdventures(); }
 function loadoutPopupBuy(i){ buyLoadout(i); renderLoadoutsPopup(); if(typeof renderHomeAdventures==='function')renderHomeAdventures(); }
 function loadoutPopupRename(){ renameActiveLoadout(); renderLoadoutsPopup(); if(typeof renderHomeAdventures==='function')renderHomeAdventures(); }
+// v9.75 — inline-namn + per-loadout Update (snapshota nuvarande gear in i loadouten)
+function loadoutSetName(i,val){
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
+  var lo=G.gearLoadouts&&G.gearLoadouts[i]; if(!lo)return;
+  lo.name=(val||'').trim()||('Loadout '+(i+1));
+  if(typeof saveGame==='function')saveGame();
+  if(typeof renderHomeAdventures==='function')renderHomeAdventures(); // uppdatera pillrets namn
+}
+function loadoutUpdate(i){
+  if(typeof ensureLoadouts==='function')ensureLoadouts();
+  var lo=G.gearLoadouts&&G.gearLoadouts[i]; if(!lo||!lo.bought)return;
+  var inp=document.getElementById('lo-name-'+i); if(inp){lo.name=(inp.value||'').trim()||('Loadout '+(i+1));}
+  // Snapshota nuvarande gear in i denna loadout. OBS: aktiv loadouts slots ÄR redan nuvarande gear via alias — rör den ej (annars bryts live-kopplingen).
+  if(i!==(G.activeLoadout||0))lo.slots=Object.assign({}, G.gearEquipped||{});
+  if(typeof saveGame==='function')saveGame();
+  renderLoadoutsPopup();
+  if(typeof renderHomeAdventures==='function')renderHomeAdventures();
+}
 function renderLoadoutsPopup(){
   if(typeof ensureLoadouts==='function')ensureLoadouts();
   var box=document.getElementById('loadouts-body'); if(!box)return;
   var active=G.activeLoadout||0;
-  var nm=(G.gearLoadouts[active]&&G.gearLoadouts[active].name)||'Loadout 1';
   var h='';
-  h+='<div style="text-align:center;margin-bottom:12px;">'
-    +'<div style="font-size:0.58rem;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.07em;">Active</div>'
-    +'<div style="font-family:\'Fredoka One\',cursive;font-size:0.98rem;color:#cfe0ff;margin:3px 0 9px;">'+loEsc(nm)+'</div>'
-    +'<button onclick="loadoutPopupRename()" style="background:rgba(124,77,255,0.22);border:1.5px solid rgba(179,136,255,0.6);border-radius:12px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.72rem;padding:8px 16px;cursor:pointer;">\u270f\ufe0f Save current &amp; name</button>'
-    +'<div style="font-size:0.6rem;color:rgba(255,255,255,0.45);margin-top:6px;line-height:1.4;">Saves the gear currently around your pet into this loadout.</div>'
-  +'</div>';
+  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:11px;text-align:center;line-height:1.5;">Tap a loadout to use it. Type a name, then tap <b>Update</b> to save your current gear into it.</div>';
   h+='<div style="display:flex;flex-direction:column;gap:8px;">';
   for(var i=0;i<5;i++){
     var lo=G.gearLoadouts[i];var isA=(i===active);var bt=lo&&lo.bought;
     if(bt){
-      h+='<div onclick="loadoutPopupSwitch('+i+')" style="display:flex;align-items:center;justify-content:space-between;background:'+(isA?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.55)')+';border:1.5px solid '+(isA?'#b083ff':'rgba(58,92,184,0.5)')+';border-radius:13px;padding:12px 15px;cursor:pointer;">'
-        +'<span style="font-family:\'Fredoka One\',cursive;font-size:0.84rem;color:'+(isA?'#e3d4ff':'#fff')+';">'+loEsc(lo.name)+'</span>'
-        +'<span style="font-size:0.7rem;font-weight:800;color:'+(isA?'#b083ff':'rgba(255,255,255,0.5)')+';">'+(isA?'\u2713 Active':'Tap to use')+'</span>'
+      h+='<div onclick="loadoutPopupSwitch('+i+')" style="display:flex;align-items:center;gap:8px;background:'+(isA?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.55)')+';border:1.5px solid '+(isA?'#b083ff':'rgba(58,92,184,0.5)')+';border-radius:13px;padding:9px 11px;cursor:pointer;">'
+        +'<input id="lo-name-'+i+'" value="'+loEsc(lo.name)+'" maxlength="18" onclick="event.stopPropagation()" onchange="loadoutSetName('+i+',this.value)" style="flex:1;min-width:0;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.8rem;padding:6px 9px;">'
+        +(isA?'<span style="flex-shrink:0;font-size:0.66rem;font-weight:800;color:#b083ff;white-space:nowrap;">\u2713 Active</span>':'<button onclick="event.stopPropagation();loadoutUpdate('+i+')" style="flex-shrink:0;background:rgba(124,77,255,0.28);border:1.5px solid rgba(179,136,255,0.6);border-radius:9px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 11px;cursor:pointer;">Update</button>')
       +'</div>';
     }else{
       h+='<div onclick="loadoutPopupBuy('+i+')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.25);border:1.5px dashed rgba(245,200,66,0.5);border-radius:13px;padding:12px 15px;cursor:pointer;">'
@@ -6818,20 +6834,23 @@ function renderActivePets(){
   wrap.innerHTML=h;
 }
 // WORKSHOP: Extract / Mutate / Reroll (flyttade hit fran Pets-hubben). Fusion ar separat (kvar i Pets).
-var workshopSubTab='mutate'; // STEG 3: Extract/Reroll gömda → Mutate är standard
+var workshopSubTab='home'; // v9.74: Workshop öppnas med bild-kort-landning (Train a Pet / Pet Merge / Gear Merge)
 function workshopSub(sub){
   // STEG 3 (2026-06-25): Extract + Reroll gömda vilande. Omdirigera ev. anrop till Mutate.
   if(sub==='extract'||sub==='reroll')sub='mutate';
   workshopSubTab=sub;
-  ['extract','mutate','reroll','merge'].forEach(function(s){
+  ['extract','mutate','reroll','merge','home'].forEach(function(s){
     var p=document.getElementById('wsub-panel-'+s);if(p)p.style.display=(s===sub)?'block':'none';
     var b=document.getElementById('wsub-'+s);if(b)b.classList.toggle('active',s===sub);
   });
+  var back=document.getElementById('wsub-back');if(back)back.style.display=(sub==='home')?'none':'block';
   if(sub==='extract')renderExtract();
   else if(sub==='mutate')renderPetTrainer();
   else if(sub==='reroll')renderReroll();
   else if(sub==='merge')renderFusion();
 }
+function workshopPetMerge(){ workshopSub('merge'); if(typeof setFusionMode==='function')setFusionMode('pets'); }
+function workshopGearMerge(){ workshopSub('merge'); if(typeof setFusionMode==='function')setFusionMode('gear'); }
 function renderWorkshop(){workshopSub(workshopSubTab);}
 
 // ============================================================
@@ -9273,7 +9292,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.73<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v9.75<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
