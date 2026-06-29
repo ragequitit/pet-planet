@@ -4372,8 +4372,8 @@ var ACTIVE_EVENT={
   bannerEmoji:'\ud83d\udc3a\ud83c\udf84\ud83c\udf81',
   currency:{name:'Snowflakes',emoji:'\u2744\ufe0f',img:ASSET_BASE+'/assets/ui/events/snowflake.png'},
   progressMax:5000,
-  snowPerHatch:60,
-  snowPerAdventure:120,
+  snowPerHatch:15,
+  snowPerAdventure:30,
   questCycleHours:24,
   chests:[
     {at:1000, reward:{shells:{forest:10}}},
@@ -9616,7 +9616,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.05<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.06<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
