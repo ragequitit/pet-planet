@@ -8393,6 +8393,7 @@ function mailRewardPreview(rw){
   if(rw.gems)ps.push(GEM_IMG+' '+fmtShort(rw.gems)+' Gems');
   if(rw.coins)ps.push(COIN_IMG+' '+fmtShort(rw.coins)+' Sparks');
   if(rw.stardust)ps.push('\u2728 '+fmtShort(rw.stardust)+' Stardust');
+  if(rw.gifts&&rw.gifts.length){rw.gifts.forEach(function(gf){ps.push('🎁 '+giftLabel(gf));});}
   return ps.length?('<div class="inbox-reward">'+ps.join('<span style="opacity:.35">|</span>')+'</div>'):'';
 }
 function renderInbox(){
@@ -8402,7 +8403,7 @@ function renderInbox(){
   if(!mailCache.length){b.innerHTML='<div class="frd-note">No new mail. Check back later!</div>';return;}
   var h='';
   mailCache.forEach(function(m){
-    var rw=m.reward||null;var hasRw=!!(rw&&(rw.gems||rw.coins||rw.stardust));
+    var rw=m.reward||null;var hasRw=!!(rw&&(rw.gems||rw.coins||rw.stardust||(rw.gifts&&rw.gifts.length)));
     h+='<div class="inbox-item" id="mail-'+m.id+'">'+
          '<div class="inbox-title">'+mailEsc(m.title)+'</div>'+
          (m.body?'<div class="inbox-body-text">'+mailEsc(m.body)+'</div>':'')+
@@ -8411,6 +8412,40 @@ function renderInbox(){
        '</div>';
   });
   b.innerHTML=h;
+}
+function buildGiftPet(name,world,rarity){
+  var rc=RARITY_CONFIG[rarity]||RARITY_CONFIG.common;
+  var e='🐾';
+  try{if(typeof SPECIES!=='undefined'&&SPECIES[world]){Object.keys(SPECIES[world]).forEach(function(t){(SPECIES[world][t]||[]).forEach(function(s){if(s&&s.name===name&&s.e)e=s.e;});});}}catch(x){}
+  var abilities=[];
+  for(var i=0;i<rc.slots;i++){var aid=ABILITIES[Math.floor(Math.random()*ABILITIES.length)];var tier=rc.tiers[i];var rv=rollAbilityValue(tier);abilities.push({id:aid,tier:tier,v:rv.v,mega:rv.mega});}
+  return {uid:Date.now()+Math.random(),name:name,e:e,rarity:rarity,world:world,abilities:abilities,explorer:(typeof rollExplorerRows==='function'?rollExplorerRows(rarity):[]),equippedSlot:-1,level:1,xp:0};
+}
+function giftLabel(gf){
+  if(!gf)return 'Gift';
+  var rl=(RARITY_CONFIG[gf.rarity]&&RARITY_CONFIG[gf.rarity].label)||gf.rarity||'';
+  if(gf.kind==='pet')return (rl?rl+' ':'')+(gf.name||'Pet');
+  var tn='Gear';
+  if(gf.gclass==='nest'){var nm=(typeof nestTypeMeta==='function')?nestTypeMeta(gf.type):null;tn=(nm&&nm.name)||gf.type;}
+  else {var gm=(typeof gearTypeMeta==='function')?gearTypeMeta(gf.type):null;tn=(gm&&gm.name)||gf.type;}
+  return (rl?rl+' ':'')+tn;
+}
+function applyMailGift(gf){
+  if(!gf)return '';
+  try{
+    if(gf.kind==='pet'){
+      var pet=buildGiftPet(gf.name,gf.world,gf.rarity);
+      if(typeof registerPet==='function')registerPet(pet);
+      else {if(!Array.isArray(G.hatchedPets))G.hatchedPets=[];G.hatchedPets.push(pet);}
+      return '🎁 '+giftLabel(gf);
+    }
+    if(gf.kind==='gear'){
+      if(gf.gclass==='nest'){if(!Array.isArray(G.nestGear))G.nestGear=[];G.nestGear.push(makeNestGear(gf.type,gf.rarity));}
+      else {if(!Array.isArray(G.gearInv))G.gearInv=[];G.gearInv.push(makeGear(gf.type,gf.rarity));}
+      return '🎁 '+giftLabel(gf);
+    }
+  }catch(x){}
+  return '';
 }
 function claimMail(id,btn){
   if(!sb||!cloudUser)return;
@@ -8422,6 +8457,7 @@ function claimMail(id,btn){
       if(rw.gems){G.gems=(G.gems||0)+rw.gems;parts.push(GEM_IMG+' +'+fmtShort(rw.gems)+' Gems');}
       if(rw.coins){G.coins=(G.coins||0)+rw.coins;parts.push(COIN_IMG+' +'+fmtShort(rw.coins)+' Sparks');}
       if(rw.stardust){G.stardust=(G.stardust||0)+rw.stardust;parts.push('\u2728 +'+fmtShort(rw.stardust)+' Stardust');}
+      if(rw.gifts&&rw.gifts.length){rw.gifts.forEach(function(gf){var pv=applyMailGift(gf);if(pv)parts.push(pv);});}
       if(typeof updateHUD==='function')updateHUD();
       if(typeof softUpdateInventory==='function')softUpdateInventory();
       saveGame();if(typeof cloudPushNow==='function')cloudPushNow();
@@ -9691,7 +9727,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.15<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.16<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}

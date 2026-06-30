@@ -177,6 +177,7 @@
     <span class="spacer"></span>
     <label id="autoLbl" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;margin-right:10px"><input id="autoChk" type="checkbox" style="width:15px;height:15px;cursor:pointer"> Auto-refresh (30s)</label>
     <button id="refresh" class="btn">Refresh</button>
+    <button id="giftBroadcast" class="btn gold" onclick="openGift(null)">Broadcast gift…</button>
   </div>
   <input id="search" class="fi" type="search" placeholder="Search players by handle (or paste a user ID)…" autocomplete="off" style="margin-bottom:10px">
   <div id="searchNote" style="font-size:12px;color:var(--muted);margin:0 0 12px;min-height:14px"></div>
@@ -213,6 +214,35 @@
       <input id="reStar" class="fi num" type="number" min="0" step="1" inputmode="numeric">
       <button id="reApply" class="btn gold" style="width:100%;margin-top:18px;padding:12px">Apply changes</button>
       <div id="reMsg" class="mmsg"></div>
+    </div>
+  </div>
+</div>
+
+<div id="giftModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="gfTitle">
+  <div class="sheet">
+    <div class="sh-head"><h3 id="gfTitle">Send Gift</h3><button class="x" onclick="closeGift()" aria-label="Close">&times;</button></div>
+    <div class="sh-body">
+      <p class="note" id="gfRecipient"></p>
+      <label class="fl" for="gfTitleIn">Title</label>
+      <input id="gfTitleIn" class="fi" type="text" placeholder="A gift for you!">
+      <label class="fl" for="gfBody">Message (optional)</label>
+      <input id="gfBody" class="fi" type="text" placeholder="Enjoy!">
+      <div style="border-top:1px solid rgba(255,255,255,0.12);margin:15px 0 10px;padding-top:13px;">
+        <label class="fl">Add a gift</label>
+        <select id="gfKind" class="fi" onchange="giftKindChange()"><option value="gear-explorer">Explorer Gear</option><option value="gear-nest">Nest Gear</option><option value="pet">Pet</option></select>
+        <div id="gfGearRow"><label class="fl" for="gfGearType">Type</label><select id="gfGearType" class="fi"></select></div>
+        <div id="gfPetRow" style="display:none"><label class="fl" for="gfWorld">World</label><select id="gfWorld" class="fi" onchange="giftWorldChange()"></select><label class="fl" for="gfSpecies">Species</label><select id="gfSpecies" class="fi"></select></div>
+        <label class="fl" for="gfRarity">Rarity</label><select id="gfRarity" class="fi"></select>
+        <button class="btn sm" style="margin-top:11px" onclick="addGift()">+ Add to gift list</button>
+      </div>
+      <div id="gfList"></div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--muted);font-size:13px">Also add currency (optional)</summary>
+        <label class="fl" for="gfCoins">Sparks</label><input id="gfCoins" class="fi num" type="number" min="0" step="1">
+        <label class="fl" for="gfGems">Gems</label><input id="gfGems" class="fi num" type="number" min="0" step="1">
+        <label class="fl" for="gfStar">Stardust</label><input id="gfStar" class="fi num" type="number" min="0" step="1">
+      </details>
+      <button id="gfSend" class="btn gold" style="width:100%;margin-top:18px;padding:12px" onclick="sendGift()">Send</button>
+      <div id="gfMsg" class="mmsg"></div>
     </div>
   </div>
 </div>
@@ -310,7 +340,7 @@ function renderAccounts(list){
         <div class="stat"><div class="k">Snapshots</div><div class="v num">${fmtInt(a.history)}</div></div>
       </div>
       <div class="foot"><span>Last save ${esc(ago(a.updated_at))}</span><span>Seen ${esc(ago(a.last_seen))}</span></div>
-      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button>${a.banned?('<button class="btn sm" onclick="doUnban(\''+esc(a.user_id)+'\')">Unban</button>'):('<button class="btn sm danger" onclick="doBan(\''+esc(a.user_id)+'\')">Ban…</button>')}</div>
+      <div class="acts"><button class="btn sm" onclick="openRes('${esc(a.user_id)}')">Resources…</button><button class="btn sm" onclick="openGift('${esc(a.user_id)}')">Gift…</button><button class="btn sm warn" onclick="openRestore('${esc(a.user_id)}')">Restore…</button>${a.banned?('<button class="btn sm" onclick="doUnban(\''+esc(a.user_id)+'\')">Unban</button>'):('<button class="btn sm danger" onclick="doBan(\''+esc(a.user_id)+'\')">Ban…</button>')}</div>
     </div>`;
   }).join('');
   box.innerHTML='<div class="grid">'+cards+'</div>';
@@ -496,6 +526,79 @@ if(!sb){
 }else{
   boot();
 }
+
+// ====== GIFT TOOL (gear/pet via mail) ======
+const GIFT_SPECIES={"starter": ["Dog", "Cat", "Rabbit", "Chicken", "Turtle", "Fox", "Owl", "Deer", "Wolf", "Baby Dragon"], "forest": ["Squirrel", "Hedgehog", "Beaver", "Woodpecker", "Badger", "Skunk", "Otter", "Wild Boar", "Moose", "Brown Bear"], "mountain": ["Ibex", "Thunderbird", "Snow Sabertooth", "Yak", "Cougar", "Condor", "Golden Eagle", "Grizzly Bear", "Snow Leopard", "Snow Yeti"], "desert": ["Jackal", "Camel", "Horned Lizard", "Vulture", "Cobra", "Oryx", "Fennec Fox", "Caracal", "Sand Cat", "Scorpion"], "ocean": ["Clownfish", "Seal", "Dolphin", "King Lobster", "Manta Ray", "Anglerfish", "Great White Shark", "Blue Whale", "Giant Squid", "Orca"], "jungle": ["Toucan", "Poison Dart Frog", "Orangutan", "Crocodile", "Anaconda", "Chameleon", "Gorilla", "Tiger", "Panther", "Jaguar"], "arctic": ["Penguin", "Arctic Hare", "Walrus", "Musk Ox", "Gyrfalcon", "Snowy Owl", "Polar Bear", "Frost Lynx", "Narwhal", "Mammoth"], "volcano": ["Ember Chick", "Ash Bat", "Lava Lizard", "Molten Kitty", "Fire Serpent", "Inferno Bull", "Magma Golem", "Hellhound", "Flame Spirit", "Volcano Dragon"], "mystic": ["Unicorn", "Griffin", "Phoenix", "Basilisk", "Celestial Stag", "Moon Raven", "Spirit Dragon", "Arcane Panther", "Nine-Tailed Fox", "Chimera"], "celestial": ["Moon Hare", "Stardust Manta", "Nebula Jellyfish", "Comet Hawk", "Lunar Lynx", "Astro Bunny", "Nebula Turtle", "Celestial Moth", "Nebula Whale", "Solar Guardian", "Astra Deer", "Starlight Wisp", "Comet Fox", "Cosmic Moth"], "cosmic": ["Eclipse Cat", "Moon Dragon", "Void Serpent", "Star Lion", "Nova Puff", "Nova Hawk"]};
+const GIFT_GEAR_EXPLORER=[{id:'backpack',name:'Backpack'},{id:'compass',name:'Compass'},{id:'boots',name:'Boots'},{id:'charm',name:'Charm'},{id:'tool',name:'Tool'}];
+const GIFT_GEAR_NEST=[{id:'incubator',name:'Incubator'},{id:'crown',name:'Crown'},{id:'gem',name:'Gem'},{id:'trinket',name:'Trinket'},{id:'feather',name:'Feather'}];
+const GIFT_RARITIES=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+let GIFT_TARGET=null, GIFT_LIST=[];
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function openGift(uid){
+  GIFT_TARGET=uid||null; GIFT_LIST=[];
+  const a=uid?ACCTS[uid]:null;
+  $('gfRecipient').innerHTML=uid?('To: <b>'+esc((a&&a.handle)||uid)+'</b>'):'To: <b>ALL PLAYERS</b> (broadcast)';
+  $('gfTitle').textContent=uid?'Send Gift':'Broadcast Gift';
+  $('gfTitleIn').value=''; $('gfBody').value=''; $('gfCoins').value=''; $('gfGems').value=''; $('gfStar').value='';
+  $('gfMsg').textContent=''; $('gfMsg').className='mmsg';
+  $('gfRarity').innerHTML=GIFT_RARITIES.map(r=>'<option value="'+r+'">'+cap(r)+'</option>').join('');
+  $('gfWorld').innerHTML=Object.keys(GIFT_SPECIES).map(w=>'<option value="'+w+'">'+cap(w)+'</option>').join('');
+  $('gfKind').value='gear-explorer'; giftKindChange(); renderGiftList();
+  $('giftModal').classList.add('open');
+}
+function closeGift(){ $('giftModal').classList.remove('open'); }
+function giftKindChange(){
+  const k=$('gfKind').value;
+  if(k==='pet'){ $('gfGearRow').style.display='none'; $('gfPetRow').style.display=''; giftWorldChange(); }
+  else { $('gfPetRow').style.display='none'; $('gfGearRow').style.display='';
+    const list=(k==='gear-nest')?GIFT_GEAR_NEST:GIFT_GEAR_EXPLORER;
+    $('gfGearType').innerHTML=list.map(t=>'<option value="'+t.id+'">'+esc(t.name)+'</option>').join(''); }
+}
+function giftWorldChange(){
+  const arr=GIFT_SPECIES[$('gfWorld').value]||[];
+  $('gfSpecies').innerHTML=arr.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+}
+function addGift(){
+  const k=$('gfKind').value, rarity=$('gfRarity').value; let g;
+  if(k==='pet'){ const name=$('gfSpecies').value; if(!name)return; g={kind:'pet',name:name,world:$('gfWorld').value,rarity:rarity}; }
+  else { g={kind:'gear',gclass:(k==='gear-nest')?'nest':'explorer',type:$('gfGearType').value,rarity:rarity}; }
+  if(GIFT_LIST.length>=20){ const m=$('gfMsg');m.className='mmsg err';m.textContent='Max 20 gifts per mail.';return; }
+  GIFT_LIST.push(g); $('gfMsg').textContent=''; renderGiftList();
+}
+function removeGift(i){ GIFT_LIST.splice(i,1); renderGiftList(); }
+function giftDesc(g){
+  const r=cap(g.rarity);
+  if(g.kind==='pet')return r+' '+g.name+' ('+cap(g.world)+')';
+  const list=(g.gclass==='nest')?GIFT_GEAR_NEST:GIFT_GEAR_EXPLORER;
+  const tn=(list.find(t=>t.id===g.type)||{}).name||g.type;
+  return r+' '+tn+' ('+(g.gclass==='nest'?'Nest':'Explorer')+' gear)';
+}
+function renderGiftList(){
+  if(!GIFT_LIST.length){ $('gfList').innerHTML='<p class="note" style="margin:8px 0">No gifts added yet.</p>'; return; }
+  $('gfList').innerHTML=GIFT_LIST.map((g,i)=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:7px 10px;margin-bottom:6px"><span style="flex:1">\uD83C\uDF81 '+esc(giftDesc(g))+'</span><button class="btn sm danger" onclick="removeGift('+i+')">&times;</button></div>').join('');
+}
+async function sendGift(){
+  const title=$('gfTitleIn').value.trim();
+  if(!title){ const m=$('gfMsg');m.className='mmsg err';m.textContent='Title is required.';return; }
+  const reward={};
+  const coins=Number($('gfCoins').value)||0, gems=Number($('gfGems').value)||0, star=Number($('gfStar').value)||0;
+  if(coins>0)reward.coins=coins; if(gems>0)reward.gems=gems; if(star>0)reward.stardust=star;
+  if(GIFT_LIST.length)reward.gifts=GIFT_LIST.slice();
+  if(!Object.keys(reward).length){ const m=$('gfMsg');m.className='mmsg err';m.textContent='Add at least one gift or some currency.';return; }
+  const scope=GIFT_TARGET?'user':'broadcast';
+  const who=GIFT_TARGET?((ACCTS[GIFT_TARGET]&&ACCTS[GIFT_TARGET].handle)||GIFT_TARGET):'ALL PLAYERS';
+  if(!confirm('Send this mail to '+who+'?')) return;
+  const m=$('gfMsg');m.className='mmsg';m.textContent='Sending…';
+  try{
+    const {data,error}=await sb.rpc('pp_admin_send_mail',{p_scope:scope,p_target:GIFT_TARGET,p_title:title,p_body:$('gfBody').value,p_reward:reward,p_expires_at:null});
+    if(error){ m.className='mmsg err'; m.textContent=error.message||'Failed.'; return; }
+    if(!data||data.ok!==true){ m.className='mmsg err'; m.textContent='Failed: '+esc((data&&data.error)||'unknown'); return; }
+    m.className='mmsg ok'; m.textContent='Sent! (mail #'+data.id+')';
+    GIFT_LIST=[]; renderGiftList();
+    setTimeout(closeGift,1500);
+  }catch(e){ m.className='mmsg err'; m.textContent='Network error.'; }
+}
+document.getElementById('giftModal').addEventListener('click',e=>{ if(e.target===document.getElementById('giftModal')) closeGift(); });
 </script>
 </body>
 </html>
