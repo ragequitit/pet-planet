@@ -2084,6 +2084,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
         <div class="edrawer-handle" onclick="toggleBuildDrawer()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" onerror="this.replaceWith(document.createTextNode('🏠'))"></div>
         <div class="edrawer-pillar" id="bld-pillar"></div>
       </div>
+      <div id="upg-drawer" class="edrawer edrawer-left">
+        <div class="edrawer-handle" onclick="toggleUpgDrawer()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/upgrade-building.png" alt="" onerror="this.replaceWith(document.createTextNode('📈'))"></div>
+        <div class="edrawer-pillar" id="upg-pillar"></div>
+      </div>
     </div>
     <div id="home-sheet">
       <div id="sheet-handle" onclick="toggleHomeSheet()">
@@ -10009,7 +10013,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.43<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.44<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11928,6 +11932,77 @@ function purchaseBuilding(i){
   if(typeof updateHUD==='function')updateHUD();
   softUpdateBuildDrawer();
 }
+// === KANT-PELARE (#3) — upgrade-låda (vänster). Köp boosts medan man spammar ägget. ===
+function upgDrawerViews(){
+  var out=[]; var unlocked=numUnlocked();
+  for(var i=0;i<unlocked;i++){var v=buildDblView(i); if(v&&(v.state==='afford'||v.state==='poor'))out.push(v);}
+  CLICK_UPGRADES.forEach(function(u){var v=buildClkView(u); if(v&&(v.state==='afford'||v.state==='poor'))out.push(v);});
+  out.sort(function(a,b){return _stateRank[a.state]-_stateRank[b.state];});
+  return out;
+}
+function upgFillPct(v){ if(v.state==='afford')return 100; var c=v.cost||0; return Math.max(0,Math.min(100,Math.floor((G.coins/Math.max(1,c))*100))); }
+function renderUpgDrawer(){
+  var p=document.getElementById('upg-pillar'); if(!p)return;
+  var vs=upgDrawerViews(); var h='';
+  for(var k=0;k<vs.length;k++){
+    var v=vs[k]; var afford=(v.state==='afford'); var pct=upgFillPct(v);
+    if(k>0)h+='<div class="edb-link"></div>';
+    h+='<button class="edb'+(afford?' buyable':' poor')+'" data-ukey="'+v.key+'" title="'+String(v.name||'').replace(/"/g,'')+'">'
+      +'<span class="edb-fill" style="height:'+pct+'%"></span>'
+      +'<span class="edb-ic">'+v.icon+'</span>'
+      +(v.badge?'<span class="edb-n">'+v.badge+'</span>':'')
+      +'</button>';
+  }
+  if(!h)h='<div style="color:rgba(255,255,255,0.4);font-size:0.58rem;text-align:center;padding:16px 4px;line-height:1.5;">No boosts<br>available yet</div>';
+  p.innerHTML=h;
+  bindUpgDrawer();
+}
+function softUpdateUpgDrawer(){
+  var dr=document.getElementById('upg-drawer'); if(!dr||!dr.classList.contains('open'))return;
+  var p=document.getElementById('upg-pillar'); if(!p)return;
+  var vs=upgDrawerViews();
+  if(p.querySelectorAll('.edb').length!==vs.length){renderUpgDrawer();return;}
+  var byKey={}; vs.forEach(function(v){byKey[v.key]=v;});
+  var btns=p.querySelectorAll('.edb');
+  for(var n=0;n<btns.length;n++){
+    var el=btns[n]; var v=byKey[el.getAttribute('data-ukey')];
+    if(!v){renderUpgDrawer();return;}
+    el.className='edb'+(v.state==='afford'?' buyable':' poor');
+    var ff=el.querySelector('.edb-fill'); if(ff)ff.style.height=upgFillPct(v)+'%';
+  }
+}
+function bindUpgDrawer(){
+  var p=document.getElementById('upg-pillar'); if(!p||p._buyBound)return; p._buyBound=true;
+  var sx=0,sy=0,lastY=0,moved=false,active=false,downBtn=null;
+  p.addEventListener('pointerdown',function(e){
+    active=true; downBtn=e.target.closest('.edb'); sx=e.clientX; sy=e.clientY; lastY=e.clientY; moved=false;
+    try{p.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  p.addEventListener('pointermove',function(e){
+    if(!active)return;
+    if(Math.abs(e.clientY-sy)>8||Math.abs(e.clientX-sx)>8)moved=true;
+    var dy=e.clientY-lastY; lastY=e.clientY; p.scrollTop-=dy;
+  });
+  function end(e){
+    if(active){ var b=(e.target.closest&&e.target.closest('.edb')); if(b&&b===downBtn&&!moved)purchaseUpgrade(b.getAttribute('data-ukey')); }
+    active=false; downBtn=null;
+  }
+  p.addEventListener('pointerup',end);
+  p.addEventListener('pointercancel',end);
+}
+function purchaseUpgrade(key){
+  if(!key)return;
+  if(key.indexOf('dbl:')===0){ var i=parseInt(key.slice(4)); var v=buildDblView(i); if(v&&v.state==='afford')buyBuildingDoubling(i); }
+  else if(key.indexOf('clk:')===0){ var id=key.slice(4); var u=CLICK_UPGRADES.find(function(x){return x.id===id;}); if(u){var cv=buildClkView(u); if(cv&&cv.state==='afford')buyClickUpgrade(id);} }
+  renderUpgDrawer();
+}
+function toggleUpgDrawer(){
+  var dr=document.getElementById('upg-drawer'); if(!dr)return;
+  var opening=!dr.classList.contains('open');
+  if(opening){ if(typeof closeBuildDrawer==='function')closeBuildDrawer(); renderUpgDrawer(); }
+  dr.classList.toggle('open');
+}
+function closeUpgDrawer(){var dr=document.getElementById('upg-drawer');if(dr)dr.classList.remove('open');}
 function renderUpgrades(){
   var wrap=document.getElementById('ulist');if(!wrap)return;
   _upgView={};
@@ -14759,7 +14834,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();if(typeof softUpdateBuildDrawer==='function')softUpdateBuildDrawer();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();var _bm0=document.getElementById('bag-modal');if(_bm0&&_bm0.classList.contains('open'))softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();var _pm=document.getElementById('pet-modal');if(_pm&&_pm.classList.contains('open'))softUpdateSlotXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();if(typeof softUpdateBuildDrawer==='function')softUpdateBuildDrawer();if(typeof softUpdateUpgDrawer==='function')softUpdateUpgDrawer();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();var _bm0=document.getElementById('bag-modal');if(_bm0&&_bm0.classList.contains('open'))softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();var _pm=document.getElementById('pet-modal');if(_pm&&_pm.classList.contains('open'))softUpdateSlotXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
