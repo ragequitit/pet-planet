@@ -9368,20 +9368,20 @@ function updateEpsInfoNums(){
   var maxw=bodyEl?bodyEl.clientWidth:0;
   var spsEl=document.getElementById('eps-info-sps');
   var sparksEl=document.getElementById('eps-info-sparks');
-  if(!spsEl||!sparksEl)return;
-  var spsVal=eps(),sparksVal=G.coins;
-  spsEl.textContent=fmtFull(spsVal);                            // full siffra med tusentalsavgränsare
-  sparksEl.textContent=fmtFull(sparksVal);
   var rowEl=document.getElementById('eps-info-row');
-  if(rowEl&&maxw){                                              // ryms båda bredvid varandra? annars stapla — och LÅS staplat (hoppar ej tillbaka)
-    if(!epsInfoStacked){
-      rowEl.style.flexDirection='row';
-      if(spsEl.scrollWidth+sparksEl.scrollWidth+24>maxw)epsInfoStacked=true;
-    }
-    if(epsInfoStacked)rowEl.style.flexDirection='column';
+  if(!spsEl||!sparksEl||!rowEl||!maxw)return;
+  var spsVal=eps(),sparksVal=G.coins;
+  // 1) Försök båda i FULL form, sida vid sida
+  rowEl.style.flexDirection='row';
+  spsEl.textContent=fmtFull(spsVal);
+  sparksEl.textContent=fmtFull(sparksVal);
+  // 2) Får de inte plats bredvid varandra → bryt till egen rad var (så båda kan stanna fulla)
+  if(spsEl.scrollWidth+sparksEl.scrollWidth+24>maxw){
+    rowEl.style.flexDirection='column';
   }
-  if(maxw&&spsEl.scrollWidth>maxw)spsEl.textContent=fmtCompact(spsVal);       // ännu bredare än rutan på egen rad → korta just den
-  if(maxw&&sparksEl.scrollWidth>maxw)sparksEl.textContent=fmtCompact(sparksVal);
+  // 3) Är en siffra ÄNDÅ för bred på egen rad → korta bara den
+  if(spsEl.scrollWidth>maxw)spsEl.textContent=fmtCompact(spsVal);
+  if(sparksEl.scrollWidth>maxw)sparksEl.textContent=fmtCompact(sparksVal);
 }
 function showEpsInfo(){
   epsInfoStacked=false; // ny öppning → utvärdera layout på nytt
@@ -9742,7 +9742,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.19<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.21<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10266,6 +10266,12 @@ function renderProfile(){
   h+='<div class="prof-qc"><div class="prof-qc-val">'+asc+'</div><div class="prof-qc-lbl">Ascend</div></div>';
   h+='<div class="prof-qc"><div class="prof-qc-val">'+profActiveSince()+'</div><div class="prof-qc-lbl">Since</div></div>';
   h+='</div>';
+  // ACCOUNT SCORE banner (tappbar → förklaring)
+  var _accSc=(typeof accountScore==='function')?accountScore():0;
+  h+='<div onclick="showAccountScoreInfo()" style="margin-top:11px;background:linear-gradient(160deg,#241a4d,#15112e);border:1px solid rgba(150,120,220,0.5);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);">'
+    +'<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.35rem;">\ud83d\udcca</span><div><div style="font-size:0.56rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;">Account Score</div><div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:1px;">How big your whole account is</div></div></div>'
+    +'<div style="font-family:\'Fredoka One\',cursive;font-size:1.5rem;color:#cdb6ff;">'+fmtShort(_accSc)+'</div>'
+  +'</div>';
   // SUBTABS
   var tabs=[['overview','Overview','📋'],['customize','Customize','🎨'],['titles','Titles','🏷️'],['badges','Badges','🛡️'],['stats','Stats','📊']];
   h+='<div class="prof-subtabs">';
@@ -13393,6 +13399,16 @@ function accountScore(){
   s+=pdx*ACCOUNT_SCORE_PER_PETDEX;
   if(Array.isArray(G.owned)){for(var i=0;i<G.owned.length;i++){s+=(G.owned[i]||0)*(i+1)*ACCOUNT_SCORE_BUILDING_MULT;}}
   return Math.floor(s);
+}
+function showAccountScoreInfo(){
+  var sc=(typeof accountScore==='function')?accountScore():0;
+  var pets=(G.hatchedPets||[]).length,gear=(G.gearInv||[]).length,nest=(G.nestGear||[]).length,asc=(G.ascensions||0);
+  var au=(G.achievements&&G.achievements.unlocked)?Object.keys(G.achievements.unlocked).length:0;
+  var pdx=(G._discoveredPets)?Object.keys(G._discoveredPets).length:0;
+  var body='<div style="text-align:center;font-family:\'Fredoka One\',cursive;font-size:2.1rem;color:#cdb6ff;margin:4px 0 10px;">'+fmtShort(sc)+'</div>'
+    +'<div style="font-size:0.8rem;color:rgba(255,255,255,0.72);line-height:1.6;text-align:center;">Your Account Score sums up everything on your account \u2014 pets (rarer &amp; shiny count more), gear, nest gear, buildings, ascensions, achievements and Petdex discoveries. The more you collect and accomplish, the higher it climbs.</div>'
+    +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.8;text-align:center;margin-top:11px;">Pets: '+pets+' \u00b7 Gear: '+gear+' \u00b7 Nest: '+nest+'<br>Ascensions: '+asc+' \u00b7 Achievements: '+au+' \u00b7 Petdex: '+pdx+'</div>';
+  showGenericModal('\ud83d\udcca','Account Score',body);
 }
 function devShowAccountScore(){
   var sc=accountScore();
