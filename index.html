@@ -2251,7 +2251,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-body">
 <p><b>Craft</b> eggs using <b>Sparks</b> + <b>Shells</b>. Each egg card shows exactly which Shell it needs.</p>
 <p>Rarer eggs need <b>rarer Shells</b> — collect Shells by clicking your egg and idling.</p>
-<p>The <b>Craft Cost</b> upgrade lowers the Shells each egg costs — up to 50% off at max level.</p>
+<p>The <b>Craft Cost</b> upgrade lowers the Shells each egg costs — up to 25% off at max level.</p>
 </div>
 <button class="hatch-info-close" onclick="closeCraftInfo()">Got it!</button>
 </div></div>
@@ -2935,8 +2935,8 @@ function clickUpgIconImg(u){
   return '<img class="bld-pic" src="'+ASSET_BASE+'/assets/ui/common/clicking-power.png" alt="" onerror="this.parentNode.textContent=\''+e+'\'">';
 }
 var UPGRADES=[
-  {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
-  {id:'hatch',e:'⏩',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,90,80,70,60,50][l]+'% → '+[100,90,80,70,60,50][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.9,0.8,0.7,0.6,0.5][l];}},
+  {id:'craft',e:'💎',n:'Egg Crafting',max:5,cost:[500,5000,50000,500000,5000000],desc:function(l){return 'Craft cost: '+[100,95,90,85,80,75][l]+'% → '+[100,95,90,85,80,75][l+1]+'%';},apply:function(l){G.craftDiscount=[1,0.95,0.9,0.85,0.8,0.75][l];}},
+  {id:'hatch',e:'⏩',n:'Hatch Speed',max:5,cost:[1000,10000,100000,1000000,10000000],desc:function(l){return 'Hatch time: '+[100,95,90,85,80,75][l]+'% → '+[100,95,90,85,80,75][l+1]+'%';},apply:function(l){G.hatchDiscount=[1,0.95,0.9,0.85,0.8,0.75][l];}},
 ];
 // PARKERADE upgrades (flyttar till Ascension): Click Power borttagen helt (ersätts av nytt klick-system);
 // Luck + Offline Gain vilande — deras nuvarande effekt (G.luck/G.offlineMult) ligger kvar via save/load,
@@ -10013,7 +10013,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.44<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.45<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -13028,7 +13028,7 @@ function buyHatchSpeedLvl(){if(buyUpgradeById('hatch')){renderHatchery();renderH
 function renderHatchSpeedModal(){
   var box=document.getElementById('hatch-speed-body');if(!box)return;
   var u=UPGRADES.find(function(x){return x.id==='hatch';});if(!u){box.innerHTML='';return;}
-  var l=G.ulvl.hatch||0;var mult=[100,90,80,70,60,50];
+  var l=G.ulvl.hatch||0;var mult=[100,95,90,85,80,75];
   var curPct=100-mult[Math.min(l,5)];
   var html='<div class="hsu-cur">Eggs currently hatch <b>'+curPct+'% faster</b></div>';
   for(var i=0;i<u.max;i++){
@@ -13069,7 +13069,7 @@ function buyCraftCostLvl(){if(buyUpgradeById('craft')){renderHatchery();renderCr
 function renderCraftCostModal(){
   var box=document.getElementById('craft-cost-body');if(!box)return;
   var u=UPGRADES.find(function(x){return x.id==='craft';});if(!u){box.innerHTML='';return;}
-  var l=G.ulvl.craft||0;var mult=[100,90,80,70,60,50];
+  var l=G.ulvl.craft||0;var mult=[100,95,90,85,80,75];
   var curPct=100-mult[Math.min(l,5)];
   var html='<div class="hsu-cur">Eggs currently cost <b>'+curPct+'% less</b> to craft</div>';
   for(var i=0;i<u.max;i++){
