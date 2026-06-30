@@ -2057,7 +2057,6 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div id="sky-life" aria-hidden="true"></div>
       <div id="scene-fade"></div>
       <div class="side-btns" id="left-btns">
-        <div class="side-btn" id="nestset-btn" onclick="openNestLoadoutsPopup()"><span class="sb-icon">🪺</span><span class="sb-label">Nest Sets</span></div>
         <div class="side-btn" id="quests-btn" onclick="openQuests()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/daily-reward.png" alt="" onerror="this.parentNode.textContent='🎁'"></span><span class="sb-label">Daily</span></div>
         <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/loadout.png" alt="" onerror="this.parentNode.textContent='🎚️'"></span><span class="sb-label">Loadouts</span></div>
@@ -2089,6 +2088,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
         <div class="edrawer-pillar" id="upg-pillar"></div>
       </div>
     </div>
+    <div id="nest-loadout-bar" style="position:relative;z-index:8;display:flex;justify-content:center;padding:6px 0 4px;"><button onclick="openNestLoadoutsPopup()" style="display:flex;align-items:center;gap:7px;background:linear-gradient(180deg,#1a2750,#101a38);border:1.5px solid rgba(120,150,230,0.55);border-radius:22px;color:#cfe0ff;font-family:'Fredoka One',cursive;font-size:0.78rem;letter-spacing:0.08em;padding:9px 28px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.35);">🎒 LOADOUTS</button></div>
     <div id="home-sheet">
       <div id="sheet-handle" onclick="toggleHomeSheet()">
         <div class="sheet-grip"></div>
@@ -6855,17 +6855,20 @@ function applyHomeMode(){
   if(flip){flip.style.display=(onHome&&!inv)?'block':'none';flip.style.top='10px';}
   var sw=document.getElementById('scene-wrap');
   var sh=document.getElementById('home-sheet');
+  var nlb=document.getElementById('nest-loadout-bar');
   var ha=document.getElementById('home-adventures');
   if(!onHome){ if(ha)ha.style.display='none'; return; }
   if(inv){ if(ha)ha.style.display='none'; return; }   // inventory keeps the build scene
   if(adv){
     if(sw)sw.style.display='none';
     if(sh)sh.style.display='none';
+    if(nlb)nlb.style.display='none';
     if(ha)ha.style.display='block';
     renderHomeAdventures();
   }else{
     if(sw)sw.style.display='block';
     if(sh)sh.style.display='block';
+    if(nlb)nlb.style.display='flex';
     if(ha)ha.style.display='none';
   }
   var fp=document.getElementById('flip-pill'); if(fp)fp.className='flip-pill '+(adv?'adv-on':'build-on');
@@ -7052,6 +7055,7 @@ function renderHomeAdventures(){
     var p=pets[idleViewIdx]; var rc=RARITY_CONFIG[p.rarity]||{color:'#fff',label:''};
     // pet + caption anchored to the BOTTOM of the tall scene (pet stands on the grass), like the main egg page
     h+='<div class="idleadv-stage-pet" style="position:absolute;left:0;right:0;bottom:10px;z-index:2;display:flex;flex-direction:column;align-items:center;padding-bottom:16px;">';
+    h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="align-self:center;margin-bottom:10px;display:inline-flex;align-items:center;gap:6px;background:rgba(124,77,255,0.55);border:1px solid rgba(179,136,255,0.85);border-radius:999px;padding:6px 14px 6px 8px;cursor:pointer;box-shadow:0 2px 7px rgba(0,0,0,0.45);-webkit-tap-highlight-color:transparent;"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="info" style="width:22px;height:22px;object-fit:contain;display:block;" onerror="this.replaceWith(document.createTextNode(\\\'i\\\'))"><span style="font-family:\'Fredoka One\',cursive;font-size:0.72rem;color:#fff;text-shadow:0 1px 2px #000;white-space:nowrap;">Pet Info</span></div>';
     h+='<div style="position:relative;width:100%;display:flex;justify-content:center;">';
     h+='<div onclick="openPetStatsPopup(\''+p.uid+'\')" style="font-size:14rem;line-height:1;filter:drop-shadow(0 10px 18px rgba(0,0,0,0.6));cursor:pointer;">'+petIco(p)+'</div>';
     if(pets.length>1){
@@ -7258,6 +7262,8 @@ function switchTab(name){
   document.getElementById('scene-wrap').style.display=isHome?'block':'none';
   var sheet=document.getElementById('home-sheet');
   if(sheet)sheet.style.display=isHome?'block':'none';
+  var nlbar=document.getElementById('nest-loadout-bar');
+  if(nlbar)nlbar.style.display=(isHome&&!isInv)?'flex':'none';
   // Bygg-växeln (Upgrades|Buildings) visas bara för bygg-bladet, döljs i inventory-läget
   var ht=document.getElementById('home-toggle');if(ht)ht.style.display=isInv?'none':'flex';
   var lbl=document.getElementById('sheet-label-text');if(lbl)lbl.textContent=isInv?'Inventory':'Buildings & Upgrades';
@@ -10013,7 +10019,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.45<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.47<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
