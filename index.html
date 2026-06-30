@@ -30,12 +30,12 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btn .sb-img{width:51px;height:51px;object-fit:contain;display:inline-block;}
 .side-btn .sb-label{font-size:0.6rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
 /* === KANT-PELARE (#3): bygg/upgrade-lådor som glider in över scenen === */
-.edrawer{position:absolute;top:0;bottom:0;z-index:46;width:34vw;max-width:150px;transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+.edrawer{position:absolute;top:0;bottom:0;z-index:46;width:25vw;max-width:120px;transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none;}
 .edrawer-right{right:0;transform:translateX(100%);}
 .edrawer-right.open{transform:translateX(0);}
 .edrawer-left{left:0;transform:translateX(-100%);}
 .edrawer-left.open{transform:translateX(0);}
-.edrawer-pillar{position:absolute;inset:0;background:rgba(8,12,24,0.8);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 7px 18px;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:auto;scrollbar-width:none;}
+.edrawer-pillar{position:absolute;inset:0;background:rgba(8,12,24,0.92);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:12px 7px 18px;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:auto;scrollbar-width:none;}
 .edrawer-pillar::-webkit-scrollbar{display:none;}
 .edrawer-right .edrawer-pillar{border-left:1.5px solid rgba(120,150,230,0.4);box-shadow:-7px 0 18px rgba(0,0,0,0.45);}
 .edrawer-left .edrawer-pillar{border-right:1.5px solid rgba(120,150,230,0.4);box-shadow:7px 0 18px rgba(0,0,0,0.45);}
@@ -43,14 +43,16 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .edrawer-right .edrawer-handle{left:0;transform:translate(-100%,-50%);border-right:none;border-radius:13px 0 0 13px;box-shadow:-4px 0 10px rgba(0,0,0,0.4);}
 .edrawer-left .edrawer-handle{right:0;transform:translate(100%,-50%);border-left:none;border-radius:0 13px 13px 0;box-shadow:4px 0 10px rgba(0,0,0,0.4);}
 .edrawer-handle img{width:30px;height:30px;object-fit:contain;}
-.edb{position:relative;width:56px;height:56px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(30,42,72,0.55);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0;transition:transform .08s;}
+.edb{position:relative;width:56px;height:56px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(30,42,72,0.55);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0;overflow:hidden;touch-action:manipulation;transition:transform .08s,box-shadow .25s,border-color .25s;}
 .edb:active{transform:scale(0.92);}
 .edb.buyable{border-color:#ffce4a;box-shadow:0 0 11px rgba(245,200,66,0.6);background:rgba(60,52,20,0.5);}
 .edb.poor{opacity:0.5;}
-.edb-ic{font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;}
+.edb-ic{position:relative;z-index:1;font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;}
 .edb-ic .bld-pic{width:38px;height:38px;object-fit:contain;}
 .edb-n{position:absolute;bottom:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#1a2750;border:1.5px solid rgba(120,150,230,0.6);color:#fff;font-size:0.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
 .edb-link{width:2px;height:9px;background:rgba(120,150,230,0.4);flex:0 0 auto;}
+.edb-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(0deg,rgba(245,200,66,0.62),rgba(245,200,66,0.08));pointer-events:none;transition:height .35s ease;z-index:0;}
+.edb.buyable .edb-fill{background:linear-gradient(0deg,rgba(245,200,66,0.5),rgba(245,200,66,0.12));}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
 /* STEG 6.6b: 5 active-slots DORMANTA (reversibelt — ta bort detta block för att visa dem igen).
@@ -10005,7 +10007,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.39<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.40<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11859,18 +11861,21 @@ function buildClkView(u){
 }
 var _stateRank={afford:0,poor:1,locked:2,owned:3};
 // === KANT-PELARE (#3) — byggnads-låda (höger). Köp byggnader medan man spammar ägget. ===
+function buildFillPct(i,c,afford){return afford?100:Math.max(0,Math.min(100,Math.floor((G.coins/Math.max(1,c))*100)));}
 function renderBuildDrawer(){
   var p=document.getElementById('bld-pillar'); if(!p)return;
   var unlocked=numUnlocked(); var h='';
   for(var i=0;i<unlocked;i++){
-    var c=bcost(i); var afford=G.coins>=c;
+    var c=bcost(i); var afford=G.coins>=c; var pct=buildFillPct(i,c,afford);
     if(i>0)h+='<div class="edb-link"></div>';
-    h+='<button class="edb'+(afford?' buyable':' poor')+'" data-bidx="'+i+'" onclick="purchaseBuilding('+i+')" title="'+BUILDINGS[i].n+'">'
+    h+='<button class="edb'+(afford?' buyable':' poor')+'" data-bidx="'+i+'" title="'+BUILDINGS[i].n+'">'
+      +'<span class="edb-fill" id="edbf'+i+'" style="height:'+pct+'%"></span>'
       +'<span class="edb-ic">'+buildingIconImg(BUILDINGS[i])+'</span>'
       +'<span class="edb-n" id="edbn'+i+'">'+(G.owned[i]||0)+'</span>'
       +'</button>';
   }
   p.innerHTML=h;
+  bindBuildDrawer();
 }
 function softUpdateBuildDrawer(){
   var dr=document.getElementById('bld-drawer'); if(!dr||!dr.classList.contains('open'))return;
@@ -11882,7 +11887,17 @@ function softUpdateBuildDrawer(){
     var c=bcost(i); var afford=G.coins>=c;
     el.className='edb'+(afford?' buyable':' poor');
     var nn=document.getElementById('edbn'+i); if(nn)nn.textContent=(G.owned[i]||0);
+    var ff=document.getElementById('edbf'+i); if(ff)ff.style.height=buildFillPct(i,c,afford)+'%';
   }
+}
+function bindBuildDrawer(){
+  var p=document.getElementById('bld-pillar'); if(!p||p._buyBound)return; p._buyBound=true;
+  var sy=0,sx=0,moved=false,downBtn=null;
+  p.addEventListener('pointerdown',function(e){ downBtn=e.target.closest('.edb'); sy=e.clientY; sx=e.clientX; moved=false; });
+  p.addEventListener('pointermove',function(e){ if(downBtn&&(Math.abs(e.clientY-sy)>9||Math.abs(e.clientX-sx)>9))moved=true; });
+  p.addEventListener('pointerup',function(e){ var b=e.target.closest('.edb'); if(b&&b===downBtn&&!moved){var i=parseInt(b.getAttribute('data-bidx')); if(!isNaN(i))purchaseBuilding(i);} downBtn=null; });
+  p.addEventListener('pointercancel',function(){downBtn=null;});
+  p.addEventListener('pointerleave',function(){downBtn=null;});
 }
 function toggleBuildDrawer(){
   var dr=document.getElementById('bld-drawer'); if(!dr)return;
