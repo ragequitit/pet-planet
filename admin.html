@@ -541,7 +541,7 @@ function openGift(uid){
   $('gfTitle').textContent=uid?'Send Gift':'Broadcast Gift';
   $('gfTitleIn').value=''; $('gfBody').value=''; $('gfCoins').value=''; $('gfGems').value=''; $('gfStar').value='';
   $('gfMsg').textContent=''; $('gfMsg').className='mmsg';
-  $('gfRarity').innerHTML=GIFT_RARITIES.map(r=>'<option value="'+r+'">'+cap(r)+'</option>').join('');
+  $('gfRarity').innerHTML='<option value="random">\uD83C\uDFB2 Random (rolled at claim)</option>'+GIFT_RARITIES.map(r=>'<option value="'+r+'">'+cap(r)+'</option>').join('');
   $('gfWorld').innerHTML=Object.keys(GIFT_SPECIES).map(w=>'<option value="'+w+'">'+cap(w)+'</option>').join('');
   $('gfKind').value='gear-explorer'; giftKindChange(); renderGiftList();
   $('giftModal').classList.add('open');
