@@ -874,8 +874,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .nav-btn span:last-child{font-size:0.74rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
 .nav-btn.active span:last-child{color:#ffe08a;}
 .pets-subnav{display:flex;gap:4px;margin-bottom:10px;}
-.psub-btn{flex:1;padding:8px 2px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.62rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
-.psub-btn span{font-size:0.82rem;}
+.psub-btn{flex:1;padding:11px 2px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.93rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
+.psub-btn span{font-size:1.23rem;}
 .psub-btn:active{transform:translateY(2px);}
 .psub-btn.active{background:linear-gradient(180deg,#f5c842,#e0a800);border-color:#fff;color:#0b1530;box-shadow:0 2px 0 #8a6000;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:999;align-items:flex-end;justify-content:center;}
@@ -2963,11 +2963,11 @@ var CLICK_UPGRADES=[
   {id:'tf2',line:'finger',name:'Pack Instinct',desc:'+0.5 per other building, per tap (Helping Paws ×5).',fingerMult:5,req:'tf1',unlockBuildings:75,cost:1e7},
   {id:'tf3',line:'finger',name:'Stampede',desc:'+5 per other building, per tap (Pack Instinct ×10).',fingerMult:10,req:'tf2',unlockBuildings:150,cost:1e9},
   // TAP-DOUBLERS ("Mighty Tap") — varje steg DUBBLAR sparks per tapp (×2, upp till ×32). Speglar Egg Tapper Boost-doublingarna: laass upp naar man aager 1/10/25/50/100 Egg Tappers, kostar 50% mer (PLATSHAALLARE -> Balance Sheet).
-  {id:'tm1',line:'tapmult',name:'Mighty Tap',desc:'Doubles your Sparks per tap (×2).',tapMult:2,unlockEggTappers:1,cost:153},
-  {id:'tm2',line:'tapmult',name:'Mighty Tap II',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm1',unlockEggTappers:10,cost:918},
-  {id:'tm3',line:'tapmult',name:'Mighty Tap III',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm2',unlockEggTappers:25,cost:5508},
-  {id:'tm4',line:'tapmult',name:'Mighty Tap IV',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm3',unlockEggTappers:50,cost:33048},
-  {id:'tm5',line:'tapmult',name:'Mighty Tap V',desc:'Doubles your Sparks per tap again (×2).',tapMult:2,req:'tm4',unlockEggTappers:100,cost:198288}
+  {id:'tm1',line:'tapmult',name:'Mighty Tap',desc:'Boosts your Sparks per tap (×1.5).',tapMult:1.5,unlockEggTappers:1,cost:153},
+  {id:'tm2',line:'tapmult',name:'Mighty Tap II',desc:'Boosts your Sparks per tap again (×1.5).',tapMult:1.5,req:'tm1',unlockEggTappers:10,cost:918},
+  {id:'tm3',line:'tapmult',name:'Mighty Tap III',desc:'Boosts your Sparks per tap again (×1.5).',tapMult:1.5,req:'tm2',unlockEggTappers:25,cost:5508},
+  {id:'tm4',line:'tapmult',name:'Mighty Tap IV',desc:'Boosts your Sparks per tap again (×1.5).',tapMult:1.5,req:'tm3',unlockEggTappers:50,cost:33048},
+  {id:'tm5',line:'tapmult',name:'Mighty Tap V',desc:'Boosts your Sparks per tap again (×1.5).',tapMult:1.5,req:'tm4',unlockEggTappers:100,cost:198288}
 ];
 function totalBuildingsOwned(){var n=0;for(var i=0;i<20;i++)n+=G.owned[i]||0;return n;}
 function nonClickBuildingsOwned(){var n=0;for(var i=1;i<20;i++)n+=G.owned[i]||0;return n;} // exkl. Egg Tapper (index 0)
@@ -9361,7 +9361,7 @@ function confirmAscension(){
 function showGenericModal(icon,title,body){
   document.getElementById('generic-modal-icon').textContent=icon;
   document.getElementById('generic-modal-title').textContent=title;
-  document.getElementById('generic-modal-body').textContent=body;
+  document.getElementById('generic-modal-body').innerHTML=body;
   document.getElementById('generic-modal').classList.add('open');
 }
 var epsInfoStacked=false; // STEG-fix: när SPS/Sparks-raden staplat sig låses den (hoppar ej tillbaka)
@@ -9371,19 +9371,16 @@ function updateEpsInfoNums(){
   var spsEl=document.getElementById('eps-info-sps');
   var sparksEl=document.getElementById('eps-info-sparks');
   var rowEl=document.getElementById('eps-info-row');
-  if(!spsEl||!sparksEl||!rowEl||!maxw)return;
+  if(!spsEl||!sparksEl||!rowEl)return;
   var spsVal=eps(),sparksVal=G.coins;
-  // 1) Försök båda i FULL form, sida vid sida
-  rowEl.style.flexDirection='row';
+  // Alltid var sin rad så fulla siffror syns. Korta bara om en är för bred ÄVEN ensam på sin rad.
+  rowEl.style.flexDirection='column';
   spsEl.textContent=fmtFull(spsVal);
   sparksEl.textContent=fmtFull(sparksVal);
-  // 2) Får de inte plats bredvid varandra → bryt till egen rad var (så båda kan stanna fulla)
-  if(spsEl.scrollWidth+sparksEl.scrollWidth+24>maxw){
-    rowEl.style.flexDirection='column';
+  if(maxw){
+    if(spsEl.scrollWidth>maxw)spsEl.textContent=fmtCompact(spsVal);
+    if(sparksEl.scrollWidth>maxw)sparksEl.textContent=fmtCompact(sparksVal);
   }
-  // 3) Är en siffra ÄNDÅ för bred på egen rad → korta bara den
-  if(spsEl.scrollWidth>maxw)spsEl.textContent=fmtCompact(spsVal);
-  if(sparksEl.scrollWidth>maxw)sparksEl.textContent=fmtCompact(sparksVal);
 }
 function showEpsInfo(){
   epsInfoStacked=false; // ny öppning → utvärdera layout på nytt
@@ -9393,7 +9390,7 @@ function showEpsInfo(){
   if(icon)icon.innerHTML='<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:46px;height:46px;object-fit:contain;vertical-align:middle;">';
   if(title)title.textContent='Sparks Per Second';
   if(body)body.innerHTML=
-    '<div id="eps-info-row" style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 22px;margin:2px 0 12px;">'+
+    '<div id="eps-info-row" style="display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;margin:2px 0 12px;">'+
       '<div style="text-align:center;"><div style="font-size:0.66rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:2px;">SPS now</div><div id="eps-info-sps" style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:#A3E635;white-space:nowrap;line-height:1.15;">'+fmtFull(eps())+'</div></div>'+
       '<div style="text-align:center;"><div style="font-size:0.66rem;letter-spacing:1px;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-bottom:2px;">Sparks now</div><div id="eps-info-sparks" style="font-family:\'Fredoka One\',cursive;font-size:1.2rem;color:var(--gold,#F5C842);white-space:nowrap;line-height:1.15;">'+fmtFull(G.coins)+'</div></div>'+
     '</div>'+
@@ -9744,7 +9741,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.23<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.25<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10027,6 +10024,7 @@ function statBreakRow(icon,name,count,total){
   var pctTxt=(pct>=10?Math.round(pct):Math.round(pct*10)/10)+'%';
   return '<div class="sb-row"><div class="sb-ic">'+icon+'</div><div class="sb-main"><div class="sb-top"><span class="sb-name">'+name+'</span><span class="sb-cnt">'+fmtShort(count)+'</span></div><div class="sb-barwrap"><div class="sb-bar" style="width:'+pct.toFixed(1)+'%"></div></div></div><div class="sb-pct">'+pctTxt+'</div></div>';
 }
+function prettyEggName(k){return String(k||'').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});}
 function openStatBreakdown(type){
   var title='',iconHtml='',rows=[],total=0,empty='',note='';
   if(type==='sparks'){
@@ -10062,11 +10060,11 @@ function openStatBreakdown(type){
     empty='No fusions yet. Fuse 5 pets of the same rarity to create a higher one \u2014 results show up here.';
   }
   if(type==='eggs'){
-    title='Eggs Hatched';iconHtml='🍳';
+    title='Eggs Hatched';iconHtml='<img src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" style="width:22px;height:22px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🍳\'))">';
     var by=G.stats.eggsHatchedByWorld||{};
     var keys=Object.keys(by);
     keys.forEach(function(k){total+=(by[k]||0);});
-    var arr=keys.map(function(k){var e=EGG_SHOP.find(function(x){return x.id===k;});return {name:e?e.name:String(k),icon:e?e.icon:'🥚',count:by[k]||0};});
+    var arr=keys.map(function(k){var e=EGG_SHOP.find(function(x){return x.id===k;});var nm=e?e.name:prettyEggName(k);var ic='<img src="'+eggShopIconUrl(k)+'" alt="" style="width:26px;height:26px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\''+(e?e.icon:'🥚')+'\'))">';return {name:nm,icon:ic,count:by[k]||0};});
     arr.sort(function(a,b){return b.count-a.count;});
     arr.forEach(function(a){if(a.count>0)rows.push(statBreakRow(a.icon,profEsc(a.name),a.count,total));});
     empty='No eggs hatched yet. Hatch an egg in the Hatchery and it will show up here.';
@@ -10268,12 +10266,6 @@ function renderProfile(){
   h+='<div class="prof-qc"><div class="prof-qc-val">'+asc+'</div><div class="prof-qc-lbl">Ascend</div></div>';
   h+='<div class="prof-qc"><div class="prof-qc-val">'+profActiveSince()+'</div><div class="prof-qc-lbl">Since</div></div>';
   h+='</div>';
-  // ACCOUNT SCORE banner (tappbar → förklaring)
-  var _accSc=(typeof accountScore==='function')?accountScore():0;
-  h+='<div onclick="showAccountScoreInfo()" style="margin-top:11px;background:linear-gradient(160deg,#241a4d,#15112e);border:1px solid rgba(150,120,220,0.5);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.06);">'
-    +'<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:1.35rem;">\ud83d\udcca</span><div><div style="font-size:0.56rem;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;">Account Score</div><div style="font-size:0.6rem;color:rgba(255,255,255,0.4);margin-top:1px;">How big your whole account is</div></div></div>'
-    +'<div style="font-family:\'Fredoka One\',cursive;font-size:1.5rem;color:#cdb6ff;">'+fmtShort(_accSc)+'</div>'
-  +'</div>';
   // SUBTABS
   var tabs=[['overview','Overview','📋'],['customize','Customize','🎨'],['titles','Titles','🏷️'],['badges','Badges','🛡️'],['stats','Stats','📊']];
   h+='<div class="prof-subtabs">';
@@ -10286,7 +10278,7 @@ function renderProfile(){
     h+='<div class="prof-ov-grid">';
     h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/currency/egg-coin.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">','Sparks Earned',fmtShort(G.stats.totalCoinsEarned||0),'sparks');
     h+=profOvCard(uiIco('stats/pets-collected','🐾',26),'Pets Collected',fmtShort(G.stats.totalPetsCollected||0),'pets');
-    h+=profOvCard('🍳','Eggs Hatched',fmtShort(G.stats.eggsHatched||0),'eggs');
+    h+=profOvCard('<img src="'+ASSET_BASE+'/assets/ui/common/hatchary.png" alt="" style="width:26px;height:26px;object-fit:contain;vertical-align:middle;" onerror="this.replaceWith(document.createTextNode(\'🍳\'))">','Eggs Hatched',fmtShort(G.stats.eggsHatched||0),'eggs');
     h+=profOvCard(uiIco('stats/total-clicks','👆',26),'Total Clicks',fmtShort(G.stats.totalClicks||0));
     h+=profOvCard('⚗️','Merges',fmtShort(G.stats.totalFusions||0),'fusions');
     h+=profOvCard(uiIco('stats/playtime','⏱️',26),'Playtime',profPlaytime());
@@ -10353,7 +10345,7 @@ function renderProfileStats(){
     ['T5 Abilities',fmtShort(s.tier5AbilitiesHatched||0)],
     ['Duplicates',fmtShort(s.duplicatePetsHatched||0)]
   ],false);
-  h+=pstCard('#ec73c8',statIco('stats-panel/stats-panel-shell','🐚'),'Shell Stats',[
+  h+=pstCard('#ec73c8',statIco('shell/ocean-shell','🐚'),'Shell Stats',[
     ['Shells Collected',fmtShort(s.totalShellsCollected||0)],
     ['Shells Spent',fmtShort(s.totalShellsSpent||0)],
     ['Highest Rarity',profRarity(s.highestRarityShellFound)],
@@ -10386,6 +10378,12 @@ function renderProfileStats(){
     ['Total Currency',fmtShort(s.totalAscensionCurrency||0)],
     ['Highest Bonus',(s.highestAscensionBonus||0)+'%']
   ],true);
+  var _accSc=(typeof accountScore==='function')?accountScore():0;
+  h+='<div class="prof-section-title" style="margin-top:16px;">Account Score</div>';
+  h+='<div onclick="showAccountScoreInfo()" style="background:linear-gradient(160deg,#241a4d,#15112e);border:1px solid rgba(150,120,220,0.5);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">'
+    +'<div style="display:flex;align-items:center;gap:11px;"><span style="font-size:1.5rem;">\ud83d\udcca</span><div><div style="font-family:\'Fredoka One\',cursive;font-size:0.98rem;color:#fff;">Account Score</div><div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-top:2px;">Tap to see how it\'s counted \u203a</div></div></div>'
+    +'<div style="font-family:\'Fredoka One\',cursive;font-size:1.65rem;color:#cdb6ff;">'+fmtShort(_accSc)+'</div>'
+  +'</div>';
   return h;
 }
 function profFavPet(){if(!G.profile||!G.profile.favoritePet)return null;return G.hatchedPets.find(function(p){return p.uid===G.profile.favoritePet;})||null;}
