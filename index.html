@@ -3806,6 +3806,8 @@ function ensureLoadouts(){
   G.gearEquipped=G.gearLoadouts[G.activeLoadout].slots; // alias: aktiv loadout = equippad uppsättning
 }
 function isGearLocked(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});return !!(g&&typeof g.lockedTo==='number'&&g.lockedTo>=0);}
+function gearMergeLocked(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});return !!(g&&(g.locked||(typeof g.lockedTo==='number'&&g.lockedTo>=0)));}
+function toggleGearLock(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;}); if(!g)return; g.locked=!g.locked; if(typeof saveGame==='function')saveGame(); if(typeof renderInventory==='function')renderInventory(); if(typeof refreshGearViews==='function')refreshGearViews(); if(typeof showGearInfo==='function')showGearInfo(uid);}
 function gearLockName(uid){var g=(G.gearInv||[]).find(function(x){return x.uid===uid;});if(!g||typeof g.lockedTo!=='number'||g.lockedTo<0)return '';ensureLoadouts();var lo=G.gearLoadouts[g.lockedTo];return lo?lo.name:'';}
 function switchLoadout(i){ensureLoadouts();if(!G.gearLoadouts[i]||!G.gearLoadouts[i].bought)return;G.activeLoadout=i;G.gearEquipped=G.gearLoadouts[i].slots;if(typeof recomputeAdventureSpeeds==='function')recomputeAdventureSpeeds();if(typeof saveGame==='function')saveGame();if(typeof renderInventory==='function')renderInventory();if(typeof refreshGearViews==='function')refreshGearViews();}
 function buyLoadout(i){
@@ -5145,7 +5147,7 @@ function lootGearGridHtml(){
   h+='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px;">';
   gs.forEach(function(g){
     var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
-    var lock=isGearLocked(g.uid)?'<span style="position:absolute;top:3px;left:5px;font-size:0.62rem;">🔒</span>':'';
+    var lock=gearMergeLocked(g.uid)?'<span style="position:absolute;top:3px;left:5px;font-size:0.62rem;">🔒</span>':'';
     h+='<div onclick="showGearInfo('+g.uid+')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#2a2350,#1a1636);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
       +lock
       +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+gearIconImg(g,38)+'</span>'
@@ -6809,9 +6811,9 @@ function idleGearTile(tid){
   var rc=g?(RARITY_CONFIG[g.rarity]||{color:'#aaa'}):null;
   var bd=g?rc.color:'rgba(150,120,220,0.45)';
   var bg=g?'linear-gradient(180deg,#221c44,#15112e)':'rgba(0,0,0,0.30)';
-  var inner=g?gearIconImg(g,32):('<span style="font-size:1.5rem;opacity:0.4;">'+t.icon+'</span>');
+  var inner=g?gearIconImg(g,34):('<span style="font-size:1.54rem;opacity:0.4;">'+t.icon+'</span>');
   return '<div onclick="openGearSlotPicker(\''+tid+'\')" style="display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;">'
-    +'<div style="width:46px;height:46px;border-radius:50%;border:2px solid '+bd+';background:'+bg+';display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);'+(g?'':'border-style:dashed;')+'">'+inner+'</div>'
+    +'<div style="width:48px;height:48px;border-radius:50%;border:3px solid '+bd+';background:'+bg+';display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.4);'+(g?'':'border-style:dashed;')+'">'+inner+'</div>'
     +'<div style="font-size:0.52rem;font-weight:800;letter-spacing:0.04em;color:rgba(255,255,255,0.62);text-transform:uppercase;text-shadow:0 1px 2px #000;">'+t.name+'</div>'
   +'</div>';
 }
@@ -6872,14 +6874,14 @@ function renderLoadoutsPopup(){
   var box=document.getElementById('loadouts-body'); if(!box)return;
   var active=G.activeLoadout||0;
   var h='';
-  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:11px;text-align:center;line-height:1.5;">Tap a loadout to use it. Type a name, then tap <b>Update</b> to save your current gear into it.</div>';
+  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:11px;text-align:center;line-height:1.5;">Tap <b>Use</b> to switch loadout. Type a name, then tap <b>Update</b> to save your current gear into it.</div>';
   h+='<div style="display:flex;flex-direction:column;gap:8px;">';
   for(var i=0;i<5;i++){
     var lo=G.gearLoadouts[i];var isA=(i===active);var bt=lo&&lo.bought;
     if(bt){
       h+='<div onclick="loadoutPopupSwitch('+i+')" style="display:flex;align-items:center;gap:8px;background:'+(isA?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.55)')+';border:1.5px solid '+(isA?'#b083ff':'rgba(58,92,184,0.5)')+';border-radius:13px;padding:9px 11px;cursor:pointer;">'
         +'<input id="lo-name-'+i+'" value="'+loEsc(lo.name)+'" maxlength="18" onclick="event.stopPropagation()" onchange="loadoutSetName('+i+',this.value)" style="flex:1;min-width:0;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.18);border-radius:8px;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.8rem;padding:6px 9px;">'
-        +(isA?'<span style="flex-shrink:0;font-size:0.66rem;font-weight:800;color:#b083ff;white-space:nowrap;">\u2713 Active</span>':'<button onclick="event.stopPropagation();loadoutUpdate('+i+')" style="flex-shrink:0;background:rgba(124,77,255,0.28);border:1.5px solid rgba(179,136,255,0.6);border-radius:9px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 11px;cursor:pointer;">Update</button>')
+        +(isA?'<span style="flex-shrink:0;font-size:0.66rem;font-weight:800;color:#b083ff;white-space:nowrap;">\u2713 Active</span>':'<span style="flex-shrink:0;display:flex;gap:6px;"><button onclick="event.stopPropagation();loadoutPopupSwitch('+i+')" style="background:linear-gradient(180deg,#37c871,#1f9b53);border:1.5px solid rgba(120,230,160,0.55);border-radius:9px;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 13px;cursor:pointer;">Use</button><button onclick="event.stopPropagation();loadoutUpdate('+i+')" style="background:rgba(124,77,255,0.28);border:1.5px solid rgba(179,136,255,0.6);border-radius:9px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 11px;cursor:pointer;">Update</button></span>')
       +'</div>';
     }else{
       h+='<div onclick="loadoutPopupBuy('+i+')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.25);border:1.5px dashed rgba(245,200,66,0.5);border-radius:13px;padding:12px 15px;cursor:pointer;">'
@@ -7180,9 +7182,34 @@ function toggleInventory(){
 function openBag(){
   renderInventory();
   document.getElementById('bag-modal').classList.add('open');
+  bindBagSwipe();
 }
 function closeBag(){
   var m=document.getElementById('bag-modal');if(m)m.classList.remove('open');
+}
+var INV_TAB_ORDER=['shells','eggs','cores','fruits','loot'];
+function bagSwipe(dir){
+  var cur=INV_TAB_ORDER.indexOf(activeInvSection||'shells'); if(cur<0)cur=0;
+  var ni=cur+dir; if(ni<0||ni>=INV_TAB_ORDER.length)return;
+  showInvSection(INV_TAB_ORDER[ni]);
+}
+function bindBagSwipe(){
+  var el=document.getElementById('bag-body'); if(!el||el._swipeBound)return;
+  el._swipeBound=true;
+  var x0=0,y0=0,t0=0,tracking=false;
+  el.addEventListener('touchstart',function(e){
+    if(!e.touches||e.touches.length!==1){tracking=false;return;}
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();tracking=true;
+  },{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(!tracking)return; tracking=false;
+    var t=e.changedTouches&&e.changedTouches[0]; if(!t)return;
+    var dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
+    if(dt>700) return;                        // för långsamt = ej svep
+    if(Math.abs(dx)<55) return;               // för kort
+    if(Math.abs(dx)<Math.abs(dy)*1.6) return; // för vertikalt = låt scroll vinna
+    bagSwipe(dx<0?1:-1);                       // vänster=nästa, höger=föregående
+  },{passive:true});
 }
 
 // Bottom-nav: tryck på en redan aktiv flik igen → tillbaka till Home (ägget)
@@ -7837,8 +7864,8 @@ function renderTrainerSetup(){
       var owned=ownedStoneIds();
       if(owned.length===0){h+='<div class="ex-empty"><div class="ex-empty-i">🎯</div><p>No Skill Stones available.</p></div>';}
       else{owned.forEach(function(id){var m=ABILITY_META[id];var sel=s.stoneId===id;var dup=!!otherAbils[id];
-        if(dup){h+='<div class="setup-ability dupdis"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:'+m.color+'">'+m.name+' Stone</span><span class="ma-dup">Already on this pet</span></div>';}
-        else{h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="trainerPickStone(\''+id+'\')"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:'+m.color+'">'+m.name+' Stone</span><span class="ma-count">×'+skillStoneCount(id)+'</span></button>';}
+        if(dup){h+='<div class="setup-ability dupdis"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:#fff">'+m.name+' Stone</span><span class="ma-dup">Already on this pet</span></div>';}
+        else{h+='<button class="setup-ability'+(sel?' sel':'')+'" onclick="trainerPickStone(\''+id+'\')"><span class="ma-icon">'+abilityIconImg(id)+'</span><span class="ma-name" style="color:#fff">'+m.name+' Stone</span><span class="ma-count">×'+skillStoneCount(id)+'</span></button>';}
       });}
       if(s.stoneId&&pet.abilities[s.slot]){
         var cur=pet.abilities[s.slot];var curM=ABILITY_META[cur.id]||{name:'?',color:'#fff'};var newM=ABILITY_META[s.stoneId]||{name:'?',color:'#fff'};
@@ -7913,7 +7940,7 @@ function renderPetTrainer(){
       h+='<div onclick="showStoneInfo(\''+id+'\')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid '+m.color+'55;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;">'
         +'<span style="position:absolute;top:3px;right:4px;font-size:0.58rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.4);border:1px solid '+m.color+'66;border-radius:8px;padding:1px 5px;">\u00d7'+skillStoneCount(id)+'</span>'
         +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+abilityIconImg(id)+'</span>'
-        +'<span style="font-weight:800;font-size:0.6rem;color:'+m.color+';text-align:center;line-height:1.15;">'+m.name+'</span>'
+        +'<span style="font-weight:800;font-size:0.6rem;color:#fff;text-align:center;line-height:1.15;">'+m.name+'</span>'
         +'</div>';
     });
     h+='</div>';
@@ -8260,24 +8287,34 @@ function renderFruitBuffs(){
 }
 function showGearInfo(uid){
   var g=(G.gearInv||[]).find(function(x){return x.uid===uid;}); if(!g)return;
-  var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'\u26aa'};
+  var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
   var tm=gearTypeMeta(g.type);
   showGenericModal(tm.icon, gearName(g), '');
-  var ico=document.getElementById('generic-modal-icon'); if(ico)ico.innerHTML=gearIconImg(g,46);
-  var body=document.getElementById('generic-modal-body');
-  if(body){
-    var abil=(g.abilities||[]).map(function(a){
-      var m=GEAR_ABILITY_META[a.id]||{name:a.id,icon:'',blurb:''};
-      return '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;text-align:left;">'
-        +'<span style="font-size:1.15rem;flex:0 0 auto;line-height:1;">'+(m.icon||'')+'</span>'
-        +'<span style="flex:1;min-width:0;"><b style="color:#fff;">'+m.name+'</b> <span style="color:'+rc.color+';font-weight:800;">+'+a.v+'%'+(a.mega?' \u2605':'')+'</span><br><span style="font-size:0.7rem;color:rgba(255,255,255,0.6);line-height:1.4;">'+m.blurb+'</span></span>'
-        +'</div>';
-    }).join('');
-    var lock=isGearLocked(uid)?'<div style="margin-top:6px;font-size:0.7rem;color:#f5c842;text-align:left;">\ud83d\udd12 Locked to loadout: '+loEsc(gearLockName(uid))+'</div>':'';
-    body.innerHTML='<div style="color:'+rc.color+';font-weight:800;font-size:0.8rem;margin-bottom:10px;">'+rc.icon+' '+gearName(g)+'</div>'
-      +abil
-      +'<div style="font-size:0.66rem;color:rgba(255,255,255,0.42);margin-top:6px;line-height:1.4;text-align:left;">Equip it under your idling pet on the <b>Adventure</b> screen.</div>'+lock;
-  }
+  var ico=document.getElementById('generic-modal-icon'); if(ico)ico.innerHTML=gearIconImg(g,56);
+  var body=document.getElementById('generic-modal-body'); if(!body)return;
+  var rows=(g.abilities||[]).map(function(a){
+    var m=GEAR_ABILITY_META[a.id]||{name:a.id,icon:'❔',blurb:''};
+    return '<div class="pra-row" style="text-align:left;">'
+      +'<span class="pra-icon">'+(m.icon||'❔')+'</span>'
+      +'<span class="pra-text"><span class="pra-name" style="color:#fff;">'+m.name+'</span>'
+      +'<span class="pra-desc">'+(m.blurb||'')+'</span></span>'
+      +'<span class="pra-val" style="color:'+rc.color+';">+'+a.v+'%'+(a.mega?' ★':'')+'</span></div>';
+  }).join('');
+  if(!rows)rows='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.74rem;padding:6px;">No abilities.</div>';
+  var locked=!!g.locked;
+  var loadout=isGearLocked(uid)?'<div style="font-size:0.66rem;color:#f5c842;text-align:center;margin-top:8px;">🧳 In loadout: '+loEsc(gearLockName(uid))+'</div>':'';
+  var lockBtn='<button onclick="toggleGearLock('+uid+')" style="width:100%;margin-top:13px;padding:11px;border-radius:12px;cursor:pointer;font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:0.82rem;'
+    +(locked
+       ?'background:linear-gradient(180deg,#f5c842,#d59a1e);border:none;color:#2a1c00;box-shadow:0 3px 0 #9c6f12;">🔒 Locked — safe from merging'
+       :'background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.22);color:#fff;">🔓 Lock to protect from merging')
+    +'</button>';
+  body.innerHTML=
+    '<div style="color:'+rc.color+';font-weight:800;font-size:0.82rem;margin-bottom:11px;text-align:center;">'+rc.icon+' '+rc.label+'</div>'
+    +'<div style="display:flex;align-items:center;gap:6px;justify-content:center;font-size:0.74rem;font-weight:800;color:rgba(255,255,255,0.8);margin-bottom:2px;"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" style="width:14px;height:14px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'i\'))"> What this gear gives you</div>'
+    +'<div class="pet-result-abilities">'+rows+'</div>'
+    +loadout
+    +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.42);margin-top:8px;line-height:1.4;text-align:center;">Equip it under your idling pet on the <b>Adventure</b> screen.</div>'
+    +lockBtn;
 }
 function showFruitInfo(id){
   var f=fruitMeta(id);var t=FRUIT_TIERS[f.tier]||{name:'',color:'#7bdf6a'};
@@ -8306,7 +8343,7 @@ function stonesInvHtml(){
       h+='<div onclick="showStoneInfo(\''+id+'\')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#23316a,#16234c);border:1px solid '+m.color+'55;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;">'
         +'<span style="position:absolute;top:3px;right:4px;font-size:0.58rem;font-weight:800;color:#fff;background:rgba(0,0,0,0.4);border:1px solid '+m.color+'66;border-radius:8px;padding:1px 5px;">\u00d7'+skillStoneCount(id)+'</span>'
         +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+abilityIconImg(id)+'</span>'
-        +'<span style="font-weight:800;font-size:0.6rem;color:'+m.color+';text-align:center;line-height:1.15;">'+m.name+'</span>'
+        +'<span style="font-weight:800;font-size:0.6rem;color:#fff;text-align:center;line-height:1.15;">'+m.name+'</span>'
         +'</div>';
     });
     h+='</div>';
@@ -9818,7 +9855,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.29<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.33<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10715,7 +10752,7 @@ var DAILY_QUEST_POOL={
     {type:'fusion',name:'Grand Merge',icon:'\u2697\ufe0f',target:10,reward:{gems:9}},
     {type:'shells',name:'Shell Hoarder',icon:'\ud83d\udc1a',target:100,reward:{shells:{mountain:3}}},
     {type:'mutate',name:'Trainer',icon:'\ud83e\uddec',target:1,reward:{gems:6}},
-    {type:'craft',name:'Egg Tycoon',icon:'\ud83d\udee0\ufe0f',target:8,reward:{gems:6}},
+    {type:'craft',name:'Egg Tycoon',icon:'\ud83d\udee0\ufe0f',iconUrl:'craft-egg.png',target:8,reward:{gems:6}},
     {type:'send',name:'Expedition Leader',icon:'\ud83d\ude80',target:6,reward:{gems:6}}
   ]
 };
@@ -10730,7 +10767,7 @@ function pickDailyQuests(){
     if(!pool.length)pool=DAILY_QUEST_POOL[g];
     var p=pool[Math.floor(Math.random()*pool.length)];
     used[p.type]=true;
-    out.push({id:'d_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward});
+    out.push({id:'d_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,iconUrl:p.iconUrl,target:p.target,reward:p.reward});
   });
   return out;
 }
@@ -10774,7 +10811,7 @@ var WEEKLY_QUEST_POOL={
   easy:[
     {type:'tap',name:'Weekly Tapper',icon:'\ud83d\udc46',target:2000,reward:{shells:{forest:12}}},
     {type:'hatch',name:'Weekly Nest',icon:'\ud83e\udd5a',target:50,reward:{shells:{mountain:6}}},
-    {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',target:10,reward:{gems:15}},
+    {type:'adventure',name:'Weekly Wanderer',icon:'\ud83e\udded',iconUrl:'map.png',target:10,reward:{gems:15}},
     {type:'fusion',name:'Weekly Combiner',icon:'\u2697\ufe0f',target:20,reward:{gems:15}},
     {type:'shells',name:'Weekly Sheller',icon:'\ud83d\udc1a',target:150,reward:{shells:{mountain:4}}},
     {type:'craft',name:'Weekly Crafter',icon:'\ud83d\udee0\ufe0f',target:25,reward:{shells:{forest:10}}}
@@ -10808,7 +10845,7 @@ function pickWeeklyQuests(){
     if(!pool.length)pool=WEEKLY_QUEST_POOL[g];
     var p=pool[Math.floor(Math.random()*pool.length)];
     used[p.type]=true;
-    out.push({id:'w_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward});
+    out.push({id:'w_'+g,grade:g,type:p.type,name:p.name,icon:p.icon,iconUrl:p.iconUrl,target:p.target,reward:p.reward});
   });
   return out;
 }
@@ -10880,7 +10917,7 @@ function rerollDailyQuest(id){
   if(!pool.length)return;
   var p=pool[Math.floor(Math.random()*pool.length)];
   if(free)Q.rerollsUsed=(Q.rerollsUsed||0)+1;else G.gems-=REROLL_GEM_COST;
-  Q.active[idx]={id:cur.id,grade:grade,type:p.type,name:p.name,icon:p.icon,target:p.target,reward:p.reward,qbase:questCumValue(p.type)};
+  Q.active[idx]={id:cur.id,grade:grade,type:p.type,name:p.name,icon:p.icon,iconUrl:p.iconUrl,target:p.target,reward:p.reward,qbase:questCumValue(p.type)};
   delete Q.claimed[cur.id];
   saveGame();updateHUD();renderQuests();
 }
@@ -10896,6 +10933,7 @@ function questGo(type){
 function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
   var sty='width:38px;height:38px;object-fit:contain;vertical-align:middle;';
+  if(q&&q.iconUrl) return '<img src="'+ASSET_BASE+'/assets/ui/quests/'+q.iconUrl+'" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\''+e+'\'))">';
   if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/common/finger-tap.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
   if(t==='hatch')  return '<img src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">';
   if(t==='shells') return '<img src="'+shellImgUrl('meadow')+'" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'🐚\'))">';
@@ -13352,7 +13390,7 @@ function removeGearFusionSlot(idx){gearFusionSlots[idx]=null;renderFusion();}
 function clearGearFusionSlots(){gearFusionSlots=[null,null,null,null,null];if(fusionMode==='gear')renderFusion();}
 function autoSelectGearFusion(){
   var rar=getGearFusionRarity()||gearFusionRarityFilter;
-  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0&&!isGearLocked(g.uid);});
+  var avail=(G.gearInv||[]).filter(function(g){return g.rarity===rar&&gearFusionSlots.indexOf(g.uid)<0&&!gearMergeLocked(g.uid);});
   for(var i=0;i<gearFusionSlots.length&&avail.length;i++){if(gearFusionSlots[i]===null){gearFusionSlots[i]=avail.shift().uid;}}
   renderFusion();
 }
@@ -13432,7 +13470,7 @@ function renderGearFusion(){
   }
   html+='</div>';
   var fr=sel||gearFusionRarityFilter;
-  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0&&!isGearLocked(g.uid);}).length;
+  var avail=gear.filter(function(g){return g.rarity===fr&&gearFusionSlots.indexOf(g.uid)<0&&!gearMergeLocked(g.uid);}).length;
   html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
   html+='<div class="fusion-selected-info">'+filledCount+' / 5 selected'+(sel&&selRc?' · <span style="color:'+selRc.color+'">'+selRc.label+'</span>':'')+'</div>';
   if(filledCount<5&&avail>0)html+='<button class="fusion-auto-btn" onclick="autoSelectGearFusion()">⚡ Auto</button>';
@@ -13451,13 +13489,13 @@ function renderGearFusion(){
   html+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;">';
   RARITY_PROGRESSION.forEach(function(r){
     var rc3=RARITY_CONFIG[r];if(!rc3)return;
-    var count=gear.filter(function(g){return g.rarity===r&&!isGearLocked(g.uid);}).length;
+    var count=gear.filter(function(g){return g.rarity===r&&!gearMergeLocked(g.uid);}).length;
     if(count===0)return;
     html+='<div data-gearfusion-rarity="'+r+'" style="padding:4px 10px;background:rgba(27,45,78,0.5);border:1.5px solid '+(gearFusionRarityFilter===r?rc3.color:'rgba(58,92,184,0.6)')+';border-radius:20px;font-size:0.62rem;color:'+(gearFusionRarityFilter===r?rc3.color:'rgba(255,255,255,0.5)')+';cursor:pointer;">'+rc3.icon+' '+rc3.label+' ('+count+')</div>';
   });
   html+='</div>';
   var eligR=sel||gearFusionRarityFilter;
-  var show=gear.filter(function(g){return g.rarity===eligR&&!isGearLocked(g.uid);});
+  var show=gear.filter(function(g){return g.rarity===eligR&&!gearMergeLocked(g.uid);});
   if(!show.length){
     html+='<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.3);font-size:0.85rem;">No '+eligR+' gear — find more on adventures!</div>';
   } else {
