@@ -35,7 +35,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .edrawer-right.open{transform:translateX(0);}
 .edrawer-left{left:0;transform:translateX(-100%);}
 .edrawer-left.open{transform:translateX(0);}
-.edrawer-pillar{position:absolute;inset:0;background:rgba(8,12,24,0.92);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;padding:12px 7px 18px;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:auto;scrollbar-width:none;}
+.edrawer-pillar{position:absolute;inset:0;background:rgba(8,12,24,0.92);overflow-y:auto;overscroll-behavior:contain;touch-action:none;padding:12px 7px 18px;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:auto;scrollbar-width:none;}
 .edrawer-pillar::-webkit-scrollbar{display:none;}
 .edrawer-right .edrawer-pillar{border-left:1.5px solid rgba(120,150,230,0.4);box-shadow:-7px 0 18px rgba(0,0,0,0.45);}
 .edrawer-left .edrawer-pillar{border-right:1.5px solid rgba(120,150,230,0.4);box-shadow:7px 0 18px rgba(0,0,0,0.45);}
@@ -10009,7 +10009,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.42<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.43<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11894,12 +11894,22 @@ function softUpdateBuildDrawer(){
 }
 function bindBuildDrawer(){
   var p=document.getElementById('bld-pillar'); if(!p||p._buyBound)return; p._buyBound=true;
-  var sy=0,sx=0,moved=false,downBtn=null;
-  p.addEventListener('pointerdown',function(e){ downBtn=e.target.closest('.edb'); sy=e.clientY; sx=e.clientX; moved=false; });
-  p.addEventListener('pointermove',function(e){ if(downBtn&&(Math.abs(e.clientY-sy)>9||Math.abs(e.clientX-sx)>9))moved=true; });
-  p.addEventListener('pointerup',function(e){ var b=e.target.closest('.edb'); if(b&&b===downBtn&&!moved){var i=parseInt(b.getAttribute('data-bidx')); if(!isNaN(i))purchaseBuilding(i);} downBtn=null; });
-  p.addEventListener('pointercancel',function(){downBtn=null;});
-  p.addEventListener('pointerleave',function(){downBtn=null;});
+  var sx=0,sy=0,lastY=0,moved=false,active=false,downBtn=null;
+  p.addEventListener('pointerdown',function(e){
+    active=true; downBtn=e.target.closest('.edb'); sx=e.clientX; sy=e.clientY; lastY=e.clientY; moved=false;
+    try{p.setPointerCapture(e.pointerId);}catch(_){}
+  });
+  p.addEventListener('pointermove',function(e){
+    if(!active)return;
+    if(Math.abs(e.clientY-sy)>8||Math.abs(e.clientX-sx)>8)moved=true;
+    var dy=e.clientY-lastY; lastY=e.clientY; p.scrollTop-=dy;   // JS-driven scroll (immun mot iOS multi-touch-lås)
+  });
+  function end(e){
+    if(active){ var b=(e.target.closest&&e.target.closest('.edb')); if(b&&b===downBtn&&!moved){var i=parseInt(b.getAttribute('data-bidx')); if(!isNaN(i))purchaseBuilding(i);} }
+    active=false; downBtn=null;
+  }
+  p.addEventListener('pointerup',end);
+  p.addEventListener('pointercancel',end);
 }
 function toggleBuildDrawer(){
   var dr=document.getElementById('bld-drawer'); if(!dr)return;
