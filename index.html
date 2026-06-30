@@ -972,6 +972,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .pet-sort-btn{flex:1;padding:5px 4px;background:rgba(27,45,78,0.5);border:1.5px solid rgba(58,92,184,0.6);border-radius:8px;font-size:0.62rem;font-weight:800;color:rgba(255,255,255,0.5);cursor:pointer;text-align:center;}
 .pet-sort-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(245,200,66,0.1);}
 .pet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.active-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
 /* ── PET CARD v6.60 (rarity-stege: glow/aura/skimmer/strålkrans/partiklar + world-BG) ── */
 .pc2{--rc:#888;--gl:0px;--au:0;position:relative;display:flex;flex-direction:column;min-height:178px;border-radius:14px;padding:7px 6px 8px;cursor:pointer;overflow:hidden;border:2px solid var(--rc);background:linear-gradient(160deg,rgba(255,255,255,0.05),rgba(8,14,34,0.92));box-shadow:0 0 var(--gl) -3px var(--rc);transition:transform .12s;}
 .pc2:active{transform:scale(0.97);}
@@ -6193,14 +6194,19 @@ var _petGridSorted=null;    // cachad filtrerad/sorterad lista (för load-more)
 var _petScrollObs=null;     // IntersectionObserver för infinite scroll
 function renderPetGrid(){
   var host=document.getElementById('pet-grid-host');if(!host)return;
-  var total=G.hatchedPets.length;
-
-  if(total===0){
+  if(G.hatchedPets.length===0){
     if(_petScrollObs){_petScrollObs.disconnect();_petScrollObs=null;}
     host.innerHTML='<div class="pet-empty"><div class="pe-icon">🐾</div><p>Hatch some eggs to get your first pet!</p></div>';
     return;
   }
-  var sorted=G.hatchedPets.filter(petMatchesFilter);
+  var base=G.hatchedPets.filter(function(p){return !petHasJob(p);});
+  var total=base.length;
+  if(total===0){
+    if(_petScrollObs){_petScrollObs.disconnect();_petScrollObs=null;}
+    host.innerHTML='<div class="pet-empty"><div class="pe-icon">💼</div><p>All your pets are working right now — see them in the Active tab.</p></div>';
+    return;
+  }
+  var sorted=base.filter(petMatchesFilter);
   sorted.sort(function(a,b){return petSortCompare(a,b,petSortMode);});
   _petGridSorted=sorted;
 
@@ -6528,25 +6534,34 @@ function openPetDetail(uid){
   });
   html+=explorerRowsHtml(pet);
   html+='</div>';
-  if(!isPetBusy(pet.uid)){
-    html+='<div class="pdx2-shortcuts">'
-      +'<button class="pdx2-sc" onclick="petDetailGoto(\'adventure\')">'+uiIco('nav/nav-adventures','\ud83d\uddfa\ufe0f',22)+'Adventure</button>'
-      +'<button class="pdx2-sc" onclick="petDetailGoto(\'fusion\')">'+uiIco('lab/fusion','\u2697\ufe0f',22)+'Merge</button>'
-      +'<button class="pdx2-sc" onclick="petDetailGoto(\'mutate\')">'+uiIco('lab/mutate','\ud83e\uddec',22)+'Pet Trainer</button>'
-      +'</div>';
-  }
-  // Equip / unequip / busy
-  if(isEquipped){
-    var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(pet.uid);});
-    html+='<button class="pdx2-act remove" onclick="unequipPet(\''+pet.uid+'\')">Remove from Slot '+(slotIdx+1)+'</button>';
-  } else if(isPetBusy(pet.uid)){
-    html+='<div class="pdx2-busy">\ud83d\uddfa\ufe0f On an Adventure</div>';
-  } else {
-    html+='<button class="pdx2-act equip" onclick="quickEquipPet(\''+pet.uid+'\')">\u26a1 Equip Pet</button>';
+  // Job status: adventure (info only) / idle / production (freeable)
+  if(isPetBusy(pet.uid)){
+    html+='<div class="pdx2-busy">🗺️ On an Adventure — comes home when it finishes</div>';
+  } else if((typeof isPetIdling==='function')&&isPetIdling(pet.uid)){
+    html+='<div class="pdx2-busy">💤 Idling</div>';
+    html+='<button class="pdx2-act remove" onclick="freePetFromJob(\''+pet.uid+'\')">Stop idling</button>';
+  } else if(((typeof petPlacedBuilding==='function')?petPlacedBuilding(pet.uid):-1)!==-1){
+    var _pjb=petPlacedBuilding(pet.uid);var _pjn=(BUILDINGS[_pjb]&&BUILDINGS[_pjb].n)||'a building';
+    html+='<div class="pdx2-busy">👥 Working in '+_pjn+'</div>';
+    html+='<button class="pdx2-act remove" onclick="freePetFromJob(\''+pet.uid+'\')">Remove from job</button>';
   }
   html+='</div></div>';
   document.getElementById('pet-detail-content').innerHTML=html;
   document.getElementById('pet-detail-modal').classList.add('open');
+}
+function freePetFromJob(uid){
+  var changed=false;
+  if(G.idlePets){var ii=G.idlePets.findIndex(function(u){return String(u)===String(uid);});if(ii>=0){G.idlePets.splice(ii,1);changed=true;}}
+  var bi=(typeof petPlacedBuilding==='function')?petPlacedBuilding(uid):-1;
+  if(bi!==-1&&G.workforce&&G.workforce[bi]){var wi=G.workforce[bi].findIndex(function(u){return String(u)===String(uid);});if(wi>=0){G.workforce[bi].splice(wi,1);changed=true;}}
+  if(!changed)return;
+  var m=document.getElementById('pet-detail-modal');if(m)m.classList.remove('open');
+  if(typeof updateHUD==='function')updateHUD();
+  if(typeof renderPets==='function')renderPets();
+  if(typeof renderActivePets==='function')renderActivePets();
+  if(typeof renderHomeAdventures==='function')renderHomeAdventures();
+  if(typeof renderBuildings==='function')renderBuildings();
+  if(typeof saveGame==='function')saveGame();
 }
 function unequipPet(uid){
   var slotIdx=G.equippedPets.findIndex(function(u){return u!=null&&String(u)===String(uid);});
@@ -7136,35 +7151,70 @@ function activePetsSignature(){
   });
   return parts.join('|');
 }
+// ACTIVE PETS — egen search/sort/filter-state (speglar Pets-fliken, delar logik-funktionerna)
+var activeSort='newest';
+var activeSearch='';
+var activeFilter={rarity:{},ability:{},favOnly:false};
+var activeFilterOpen=false;
+function petHasJob(p){
+  if(!p)return false;
+  if(typeof isPetBusy==='function'&&isPetBusy(p.uid))return true;
+  if(typeof isPetIdling==='function'&&isPetIdling(p.uid))return true;
+  if(typeof petPlacedBuilding==='function'&&petPlacedBuilding(p.uid)!==-1)return true;
+  return false;
+}
+function collectActiveJobPets(){return (G.hatchedPets||[]).filter(petHasJob);}
 function renderActivePets(){
   var wrap=document.getElementById('active-wrap'); if(!wrap)return;
   _activePetsSig=activePetsSignature();
-  var rows=[];
-  (G.hatchedPets||[]).forEach(function(p){
-    var job=null,jc='#9bb6ff',rank=9;
-    if(typeof isPetIdling==='function'&&isPetIdling(p.uid)){job='💤 Idle';jc='#8fd6ff';rank=1;}
-    else if(typeof isPetBusy==='function'&&isPetBusy(p.uid)){job='🗺️ Adventure';jc='#f5c842';rank=0;}
-    else {var bi=(typeof petPlacedBuilding==='function')?petPlacedBuilding(p.uid):-1;if(bi!==-1){job='👥 '+((BUILDINGS[bi]&&BUILDINGS[bi].n)||'Building');jc='#b083ff';rank=2;}}
-    if(job)rows.push({p:p,job:job,jc:jc,rank:rank});
-  });
-  if(!rows.length){wrap.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.55);font-size:0.85rem;padding:42px 20px;line-height:1.6;">No pets are working right now.<br>Send pets on adventures, set them to idle, or place them in production buildings.</div>';return;}
-  rows.sort(function(a,b){return a.rank-b.rank;});
-  var h='<div style="font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:11px;text-align:center;line-height:1.5;">'+rows.length+' pet'+(rows.length>1?'s':'')+' currently have a job — they can\'t be used elsewhere until freed.</div>';
-  h+='<div style="display:flex;flex-direction:column;gap:8px;">';
-  rows.forEach(function(r){
-    var rc=RARITY_CONFIG[r.p.rarity]||RARITY_CONFIG.common;
-    h+='<div style="display:flex;align-items:center;gap:11px;background:rgba(27,45,78,0.5);border:1.5px solid '+rc.color+'66;border-radius:13px;padding:10px 13px;">'
-      +'<span style="font-size:1.9rem;flex-shrink:0;display:flex;align-items:center;">'+petIco(r.p)+'</span>'
-      +'<span style="flex:1;min-width:0;display:flex;flex-direction:column;">'
-        +'<span style="font-family:\'Fredoka One\',cursive;font-size:0.86rem;color:'+rc.color+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+petDisplayName(r.p)+'</span>'
-        +'<span style="font-size:0.62rem;color:rgba(255,255,255,0.5);">'+rc.label+'</span>'
-      +'</span>'
-      +'<span style="flex-shrink:0;font-family:\'Fredoka One\',cursive;font-size:0.72rem;color:'+r.jc+';white-space:nowrap;">'+r.job+'</span>'
-    +'</div>';
-  });
-  h+='</div>';
-  wrap.innerHTML=h;
+  var jobs=collectActiveJobPets();
+  if(!jobs.length){wrap.innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.55);font-size:0.85rem;padding:42px 20px;line-height:1.6;">No pets are working right now.<br>Send pets on adventures, set them to idle, or place them in production buildings.</div>';return;}
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var fcount=petActiveFilterCountOf(activeFilter);
+  var html='<div style="font-size:0.74rem;color:rgba(255,255,255,0.55);margin-bottom:9px;text-align:center;line-height:1.5;">'+jobs.length+' pet'+(jobs.length>1?'s':'')+' currently have a job \u2014 tap one to see details or free it.</div>';
+  html+='<div class="pet-tools">';
+  html+=petSortBarHtml(activeSort,'setActiveSort');
+  html+='<button class="pet-filter-btn'+(fcount?' on':'')+(activeFilterOpen?' open':'')+'" onclick="toggleActiveFilterPanel()">\u2699 Filter'+(fcount?(' ('+fcount+')'):'')+'</button>';
+  html+='<div class="pet-search"><span class="pet-search-ic">\ud83d\udd0d</span><input id="active-search-input" class="pet-search-in" type="text" placeholder="Search\u2026" value="'+(activeSearch.replace(/"/g,'&quot;'))+'" oninput="onActiveSearch(this.value)">'+(activeSearch?'<span class="pet-search-x" onclick="clearActiveSearch()">\u2715</span>':'')+'</div>';
+  html+='</div>';
+  if(activeFilterOpen){
+    html+='<div class="pet-filter-panel">';
+    html+='<div class="pf-group-lbl">Show</div><div class="pf-chips"><button class="pf-chip pf-fav'+(activeFilter.favOnly?' active':'')+'" onclick="toggleActiveFavFilter()">\u2605 Favorites only</button></div>';
+    html+='<div class="pf-group-lbl">Rarity</div><div class="pf-chips">';
+    rarityOrder.forEach(function(r){var rc=RARITY_CONFIG[r]||{};var on=!!activeFilter.rarity[r];html+='<button class="pf-chip pf-rar'+(on?' active':'')+'" style="--cc:'+(rc.color||'#888')+'" onclick="toggleActiveFilterChip(\'rarity\',\''+r+'\')">'+(rc.label||r)+'</button>';});
+    html+='</div>';
+    html+='<div class="pf-group-lbl">Ability</div><div class="pf-chips">';
+    Object.keys(ABILITY_META).forEach(function(aid){var m=ABILITY_META[aid];var on=!!activeFilter.ability[aid];html+='<button class="pf-chip'+(on?' active':'')+'" onclick="toggleActiveFilterChip(\'ability\',\''+aid+'\')">'+abilityIconImg(aid)+' '+m.name+'</button>';});
+    html+='</div>';
+    if(fcount>0)html+='<button class="pf-clear" onclick="clearActiveAll()">Clear all filters</button>';
+    html+='</div>';
+  }
+  html+='<div id="active-grid-host"></div>';
+  wrap.innerHTML=html;
+  renderActiveGrid();
 }
+function renderActiveGrid(){
+  var host=document.getElementById('active-grid-host'); if(!host)return;
+  var jobs=collectActiveJobPets();
+  var list=jobs.filter(function(p){return petMatchesFilterCore(p,activeFilter,activeSearch);});
+  list.sort(function(a,b){return petSortCompare(a,b,activeSort);});
+  var html='';
+  var filtering=(activeSearch||petActiveFilterCountOf(activeFilter)>0);
+  if(filtering)html+='<div class="pet-result-line">Showing '+list.length+' of '+jobs.length+'</div>';
+  if(!list.length){host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">\ud83d\udd0d</div><p>No working pets match your search or filters.</p><button class="pf-clear" onclick="clearActiveAll()">Clear</button></div>';return;}
+  html+='<div class="active-grid">';
+  list.forEach(function(p,i){ html+=petCardHtml(p,i); });
+  html+='</div>';
+  host.innerHTML=html;
+}
+function onActiveSearch(v){activeSearch=v;renderActiveGrid();}
+function clearActiveSearch(){activeSearch='';renderActivePets();}
+function setActiveSort(m){activeSort=m;renderActiveGrid();}
+function toggleActiveFilterPanel(){activeFilterOpen=!activeFilterOpen;renderActivePets();}
+function toggleActiveFilterChip(group,key){activeFilter[group][key]=!activeFilter[group][key];renderActivePets();}
+function clearActiveFilters(){activeFilter={rarity:{},ability:{},favOnly:false};renderActivePets();}
+function clearActiveAll(){activeFilter={rarity:{},ability:{},favOnly:false};activeSearch='';renderActivePets();}
+function toggleActiveFavFilter(){activeFilter.favOnly=!activeFilter.favOnly;renderActivePets();}
 // WORKSHOP: Extract / Mutate / Reroll (flyttade hit fran Pets-hubben). Fusion ar separat (kvar i Pets).
 var workshopSubTab='home'; // v9.74: Workshop öppnas med bild-kort-landning (Train a Pet / Pet Merge / Gear Merge)
 function workshopSub(sub){
@@ -9641,7 +9691,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.09<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.15<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
