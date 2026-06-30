@@ -5877,11 +5877,11 @@ function eggTap(clientX,clientY,quiet){
   egg.addEventListener('contextmenu',function(e){e.preventDefault();});
   egg.addEventListener('dragstart',function(e){e.preventDefault();});
   egg.addEventListener('selectstart',function(e){e.preventDefault();});
-  egg.addEventListener('touchstart',function(e){if(e.touches&&e.touches.length>1)return;e.preventDefault();},{passive:false}); // stoppar iOS markerings-loupe vid dubbeltapp-håll
+  // (Ingen touchstart-preventDefault: loupe stoppas redan av CSS (-webkit-touch-callout/user-select:none).
+  //  En passive:false-preventDefault har blockerade iOS fran att scrolla pelaren medan agget halls.)
   egg.addEventListener('pointerdown',function(e){
     if(e.button>0)return;
     if(holdId!==null)return;                   // EN pekare i taget: stoppar flerfinger-tap-fusket pa mobil (matchar desktop)
-    e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
     G.stats.tapClicks=(G.stats.tapClicks||0)+1; // diskret tap (utöver totalClicks)
     if(holdId===null){ start(e); }
@@ -10009,7 +10009,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.41<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.42<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
