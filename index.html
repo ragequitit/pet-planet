@@ -898,7 +898,7 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 #nb-pets .ni-img{width:58px;height:58px;}
 .nav-btn span:last-child{font-size:0.74rem;font-weight:800;color:#fff;font-family:'Baloo 2',cursive;text-shadow:0 1px 1px rgba(0,0,0,0.95),0 0 2px rgba(0,0,0,0.7);letter-spacing:0;white-space:nowrap;line-height:1;}
 .nav-btn.active span:last-child{color:#ffe08a;}
-.pets-subnav{display:flex;gap:4px;margin-bottom:10px;}
+.pets-subnav{display:flex;gap:4px;margin:0 auto 10px;max-width:80%;}
 .psub-btn{flex:1;padding:11px 2px;background:linear-gradient(180deg,#1f3d78,#142a52);border:2px solid #3a5cb8;border-radius:12px;color:rgba(255,255,255,0.78);font-family:'Fredoka One',cursive;font-size:0.93rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap;box-shadow:0 2px 0 #0a1838;transition:transform 0.1s;}
 .psub-btn span{font-size:1.23rem;}
 .psub-btn:active{transform:translateY(2px);}
@@ -2130,9 +2130,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       </div>
       <div id="wsub-panel-home" class="psub-panel">
         <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:4px 0 8px;">
-          <div onclick="workshopSub('mutate')" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/train-a-pet.png" alt="Train a Pet" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Train a Pet'))"></div>
-          <div onclick="workshopPetMerge()" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/pet-merge.png" alt="Pet Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Pet Merge'))"></div>
-          <div onclick="workshopGearMerge()" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/gear-merge.png" alt="Gear Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Gear Merge'))"></div>
+          <div onclick="workshopSub('mutate')" style="width:34%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/train-a-pet.png" alt="Train a Pet" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Train a Pet'))"></div>
+          <div onclick="workshopPetMerge()" style="width:34%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/pet-merge.png" alt="Pet Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Pet Merge'))"></div>
+          <div onclick="workshopGearMerge()" style="width:34%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/gear-merge.png" alt="Gear Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Gear Merge'))"></div>
         </div>
       </div>
       <div id="wsub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
@@ -8329,7 +8329,7 @@ function showBuffTipIdx(ev,i){ if(ev)ev.stopPropagation(); var html=_buffTipData
 function showBuffTip(ev,html){
   hideBuffTip();
   var t=document.createElement('div'); t.className='buff-tip'; t.innerHTML=html;
-  t.onclick=function(e){e.stopPropagation();};
+  t.onclick=function(e){e.stopPropagation();hideBuffTip();};
   document.body.appendChild(t);
   var px=(ev&&ev.clientX)||window.innerWidth/2, py=(ev&&ev.clientY)||80;
   var w=t.offsetWidth||180, h=t.offsetHeight||60;
@@ -10037,7 +10037,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.51<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.52<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -11115,6 +11115,8 @@ function questGo(type){
 function questIcon(q){
   var t=q&&q.type, e=(q&&q.icon)||'⭐';
   var sty='width:38px;height:38px;object-fit:contain;vertical-align:middle;';
+  if(t==='adventure'||t==='send') return '<img src="'+ASSET_BASE+'/assets/ui/quests/map.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\''+e+'\'))">';
+  if(t==='craft')  return '<img src="'+ASSET_BASE+'/assets/ui/quests/craft-egg.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\''+e+'\'))">';
   if(q&&q.iconUrl) return '<img src="'+ASSET_BASE+'/assets/ui/quests/'+q.iconUrl+'" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\''+e+'\'))">';
   if(t==='tap')    return '<img src="'+ASSET_BASE+'/assets/ui/common/finger-tap.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'👆\'))">';
   if(t==='hatch')  return '<img src="'+ASSET_BASE+'/assets/eggs/meadow-egg.png" alt="" style="'+sty+'" onerror="this.replaceWith(document.createTextNode(\'🥚\'))">';
