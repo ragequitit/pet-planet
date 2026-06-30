@@ -2776,20 +2776,6 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div class="prof-topbar-title">⭐ Choose Favorite Pet</div>
       <button class="prof-x" onclick="closeFavPicker()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/cross.png" alt="Close" style="width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;" onerror="this.replaceWith(document.createTextNode('\u2715'))"></button>
     </div>
-    <div class="favpick-controls">
-      <input id="favpick-search" class="favpick-search" placeholder="Search by name…" oninput="favPickSearch=this.value;renderFavPickerList()">
-      <div class="favpick-row2">
-        <select id="favpick-rarity" class="favpick-sel" onchange="favPickRarity=this.value;renderFavPickerList()"></select>
-        <select id="favpick-sort" class="favpick-sel" onchange="favPickSort=this.value;renderFavPickerList()">
-          <option value="rarity">Sort: Rarity</option>
-          <option value="name">Sort: Name A–Z</option>
-          <option value="level_desc">Sort: Level High→Low</option>
-          <option value="level_asc">Sort: Level Low→High</option>
-          <option value="new">Sort: Newest</option>
-          <option value="old">Sort: Oldest</option>
-        </select>
-      </div>
-    </div>
     <div class="prof-body" id="favpick-list"></div>
   </div>
 </div>
@@ -9741,7 +9727,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.25<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.26<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10442,56 +10428,62 @@ function openFavCrop(){
 var _lastAvatarSynced=null;
 function cloudSyncAvatar(){try{if(sb&&cloudUser&&typeof profAvatarInner==='function'){var a=profAvatarInner();if(a!==_lastAvatarSynced){_lastAvatarSynced=a;sb.rpc('pp_set_avatar',{p_avatar:a});}}}catch(e){}}
 // ---- Favorit-djur-väljare (popup med sök + raritets-filter + sortering inkl. ålder) ----
-var favPickSearch='',favPickRarity='all',favPickSort='rarity';
+var favSort='newest',favSearch='',favFilter={rarity:{},ability:{},favOnly:false},favFilterOpen=false;
 var FAV_RARITY_ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
 function petAgeMs(p){var u=(typeof p.uid==='number')?Math.floor(p.uid):0;return u>0?Math.max(0,Date.now()-u):0;}
 function petAgeLabel(p){var ms=petAgeMs(p);if(!ms)return '';var s=Math.floor(ms/1000);if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d';}
 function openFavPicker(){
-  favPickSearch='';favPickRarity='all';favPickSort='rarity';
-  var owned={};(G.hatchedPets||[]).forEach(function(p){owned[p.rarity]=true;});
-  var sel=document.getElementById('favpick-rarity');
-  if(sel){var opts='<option value="all">All rarities</option>';FAV_RARITY_ORDER.forEach(function(r){if(owned[r]){var rc=RARITY_CONFIG[r];opts+='<option value="'+r+'">'+(rc?rc.label:r)+'</option>';}});sel.innerHTML=opts;sel.value='all';}
-  var ss=document.getElementById('favpick-search');if(ss)ss.value='';
-  var srt=document.getElementById('favpick-sort');if(srt)srt.value='rarity';
+  favSearch='';favFilter={rarity:{},ability:{},favOnly:false};favFilterOpen=false;
   renderFavPickerList();
   document.getElementById('favpicker-modal').classList.add('open');
 }
 function closeFavPicker(){document.getElementById('favpicker-modal').classList.remove('open');}
 function pickFav(uid){setFavoritePet(uid);closeFavPicker();}
 function renderFavPickerList(){
-  var list=document.getElementById('favpick-list');if(!list)return;
-  var pets=(G.hatchedPets||[]).slice();
-  var q=favPickSearch.trim().toLowerCase();
-  pets=pets.filter(function(p){
-    if(favPickRarity!=='all'&&p.rarity!==favPickRarity)return false;
-    if(q&&String(p.name||'').toLowerCase().indexOf(q)<0)return false;
-    return true;
-  });
-  if(favPickSort==='name')pets.sort(function(a,b){return String(a.name).localeCompare(String(b.name));});
-  else if(favPickSort==='new')pets.sort(function(a,b){return (b.uid||0)-(a.uid||0);});
-  else if(favPickSort==='old')pets.sort(function(a,b){return (a.uid||0)-(b.uid||0);});
-  else if(favPickSort==='level_desc')pets.sort(function(a,b){return petLevelFromXp(b.xp||0)-petLevelFromXp(a.xp||0);});
-  else if(favPickSort==='level_asc')pets.sort(function(a,b){return petLevelFromXp(a.xp||0)-petLevelFromXp(b.xp||0);});
-  else pets.sort(function(a,b){var d=FAV_RARITY_ORDER.indexOf(b.rarity)-FAV_RARITY_ORDER.indexOf(a.rarity);return d!==0?d:String(a.name).localeCompare(String(b.name));});
-  var curNone=!(G.profile&&G.profile.favoritePet);
-  var h='<div class="favpick-none'+(curNone?' sel':'')+'" onclick="clearFavoritePet();closeFavPicker()">🚫 No favorite (default avatar)</div>';
-  if(pets.length===0){
-    h+='<div class="prof-cz-empty">No pets match. Try clearing the filter or search.</div>';
-  }else{
-    h+='<div class="favpick-count">'+pets.length+' pet'+(pets.length===1?'':'s')+'</div><div class="prof-petgrid">';
-    pets.forEach(function(p){
-      var rc=RARITY_CONFIG[p.rarity];var col=rc?rc.color:'#aaa';
-      var sel=(G.profile&&G.profile.favoritePet===p.uid)?' sel':'';
-      var age=petAgeLabel(p);
-      h+='<div class="prof-petpick'+sel+'" style="border-color:'+(sel?'var(--gold)':(col+'66'))+'" onclick="pickFav('+JSON.stringify(p.uid)+')">';
-      h+='<div class="prof-petpick-e">'+(petIco(p)||'🐾')+'</div><div class="prof-petpick-n" style="color:'+col+'">'+profEsc(p.name)+'</div>';
-      if(age)h+='<div class="favpick-age">'+age+' old</div>';
-      h+='</div>';
-    });
-    h+='</div>';
+  var wrap=document.getElementById('favpick-list');if(!wrap)return;
+  var rarityOrder=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
+  var fcount=petActiveFilterCountOf(favFilter);
+  var html='<div class="pet-tools">';
+  html+=petSortBarHtml(favSort,'setFavSort');
+  html+='<button class="pet-filter-btn'+(fcount?' on':'')+(favFilterOpen?' open':'')+'" onclick="toggleFavFilterPanel()">\u2699 Filter'+(fcount?(' ('+fcount+')'):'')+'</button>';
+  html+='<div class="pet-search"><span class="pet-search-ic">\ud83d\udd0d</span><input id="fav-search-input" class="pet-search-in" type="text" placeholder="Search\u2026" value="'+(favSearch.replace(/"/g,'&quot;'))+'" oninput="onFavSearch(this.value)">'+(favSearch?'<span class="pet-search-x" onclick="clearFavSearch()">\u2715</span>':'')+'</div>';
+  html+='</div>';
+  if(favFilterOpen){
+    html+='<div class="pet-filter-panel">';
+    html+='<div class="pf-group-lbl">Show</div><div class="pf-chips"><button class="pf-chip pf-fav'+(favFilter.favOnly?' active':'')+'" onclick="toggleFavFavFilter()">\u2605 Favorites only</button></div>';
+    html+='<div class="pf-group-lbl">Rarity</div><div class="pf-chips">';
+    rarityOrder.forEach(function(r){var rc=RARITY_CONFIG[r]||{};var on=!!favFilter.rarity[r];html+='<button class="pf-chip pf-rar'+(on?' active':'')+'" style="--cc:'+(rc.color||'#888')+'" onclick="toggleFavFilterChip(\'rarity\',\''+r+'\')">'+(rc.label||r)+'</button>';});
+    html+='</div>';
+    html+='<div class="pf-group-lbl">Ability</div><div class="pf-chips">';
+    Object.keys(ABILITY_META).forEach(function(aid){var m=ABILITY_META[aid];var on=!!favFilter.ability[aid];html+='<button class="pf-chip'+(on?' active':'')+'" onclick="toggleFavFilterChip(\'ability\',\''+aid+'\')">'+abilityIconImg(aid)+' '+m.name+'</button>';});
+    html+='</div>';
+    if(fcount>0)html+='<button class="pf-clear" onclick="clearFavAll()">Clear all filters</button>';
+    html+='</div>';
   }
-  list.innerHTML=h;
+  html+='<div id="fav-grid-host"></div>';
+  wrap.innerHTML=html;
+  renderFavGrid();
 }
+function renderFavGrid(){
+  var host=document.getElementById('fav-grid-host');if(!host)return;
+  var list=(G.hatchedPets||[]).filter(function(p){return petMatchesFilterCore(p,favFilter,favSearch);});
+  list.sort(function(a,b){return petSortCompare(a,b,favSort);});
+  var html='';
+  var filtering=(favSearch||petActiveFilterCountOf(favFilter)>0);
+  if(filtering)html+='<div class="pet-result-line">Showing '+list.length+' of '+((G.hatchedPets||[]).length)+'</div>';
+  if(!list.length){host.innerHTML=html+'<div class="pet-empty"><div class="pe-icon">\ud83d\udd0d</div><p>No pets match your search or filters.</p><button class="pf-clear" onclick="clearFavAll()">Clear</button></div>';return;}
+  html+='<div class="active-grid">';
+  list.forEach(function(p,i){ html+=petCardHtml(p,i,{lite:true,onClick:"pickFav('"+p.uid+"')"}); });
+  html+='</div>';
+  host.innerHTML=html;
+}
+function onFavSearch(v){favSearch=v;renderFavGrid();}
+function clearFavSearch(){favSearch='';renderFavPickerList();}
+function setFavSort(m){favSort=m;renderFavGrid();}
+function toggleFavFilterPanel(){favFilterOpen=!favFilterOpen;renderFavPickerList();}
+function toggleFavFilterChip(group,key){favFilter[group][key]=!favFilter[group][key];renderFavPickerList();}
+function clearFavAll(){favFilter={rarity:{},ability:{},favOnly:false};favSearch='';renderFavPickerList();}
+function toggleFavFavFilter(){favFilter.favOnly=!favFilter.favOnly;renderFavPickerList();}
 function renderProfileCustomize(){
   var ORDER=['common','uncommon','rare','epic','legendary','mythical','artifact','heavenly','eternal','cosmic'];
   var h='<div class="prof-section-title">Customize</div>';
