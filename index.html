@@ -29,6 +29,28 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .side-btn .sb-icon{position:absolute;top:-21px;left:0;right:0;text-align:center;font-size:2.54rem;line-height:1;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55));}
 .side-btn .sb-img{width:51px;height:51px;object-fit:contain;display:inline-block;}
 .side-btn .sb-label{font-size:0.6rem;font-weight:800;letter-spacing:0.5px;color:#fff;text-transform:uppercase;text-shadow:0 1px 2px rgba(0,0,0,0.85);}
+/* === KANT-PELARE (#3): bygg/upgrade-lådor som glider in över scenen === */
+.edrawer{position:absolute;top:0;bottom:0;z-index:46;width:34vw;max-width:150px;transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none;}
+.edrawer-right{right:0;transform:translateX(100%);}
+.edrawer-right.open{transform:translateX(0);}
+.edrawer-left{left:0;transform:translateX(-100%);}
+.edrawer-left.open{transform:translateX(0);}
+.edrawer-pillar{position:absolute;inset:0;background:rgba(8,12,24,0.8);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 7px 18px;display:flex;flex-direction:column;align-items:center;gap:0;pointer-events:auto;scrollbar-width:none;}
+.edrawer-pillar::-webkit-scrollbar{display:none;}
+.edrawer-right .edrawer-pillar{border-left:1.5px solid rgba(120,150,230,0.4);box-shadow:-7px 0 18px rgba(0,0,0,0.45);}
+.edrawer-left .edrawer-pillar{border-right:1.5px solid rgba(120,150,230,0.4);box-shadow:7px 0 18px rgba(0,0,0,0.45);}
+.edrawer-handle{position:absolute;top:50%;width:42px;height:66px;background:rgba(10,16,30,0.92);border:1.5px solid rgba(120,150,230,0.55);display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;z-index:2;}
+.edrawer-right .edrawer-handle{left:0;transform:translate(-100%,-50%);border-right:none;border-radius:13px 0 0 13px;box-shadow:-4px 0 10px rgba(0,0,0,0.4);}
+.edrawer-left .edrawer-handle{right:0;transform:translate(100%,-50%);border-left:none;border-radius:0 13px 13px 0;box-shadow:4px 0 10px rgba(0,0,0,0.4);}
+.edrawer-handle img{width:30px;height:30px;object-fit:contain;}
+.edb{position:relative;width:56px;height:56px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(30,42,72,0.55);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0;transition:transform .08s;}
+.edb:active{transform:scale(0.92);}
+.edb.buyable{border-color:#ffce4a;box-shadow:0 0 11px rgba(245,200,66,0.6);background:rgba(60,52,20,0.5);}
+.edb.poor{opacity:0.5;}
+.edb-ic{font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;}
+.edb-ic .bld-pic{width:38px;height:38px;object-fit:contain;}
+.edb-n{position:absolute;bottom:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#1a2750;border:1.5px solid rgba(120,150,230,0.6);color:#fff;font-size:0.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.edb-link{width:2px;height:9px;background:rgba(120,150,230,0.4);flex:0 0 auto;}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
 /* STEG 6.6b: 5 active-slots DORMANTA (reversibelt — ta bort detta block för att visa dem igen).
@@ -2033,6 +2055,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
       <div id="sky-life" aria-hidden="true"></div>
       <div id="scene-fade"></div>
       <div class="side-btns" id="left-btns">
+        <div class="side-btn" id="nestset-btn" onclick="openNestLoadoutsPopup()"><span class="sb-icon">🪺</span><span class="sb-label">Nest Sets</span></div>
         <div class="side-btn" id="quests-btn" onclick="openQuests()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-quests.png" alt="" onerror="this.parentNode.textContent='📋'"></span><span class="sb-label">Quests</span></div>
         <div class="side-btn" id="daily-btn" onclick="claimDaily()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/menu/daily-reward.png" alt="" onerror="this.parentNode.textContent='🎁'"></span><span class="sb-label">Daily</span></div>
         <div class="side-btn" id="loadout-btn" onclick="openLoadoutModal()"><span class="sb-icon"><img class="sb-img" src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/common/loadout.png" alt="" onerror="this.parentNode.textContent='🎚️'"></span><span class="sb-label">Loadouts</span></div>
@@ -2054,6 +2077,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
           <div id="egg-shadow"></div>
         </div>
         <div id="nestgear-ring"></div>
+      </div>
+      <div id="bld-drawer" class="edrawer edrawer-right">
+        <div class="edrawer-handle" onclick="toggleBuildDrawer()"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/buildings/building.png" alt="" onerror="this.replaceWith(document.createTextNode('🏠'))"></div>
+        <div class="edrawer-pillar" id="bld-pillar"></div>
       </div>
     </div>
     <div id="home-sheet">
@@ -2247,6 +2274,12 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 <div class="hatch-info-body" id="loadouts-body"></div>
 <button class="hatch-info-close" onclick="closeLoadoutsPopup()">Close</button>
 </div></div>
+<div id="nest-loadouts-modal" class="modal-overlay" style="align-items:center;justify-content:center;" onclick="if(event.target===this)closeNestLoadoutsPopup()">
+<div class="hatch-info-card">
+<div class="hatch-info-head">🪺 Nest Gear Sets</div>
+<div class="hatch-info-body" id="nest-loadouts-body"></div>
+<button class="hatch-info-close" onclick="closeNestLoadoutsPopup()">Close</button>
+</div></div>
 <div id="loadout-modal" class="modal-overlay">
   <div class="prof-panel">
     <div class="prof-topbar">
@@ -2374,7 +2407,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div class="howto-row"><div class="howto-ic">&#x1F4B0;</div><div class="howto-txt"><div class="howto-nm">Treasure Hunter</div><div class="howto-desc">Earn more Sparks from adventures.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x2B50;</div><div class="howto-txt"><div class="howto-nm">XP Boost</div><div class="howto-desc">Your pets gain more XP.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x1F340;</div><div class="howto-txt"><div class="howto-nm">Lucky Paw</div><div class="howto-desc">Higher chance of bonus loot.</div></div></div>
-    <div class="howto-row"><div class="howto-ic">&#x2728;</div><div class="howto-txt"><div class="howto-nm">Rare Find</div><div class="howto-desc">Better odds of rare loot.</div></div></div>
+    <div class="howto-row"><div class="howto-ic">&#x2728;</div><div class="howto-txt"><div class="howto-nm">Rare Find</div><div class="howto-desc">Higher chance for bonus loot from adventures &#x2014; gear, maps, relics, stones, gems and eggs. It boosts the drop chance for all of them.</div></div></div>
     <div class="howto-row"><div class="howto-ic">&#x1F41A;</div><div class="howto-txt"><div class="howto-nm">Shell Seeker</div><div class="howto-desc">Earn more Shells from adventures.</div></div></div>
 
     <div class="howto-sec">Adventure Gear Abilities</div>
@@ -3362,7 +3395,7 @@ var ABILITY_META={
   treasureFind:{name:'Treasure Hunter',icon:'💰', color:'#f5c842', desc:function(v){return '+'+v+'% Sparks from adventures';}},
   xpBoost:     {name:'XP Boost',      icon:'⭐', color:'#a3e635', desc:function(v){return '+'+v+'% Pet XP';}},
   fortune:     {name:'Lucky Paw',     icon:'🍀', color:'#81c784', desc:function(v){return '+'+v+'% bonus loot chance';}},
-  rareFind:    {name:'Rare Find',     icon:'✨', color:'#ce93d8', desc:function(v){return '+'+v+'% rare-loot odds';}},
+  rareFind:    {name:'Rare Find',     icon:'✨', color:'#ce93d8', desc:function(v){return '+'+v+'% chance for bonus loot (gear, maps, stones, gems\u2026)';}},
   shellLuck:   {name:'Shell Seeker',  icon:'🐚', color:'#90caf9', desc:function(v){return '+'+v+'% Shells from adventures';}},
 };
 var TIER_VALUES={1:2,2:4,3:7,4:11,5:15};
@@ -3633,7 +3666,7 @@ function rollNestGearDrop(eggId){
 }
 // STEG 5: MERGE — 5 nest gear av SAMMA rarity → 1 (en rarity upp; vid taket reroll). Speglar mergeGear.
 function nestIsEquipped(uid){if(!G.nestEquipped)return false;for(var t in G.nestEquipped){if(G.nestEquipped[t]===uid)return true;}return false;}
-function nestFreeOf(rarity){return (G.nestGear||[]).filter(function(g){return g.rarity===rarity&&!nestIsEquipped(g.uid);});}
+function nestFreeOf(rarity){return (G.nestGear||[]).filter(function(g){return g.rarity===rarity&&!nestIsEquipped(g.uid)&&!g.locked;});}
 function mergeNestGear(arr){
   if(!arr||arr.length!==5)return null;
   var rarity=arr[0].rarity;
@@ -3692,6 +3725,68 @@ function unequipNestGear(type){
   if(typeof saveGame==='function')saveGame();
   if(typeof renderNestRing==='function')renderNestRing();
   openNestSlotPicker(type);
+}
+// ====== NEST GEAR LOADOUTS (#1b) — speglar explorer-loadouts; 5 set, #1 gratis, #2-5 kops med Gems. Aktiv set slots = G.nestEquipped. ======
+function nestLoadoutGemCost(i){return [0,75,150,300,600][i]||0;}
+function ensureNestLoadouts(){
+  if(!Array.isArray(G.nestGearLoadouts)||G.nestGearLoadouts.length<5){
+    var arr=[];
+    for(var i=0;i<5;i++)arr.push({bought:i===0,name:'Nest Set '+(i+1),slots:{incubator:null,crown:null,gem:null,trinket:null,feather:null}});
+    if(G.nestEquipped&&typeof G.nestEquipped==='object'){
+      ['incubator','crown','gem','trinket','feather'].forEach(function(t){arr[0].slots[t]=(G.nestEquipped[t]!=null?G.nestEquipped[t]:null);});
+    }
+    G.nestGearLoadouts=arr;
+  }
+  for(var j=0;j<5;j++){ if(!G.nestGearLoadouts[j].slots)G.nestGearLoadouts[j].slots={incubator:null,crown:null,gem:null,trinket:null,feather:null}; if(!G.nestGearLoadouts[j].name)G.nestGearLoadouts[j].name='Nest Set '+(j+1); }
+  if(typeof G.activeNestLoadout!=='number'||G.activeNestLoadout<0||G.activeNestLoadout>4||!G.nestGearLoadouts[G.activeNestLoadout].bought)G.activeNestLoadout=0;
+  var have={}; (G.nestGear||[]).forEach(function(g){have[g.uid]=true;});
+  G.nestGearLoadouts.forEach(function(lo){ ['incubator','crown','gem','trinket','feather'].forEach(function(t){ if(lo.slots[t]!=null&&!have[lo.slots[t]])lo.slots[t]=null; }); });
+  G.nestEquipped=G.nestGearLoadouts[G.activeNestLoadout].slots;
+}
+function switchNestLoadout(i){ensureNestLoadouts();if(!G.nestGearLoadouts[i]||!G.nestGearLoadouts[i].bought)return;G.activeNestLoadout=i;G.nestEquipped=G.nestGearLoadouts[i].slots;if(typeof saveGame==='function')saveGame();if(typeof renderNestRing==='function')renderNestRing();if(typeof renderInventory==='function')renderInventory();if(typeof updateHUD==='function')updateHUD();}
+function buyNestLoadout(i){
+  ensureNestLoadouts();var lo=G.nestGearLoadouts[i];if(!lo||lo.bought)return;
+  var cost=nestLoadoutGemCost(i);
+  if((G.gems||0)<cost){if(typeof showRewardPopup==='function')showRewardPopup(['Not enough Gems.','Nest Set '+(i+1)+' costs '+cost+' Gems.'],false);return;}
+  if(typeof confirm==='function'&&!confirm('Buy '+lo.name+' for '+cost+' Gems?'))return;
+  G.gems-=cost;lo.bought=true;if(typeof updateHUD==='function')updateHUD();
+  switchNestLoadout(i);
+}
+function nestLoadoutSetName(i,val){ensureNestLoadouts();var lo=G.nestGearLoadouts&&G.nestGearLoadouts[i];if(!lo)return;lo.name=(val||'').trim()||('Nest Set '+(i+1));if(typeof saveGame==='function')saveGame();}
+function nestLoadoutUpdate(i){
+  ensureNestLoadouts();var lo=G.nestGearLoadouts&&G.nestGearLoadouts[i];if(!lo||!lo.bought)return;
+  var inp=document.getElementById('nlo-name-'+i); if(inp){lo.name=(inp.value||'').trim()||('Nest Set '+(i+1));}
+  if(i!==(G.activeNestLoadout||0))lo.slots=Object.assign({}, G.nestEquipped||{});
+  if(typeof saveGame==='function')saveGame();
+  renderNestLoadoutsPopup();
+}
+function openNestLoadoutsPopup(){ ensureNestLoadouts(); renderNestLoadoutsPopup(); var m=document.getElementById('nest-loadouts-modal'); if(m)m.classList.add('open'); }
+function closeNestLoadoutsPopup(){ var m=document.getElementById('nest-loadouts-modal'); if(m)m.classList.remove('open'); }
+function nestLoadoutPopupSwitch(i){ switchNestLoadout(i); renderNestLoadoutsPopup(); }
+function nestLoadoutPopupBuy(i){ buyNestLoadout(i); renderNestLoadoutsPopup(); }
+function renderNestLoadoutsPopup(){
+  ensureNestLoadouts();
+  var box=document.getElementById('nest-loadouts-body'); if(!box)return;
+  var active=G.activeNestLoadout||0;
+  var h='';
+  h+='<div style="font-size:0.62rem;color:rgba(255,255,255,0.5);margin-bottom:11px;text-align:center;line-height:1.5;">Tap <b>Use</b> to switch nest set. Type a name, then tap <b>Update</b> to save your current nest gear into it.</div>';
+  h+='<div style="display:flex;flex-direction:column;gap:8px;">';
+  for(var i=0;i<5;i++){
+    var lo=G.nestGearLoadouts[i];var isA=(i===active);var bt=lo&&lo.bought;
+    if(bt){
+      h+='<div onclick="nestLoadoutPopupSwitch('+i+')" style="display:flex;align-items:center;gap:8px;background:'+(isA?'rgba(176,131,255,0.22)':'rgba(27,45,78,0.55)')+';border:1.5px solid '+(isA?'#b083ff':'rgba(58,92,184,0.4)')+';border-radius:13px;padding:9px 11px;cursor:pointer;">'
+        +'<input id="nlo-name-'+i+'" value="'+loEsc(lo.name)+'" maxlength="18" onclick="event.stopPropagation()" onchange="nestLoadoutSetName('+i+',this.value)" style="flex:1;min-width:0;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-family:\'Baloo 2\',sans-serif;font-weight:700;font-size:0.82rem;padding:6px 9px;">'
+        +(isA?'<span style="flex-shrink:0;font-size:0.66rem;font-weight:800;color:#b083ff;white-space:nowrap;">✓ Active</span>':'<span style="flex-shrink:0;display:flex;gap:6px;"><button onclick="event.stopPropagation();nestLoadoutPopupSwitch('+i+')" style="background:linear-gradient(180deg,#37c871,#1f9b53);border:1.5px solid rgba(120,230,160,0.55);border-radius:9px;color:#fff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 13px;cursor:pointer;">Use</button><button onclick="event.stopPropagation();nestLoadoutUpdate('+i+')" style="background:rgba(124,77,255,0.28);border:1.5px solid rgba(179,136,255,0.6);border-radius:9px;color:#e3d4ff;font-family:\'Fredoka One\',cursive;font-size:0.64rem;padding:6px 11px;cursor:pointer;">Update</button></span>')
+      +'</div>';
+    }else{
+      h+='<div onclick="nestLoadoutPopupBuy('+i+')" style="display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.25);border:1.5px dashed rgba(245,200,66,0.5);border-radius:13px;padding:11px;cursor:pointer;">'
+        +'<span style="display:flex;align-items:center;gap:9px;font-family:\'Fredoka One\',cursive;font-size:0.84rem;color:rgba(255,255,255,0.62);">'+LOCK_IMG+' '+loEsc((lo&&lo.name)||('Nest Set '+(i+1)))+'</span>'
+        +'<span style="display:flex;align-items:center;gap:5px;font-size:0.76rem;color:#f5c842;font-weight:800;">'+GEM_IMG+' '+nestLoadoutGemCost(i)+'</span>'
+      +'</div>';
+    }
+  }
+  h+='</div>';
+  box.innerHTML=h;
 }
 function nestGearOverviewHtml(){
   var h='<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);line-height:1.5;margin-bottom:10px;">Equip one of each type. These boost your <b>main loop</b> \u2014 tapping, hatching &amp; production \u2014 not adventures.</div>';
@@ -5218,7 +5313,7 @@ function lootInvHtml(){
         var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
         var tm=nestTypeMeta(g.type);
         var eq=(typeof nestIsEquipped==='function'&&nestIsEquipped(g.uid))?'<span style="position:absolute;top:3px;left:5px;font-size:0.62rem;">✅</span>':'';
-        h+='<div onclick="openNestGear()" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#221c44,#15112e);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
+        h+='<div onclick="showNestGearInfo('+g.uid+')" style="position:relative;cursor:pointer;background:linear-gradient(180deg,#221c44,#15112e);border:1px solid '+rc.color+'99;border-radius:14px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;box-shadow:0 0 9px '+rc.color+'33;">'
           +eq
           +'<span style="font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;height:40px;">'+nestGearIconImg(g,38)+'</span>'
           +'<span style="font-weight:800;font-size:0.62rem;color:'+rc.color+';text-align:center;line-height:1.15;">'+nestGearName(g)+'</span>'
@@ -5361,7 +5456,7 @@ function saveGame(){
     petSlots:G.petSlots,currentWorld:G.currentWorld,owned:G.owned,workforce:G.workforce,wfSlots:G.wfSlots,buildingDoublings:G.buildingDoublings,clickUpgrades:G.clickUpgrades,ulvl:G.ulvl,
     equippedPets:G.equippedPets,shells:G.shells,eggsOwned:G.eggsOwned,eventEggDefs:G.eventEggDefs,
     loadouts:G.loadouts,
-    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,nestGear:G.nestGear,nestEquipped:G.nestEquipped,
+    eggsHatched:G.eggsHatched,hatchSlots:G.hatchSlots,hatchSlotCount:G.hatchSlotCount,hatchedPets:G.hatchedPets,mutationCores:G.mutationCores,skillStones:G.skillStones,fruits:G.fruits,fruitBuffs:G.fruitBuffs,fruitCharges:G.fruitCharges,gearInv:G.gearInv,gearEquipped:G.gearEquipped,gearLoadouts:G.gearLoadouts,activeLoadout:G.activeLoadout,nestGear:G.nestGear,nestEquipped:G.nestEquipped,nestGearLoadouts:G.nestGearLoadouts,activeNestLoadout:G.activeNestLoadout,
     extractChambers:G.extractChambers,extractUnlocked:G.extractUnlocked,mutateChambers:G.mutateChambers,mutateUnlocked:G.mutateUnlocked,
     rerollCharms:G.rerollCharms,
     stats:G.stats,_discoveredPets:G._discoveredPets,achievements:G.achievements,gems:G.gems,permBonus:G.permBonus,stardust:G.stardust,ascensions:G.ascensions,ascensionUpgrades:G.ascensionUpgrades,worldClaims:G.worldClaims,lostUnlocked:G.lostUnlocked,mapsOwned:G.mapsOwned,relics:G.relics,areasUnlocked:G.areasUnlocked,homeMode:G.homeMode,idleWorld:G.idleWorld,idleSlots:G.idleSlots,idlePets:G.idlePets,titlesEarned:G.titlesEarned,adventureSlots:G.adventureSlots,adventures:G.adventures,profile:G.profile,settings:G.settings,redeemedCodes:G.redeemedCodes,newsSeen:G.newsSeen,event:G.event,quests:G.quests,weeklyQuests:G.weeklyQuests,battlePass:G.battlePass,boosts:G.boosts,cosmeticsOwned:G.cosmeticsOwned,playerXp:G.playerXp,playerLevel:G.playerLevel,savedAt:Date.now()
@@ -5384,7 +5479,7 @@ function resetGame(){
   G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};
+  G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};G.nestGearLoadouts=null;G.activeNestLoadout=0;
   G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
   G.rerollCharms=0;
   G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -5783,6 +5878,7 @@ function eggTap(clientX,clientY,quiet){
   egg.addEventListener('touchstart',function(e){e.preventDefault();},{passive:false}); // stoppar iOS markerings-loupe vid dubbeltapp-håll
   egg.addEventListener('pointerdown',function(e){
     if(e.button>0)return;
+    if(holdId!==null)return;                   // EN pekare i taget: stoppar flerfinger-tap-fusket pa mobil (matchar desktop)
     e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
     G.stats.tapClicks=(G.stats.tapClicks||0)+1; // diskret tap (utöver totalClicks)
@@ -5796,6 +5892,29 @@ function eggTap(clientX,clientY,quiet){
   function up(e){ if(holdId!==null&&e.pointerId===holdId) stop(); }
   egg.addEventListener('pointerup',up);
   egg.addEventListener('pointercancel',up);
+})();
+
+// Swipe vanster/hoger pa hemskarmen for att byta lage (egg <-> idle), speglar flip-switchen.
+(function(){
+  var el=document.getElementById('main'); if(!el)return;
+  var x0=0,y0=0,t0=0,track=false;
+  el.addEventListener('touchstart',function(e){
+    if(!e.touches||e.touches.length!==1){track=false;return;}
+    var onHome=(typeof SCENE_TABS!=='undefined')&&SCENE_TABS.indexOf(currentTab)>=0&&currentTab!=='inventory';
+    if(!onHome){track=false;return;}
+    if(e.target&&e.target.closest&&e.target.closest('.hatch-slot-row,.egg-craft-row,.shop-worlds,.set-tabs,.bonus-strip,.flip-pill,input,textarea')){track=false;return;}
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();track=true;
+  },{passive:true});
+  el.addEventListener('touchend',function(e){
+    if(!track)return; track=false;
+    var t=e.changedTouches&&e.changedTouches[0]; if(!t)return;
+    var dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
+    if(dt>600) return;                          // for langsamt
+    if(Math.abs(dx)<70) return;                 // for kort
+    if(Math.abs(dx)<Math.abs(dy)*2) return;     // for vertikalt -> lat scroll vinna
+    if(dx<0){ if(G.homeMode!=='adventures')setHomeMode('adventures'); }  // svep vanster -> idle/aventyr
+    else    { if(G.homeMode!=='build')setHomeMode('build'); }            // svep hoger  -> agg/build
+  },{passive:true});
 })();
 
 // ============================================================
@@ -6704,8 +6823,8 @@ document.getElementById('shell-info-modal').onclick=function(e){if(e.target===th
 // MODALS: OFFLINE, PET RESULT
 // ============================================================
 document.getElementById('offline-claim').onclick=function(){document.getElementById('offline-modal').classList.remove('open');if(typeof maybeShowNewsPopup==='function')setTimeout(maybeShowNewsPopup,300);};
-document.getElementById('pet-result-close').onclick=function(){document.getElementById('pet-result-modal').classList.remove('open');};
-document.getElementById('pet-result-modal').onclick=function(e){if(e.target===this)this.classList.remove('open');};
+document.getElementById('pet-result-close').onclick=function(){if(_pendingGearReveal){var _g=_pendingGearReveal;_pendingGearReveal=null;showGearResult(_g);return;}document.getElementById('pet-result-modal').classList.remove('open');};
+document.getElementById('pet-result-modal').onclick=function(e){if(e.target===this){if(_pendingGearReveal){var _g=_pendingGearReveal;_pendingGearReveal=null;showGearResult(_g);return;}this.classList.remove('open');}};
 
 // ============================================================
 // TAB SWITCHING
@@ -8196,7 +8315,7 @@ function abilityBlurb(id){return {
   treasureFind:'Earns extra Sparks from adventures.',
   xpBoost:'Your pets gain more XP.',
   fortune:'Better chance for bonus loot on adventures and while idling.',
-  rareFind:'Better odds of rare loot.',
+  rareFind:'Higher chance for bonus loot from adventures \u2014 gear, maps, relics, stones, gems and eggs.',
   shellLuck:'Brings home more Shells.'
 }[id]||'A helpful bonus.';}
 function showAbilityTip(ev,id,valTxt){
@@ -8316,6 +8435,37 @@ function showGearInfo(uid){
     +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.42);margin-top:8px;line-height:1.4;text-align:center;">Equip it under your idling pet on the <b>Adventure</b> screen.</div>'
     +lockBtn;
 }
+function showNestGearInfo(uid){
+  var g=(G.nestGear||[]).find(function(x){return x.uid===uid;}); if(!g)return;
+  var rc=RARITY_CONFIG[g.rarity]||{color:'#aaa',label:g.rarity,icon:'⚪'};
+  var tm=nestTypeMeta(g.type);
+  showGenericModal(tm.icon, nestGearName(g), '');
+  var ico=document.getElementById('generic-modal-icon'); if(ico)ico.innerHTML=nestGearIconImg(g,56);
+  var body=document.getElementById('generic-modal-body'); if(!body)return;
+  var rows=(g.abilities||[]).map(function(a){
+    var m=NEST_GEAR_ABILITY_META[a.id]||{name:a.id,icon:'❔',blurb:''};
+    return '<div class="pra-row" style="text-align:left;"><span class="pra-icon">'+(m.icon||'❔')+'</span>'
+      +'<span class="pra-text"><span class="pra-name" style="color:#fff;">'+m.name+'</span>'
+      +'<span class="pra-desc">'+(m.blurb||'')+'</span></span>'
+      +'<span class="pra-val" style="color:'+rc.color+';">+'+a.v+'%'+(a.mega?' ★':'')+'</span></div>';
+  }).join('');
+  if(!rows)rows='<div style="text-align:center;color:rgba(255,255,255,0.45);font-size:0.74rem;padding:6px;">No abilities.</div>';
+  var locked=!!g.locked;
+  var eqNote=(typeof nestIsEquipped==='function'&&nestIsEquipped(uid))?'<div style="font-size:0.66rem;color:#9fe6b0;text-align:center;margin-top:8px;">✓ Currently equipped around your egg</div>':'';
+  var lockBtn='<button onclick="toggleNestGearLock('+uid+')" style="width:100%;margin-top:13px;padding:11px;border-radius:12px;cursor:pointer;font-family:\'Baloo 2\',sans-serif;font-weight:800;font-size:0.82rem;'
+    +(locked
+       ?'background:linear-gradient(180deg,#f5c842,#d59a1e);border:none;color:#2a1c00;box-shadow:0 3px 0 #9c6f12;">🔒 Locked — safe from merging'
+       :'background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.22);color:#fff;">🔓 Lock to protect from merging')
+    +'</button>';
+  body.innerHTML=
+    '<div style="color:'+rc.color+';font-weight:800;font-size:0.82rem;margin-bottom:11px;text-align:center;">'+rc.icon+' '+rc.label+'</div>'
+    +'<div style="display:flex;align-items:center;gap:6px;justify-content:center;font-size:0.74rem;font-weight:800;color:rgba(255,255,255,0.8);margin-bottom:2px;"><img src="'+ASSET_BASE+'/assets/ui/common/info.png" alt="i" style="width:14px;height:14px;object-fit:contain;" onerror="this.replaceWith(document.createTextNode(\'i\'))"> What this gear gives you</div>'
+    +'<div class="pet-result-abilities">'+rows+'</div>'
+    +eqNote
+    +'<div style="font-size:0.64rem;color:rgba(255,255,255,0.42);margin-top:8px;line-height:1.4;text-align:center;">Equip it around your egg on the <b>main screen</b>.</div>'
+    +lockBtn;
+}
+function toggleNestGearLock(uid){var g=(G.nestGear||[]).find(function(x){return x.uid===uid;}); if(!g)return; g.locked=!g.locked; if(typeof saveGame==='function')saveGame(); if(typeof renderNestRing==='function')renderNestRing(); if(typeof renderInventory==='function')renderInventory(); if(typeof showNestGearInfo==='function')showNestGearInfo(uid);}
 function showFruitInfo(id){
   var f=fruitMeta(id);var t=FRUIT_TIERS[f.tier]||{name:'',color:'#7bdf6a'};
   showGenericModal(f.emoji,f.name,'');
@@ -9855,7 +10005,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.33<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.39<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -9907,7 +10057,7 @@ function resetFromSettings(){
     G.shells={meadow:0,forest:0,mountain:0,desert:0,ocean:0,volcano:0,jungle:0,arctic:0,mystic:0,celestial:0,cosmic:0};
   G.mapsOwned={};G.lostUnlocked={};G.areasUnlocked={};G.relics={};
   G.idleWorld='starter';G.idlePets=[];G.idleStartAt=0;G.idleSlots=1;G.idleBag={shells:{},finds:[]};idleViewIdx=0;
-    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};
+    G.eggsOwned={};G.eggsHatched={};G.hatchSlots=[];G.hatchSlotCount=1;G.hatchedPets=[];G.workforce={};G.wfSlots={};G.mutationCores=[];G.skillStones={};G.fruits={};G.fruitBuffs=[];G.fruitCharges={};G.gearInv=[];G.gearEquipped={backpack:null,compass:null,boots:null,charm:null,tool:null};G.gearLoadouts=null;G.activeLoadout=0;G.nestGear=[];G.nestEquipped={incubator:null,crown:null,gem:null,trinket:null,feather:null};G.nestGearLoadouts=null;G.activeNestLoadout=0;
     G.extractChambers=[null,null,null];G.extractUnlocked=1;G.mutateChambers=[null,null,null];G.mutateUnlocked=1;
     G.rerollCharms=0;
     G.gems=0;G.playerXp=0;G.playerLevel=1;
@@ -11708,6 +11858,49 @@ function buildClkView(u){
     state: owned?'owned':(unlocked?(G.coins>=u.cost?'afford':'poor'):'locked')};
 }
 var _stateRank={afford:0,poor:1,locked:2,owned:3};
+// === KANT-PELARE (#3) — byggnads-låda (höger). Köp byggnader medan man spammar ägget. ===
+function renderBuildDrawer(){
+  var p=document.getElementById('bld-pillar'); if(!p)return;
+  var unlocked=numUnlocked(); var h='';
+  for(var i=0;i<unlocked;i++){
+    var c=bcost(i); var afford=G.coins>=c;
+    if(i>0)h+='<div class="edb-link"></div>';
+    h+='<button class="edb'+(afford?' buyable':' poor')+'" data-bidx="'+i+'" onclick="purchaseBuilding('+i+')" title="'+BUILDINGS[i].n+'">'
+      +'<span class="edb-ic">'+buildingIconImg(BUILDINGS[i])+'</span>'
+      +'<span class="edb-n" id="edbn'+i+'">'+(G.owned[i]||0)+'</span>'
+      +'</button>';
+  }
+  p.innerHTML=h;
+}
+function softUpdateBuildDrawer(){
+  var dr=document.getElementById('bld-drawer'); if(!dr||!dr.classList.contains('open'))return;
+  var p=document.getElementById('bld-pillar'); if(!p)return;
+  var unlocked=numUnlocked();
+  if(p.querySelectorAll('.edb').length!==unlocked){renderBuildDrawer();return;}
+  for(var i=0;i<unlocked;i++){
+    var el=p.querySelector('.edb[data-bidx="'+i+'"]'); if(!el)continue;
+    var c=bcost(i); var afford=G.coins>=c;
+    el.className='edb'+(afford?' buyable':' poor');
+    var nn=document.getElementById('edbn'+i); if(nn)nn.textContent=(G.owned[i]||0);
+  }
+}
+function toggleBuildDrawer(){
+  var dr=document.getElementById('bld-drawer'); if(!dr)return;
+  var opening=!dr.classList.contains('open');
+  if(opening){ if(typeof closeUpgDrawer==='function')closeUpgDrawer(); renderBuildDrawer(); }
+  dr.classList.toggle('open');
+}
+function closeBuildDrawer(){var dr=document.getElementById('bld-drawer');if(dr)dr.classList.remove('open');}
+function purchaseBuilding(i){
+  if(i<0||i>=numUnlocked())return;
+  var c=bcost(i); if(G.coins<c)return;
+  G.coins-=c; G.owned[i]++; G.stats.totalBuildingsPurchased++; G.stats.totalCoinsSpent+=c;
+  if(typeof buzz==='function')buzz(6);
+  if(typeof renderBuildings==='function')renderBuildings();
+  if(typeof renderUpgrades==='function')renderUpgrades();
+  if(typeof updateHUD==='function')updateHUD();
+  softUpdateBuildDrawer();
+}
 function renderUpgrades(){
   var wrap=document.getElementById('ulist');if(!wrap)return;
   _upgView={};
@@ -12600,7 +12793,7 @@ function collectHatch(idx){
   // Lat agget sta kvar i hero-nastet tills "Hatch Successful"-popupen faktiskt visas (smoothare -> man ser inte saker forsvinna fore popupen).
   showPetResult(pet,function(){
     renderHatchery();
-    if(_nestDrop&&typeof showRewardPopup==='function'){var _nrc=RARITY_CONFIG[_nestDrop.rarity]||{label:_nestDrop.rarity,color:'#cdb6ff'};showRewardPopup([nestGearIconImg(_nestDrop,30)+'<br><b style="color:'+(_nrc.color||'#cdb6ff')+'">'+nestGearName(_nestDrop)+'</b><br><span style="font-size:0.64rem;color:rgba(255,255,255,0.5)">Tap to equip it around your egg</span>'],false,4200,'🪺 Nest Gear Found!',openNestGear);}
+    if(_nestDrop){_pendingGearReveal=_nestDrop;}
   },luckyCount);
 }
 // Forladdar BÅDE pet-bilden OCH rarity-bakgrundskortet och oppnar popupen forst nar BÅDA ar klara (inget poppar in i fel ordning). Failsafe-timeout sa den aldrig hanger. Rarity-bg:erna ar dessutom forladdade vid start (preloadHatchBgs) -> oftast redan i cache -> kanns blixtsnabbt.
@@ -12650,6 +12843,32 @@ function showPetResult(pet,onShown,luckyCount){
   document.getElementById('pet-result-close').innerHTML='Collect';
   var inv=document.getElementById('pet-result-inv');if(inv){inv.textContent='It has been added to your inventory.';inv.style.display='';}
   openPetResultModal(pet,onShown);
+}
+var _pendingGearReveal=null;
+function showGearResult(gear){
+  if(!gear)return;
+  var rc=RARITY_CONFIG[gear.rarity]||RARITY_CONFIG.common;
+  var card=document.getElementById('pet-result-card');
+  if(card)card.style.setProperty('--rc',rc.color);
+  var bg=document.getElementById('pet-result-bg');
+  if(bg){bg.style.display='';bg.onerror=function(){this.style.display='none';};bg.src=ASSET_BASE+'/assets/ui/hatch/hatch-bg-'+gear.rarity+'.png';}
+  document.getElementById('pet-result-title').textContent='NEST GEAR FOUND!';
+  document.getElementById('pet-result-sub').textContent='You found a';
+  document.getElementById('pet-result-icon').innerHTML='<span style="display:flex;align-items:center;justify-content:center;height:100%;font-size:6rem;line-height:1;">'+nestGearIconImg(gear,124)+'</span>';
+  document.getElementById('pet-result-name').textContent=nestGearName(gear);
+  document.getElementById('pet-result-rarity').textContent=rc.label;
+  var w=document.getElementById('pet-result-world');if(w){w.textContent='';w.style.display='none';}
+  var abHtml=(gear.abilities||[]).map(function(a){
+    var m=NEST_GEAR_ABILITY_META[a.id]||{name:a.id,icon:'❔',blurb:''};
+    return '<div class="pra-row" style="text-align:left;"><span class="pra-icon">'+(m.icon||'❔')+'</span>'
+      +'<span class="pra-text"><span class="pra-name" style="color:#fff;">'+m.name+'</span>'
+      +'<span class="pra-desc">'+(m.blurb||'')+'</span></span>'
+      +'<span class="pra-val" style="color:'+rc.color+';">+'+a.v+'%'+(a.mega?' ★':'')+'</span></div>';
+  }).join('');
+  document.getElementById('pet-result-abilities').innerHTML=abHtml;
+  document.getElementById('pet-result-close').innerHTML='Collect';
+  var inv=document.getElementById('pet-result-inv');if(inv){inv.innerHTML='Added to your <b>Nest Gear</b> — equip it around your egg.';inv.style.display='';}
+  document.getElementById('pet-result-modal').classList.add('open');
 }
 // Dra-för-att-scrolla (mus) på horisontella rader, t.ex. hatch-slot-raden. Touch scrollar redan.
 var _dragRow=null,_dragSX=0,_dragSL=0,_dragMoved=false;
@@ -14513,7 +14732,7 @@ function softUpdateUpgrades(){
   var allDone=!next;var slotAfford=!allDone&&G.coins>=next.cost;
   sd.className='upg '+(allDone?'maxed':slotAfford?'can-buy':'poor');
 }
-setInterval(function(){updateBuildingClasses();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();var _bm0=document.getElementById('bag-modal');if(_bm0&&_bm0.classList.contains('open'))softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();var _pm=document.getElementById('pet-modal');if(_pm&&_pm.classList.contains('open'))softUpdateSlotXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
+setInterval(function(){updateBuildingClasses();if(typeof softUpdateBuildDrawer==='function')softUpdateBuildDrawer();updateUpgradeGlow();updateEventGlow();ensureDailyQuests();ensureWeeklyQuests();updateQuestGlow();softUpdateQuests();ensureBattlePass();updateBpGlow();softUpdateBp();var _bm0=document.getElementById('bag-modal');if(_bm0&&_bm0.classList.contains('open'))softUpdateInventory();if(document.getElementById('tab-pets')&&document.getElementById('tab-pets').style.display==='block')softUpdatePetXp();var _pm=document.getElementById('pet-modal');if(_pm&&_pm.classList.contains('open'))softUpdateSlotXp();if(document.getElementById('tab-upgrades').style.display==='block')softUpdateUpgradesTab();else if(_tipKey)closeUpgTip();if(_bldTipIdx!==null){if(document.getElementById('tab-buildings').style.display!=='block')closeBldTip();else refreshBldTip();}},500);
 // Stäng byggnads-info-popup vid klick utanför (varken på en ikon eller i popupen)
 document.addEventListener('click',function(e){
   if(_bldTipIdx===null)return;
@@ -14596,6 +14815,7 @@ if(savedData){
   G.gearEquipped=(savedData.gearEquipped&&typeof savedData.gearEquipped==='object'&&!Array.isArray(savedData.gearEquipped))?savedData.gearEquipped:{};
   ['backpack','compass','boots','charm','tool'].forEach(function(t){if(!(t in G.gearEquipped))G.gearEquipped[t]=null;});
   G.gearLoadouts=Array.isArray(savedData.gearLoadouts)?savedData.gearLoadouts:null;
+  G.nestGearLoadouts=Array.isArray(savedData.nestGearLoadouts)?savedData.nestGearLoadouts:null;G.activeNestLoadout=(typeof savedData.activeNestLoadout==='number')?savedData.activeNestLoadout:0;if(typeof ensureNestLoadouts==='function')ensureNestLoadouts();
   G.activeLoadout=(typeof savedData.activeLoadout==='number')?savedData.activeLoadout:0;
   if(typeof ensureLoadouts==='function')ensureLoadouts();
   G.extractChambers=Array.isArray(savedData.extractChambers)?savedData.extractChambers.slice(0,3):[null,null,null];
