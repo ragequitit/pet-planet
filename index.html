@@ -46,13 +46,13 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .edb{position:relative;width:56px;height:56px;border-radius:14px;border:1.5px solid rgba(255,255,255,0.12);background:rgba(30,42,72,0.55);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:0 0 auto;padding:0;overflow:hidden;touch-action:manipulation;transition:transform .08s,box-shadow .25s,border-color .25s;}
 .edb:active{transform:scale(0.92);}
 .edb.buyable{border-color:#ffce4a;box-shadow:0 0 11px rgba(245,200,66,0.6);background:rgba(60,52,20,0.5);}
-.edb.poor{opacity:0.5;}
+.edb.poor .edb-ic{opacity:0.4;}
 .edb-ic{position:relative;z-index:1;font-size:1.9rem;line-height:1;display:flex;align-items:center;justify-content:center;}
 .edb-ic .bld-pic{width:38px;height:38px;object-fit:contain;}
 .edb-n{position:absolute;bottom:-3px;right:-3px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#1a2750;border:1.5px solid rgba(120,150,230,0.6);color:#fff;font-size:0.66rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
 .edb-link{width:2px;height:9px;background:rgba(120,150,230,0.4);flex:0 0 auto;}
-.edb-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(0deg,rgba(245,200,66,0.62),rgba(245,200,66,0.08));pointer-events:none;transition:height .35s ease;z-index:0;}
-.edb.buyable .edb-fill{background:linear-gradient(0deg,rgba(245,200,66,0.5),rgba(245,200,66,0.12));}
+.edb-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(0deg,rgba(255,206,74,0.95),rgba(255,206,74,0.42));box-shadow:0 -2px 7px rgba(255,206,74,0.5);pointer-events:none;transition:height .35s ease;z-index:0;}
+.edb.buyable .edb-fill{background:linear-gradient(0deg,rgba(255,206,74,0.92),rgba(255,206,74,0.6));}
 #pedestal-img{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:260px;height:auto;z-index:3;display:none;}
 #pet-positions{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);width:280px;height:60px;z-index:7;}
 /* STEG 6.6b: 5 active-slots DORMANTA (reversibelt — ta bort detta block för att visa dem igen).
@@ -5877,14 +5877,14 @@ function eggTap(clientX,clientY,quiet){
   egg.addEventListener('contextmenu',function(e){e.preventDefault();});
   egg.addEventListener('dragstart',function(e){e.preventDefault();});
   egg.addEventListener('selectstart',function(e){e.preventDefault();});
-  egg.addEventListener('touchstart',function(e){e.preventDefault();},{passive:false}); // stoppar iOS markerings-loupe vid dubbeltapp-håll
+  egg.addEventListener('touchstart',function(e){if(e.touches&&e.touches.length>1)return;e.preventDefault();},{passive:false}); // stoppar iOS markerings-loupe vid dubbeltapp-håll
   egg.addEventListener('pointerdown',function(e){
     if(e.button>0)return;
     if(holdId!==null)return;                   // EN pekare i taget: stoppar flerfinger-tap-fusket pa mobil (matchar desktop)
     e.preventDefault();
     eggTap(e.clientX,e.clientY);               // omedelbart tapp (ljud + vibration som vanligt)
     G.stats.tapClicks=(G.stats.tapClicks||0)+1; // diskret tap (utöver totalClicks)
-    if(holdId===null){ try{egg.setPointerCapture(e.pointerId);}catch(_){ } start(e); }
+    if(holdId===null){ start(e); }
   });
   egg.addEventListener('pointermove',function(e){
     if(e.pointerId!==holdId)return;
@@ -5894,6 +5894,8 @@ function eggTap(clientX,clientY,quiet){
   function up(e){ if(holdId!==null&&e.pointerId===holdId) stop(); }
   egg.addEventListener('pointerup',up);
   egg.addEventListener('pointercancel',up);
+  document.addEventListener('pointerup',up);
+  document.addEventListener('pointercancel',up);
 })();
 
 // Swipe vanster/hoger pa hemskarmen for att byta lage (egg <-> idle), speglar flip-switchen.
@@ -5904,7 +5906,7 @@ function eggTap(clientX,clientY,quiet){
     if(!e.touches||e.touches.length!==1){track=false;return;}
     var onHome=(typeof SCENE_TABS!=='undefined')&&SCENE_TABS.indexOf(currentTab)>=0&&currentTab!=='inventory';
     if(!onHome){track=false;return;}
-    if(e.target&&e.target.closest&&e.target.closest('.hatch-slot-row,.egg-craft-row,.shop-worlds,.set-tabs,.bonus-strip,.flip-pill,input,textarea')){track=false;return;}
+    if(e.target&&e.target.closest&&e.target.closest('.hatch-slot-row,.egg-craft-row,.shop-worlds,.set-tabs,.bonus-strip,.flip-pill,.edrawer,input,textarea')){track=false;return;}
     x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();track=true;
   },{passive:true});
   el.addEventListener('touchend',function(e){
@@ -10007,7 +10009,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.40<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.41<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
