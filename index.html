@@ -1936,7 +1936,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .side-btn:active .sb-icon{transform:translateY(2px);}
 
 /* ===== HOME-FLIP SWITCH — laser-glow pill med glidande kula ===== */
-.flip-pill{position:relative;display:inline-flex;align-items:center;gap:9px;padding:3px 11px;border-radius:24px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;transform:scale(1.2);transform-origin:center center;}
+.flip-pill{position:relative;display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:24px;background:linear-gradient(180deg,#0e1630,#0a1124);box-shadow:0 0 10px rgba(70,140,255,0.40),0 0 18px rgba(150,80,255,0.30);pointer-events:auto;transform:scale(1.2);transform-origin:center center;}
 .flip-pill::before{content:'';position:absolute;inset:0;border-radius:24px;padding:1.5px;background:linear-gradient(90deg,#36a8ff,#6f5bff,#a64bff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
 .flip-lbl{background:transparent;border:none;font-family:inherit;font-weight:800;font-size:0.73rem;letter-spacing:0.3px;color:rgba(255,255,255,0.45);cursor:pointer;display:flex;align-items:center;gap:4px;padding:3px 2px;white-space:nowrap;transition:color .2s,text-shadow .2s;}
 .flip-knob{position:relative;width:41px;height:20px;flex:0 0 auto;border-radius:12px;background:rgba(8,12,30,0.9);border:1px solid rgba(150,170,230,0.45);cursor:pointer;box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);}
@@ -1944,6 +1944,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
 .flip-pill.build-on .flip-lbl.l{color:#cfe6ff;text-shadow:0 0 8px rgba(80,160,255,0.85);}
 .flip-pill.adv-on .flip-lbl.r{color:#ecd4ff;text-shadow:0 0 8px rgba(170,90,255,0.9);}
 .flip-pill.adv-on .flip-knob i{left:calc(100% - 15px);background:radial-gradient(circle at 35% 30%,#fff,#d8b6ff 70%);box-shadow:0 0 8px rgba(175,95,255,0.95);}
+.flip-lbl img{opacity:0.45;transition:opacity .2s;}
+.flip-pill.build-on .flip-lbl.l img{opacity:1;}
+.flip-pill.adv-on .flip-lbl.r img{opacity:1;}
 
 /* (2)+(3) Add Friend-popupen och Notifications/View All-popupen saknade
    panel-bakgrund (var inte med i någon .prof-panel-regel) → genomskinliga/"wonky".
@@ -2018,9 +2021,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
   <div id="main">
     <div id="home-flip" style="display:none;position:absolute;top:25px;left:0;right:0;z-index:20;padding:0;pointer-events:none;text-align:center;">
       <div id="flip-pill" class="flip-pill build-on">
-        <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"> MAIN EGG</button>
+        <button class="flip-lbl l" onclick="setHomeMode('build')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/eggs/meadow-egg.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🥚'))"></button>
         <div class="flip-knob" onclick="setHomeMode(G.homeMode==='adventures'?'build':'adventures')"><i></i></div>
-        <button class="flip-lbl r" onclick="setHomeMode('adventures')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🗺️'))"> ADVENTURE</button>
+        <button class="flip-lbl r" onclick="setHomeMode('adventures')"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/nav/nav-adventures.png" alt="" style="width:23px;height:23px;object-fit:contain;flex:0 0 auto;" onerror="this.replaceWith(document.createTextNode('🗺️'))"></button>
       </div>
     </div>
     <div id="scene-wrap">
@@ -9727,7 +9730,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.16<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.17<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
