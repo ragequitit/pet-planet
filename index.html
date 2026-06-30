@@ -5905,21 +5905,35 @@ function eggTap(clientX,clientY,quiet){
 // Swipe vanster/hoger pa hemskarmen for att byta lage (egg <-> idle), speglar flip-switchen.
 (function(){
   var el=document.getElementById('main'); if(!el)return;
-  var x0=0,y0=0,t0=0,track=false;
+  var x0=0,y0=0,t0=0,track=false,dir=0;   // dir: 0=obestamt, 1=horisontellt, -1=vertikalt
+  var DECIDE=8;                            // px innan riktningen laeses
+  function startOK(e){
+    var onHome=(typeof SCENE_TABS!=='undefined')&&SCENE_TABS.indexOf(currentTab)>=0&&currentTab!=='inventory';
+    if(!onHome)return false;
+    if(e.target&&e.target.closest&&e.target.closest('#stage-group,.hatch-slot-row,.egg-craft-row,.shop-worlds,.set-tabs,.bonus-strip,.flip-pill,.edrawer,input,textarea'))return false;
+    return true;
+  }
   el.addEventListener('touchstart',function(e){
     if(!e.touches||e.touches.length!==1){track=false;return;}
-    var onHome=(typeof SCENE_TABS!=='undefined')&&SCENE_TABS.indexOf(currentTab)>=0&&currentTab!=='inventory';
-    if(!onHome){track=false;return;}
-    if(e.target&&e.target.closest&&e.target.closest('.hatch-slot-row,.egg-craft-row,.shop-worlds,.set-tabs,.bonus-strip,.flip-pill,.edrawer,input,textarea')){track=false;return;}
-    x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();track=true;
+    if(!startOK(e)){track=false;return;}
+    x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();track=true;dir=0;
   },{passive:true});
+  el.addEventListener('touchmove',function(e){
+    if(!track||!e.touches||e.touches.length!==1)return;
+    var dx=e.touches[0].clientX-x0, dy=e.touches[0].clientY-y0;
+    if(dir===0){
+      if(Math.abs(dx)<DECIDE&&Math.abs(dy)<DECIDE)return;       // for lite roerelse for att besluta
+      dir=(Math.abs(dx)>Math.abs(dy))?1:-1;                     // las riktning pa forsta tydliga roerelsen
+    }
+    if(dir===1&&e.cancelable)e.preventDefault();                // horisontellt svep -> stoppa vertikal scroll (mjukt)
+  },{passive:false});
   el.addEventListener('touchend',function(e){
     if(!track)return; track=false;
+    if(dir!==1)return;                                          // bara horisontellt-lasta svep byter lage
     var t=e.changedTouches&&e.changedTouches[0]; if(!t)return;
-    var dx=t.clientX-x0, dy=t.clientY-y0, dt=Date.now()-t0;
-    if(dt>600) return;                          // for langsamt
-    if(Math.abs(dx)<70) return;                 // for kort
-    if(Math.abs(dx)<Math.abs(dy)*2) return;     // for vertikalt -> lat scroll vinna
+    var dx=t.clientX-x0, dt=Date.now()-t0;
+    if(dt>700) return;                                          // for langsamt
+    if(Math.abs(dx)<55) return;                                 // for kort
     if(dx<0){ if(G.homeMode!=='adventures')setHomeMode('adventures'); }  // svep vanster -> idle/aventyr
     else    { if(G.homeMode!=='build')setHomeMode('build'); }            // svep hoger  -> agg/build
   },{passive:true});
@@ -10019,7 +10033,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.47<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.49<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -12785,10 +12799,9 @@ function renderWfPicker(i,box){
   avail.sort(function(a,b){var d=rord.indexOf(b.rarity)-rord.indexOf(a.rarity);return d!==0?d:String(a.name||'').localeCompare(String(b.name||''));}); // bästa raritet först, sen namn
   var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><button class="wf-back" onclick="wfBackToSlots()" style="margin-bottom:0;">\u2190 Back</button><span style="color:rgba(255,255,255,0.5);font-size:0.72rem;font-family:\'Fredoka One\',cursive;">'+avail.length+' free</span></div>';
   if(avail.length===0){html+='<div class="egp-empty">No free pets to place.<br>Hatch more eggs, or remove a pet from another building first.</div>';box.innerHTML=html;return;}
-  html+='<div class="wf-grid">';
-  var nextSlot=workforcePets(i).length;
-  avail.forEach(function(p){html+=wfCellHtml(i,p,false,nextSlot);});
-  html+='</div>';box.innerHTML=html;
+  html+='<div class="wf-pick-scroll" style="max-height:58vh;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:2px 4px 4px;"><div class="pet-grid">';
+  avail.forEach(function(p,idx){html+=petCardHtml(p,idx,{onClick:"wfTryPlace("+i+",'"+p.uid+"')",lite:true});});
+  html+='</div></div>';box.innerHTML=html;
 }
 function openEggPicker(){
   if(G.hatchSlots.length>=G.hatchSlotCount)return; // ingen ledig slot
