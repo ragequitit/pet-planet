@@ -1616,6 +1616,8 @@ html,body{height:100%;background:#000;display:flex;justify-content:center;font-f
 .adv-pick-pet:active{transform:translateY(1px);}
 .adv-pick-pet.locked{opacity:0.5;cursor:not-allowed;border-style:dashed;}
 .adv-pick-pet.locked:active{transform:none;}
+.adv-pick-pet.tired{cursor:default;border-style:dashed;}
+.adv-pick-pet.tired .app-emoji,.adv-pick-pet.tired .app-info,.adv-pick-pet.tired .app-lvlcol{opacity:0.45;}
 .app-lvl{flex-shrink:0;font-size:0.6rem;font-weight:900;color:#cdb6ff;background:rgba(122,90,208,0.22);border:1px solid rgba(122,90,208,0.5);border-radius:6px;padding:1px 6px;font-family:'Baloo 2',sans-serif;}
 .app-lvlcol{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:3px;width:48px;}
 .app-xp{width:100%;height:5px;background:rgba(0,0,0,0.4);border-radius:4px;overflow:hidden;border:1px solid rgba(122,90,208,0.3);}
@@ -2090,10 +2092,10 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
         <button onclick="workshopSub('home')" style="background:rgba(27,45,78,0.6);border:1.5px solid rgba(120,150,230,0.5);border-radius:20px;color:#cfe0ff;font-family:'Fredoka One',cursive;font-size:0.74rem;padding:7px 16px;cursor:pointer;">← Workshop</button>
       </div>
       <div id="wsub-panel-home" class="psub-panel">
-        <div style="display:flex;flex-direction:column;gap:14px;padding:4px 0 8px;">
-          <div onclick="workshopSub('mutate')" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/train-a-pet.png" alt="Train a Pet" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Train a Pet'))"></div>
-          <div onclick="workshopPetMerge()" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/pet-merge.png" alt="Pet Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Pet Merge'))"></div>
-          <div onclick="workshopGearMerge()" style="cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/gear-merge.png" alt="Gear Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Gear Merge'))"></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:14px;padding:4px 0 8px;">
+          <div onclick="workshopSub('mutate')" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/train-a-pet.png" alt="Train a Pet" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Train a Pet'))"></div>
+          <div onclick="workshopPetMerge()" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/pet-merge.png" alt="Pet Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Pet Merge'))"></div>
+          <div onclick="workshopGearMerge()" style="width:75%;cursor:pointer;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,0.45);"><img src="https://raw.githubusercontent.com/ragequitit/pet-planet/main/assets/ui/workshop/gear-merge.png" alt="Gear Merge" style="width:100%;height:auto;display:block;" onerror="this.replaceWith(document.createTextNode('Gear Merge'))"></div>
         </div>
       </div>
       <div id="wsub-panel-extract" class="psub-panel" style="display:none"><div id="extract-wrap"></div></div>
@@ -4885,7 +4887,7 @@ function openAdvPicker(advId){
         return '<span class="app-odd'+(ec.aff?' aff':'')+'">'+ico+(e?e.name.replace(' Egg',''):o.id)+' '+Math.round(o.pct*100)+'%</span>';
       }).join('');
       var oddsLine='<div class="app-odds"><span class="app-odds-lbl">BONUS</span>'+oddsHtml+(ec.aff?' <span class="app-aff-tag">🎯 Affinity!</span>':'')+'</div>';
-      html+='<div class="adv-pick-pet'+(canSend?'':' locked')+'"'+(canSend?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
+      html+='<div class="adv-pick-pet'+(canSend?'':(tired?' tired':' locked'))+'"'+(canSend?' onclick="startAdventure(\''+advId+'\','+p.uid+')"':'')+'>';
       html+='<div class="app-emoji">'+petIco(p)+'</div>';
       html+='<div class="app-info"><div class="app-name" style="color:'+rc.color+'">'+p.name+'</div><div class="app-rar">'+rc.label+(tags.length?' · '+tags.join(' '):'')+'</div>'+oddsLine+'<div style="display:flex;align-items:center;gap:5px;margin-top:3px;"><span style="font-size:0.62rem;">💪</span><div style="flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.35);overflow:hidden;"><div style="height:100%;width:'+Math.min(100,Math.round(stam/Math.max(1,staminaMax())*100))+'%;background:'+(tired?'#e0683a':'linear-gradient(90deg,#3aa0e0,#5ad0e0)')+';"></div></div><span style="font-size:0.58rem;color:rgba(255,255,255,0.55);">'+Math.round(stam)+'</span></div></div>';
       html+='<div class="app-lvlcol"><div class="app-lvl">Lv '+lv+'</div>'+(lp.max?'<div class="app-xp-pct">MAX</div>':'<div class="app-xp"><div class="app-xp-fill" style="width:'+lp.pct+'%"></div></div><div class="app-xp-pct">'+Math.round(lp.pct)+'%</div>')+'</div>';
@@ -9742,7 +9744,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.21<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.23<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -10387,11 +10389,58 @@ function renderProfileStats(){
   return h;
 }
 function profFavPet(){if(!G.profile||!G.profile.favoritePet)return null;return G.hatchedPets.find(function(p){return p.uid===G.profile.favoritePet;})||null;}
-function profAvatarInner(){var fp=profFavPet();return (fp&&petIco(fp))?petIco(fp):'👤';}
+function profAvatarInner(){var fp=profFavPet();if(fp&&fp.world&&fp.name&&G.profile&&G.profile.favCrop){var c=G.profile.favCrop;return '<div style="width:100%;height:100%;border-radius:50%;background-image:url(\''+petArtUrl(fp)+'\');background-size:'+c.size+'%;background-position:'+c.x+'% '+c.y+'%;background-repeat:no-repeat;"></div>';}return (fp&&petIco(fp))?petIco(fp):'👤';}
 var profPickerOpen=false;
 function toggleFavPicker(){profPickerOpen=!profPickerOpen;renderProfile();}
-function setFavoritePet(uid){if(!G.profile)G.profile={};G.profile.favoritePet=uid;profPickerOpen=false;saveGame();cloudSyncAvatar();renderProfile();}
+function setFavoritePet(uid){if(!G.profile)G.profile={};var changed=(G.profile.favoritePet!==uid);G.profile.favoritePet=uid;if(changed)G.profile.favCrop=null;profPickerOpen=false;saveGame();cloudSyncAvatar();renderProfile();var fp=profFavPet();if(fp&&fp.world&&fp.name&&typeof openFavCrop==='function')setTimeout(openFavCrop,60);}
 function clearFavoritePet(){if(G.profile)G.profile.favoritePet=null;saveGame();cloudSyncAvatar();renderProfile();}
+// ===== FAVORITE PET — display-picture crop (drag to pan + zoom slider). Procent-baserat → skalar i alla avatar-storlekar + hos vänner. =====
+var _favCrop={size:130,x:50,y:30};
+function favCropOf(){var c=(G.profile&&G.profile.favCrop)?G.profile.favCrop:null;return c?{size:c.size,x:c.x,y:c.y}:{size:130,x:50,y:30};}
+function favCropApply(){var pv=document.getElementById('favcrop-prev');if(!pv)return;pv.style.backgroundSize=_favCrop.size+'%';pv.style.backgroundPosition=_favCrop.x+'% '+_favCrop.y+'%';}
+function favCropReset(){_favCrop={size:130,x:50,y:30};var z=document.getElementById('favcrop-zoom');if(z)z.value=130;favCropApply();}
+function closeFavCrop(){var ov=document.getElementById('favcrop-ov');if(ov)ov.remove();}
+function favCropSave(){if(!G.profile)G.profile={};G.profile.favCrop={size:_favCrop.size,x:Math.round(_favCrop.x*10)/10,y:Math.round(_favCrop.y*10)/10};if(typeof saveGame==='function')saveGame();if(typeof cloudSyncAvatar==='function')cloudSyncAvatar();if(typeof renderProfile==='function')renderProfile();closeFavCrop();}
+function openFavCrop(){
+  var fp=profFavPet(); if(!fp||!fp.world||!fp.name)return;
+  var url=petArtUrl(fp);
+  _favCrop=favCropOf();
+  var ex=document.getElementById('favcrop-ov'); if(ex)ex.remove();
+  var ov=document.createElement('div'); ov.id='favcrop-ov';
+  ov.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(4,8,20,0.82);display:flex;align-items:center;justify-content:center;padding:18px;';
+  ov.innerHTML=
+    '<div style="background:linear-gradient(180deg,#15264e,#0b1530);border:2px solid #3a5cb8;border-radius:20px;padding:18px;width:320px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.6);">'
+    +'<div style="font-family:\'Fredoka One\',cursive;font-size:1.05rem;color:#fff;text-align:center;margin-bottom:3px;">Adjust display picture</div>'
+    +'<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);text-align:center;margin-bottom:14px;">Drag to move the face into view \u00b7 slider to zoom</div>'
+    +'<div id="favcrop-prev" style="width:220px;height:220px;border-radius:50%;margin:0 auto;border:3px solid var(--gold);box-shadow:0 0 14px rgba(245,200,66,0.3);background-color:#0b1530;background-image:url(\''+url+'\');background-repeat:no-repeat;cursor:grab;touch-action:none;user-select:none;"></div>'
+    +'<input id="favcrop-zoom" type="range" min="100" max="320" value="'+_favCrop.size+'" style="width:100%;margin:16px 0 4px;">'
+    +'<div style="display:flex;gap:8px;margin-top:10px;">'
+      +'<button onclick="favCropReset()" style="flex:0 0 auto;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:#fff;font-weight:700;padding:10px 12px;cursor:pointer;">Reset</button>'
+      +'<button onclick="closeFavCrop()" style="flex:1;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;color:#fff;font-weight:700;padding:10px;cursor:pointer;">Cancel</button>'
+      +'<button onclick="favCropSave()" style="flex:1;background:linear-gradient(180deg,#ffcf5a,#f5a623);border:none;border-radius:10px;color:#2a1c00;font-weight:800;padding:10px;cursor:pointer;">Save</button>'
+    +'</div></div>';
+  document.body.appendChild(ov);
+  favCropApply();
+  var pv=document.getElementById('favcrop-prev');
+  var zoom=document.getElementById('favcrop-zoom');
+  zoom.oninput=function(){_favCrop.size=Number(zoom.value);favCropApply();};
+  var dragging=false,lastX=0,lastY=0;
+  pv.addEventListener('pointerdown',function(e){dragging=true;lastX=e.clientX;lastY=e.clientY;try{pv.setPointerCapture(e.pointerId);}catch(_){}pv.style.cursor='grabbing';});
+  pv.addEventListener('pointermove',function(e){
+    if(!dragging)return;
+    var dx=e.clientX-lastX,dy=e.clientY-lastY; lastX=e.clientX; lastY=e.clientY;
+    var D=pv.clientWidth||220; var overflow=(_favCrop.size/100-1)*D;
+    if(overflow>0){
+      _favCrop.x=Math.max(0,Math.min(100,_favCrop.x-dx/overflow*100));
+      _favCrop.y=Math.max(0,Math.min(100,_favCrop.y-dy/overflow*100));
+      favCropApply();
+    }
+  });
+  var end=function(){dragging=false;pv.style.cursor='grab';};
+  pv.addEventListener('pointerup',end); pv.addEventListener('pointercancel',end);
+  ov.addEventListener('click',function(e){if(e.target===ov)closeFavCrop();});
+}
+
 var _lastAvatarSynced=null;
 function cloudSyncAvatar(){try{if(sb&&cloudUser&&typeof profAvatarInner==='function'){var a=profAvatarInner();if(a!==_lastAvatarSynced){_lastAvatarSynced=a;sb.rpc('pp_set_avatar',{p_avatar:a});}}}catch(e){}}
 // ---- Favorit-djur-väljare (popup med sök + raritets-filter + sortering inkl. ålder) ----
@@ -14486,7 +14535,7 @@ if(savedData){
   G.cosmeticsOwned=(savedData.cosmeticsOwned&&typeof savedData.cosmeticsOwned==='object')?savedData.cosmeticsOwned:{};
   G.playerXp=(typeof savedData.playerXp==='number')?savedData.playerXp:0; // permanent kontonivå (nollställs aldrig)
   G.playerLevel=playerLevelFromXp(G.playerXp);
-  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;if(savedData.profile.frame)G.profile.frame=savedData.profile.frame;if(Array.isArray(savedData.profile.framesOwned))G.profile.framesOwned=savedData.profile.framesOwned;}
+  if(savedData.profile){if(savedData.profile.name)G.profile.name=savedData.profile.name;if(savedData.profile.favoritePet)G.profile.favoritePet=savedData.profile.favoritePet;if(savedData.profile.favCrop)G.profile.favCrop=savedData.profile.favCrop;if(savedData.profile.equippedTitle)G.profile.equippedTitle=savedData.profile.equippedTitle;if(savedData.profile.frame)G.profile.frame=savedData.profile.frame;if(Array.isArray(savedData.profile.framesOwned))G.profile.framesOwned=savedData.profile.framesOwned;}
   var rawSet=savedData.settings||{};
   G.settings=Object.assign({},DEFAULT_SETTINGS,rawSet);
   // Migrera gammalt format (v2.9: sfx-boolean + skipConfirm) så ljudet inte plötsligt slår på
