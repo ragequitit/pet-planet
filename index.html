@@ -2160,7 +2160,7 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <div id="dev-modal-body"></div>
   </div>
 </div>
-<div id="island-test-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:#08111d;">
+<div id="island-test-modal" style="display:none;position:fixed;left:0;right:0;top:var(--top-h);bottom:var(--nav-h);z-index:80;background:#08111d;overflow:hidden;"><style>@keyframes isleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-11px)}}</style>
   <div id="isle-viewport" style="position:absolute;inset:0;overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab;">
     <div id="isle-world" style="position:absolute;left:0;top:0;width:1600px;height:1200px;transform-origin:0 0;will-change:transform;"></div>
   </div>
@@ -2174,7 +2174,9 @@ button:active, [class*="btn"]:active, .inbox-claim:active, .ev-claim:active, .ev
     <button onclick="isleZoomBtn(0.8)" style="width:46px;height:46px;border-radius:12px;background:rgba(20,30,50,0.9);border:1.5px solid #3a5cb8;color:#cfe0ff;font-size:1.5rem;cursor:pointer;">−</button>
   </div>
   <div id="isle-hint" style="position:absolute;left:0;right:0;bottom:24px;text-align:center;color:#9fb3d8;font-family:'Nunito',sans-serif;font-size:0.8rem;pointer-events:none;">Drag to move · pinch or +/− to zoom · tap a building</div>
-  <div id="isle-toast" style="position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);background:rgba(10,17,29,0.94);border:1.5px solid #3a5cb8;border-radius:12px;padding:12px 18px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;display:none;pointer-events:none;z-index:5;"></div>
+  <div id="isle-toast" style="position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);background:rgba(10,17,29,0.94);border:1.5px solid #3a5cb8;border-radius:12px;padding:12px 18px;color:#fff;font-family:'Fredoka One',cursive;font-size:0.95rem;display:none;pointer-events:none;z-index:8;"></div>
+  <div id="isle-panel-scrim" onclick="closeIslePanel()" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:9;"></div>
+  <div id="isle-panel" style="position:absolute;left:0;right:0;bottom:0;z-index:10;background:linear-gradient(180deg,#152238,#0d1728);border-top:2px solid #3a5cb8;border-radius:20px 20px 0 0;padding:14px 16px 18px;transform:translateY(115%);transition:transform 0.28s cubic-bezier(.2,.8,.2,1);box-shadow:0 -8px 24px rgba(0,0,0,0.5);"></div>
 </div>
 <div id="stats-modal" class="modal-overlay" onclick="if(event.target===this)closeStatsPanel()">
   <div class="prof-panel">
@@ -5651,39 +5653,22 @@ function closeDevMenu(){var m=document.getElementById('dev-modal');if(m)m.classL
 // ============================================================
 var ISLE={tx:0,ty:0,scale:1,pointers:{},lastDist:0,dragId:null,lastX:0,lastY:0,moved:0,W:1600,H:1200};
 var _isleBound=false,_isleToastT=null;
-function isleBldHtml(x,y,emoji,name){
-  return '<div class="isle-bld" data-name="'+name+'" style="position:absolute;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;cursor:pointer;">'
-    +'<div style="width:96px;height:96px;border-radius:20px;background:linear-gradient(180deg,#fff7e6,#ffe0a3);border:4px solid #b5721f;display:flex;align-items:center;justify-content:center;font-size:52px;box-shadow:0 8px 0 #7d4d12,0 14px 18px rgba(0,0,0,0.35);">'+emoji+'</div>'
-    +'<div style="margin-top:6px;background:rgba(10,17,29,0.86);border:1.5px solid #3a5cb8;border-radius:9px;padding:3px 10px;color:#eaf1ff;font-family:\'Fredoka One\',cursive;font-size:15px;white-space:nowrap;">'+name+'</div></div>';
+function isleBldHtml(x,y,file,name){
+  return '<div class="isle-bld" data-name="'+name+'" data-file="'+file+'" style="position:absolute;left:'+x+'px;top:'+y+'px;width:128px;height:128px;margin-left:-64px;margin-top:-64px;cursor:pointer;">'
+    +'<img src="'+ASSET_BASE+'/assets/island/'+file+'" alt="'+name+'" draggable="false" style="width:128px;height:128px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,0.45));pointer-events:none;" onerror="this.style.display=\'none\'">'
+    +'</div>';
 }
 function isleWorldHtml(){
-  var svg='<svg width="1600" height="1200" viewBox="0 0 1600 1200" style="position:absolute;left:0;top:0;" xmlns="http://www.w3.org/2000/svg">'
-    +'<defs><radialGradient id="isea" cx="50%" cy="45%" r="70%"><stop offset="0%" stop-color="#2e7fc4"/><stop offset="100%" stop-color="#1c4f82"/></radialGradient>'
-    +'<linearGradient id="iland" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#8fd66a"/><stop offset="100%" stop-color="#5fae44"/></linearGradient></defs>'
-    +'<rect width="1600" height="1200" fill="url(#isea)"/>'
-    // våg-ringar
-    +'<ellipse cx="800" cy="620" rx="720" ry="520" fill="none" stroke="rgba(255,255,255,0.10)" stroke-width="6"/>'
-    +'<ellipse cx="800" cy="620" rx="640" ry="450" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>'
-    // sandstrand + ö
-    +'<path d="M300,560 Q360,300 720,270 Q1080,240 1240,420 Q1400,600 1230,850 Q1050,1050 720,1010 Q380,980 300,720 Z" fill="#f2e2ad"/>'
-    +'<path d="M340,560 Q400,340 720,315 Q1050,290 1195,450 Q1345,610 1185,835 Q1020,1010 725,975 Q415,945 345,715 Z" fill="url(#iland)"/>'
-    // sjö
-    +'<ellipse cx="1020" cy="640" rx="120" ry="80" fill="#3aa0d6"/><ellipse cx="1020" cy="628" rx="120" ry="80" fill="#4fb6e8"/>'
-    // berg med snötopp
-    +'<polygon points="520,470 640,250 760,470" fill="#8a94a6"/><polygon points="600,330 640,250 686,330" fill="#f4f8ff"/>'
-    +'<polygon points="700,470 800,300 900,470" fill="#7c8698"/><polygon points="770,360 800,300 838,360" fill="#f4f8ff"/>'
-    // träd
-    +'<g fill="#3f8f3a"><circle cx="470" cy="820" r="26"/><circle cx="520" cy="840" r="22"/><circle cx="1140" cy="500" r="24"/><circle cx="1180" cy="820" r="26"/><circle cx="880" cy="900" r="22"/></g>'
-    // stigar
-    +'<g stroke="#e6d49a" stroke-width="16" fill="none" stroke-linecap="round" opacity="0.9"><path d="M800,600 L560,560"/><path d="M800,600 L900,470"/><path d="M800,600 L1050,700"/><path d="M800,600 L660,800"/><path d="M800,600 L1030,400"/><path d="M800,600 L440,760"/></g>'
-    +'</svg>';
-  // centralt ägg
-  var egg='<div style="position:absolute;left:800px;top:600px;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;">'
-    +'<div style="font-size:96px;filter:drop-shadow(0 10px 12px rgba(0,0,0,0.4));">🥚</div>'
-    +'<div style="margin-top:2px;background:rgba(10,17,29,0.86);border:1.5px solid #d9a441;border-radius:9px;padding:3px 12px;color:#ffe6a3;font-family:\'Fredoka One\',cursive;font-size:15px;">The Egg</div></div>';
-  var blds=isleBldHtml(560,560,'🏪','Market')+isleBldHtml(900,470,'🥚','Hatchery')+isleBldHtml(1050,700,'🐚','Shell Cove')
-    +isleBldHtml(660,800,'🎓','Training Grounds')+isleBldHtml(1030,400,'🍀','Fortune Den')+isleBldHtml(440,760,'🧭','Expedition Post');
-  return svg+egg+blds;
+  var bg='<img src="'+ASSET_BASE+'/assets/island/map.png" alt="" draggable="false" style="position:absolute;left:0;top:0;width:1600px;height:1200px;pointer-events:none;">';
+  var egg='<div id="isle-egg" style="position:absolute;left:752px;top:527px;width:120px;height:120px;margin-left:-60px;margin-top:-60px;cursor:pointer;animation:isleFloat 2.6s ease-in-out infinite;">'
+    +'<img src="'+ASSET_BASE+'/assets/island/egg.png" alt="Egg" draggable="false" style="width:120px;height:120px;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(0,0,0,0.45));pointer-events:none;" onerror="this.style.display=\'none\'"></div>';
+  var blds=isleBldHtml(791,817,'market.png','Market')
+    +isleBldHtml(1235,816,'expedition-post.png','Expedition Post')
+    +isleBldHtml(242,814,'shell-collector.png','Shell Cove')
+    +isleBldHtml(292,463,'hatchary.png','Hatchery')
+    +isleBldHtml(1278,559,'training-ground.png','Training Grounds')
+    +isleBldHtml(1076,323,'fortune-den.png','Fortune Den');
+  return bg+blds+egg;
 }
 function isleApply(){ISLE.scale=Math.max(0.4,Math.min(2.6,ISLE.scale));var w=document.getElementById('isle-world');if(w)w.style.transform='translate('+ISLE.tx+'px,'+ISLE.ty+'px) scale('+ISLE.scale+')';}
 function isleZoomAt(cx,cy,f){var s0=ISLE.scale,s1=Math.max(0.4,Math.min(2.6,s0*f));ISLE.tx=cx-(cx-ISLE.tx)*(s1/s0);ISLE.ty=cy-(cy-ISLE.ty)*(s1/s0);ISLE.scale=s1;isleApply();}
@@ -5696,12 +5681,35 @@ function isleBindOnce(){
   var vp=document.getElementById('isle-viewport');
   vp.addEventListener('pointerdown',function(e){try{vp.setPointerCapture(e.pointerId);}catch(x){}ISLE.pointers[e.pointerId]={x:e.clientX,y:e.clientY};var ids=Object.keys(ISLE.pointers);if(ids.length===1){ISLE.dragId=e.pointerId;ISLE.lastX=e.clientX;ISLE.lastY=e.clientY;ISLE.moved=0;}else if(ids.length===2){ISLE.lastDist=_isleDist();}});
   vp.addEventListener('pointermove',function(e){if(!ISLE.pointers[e.pointerId])return;ISLE.pointers[e.pointerId]={x:e.clientX,y:e.clientY};var ids=Object.keys(ISLE.pointers);if(ids.length>=2){var d=_isleDist();if(ISLE.lastDist>0){var c=_isleMid(),rect=vp.getBoundingClientRect();isleZoomAt(c.x-rect.left,c.y-rect.top,d/ISLE.lastDist);}ISLE.lastDist=d;ISLE.moved+=99;}else if(e.pointerId===ISLE.dragId){var dx=e.clientX-ISLE.lastX,dy=e.clientY-ISLE.lastY;ISLE.tx+=dx;ISLE.ty+=dy;ISLE.moved+=Math.abs(dx)+Math.abs(dy);ISLE.lastX=e.clientX;ISLE.lastY=e.clientY;isleApply();}});
-  function up(e){if(ISLE.pointers[e.pointerId]){if(ISLE.moved<8&&Object.keys(ISLE.pointers).length===1){var el=document.elementFromPoint(e.clientX,e.clientY);var b=el&&el.closest?el.closest('.isle-bld'):null;if(b)isleToast(b.getAttribute('data-name'));}delete ISLE.pointers[e.pointerId];}var ids=Object.keys(ISLE.pointers);if(ids.length<2)ISLE.lastDist=0;if(ids.length===1){ISLE.dragId=ids[0];var p=ISLE.pointers[ids[0]];ISLE.lastX=p.x;ISLE.lastY=p.y;}if(ids.length===0)ISLE.dragId=null;}
+  function up(e){if(ISLE.pointers[e.pointerId]){if(ISLE.moved<8&&Object.keys(ISLE.pointers).length===1){var el=document.elementFromPoint(e.clientX,e.clientY);var egg=el&&el.closest?el.closest('#isle-egg'):null;var b=el&&el.closest?el.closest('.isle-bld'):null;if(egg)isleEggTap();else if(b)openIslePanel(b.getAttribute('data-name'),b.getAttribute('data-file'));}delete ISLE.pointers[e.pointerId];}var ids=Object.keys(ISLE.pointers);if(ids.length<2)ISLE.lastDist=0;if(ids.length===1){ISLE.dragId=ids[0];var p=ISLE.pointers[ids[0]];ISLE.lastX=p.x;ISLE.lastY=p.y;}if(ids.length===0)ISLE.dragId=null;}
   vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);
   vp.addEventListener('wheel',function(e){e.preventDefault();var rect=vp.getBoundingClientRect();isleZoomAt(e.clientX-rect.left,e.clientY-rect.top,e.deltaY<0?1.12:0.89);},{passive:false});
 }
 function openIslandTest(){closeDevMenu();var world=document.getElementById('isle-world');world.innerHTML=isleWorldHtml();document.getElementById('island-test-modal').style.display='block';var vp=document.getElementById('isle-viewport');var vw=vp.clientWidth,vh=vp.clientHeight;ISLE.scale=Math.min(vw/ISLE.W,vh/ISLE.H)*1.15;ISLE.tx=(vw-ISLE.W*ISLE.scale)/2;ISLE.ty=(vh-ISLE.H*ISLE.scale)/2;isleApply();isleBindOnce();}
-function closeIslandTest(){var m=document.getElementById('island-test-modal');if(m)m.style.display='none';}
+function closeIslandTest(){var m=document.getElementById('island-test-modal');if(m)m.style.display='none';closeIslePanel();}
+var _isleFakeLv={};
+var _isleRole={'Market':'Extra egg coins','Expedition Post':'Boostar äventyr / fler slots','Shell Cove':'Mer shells','Hatchery':'Fler/bättre ägg (odds, slots, shells)','Training Grounds':'XP till placerade pets','Fortune Den':'Luck / bättre rare-odds'};
+function openIslePanel(name,file){
+  var p=document.getElementById('isle-panel');if(!p)return;
+  var lv=_isleFakeLv[name]||0;
+  var slots='';for(var i=0;i<4;i++)slots+='<div style="width:54px;height:54px;border-radius:13px;border:2px dashed #3a5cb8;background:rgba(30,45,75,0.55);display:flex;align-items:center;justify-content:center;color:#5f7bb8;font-size:1.5rem;flex:0 0 auto;">+</div>';
+  p.innerHTML='<div style="width:40px;height:4px;border-radius:3px;background:#3a5cb8;margin:0 auto 12px;"></div>'
+    +'<div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">'
+    +'<img src="'+ASSET_BASE+'/assets/island/'+file+'" alt="" style="width:58px;height:58px;object-fit:contain;" onerror="this.style.display=\'none\'">'
+    +'<div style="flex:1;min-width:0;"><div style="font-family:\'Fredoka One\',cursive;color:#eaf1ff;font-size:1.15rem;">'+name+'</div><div style="color:#9fb3d8;font-size:0.78rem;">'+(_isleRole[name]||'')+'</div></div>'
+    +'<button onclick="closeIslePanel()" style="background:none;border:none;color:#9fb3d8;font-size:1.4rem;cursor:pointer;line-height:1;">✕</button></div>'
+    +'<div style="display:flex;gap:8px;align-items:stretch;margin-bottom:14px;">'
+    +'<button onclick="isleFakeBuy(\''+name+'\')" style="flex:1;padding:12px;background:linear-gradient(180deg,#f2b04a,#d98a1f);border:none;border-radius:13px;color:#3a2200;font-family:\'Fredoka One\',cursive;font-size:0.98rem;cursor:pointer;">Buy · Lv <span id="isle-lv">'+lv+'</span></button>'
+    +'<button style="padding:12px 15px;background:rgba(90,60,20,0.35);border:1.5px solid #b5721f;border-radius:13px;color:#ffcf7a;font-family:\'Fredoka One\',cursive;font-size:0.85rem;cursor:pointer;">⬆ Upgrade</button></div>'
+    +'<div style="color:#cfe0ff;font-family:\'Fredoka One\',cursive;font-size:0.82rem;margin-bottom:8px;">🐾 Workforce · Stage 1 <span style="color:#7f93b8;font-size:0.72rem;">(4 platser)</span></div>'
+    +'<div style="display:flex;gap:9px;justify-content:center;">'+slots+'</div>'
+    +'<div style="color:#7f93b8;font-size:0.68rem;margin-top:12px;text-align:center;">Preview — knapparna visar bara upplägget, ingen riktig logik än</div>';
+  p.style.transform='translateY(0)';
+  var s=document.getElementById('isle-panel-scrim');if(s)s.style.display='block';
+}
+function closeIslePanel(){var p=document.getElementById('isle-panel');if(p)p.style.transform='translateY(115%)';var s=document.getElementById('isle-panel-scrim');if(s)s.style.display='none';}
+function isleFakeBuy(name){_isleFakeLv[name]=(_isleFakeLv[name]||0)+1;var el=document.getElementById('isle-lv');if(el)el.textContent=_isleFakeLv[name];}
+function isleEggTap(){isleToast('🥚 The Egg — tap to hatch!');}
 // DEV-knappen visas BARA för ägarens konto (Chriswhippit). Andra inloggade ser den inte.
 var DEV_OWNER_ID='d2b2e750-ff9d-40c2-acbf-03c82a44d655';
 function updateDevFab(){
@@ -10155,7 +10163,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.55<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.56<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
