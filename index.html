@@ -4177,10 +4177,14 @@ function petXpProgress(pet){
 function petSyncLevel(pet){if(!pet)return false;var was=pet.level||1;pet.level=petLevelFromXp(pet.xp||0);return pet.level>was;}
 
 // Aktiva pets (i slottarna) tjänar XP långsamt över tid medan de jobbar.
-var PET_ACTIVE_XP_PER_MIN=5; // XP/min per utrustad pet (PLATSHÅLLARE)
-var IDLE_PET_XP_PER_MIN=3; // XP/min per idlande pet i Pet Adventures (PLATSHÅLLARE → Balance Sheet)
+var PET_ACTIVE_XP_PER_MIN=5; // XP/min per utrustad pet (LEGACY: active-slots gömda i UI, ger 0 i praktiken)
+var IDLE_PET_XP_PER_MIN=15; // XP/min per idlande pet i Pet Adventures (v10.53: snabbfil för att levla mot Arctic/Volcano)
+var WORKFORCE_PET_XP_PER_MIN=4; // v10.53: XP/min per pet placerad i en byggnads workforce (bred passiv motor — hela stallet levlar medan de jobbar)
+var ADV_XP_MULT=2.5; // v10.53: global multiplikator på all äventyrs-XP
 // Pet-nivå höjer CHANSEN på sällsynt bonus-loot (gems/rara ägg) i äventyr. Loot-tabellen är ändå taket.
 var PET_LEVEL_LOOT_BONUS=0.015; // +1,5% rare-chans per nivå över Lv 1 (PLATSHÅLLARE) → Lv 25 ≈ +36%
+// v10.54 — En pets xpBoost-ability höjer nu ALL dess XP (tick + offline), inte bara äventyr.
+function petXpMult(pet){var b=0;if(pet&&pet.abilities)pet.abilities.forEach(function(a){if(a&&a.id==='xpBoost')b+=abilityVal(a);});return 1+b/100;}
 function tickActivePetXp(dt){
   if(!G.equippedPets||!G.equippedPets.length)return;
   var rate=PET_ACTIVE_XP_PER_MIN/60; // XP/sek
@@ -4190,7 +4194,7 @@ function tickActivePetXp(dt){
     var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);});
     if(!pet)return;
     if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return; // redan max
-    pet._xpAcc=(pet._xpAcc||0)+rate*dt; // ackumulera bråkdels-XP
+    pet._xpAcc=(pet._xpAcc||0)+rate*petXpMult(pet)*dt; // ackumulera bråkdels-XP (v10.54: xpBoost gäller nu tick)
     if(pet._xpAcc>=1){
       var add=Math.floor(pet._xpAcc);pet._xpAcc-=add;
       var beforeLv=petLevelFromXp(pet.xp||0);
@@ -4206,6 +4210,46 @@ function tickActivePetXp(dt){
     var pt=document.getElementById('tab-pets');
     if(pt&&pt.style.display==='block'&&typeof renderPets==='function')renderPets();
   }
+}
+
+// v10.53 — Pets placerade i byggnaders workforce tjänar en liten passiv XP-summa medan de jobbar.
+function tickWorkforceXp(dt){
+  if(!G.workforce)return;
+  var rate=WORKFORCE_PET_XP_PER_MIN/60, leveled=null, seen={};
+  for(var i=0;i<20;i++){
+    var arr=G.workforce[i]; if(!Array.isArray(arr))continue;
+    arr.forEach(function(uid){
+      if(uid==null||seen[uid])return; seen[uid]=1;
+      var pet=petByUid(uid); if(!pet)return;
+      if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return;
+      pet._xpAcc=(pet._xpAcc||0)+rate*petXpMult(pet)*dt;
+      if(pet._xpAcc>=1){
+        var add=Math.floor(pet._xpAcc);pet._xpAcc-=add;
+        var beforeLv=petLevelFromXp(pet.xp||0);
+        pet.xp=(pet.xp||0)+add;
+        petSyncLevel(pet);
+        G.stats.totalActivePetXp=(G.stats.totalActivePetXp||0)+add;
+        if(pet.level>beforeLv){if(!leveled)leveled=[];leveled.push(pet);}
+      }
+    });
+  }
+  if(leveled&&typeof showRewardPopup==='function'){
+    showRewardPopup(leveled.map(function(p){return '⭐ '+p.name+' reached Lv '+p.level+'!';}),false,3000);
+    var pt=document.getElementById('tab-pets');
+    if(pt&&pt.style.display==='block'&&typeof renderPets==='function')renderPets();
+  }
+}
+
+// v10.54 — Offline-XP: idle- och workforce-pets tjänar XP medan du är borta (sek redan cappat till offline-taket 8h). Tyst — inga level-up-popups vid load.
+function applyOfflineXp(sec){
+  if(!(sec>0))return;
+  var ir=IDLE_PET_XP_PER_MIN/60, wr=WORKFORCE_PET_XP_PER_MIN/60;
+  (G.idlePets||[]).forEach(function(uid){
+    var pet=petByUid(uid); if(!pet)return;
+    if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return;
+    pet.xp=(pet.xp||0)+Math.floor(ir*sec*petXpMult(pet)); petSyncLevel(pet);
+  });
+  if(G.workforce){var seen={};for(var i=0;i<20;i++){var arr=G.workforce[i];if(!Array.isArray(arr))continue;arr.forEach(function(uid){if(uid==null||seen[uid])return;seen[uid]=1;var pet=petByUid(uid);if(!pet)return;if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return;pet.xp=(pet.xp||0)+Math.floor(wr*sec*petXpMult(pet)); petSyncLevel(pet);});}}
 }
 
 function generateEventPet(){
@@ -4885,7 +4929,7 @@ function rollAdvReward(adv,pet){
   if(typeof rollGear==='function'&&Math.random()<GEAR_DROP_CHANCE*luckMult){
     bonus.push({type:'gear',gear:rollGear(advGearBand(adv))});
   }
-  return {coins:coins,shells:shells,xp:Math.round((adv.xp||0)*(1+(s.xpBoost||0)/100)),bonus:bonus,affinity:aff};
+  return {coins:coins,shells:shells,xp:Math.round((adv.xp||0)*ADV_XP_MULT*(1+(s.xpBoost||0)/100)),bonus:bonus,affinity:aff};
 }
 function nextAdvSlotCost(){if(G.adventureSlots>=ADVENTURE_SLOT_MAX)return null;return ADVENTURE_SLOT_COSTS[G.adventureSlots-1];}
 function buyAdventureSlot(){
@@ -7213,7 +7257,7 @@ function tickIdlePets(dt){
   (G.idlePets||[]).forEach(function(uid){
     var pet=G.hatchedPets.find(function(p){return String(p.uid)===String(uid);}); if(!pet)return;
     if(petLevelFromXp(pet.xp||0)>=PET_MAX_LEVEL)return;
-    pet._xpAcc=(pet._xpAcc||0)+ixr*dt;
+    pet._xpAcc=(pet._xpAcc||0)+ixr*petXpMult(pet)*dt;
     if(pet._xpAcc>=1){ var add=Math.floor(pet._xpAcc);pet._xpAcc-=add;var bl=petLevelFromXp(pet.xp||0);pet.xp=(pet.xp||0)+add;petSyncLevel(pet);G.stats.totalActivePetXp=(G.stats.totalActivePetXp||0)+add;if(pet.level>bl){if(!ilv)ilv=[];ilv.push(pet);} }
   });
   if(ilv&&typeof showRewardPopup==='function'){showRewardPopup(ilv.map(function(p){return '⭐ '+p.name+' reached Lv '+p.level+'!';}),false,3000);}
@@ -10037,7 +10081,7 @@ function renderSettings(){
     '<button class="set-action-btn red" onclick="resetFromSettings()">🗑️ Reset Game <span style="font-size:0.65rem;opacity:0.85">(Local Data)</span></button>'+
     '</div>';
 
-  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.52<br>An idle pet collection game · Made with 💜</div></div>';
+  b.innerHTML=tabs+'<div class="set-content">'+c+actions+'<div class="set-about">Pet Planet — v10.54<br>An idle pet collection game · Made with 💜</div></div>';
   // Mushjul → horisontell scroll på flik-raden (för dator; touch-svep funkar redan på mobil)
   var stbar=b.querySelector('.set-tabs');
   if(stbar){stbar.addEventListener('wheel',function(e){if(e.deltaY!==0&&stbar.scrollWidth>stbar.clientWidth){e.preventDefault();stbar.scrollLeft+=e.deltaY;}},{passive:false});}
@@ -14810,6 +14854,7 @@ function tick(now){
   G.coins+=currentEps*dt;G.total+=currentEps*dt;
   G.stats.totalCoinsEarned+=currentEps*dt;trackCoins('idle',currentEps*dt);
   tickActivePetXp(dt); // aktiva pets tjänar XP medan de jobbar
+  tickWorkforceXp(dt); // v10.53: pets i byggnaders workforce tjänar passiv XP
   if(currentEps>G.stats.highestEpsReached)G.stats.highestEpsReached=currentEps;
   G.stats.totalTimePlayed+=dt;
   var sessionLen=(Date.now()-G.stats.currentSessionStart)/1000;
@@ -15021,6 +15066,7 @@ if(savedData){
       G.coins+=offlineCoins;G.total+=offlineCoins;
       G.stats.offlineRewardsClaimed++;
       G.stats.totalCoinsEarned+=offlineCoins;trackCoins('offline',offlineCoins);
+      applyOfflineXp(offlineMs/1000); // v10.54: idle + workforce tjänar XP offline (samma 8h-tak som mynten)
       // Frukter droppar INTE offline (skärm-frukter fångas bara live, väsk-frukter droppar bara medan du spelar). Avstängt.
       _offlineFruitSummary=null;
     }
