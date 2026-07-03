@@ -1,0 +1,2940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flip the Switch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#16110d; --bg2:#1d1712; --panel:#241c16; --panel2:#2c231b; --panel3:#352a20;
+  --line:#3a2d22; --line2:#4a3a2c;
+  --cream:#f3e7d5; --muted:#a08b74; --dim:#7d6a55;
+  --honey:#f4b64c; --honey2:#ffd27a; --ember:#e8804f; --glow:#ffb648;
+  --c-common:#9c8f7d; --c-uncommon:#86c06a; --c-rare:#57b0e6; --c-epic:#b483e6;
+  --c-legendary:#f5a623; --c-mythical:#ff6f6f; --c-artifact:#35d6c0; --c-cosmic:#ff8fd0;
+  --good:#86c06a; --bad:#e07a5f;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --disp:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:radial-gradient(1200px 800px at 50% -10%,var(--halo,#241a12) 0%,var(--bg) 55%);
+  color:var(--cream); font-family:var(--body); overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; line-height:1.4;
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--line2);border-radius:8px}
+::selection{background:var(--honey);color:#1a130c}
+
+/* ---------- START SCREEN ---------- */
+#start{
+  position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;
+  align-items:center;justify-content:flex-start;text-align:center;padding:24px;overflow-y:auto;
+  background:radial-gradient(900px 700px at 50% 35%,var(--halo,#241a12) 0%,var(--bg) 60%);
+  transition:opacity .8s ease, transform .8s ease;
+}
+.start-inner{margin:auto;width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center;
+  padding:24px 0;min-height:min-content}
+#start.gone{opacity:0;transform:scale(1.04);pointer-events:none}
+.brand{font-family:var(--disp);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(38px,11vw,76px);line-height:.95;
+  background:linear-gradient(180deg,#fff0d6,var(--honey) 70%,var(--ember));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 30px rgba(244,182,76,.25));}
+.tag{color:var(--muted);max-width:440px;margin:18px auto 0;font-size:15px}
+.tag b{color:var(--cream);font-weight:600}
+
+/* the switch */
+.switch-wrap{margin-top:54px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.switch{
+  width:210px;height:104px;border-radius:56px;position:relative;cursor:pointer;
+  background:linear-gradient(180deg,#120d09,#241a12);
+  border:2px solid #3d2e20;
+  box-shadow:inset 0 6px 16px rgba(0,0,0,.7), inset 0 -2px 4px rgba(255,180,72,.05), 0 10px 40px rgba(0,0,0,.5);
+  transition:box-shadow .4s;
+}
+.switch::before{content:'OFF';position:absolute;right:26px;top:50%;transform:translateY(-50%);
+  font-family:var(--mono);font-size:13px;letter-spacing:2px;color:#5a4632;font-weight:600}
+.knob{
+  position:absolute;top:6px;left:6px;width:90px;height:90px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#4a3a2b,#241a12 70%);
+  border:1px solid #52402e;
+  box-shadow:0 6px 14px rgba(0,0,0,.6), inset 0 2px 3px rgba(255,200,120,.15);
+  transition:left .38s cubic-bezier(.3,1.5,.5,1), background .38s, box-shadow .38s;
+  display:flex;align-items:center;justify-content:center;
+}
+.knob::after{content:'';width:12px;height:44px;border-radius:8px;background:#1b120b;box-shadow:inset 0 2px 3px rgba(0,0,0,.6)}
+.switch.on{border-color:var(--honey);box-shadow:inset 0 6px 16px rgba(0,0,0,.6), 0 0 60px rgba(244,182,76,.35)}
+.switch.on::before{content:'ON';left:32px;right:auto;color:var(--honey2)}
+.switch.on .knob{left:110px;background:radial-gradient(circle at 35% 30%,#ffe0a0,var(--honey) 70%);
+  box-shadow:0 6px 20px rgba(244,182,76,.5), inset 0 2px 4px rgba(255,255,255,.4)}
+.switch.on .knob::after{background:#a86a1e}
+.hint{color:var(--dim);font-family:var(--mono);font-size:12px;letter-spacing:1px}
+.hint b{color:var(--honey)}
+
+/* ---------- APP ---------- */
+#app{max-width:1180px;margin:0 auto;padding:14px 14px 60px;opacity:0;transition:opacity .8s ease .3s}
+#app.live{opacity:1}
+
+/* topbar */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.who{display:flex;align-items:center;gap:11px;min-width:150px}
+.avatar{width:42px;height:42px;border-radius:12px;flex:0 0 auto;
+  background:radial-gradient(circle at 40% 30%,#3a2c1e,#211812);border:1px solid var(--line2);
+  display:flex;align-items:center;justify-content:center}
+.who .nm{font-family:var(--disp);font-weight:600;font-size:17px;line-height:1.1}
+.who .sub{color:var(--muted);font-size:11.5px;font-family:var(--mono)}
+.res-strip{display:flex;gap:8px;flex:1;flex-wrap:wrap;justify-content:center}
+.res{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:6px 10px;min-width:0}
+.res .ico{width:18px;height:18px;flex:0 0 auto}
+.res .v{font-family:var(--mono);font-weight:600;font-size:13.5px;line-height:1}
+.res .r{font-family:var(--mono);font-size:10px;color:var(--good);line-height:1;margin-top:2px}
+.res .col{display:flex;flex-direction:column;gap:0}
+.spd{display:flex;gap:4px;align-items:center}
+.spd button{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);
+  background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:6px 8px;transition:.15s}
+.spd button.a{color:#1a130c;background:var(--honey);border-color:var(--honey)}
+.icon-btn{width:34px;height:34px;border-radius:9px;background:var(--bg2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.15s;font-size:15px}
+.icon-btn:hover{color:var(--cream);border-color:var(--line2)}
+
+/* layout */
+/* movable module grid — TRUE 2D cell grid: each panel has an explicit (x,y,w,h) cell rect */
+.board{display:grid;grid-template-columns:1fr;grid-auto-rows:auto;gap:12px;align-items:start;position:relative}
+@media(min-width:760px){.board{grid-template-columns:repeat(4,1fr);grid-auto-rows:var(--rowh,42px);align-items:stretch}}
+.board.stacked{grid-template-columns:1fr!important;grid-auto-rows:auto!important;align-items:start}
+.mod{min-width:0;position:relative}
+/* on the cell grid each panel fills its cell; overflowing content scrolls inside it */
+@media(min-width:760px){
+  .board:not(.stacked) .mod>.card,.board:not(.stacked) .mod>.stage-card{height:100%}
+  .board:not(.stacked) .mod>.card{display:flex;flex-direction:column}
+  .board:not(.stacked) .mod>.card>.body{flex:1 1 auto;min-height:0;overflow:auto}
+  .board:not(.stacked) .mod.collapsed .card>.body{flex:0}
+  .board:not(.stacked) .mod-stage .stage{height:100%}
+}
+.mod-grip{display:none}
+.board.editing{user-select:none;-webkit-user-select:none;touch-action:none}
+.board.editing .mod:not(.mod-stage){outline:2px dashed var(--line2);outline-offset:2px;border-radius:16px}
+.board.editing .mod .card,.board.editing .mod .stage-card{pointer-events:none}
+.board.editing .mod-grip{display:inline-flex;align-items:center;gap:5px;position:absolute;top:-9px;left:12px;z-index:6;
+  background:var(--honey);color:#1a130c;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.5px;
+  padding:4px 10px;border-radius:7px;cursor:grab;touch-action:none;box-shadow:0 3px 10px rgba(0,0,0,.4)}
+.mod.dragging{position:fixed;z-index:60;margin:0;pointer-events:none;box-shadow:0 24px 70px rgba(0,0,0,.65);
+  opacity:.97;outline:2px solid var(--honey);outline-offset:0;border-radius:16px;transition:none}
+.grid-ph{border:2px dashed var(--honey);border-radius:16px;background:rgba(244,182,76,.12);z-index:0;pointer-events:none}
+.board:not(.stacked) .mod.collapsed{align-self:start}
+.board:not(.stacked) .mod.collapsed>.card{height:auto}
+#layoutBar{position:fixed;left:50%;bottom:16px;transform:translateX(-50%) translateY(120%);z-index:75;
+  display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--honey);border-radius:14px;padding:10px 12px 10px 16px;box-shadow:0 12px 50px rgba(0,0,0,.55);
+  transition:transform .3s ease;max-width:92vw}
+#layoutBar.show{transform:translateX(-50%) translateY(0)}
+#layoutBar span{font-size:12px;color:var(--muted)}
+#layoutBar button{background:var(--honey);color:#1a130c;font-family:var(--disp);font-weight:600;font-size:13px;
+  padding:8px 16px;border-radius:10px}
+/* stage is locked (not movable/resizable/collapsible) but only ~half width so panels sit beside it */
+.board.editing .mod-stage{outline:none!important;cursor:default}
+.board.editing .mod-stage .stage-card{pointer-events:auto}
+.mod-stage .mod-grip,.mod-stage .mod-resize{display:none!important}
+/* vertical resize handle (edit mode, non-stage) */
+.mod-resize{display:none}
+.board.editing .mod:not(.mod-stage) .mod-resize{display:flex;align-items:center;justify-content:center;
+  position:absolute;left:0;right:0;bottom:-4px;height:16px;z-index:6;cursor:ns-resize;touch-action:none;
+  color:#1a130c;font-size:11px;font-weight:700;border-radius:0 0 14px 14px;
+  background:linear-gradient(180deg,rgba(244,182,76,.25),var(--honey))}
+.board.editing .mod:not(.mod-stage) .mod-resize::after{content:'⇕ drag'}
+.mod .card>.body{transition:none}
+.mod.resizing{outline:2px solid var(--honey)!important}
+
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+  border-radius:16px;padding:13px 14px;position:relative}
+.card h3{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.card h3 .dot{width:6px;height:6px;border-radius:50%;background:var(--honey);box-shadow:0 0 8px var(--honey)}
+
+/* STAGE */
+.stage-card{padding:0;overflow:hidden;background:none;border:none}
+.stage{position:relative;height:340px;border-radius:20px;overflow:hidden;
+  border:1px solid var(--line2);
+  background:
+    radial-gradient(120% 90% at 50% 118%,rgba(244,182,76,.20),transparent 60%),
+    radial-gradient(90% 70% at 50% 8%,#2c2013,transparent 65%),
+    linear-gradient(180deg,#221a12,#171008);}
+@media(min-width:860px){.stage{height:420px}}
+.world-label{position:absolute;top:12px;left:50%;transform:translateX(-50%);text-align:center;z-index:3;width:88%}
+.world-label .wn{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.02em}
+.pbar{height:7px;border-radius:6px;background:rgba(0,0,0,.4);border:1px solid var(--line);
+  overflow:hidden;margin-top:7px}
+.pbar > span{display:block;height:100%;border-radius:6px;
+  background:linear-gradient(90deg,var(--honey),var(--honey2));transition:width .4s;box-shadow:0 0 12px rgba(244,182,76,.5)}
+.pbar.asc > span{background:linear-gradient(90deg,#b483e6,#ff8fd0)}
+.floor{position:absolute;left:0;right:0;bottom:0;height:74px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.35));
+  border-top:1px solid rgba(244,182,76,.12)}
+.creature{position:absolute;bottom:56px;left:50%;width:120px;height:130px;
+  transform:translateX(-50%);transition:left 2.4s cubic-bezier(.4,0,.3,1);z-index:2;will-change:transform}
+.creature .body{animation:breathe 3.4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes breathe{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-4px) scaleY(1.015)}}
+.creature.hop .body{animation:hop .55s ease}
+@keyframes hop{0%{transform:translateY(0)}35%{transform:translateY(-26px) scaleY(1.05)}70%{transform:translateY(0) scaleY(.95)}100%{transform:translateY(0)}}
+.eye{transform-box:fill-box;transform-origin:center;animation:blink 4.6s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+.shadow{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);width:88px;height:16px;
+  border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent 70%);z-index:1;transition:left 2.4s cubic-bezier(.4,0,.3,1)}
+.thought{position:absolute;bottom:186px;left:50%;transform:translateX(-50%);z-index:4;
+  background:rgba(28,20,13,.92);border:1px solid var(--line2);border-radius:14px;
+  padding:7px 13px;font-size:13px;font-weight:500;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);transition:left 2.4s cubic-bezier(.4,0,.3,1),opacity .4s;max-width:80%}
+.thought::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%) rotate(45deg);
+  width:10px;height:10px;background:rgba(28,20,13,.92);border-right:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.thought .em{color:var(--honey2)}
+/* float rewards */
+.floaty{position:absolute;font-family:var(--mono);font-weight:700;font-size:14px;pointer-events:none;
+  z-index:5;animation:floatUp 1.5s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(.8)}15%{opacity:1;transform:translateY(-6px) scale(1)}100%{opacity:0;transform:translateY(-52px) scale(1)}}
+/* --- emoji reactions --- */
+.react-launch{position:absolute;right:10px;bottom:10px;z-index:8;width:38px;height:38px;border-radius:50%;
+  border:1px solid rgba(244,182,76,.4);background:rgba(28,20,12,.82);color:#fff;font-size:19px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.45);transition:transform .12s ease,background .12s ease}
+.react-launch:hover{transform:scale(1.08);background:rgba(40,30,18,.92)}
+.react-bar{position:absolute;right:10px;bottom:56px;z-index:8;max-width:min(90%,320px);display:none;flex-wrap:wrap;gap:5px;
+  padding:9px;border-radius:14px;background:rgba(20,14,9,.94);border:1px solid rgba(244,182,76,.28);
+  box-shadow:0 10px 30px rgba(0,0,0,.55)}
+.react-bar.open{display:flex}
+.react-bar .rx{width:32px;height:32px;border-radius:9px;border:1px solid transparent;background:rgba(255,255,255,.04);
+  font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .1s ease,background .1s ease}
+.react-bar .rx:hover{transform:scale(1.16);background:rgba(244,182,76,.16)}
+.react-bar .rx.paint{border:1px dashed rgba(244,182,76,.5)}
+.react-bar .rx svg{width:22px;height:22px;display:block}
+.reaction{position:absolute;z-index:9;pointer-events:none;font-size:30px;filter:drop-shadow(0 3px 8px rgba(0,0,0,.5));
+  animation:reactUp 3.6s cubic-bezier(.2,.7,.3,1) forwards}
+.reaction svg{width:34px;height:34px;display:block}
+@keyframes reactUp{
+  0%{opacity:0;transform:translateY(58px) scale(.5)}
+  10%{opacity:1;transform:translateY(0) scale(1.15)}
+  18%{transform:translateY(0) scale(1)}
+  72%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translateY(-18px) scale(1)}}
+/* paint modal */
+#paintModal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;
+  background:rgba(6,4,2,.72);backdrop-filter:blur(3px)}
+#paintModal.show{display:flex}
+.paint-box{background:linear-gradient(180deg,#241a10,#1a120a);border:1px solid rgba(244,182,76,.3);border-radius:18px;
+  padding:18px;width:min(92vw,320px);box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.paint-title{font-weight:700;color:var(--cream);margin-bottom:12px;text-align:center}
+.paint-grid{display:grid;gap:1px;background:#3a2c1c;border:2px solid #3a2c1c;border-radius:8px;overflow:hidden;
+  width:220px;height:220px;margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.paint-grid .pc{background:#140f09;cursor:pointer;user-select:none;-webkit-user-select:none}
+.paint-swatches{display:flex;justify-content:center;gap:7px;margin:12px 0}
+.paint-swatches .sw{width:24px;height:24px;border-radius:6px;cursor:pointer;border:2px solid transparent}
+.paint-swatches .sw.on{border-color:#fff}
+.paint-actions{display:flex;gap:8px;justify-content:center}
+.pbtn{padding:8px 12px;border-radius:9px;border:1px solid rgba(244,182,76,.35);background:rgba(255,255,255,.04);
+  color:var(--cream);cursor:pointer;font-size:13px}
+.pbtn.go{background:var(--honey);border-color:var(--honey);color:#1a120a;font-weight:700}
+.pbtn.ghost{opacity:.75}
+.spark{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--honey2);z-index:5;pointer-events:none;
+  box-shadow:0 0 8px var(--honey2);animation:sparkFly .8s ease-out forwards}
+@keyframes sparkFly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+/* ambient workshop props */
+.prop{position:absolute;bottom:56px;border-radius:8px;z-index:1;opacity:.9}
+.anvil{left:calc(50% + 62px);width:52px;height:34px;
+  background:linear-gradient(180deg,#3b2c1e,#241811);border:1px solid #4a3826;border-radius:6px 6px 4px 4px}
+.chest{left:calc(50% - 118px);width:44px;height:34px;bottom:56px;
+  background:linear-gradient(180deg,#5a8a86,#2f4d4b);border:1px solid #6fb0aa;border-radius:5px}
+.chest::before{content:'';position:absolute;left:0;right:0;top:11px;height:4px;background:rgba(255,255,255,.25)}
+
+/* --- side-scroller scene --- */
+.scene{position:absolute;inset:0;overflow:hidden;border-radius:20px;z-index:0}
+.scene-sky{position:absolute;inset:0;transition:background 1s ease}
+.pll{position:absolute;inset:0;background-repeat:repeat-x;background-position:0 bottom;
+  background-size:auto 100%;will-change:background-position}
+.pll.far{opacity:.6;filter:saturate(.75) brightness(.92)}
+.pll.mid{opacity:.9}
+.worldflash{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 62%,rgba(255,214,140,.85),rgba(255,180,72,.25) 40%,transparent 68%)}
+.worldflash.go{animation:wflash 1.1s ease}
+@keyframes wflash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+/* home base scene (periodic visit) */
+.base{position:absolute;inset:0;z-index:1;opacity:0;pointer-events:none;transition:opacity .55s ease;
+  background:linear-gradient(180deg,#2c2013 0%,#241a10 58%,#1c130b 58%,#160f08 100%)}
+.base.show{opacity:1}
+.room-wall{position:absolute;left:0;right:0;top:0;height:60%;
+  background:radial-gradient(90% 130% at 50% 4%,rgba(244,182,76,.20),transparent 62%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.014) 0 1px,transparent 1px 58px),
+    linear-gradient(180deg,#2e2214,#241a10)}
+.room-window{position:absolute;top:6%;left:50%;transform:translateX(-50%);width:108px;height:62px;border-radius:8px;
+  background:radial-gradient(120% 120% at 50% 18%,rgba(255,216,142,.55),rgba(244,182,76,.20) 60%,transparent);
+  border:3px solid #3a2c1c;box-shadow:0 0 34px rgba(244,182,76,.32),inset 0 0 18px rgba(255,214,140,.28)}
+.room-window::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 47%,#3a2c1c 47% 53%,transparent 53%),
+    linear-gradient(180deg,transparent 44%,#3a2c1c 44% 56%,transparent 56%)}
+.base-floor{position:absolute;left:0;right:0;bottom:0;height:42%;
+  background:linear-gradient(180deg,#3a2c1c,#221710);border-top:2px solid rgba(244,182,76,.28)}
+.room-rug{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);width:64%;height:15%;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,132,79,.30),rgba(180,90,60,.12) 58%,transparent 72%)}
+.room-bench{position:absolute;bottom:41%;right:7%;width:58px;height:26px;border-radius:5px;
+  background:linear-gradient(180deg,#4a3826,#2a1e14);border:1px solid #5a4632;box-shadow:0 7px 14px rgba(0,0,0,.42)}
+.room-bench::before{content:'🛠️';position:absolute;top:-15px;left:9px;font-size:14px;filter:saturate(.85)}
+.room-shelf{position:absolute;top:36%;left:9%;right:9%;height:3px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#5a4632 12%,#5a4632 88%,transparent);box-shadow:0 3px 9px rgba(0,0,0,.42)}
+.shelf-items{position:absolute;left:0;right:0;bottom:3px;display:flex;justify-content:center;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.trophy{display:flex;flex-direction:column;align-items:center;gap:2px;animation:trophyPop .5s ease}
+.trophy .ti{font-size:19px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.5))}
+.trophy .tl{font-family:var(--mono);font-size:8px;color:var(--honey2);white-space:nowrap;opacity:.82}
+@keyframes trophyPop{from{transform:translateY(7px) scale(.6);opacity:0}to{transform:none;opacity:1}}
+.room-beacon{position:absolute;top:19%;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;z-index:2}
+.room-beacon .bi{font-size:28px;filter:drop-shadow(0 0 13px currentColor)}
+.room-beacon .bl{font-family:var(--mono);font-size:9px;letter-spacing:.4px}
+.hammer{position:absolute;font-size:22px;z-index:5;pointer-events:none;transform-origin:bottom left;animation:swing .55s ease forwards}
+@keyframes swing{0%{transform:rotate(-45deg) scale(.9)}45%{transform:rotate(18deg) scale(1)}100%{transform:rotate(-6deg);opacity:0}}
+.creature.walking{animation:walk .5s ease-in-out infinite}
+@keyframes walk{0%,100%{transform:translateX(-50%) translateY(0) rotate(-1.2deg)}
+  50%{transform:translateX(-50%) translateY(-5px) rotate(1.2deg)}}
+.creature .flame{transform-box:fill-box;transform-origin:top center;animation:flameIdle .9s ease-in-out infinite}
+.creature .t2 .flame{animation-delay:.15s}
+@keyframes flameIdle{0%,100%{transform:scaleY(.62);opacity:.55}50%{transform:scaleY(.92);opacity:.85}}
+.creature.walking .t1 .flame{animation:flameThrust .28s ease-in-out infinite}
+.creature.walking .t2 .flame{animation:flameThrust .28s ease-in-out infinite .14s}
+@keyframes flameThrust{0%,100%{transform:scaleY(1);opacity:.9}50%{transform:scaleY(1.55);opacity:1}}
+.tap{cursor:pointer;transition:filter .12s ease,transform .12s ease}
+.tap:hover{filter:brightness(1.12)}
+.res.tap:hover{transform:translateY(-1px)}
+.levent.tap:hover{background:rgba(255,255,255,.05);border-radius:8px}
+.lpk{opacity:.55;font-size:11px}
+
+/* --- local duo (two wanderers) --- */
+.hidden{display:none!important}
+.creature.friend{filter:hue-rotate(150deg) saturate(1.15)}
+.wtag{position:absolute;bottom:24px;transform:translateX(-50%);z-index:4;pointer-events:none;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.5px;text-align:center;line-height:1.25;
+  background:rgba(28,20,13,.82);border:1px solid var(--line2);border-radius:9px;padding:3px 9px;white-space:nowrap;
+  transition:left .3s ease}
+.wtag b{color:var(--honey2);font-size:11.5px}
+.wtag.friend b{color:#7fd8e6}
+.wtag .ww{color:var(--muted);font-size:9.5px}
+.creature.friend .body{animation-delay:.4s}
+
+/* NOW panel */
+.now-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0}
+.now-row + .now-row{border-top:1px dashed var(--line)}
+.now-row .k{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em}
+.now-row .val{font-family:var(--mono);font-weight:600;text-align:right}
+.badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600;
+  padding:3px 8px;border-radius:7px;background:var(--bg2);border:1px solid var(--line)}
+
+/* buildings */
+.blist{display:flex;flex-direction:column;gap:2px;max-height:none}
+.brow{display:flex;align-items:center;gap:9px;padding:7px 6px;border-radius:9px;transition:.2s}
+.brow.flash{background:rgba(244,182,76,.12)}
+.brow.tgt{background:rgba(244,182,76,.06);outline:1px solid rgba(244,182,76,.25)}
+.bico{width:26px;height:26px;border-radius:8px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px solid var(--line);font-size:13px}
+.bmeta{flex:1;min-width:0}
+.bmeta .bn{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bmeta .bd{font-family:var(--mono);font-size:10.5px;color:var(--muted)}
+.blv{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--honey2)}
+.mod-stage{opacity:1 !important}
+
+/* gear */
+.gslots{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.gslot{aspect-ratio:1;border-radius:11px;background:var(--bg2);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;position:relative;transition:.25s;font-size:16px}
+.gslot .pw{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:8.5px;color:var(--muted)}
+.gtotal{margin-top:9px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.gtotal b{color:var(--honey2)}
+
+/* craft */
+.craft-live{display:flex;align-items:center;gap:10px}
+.craft-ico{width:38px;height:38px;border-radius:11px;background:var(--bg2);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:18px;flex:0 0 auto;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 rgba(244,182,76,0)}50%{box-shadow:0 0 16px rgba(244,182,76,.4)}}
+.craft-body{flex:1;min-width:0}
+.craft-body .ct{font-size:13px;font-weight:600}
+.cbar{height:6px;border-radius:5px;background:rgba(0,0,0,.35);overflow:hidden;margin-top:6px}
+.cbar>span{display:block;height:100%;background:linear-gradient(90deg,#b483e6,#ff8fd0);transition:width .2s}
+.craft-idle{color:var(--dim);font-size:12.5px;font-family:var(--mono);text-align:center;padding:8px 0}
+
+/* events / log */
+.log{display:flex;flex-direction:column}
+.levent{display:flex;gap:9px;font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+.levent:last-child{border-bottom:none}
+.levent .lt{font-family:var(--mono);font-size:10.5px;color:var(--dim);flex:0 0 auto;width:46px}
+.levent .lx{flex:1}
+.levent .lx b{font-weight:600}
+
+/* stats */
+.srow{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.srow:last-child{border-bottom:none}
+.srow .sk{color:var(--muted)}
+.srow .sv{font-family:var(--mono);font-weight:600}
+
+/* achievements */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:8px}
+.ach{aspect-ratio:1;border-radius:12px;background:var(--bg2);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:19px;position:relative;transition:.3s;filter:grayscale(1);opacity:.35}
+.ach.got{filter:none;opacity:1;border-color:var(--honey);box-shadow:0 0 14px rgba(244,182,76,.2);background:linear-gradient(180deg,#33281c,#251c14)}
+.ach .tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);
+  background:#0f0b07;border:1px solid var(--line2);border-radius:8px;padding:6px 9px;width:150px;
+  font-size:10.5px;text-align:center;opacity:0;pointer-events:none;transition:.15s;z-index:10;font-family:var(--body)}
+.ach .tip b{color:var(--honey2);display:block;font-size:11px;margin-bottom:2px}
+.ach:hover .tip{opacity:1}
+
+.collapsible > h3{cursor:pointer;user-select:none;justify-content:space-between}
+.collapsible > h3 .chev{transition:.2s;font-size:14px}
+.collapsible.closed .body{display:none}
+.collapsible.closed .chev{transform:rotate(-90deg)}
+
+/* toast (achievement unlock) */
+#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:linear-gradient(180deg,#33281c,#241a12);border:1px solid var(--honey);border-radius:12px;
+  padding:9px 15px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);
+  animation:toastIn .4s ease, toastOut .4s ease 3.6s forwards;max-width:90vw}
+@keyframes toastIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-16px)}}
+.toast .ti{font-size:22px}
+.toast .tx b{color:var(--honey2);font-family:var(--disp);font-size:13px}
+.toast .tx div{font-size:11px;color:var(--muted)}
+
+/* offline modal */
+#offlay{position:fixed;inset:0;z-index:70;background:rgba(10,7,4,.75);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:20px}
+#offlay.show{display:flex}
+.offbox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:20px;padding:22px;max-width:440px;width:100%;max-height:82vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.offbox h2{font-family:var(--disp);font-size:20px;font-weight:700;margin-bottom:4px}
+.offbox .osub{color:var(--muted);font-size:13px;margin-bottom:16px}
+.offbox .ot{display:flex;gap:10px;font-size:12.5px;padding:7px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+.offbox .ot .ott{font-family:var(--mono);color:var(--dim);font-size:10.5px;width:52px;flex:0 0 auto}
+.obtn{width:100%;margin-top:18px;padding:12px;border-radius:12px;font-family:var(--disp);font-weight:600;
+  background:var(--honey);color:#1a130c;font-size:15px;transition:.15s}
+.obtn:hover{background:var(--honey2)}
+
+/* lore reader */
+.lore-link{margin-top:24px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--muted);
+  background:none;border:none;border-bottom:1px dashed var(--line2);padding:3px 3px 4px;transition:.15s}
+.lore-link:hover{color:var(--honey2);border-color:var(--honey)}
+.friends-wrap{margin-top:20px;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center}
+.friends-btn{font-family:var(--mono);font-size:12px;letter-spacing:1px;color:var(--cream);background:var(--bg2);
+  border:1px solid var(--line2);border-radius:11px;padding:9px 16px;transition:.15s}
+.friends-btn:hover{border-color:var(--honey);color:var(--honey2)}
+.friends-panel{max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .3s ease;width:100%;
+  text-align:left;margin-top:0}
+.friends-panel.open{max-height:900px;opacity:1;margin-top:12px}
+.friends-inner{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:16px;padding:16px 16px 14px}
+.friends-inner .fp-title{font-family:var(--disp);font-weight:600;font-size:15px;margin-bottom:6px}
+.friends-inner .fp-body{font-size:12.5px;color:var(--muted);line-height:1.55}
+.fp-code{margin:12px 0;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:10px 12px;text-align:center}
+.fp-code span{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase}
+.fp-code b{display:block;font-family:var(--mono);font-size:20px;font-weight:700;color:var(--honey2);letter-spacing:3px;margin-top:4px}
+.fp-note{font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:12px}
+.fp-solo{width:100%;padding:11px;border-radius:11px;font-family:var(--disp);font-weight:600;font-size:14px;
+  background:var(--honey);color:#1a130c;transition:.15s}
+.fp-solo:hover{background:var(--honey2)}
+.fp-duo{width:100%;padding:12px;border-radius:11px;font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:12px;
+  background:linear-gradient(180deg,#2f4d4b,#233b39);color:#bfeef0;border:1px solid #6fb0aa;transition:.15s}
+.fp-duo:hover{background:linear-gradient(180deg,#396460,#2a4744);border-color:#7fd8e6}
+.fp-net{margin:12px 0;background:var(--bg2);border:1px solid var(--line);border-radius:11px;padding:11px 12px}
+.fp-net-title{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.fp-net-btn{width:100%;padding:9px;border-radius:9px;font-family:var(--mono);font-size:12px;letter-spacing:.5px;
+  background:var(--panel);color:var(--cream);border:1px solid var(--line2);transition:.15s;cursor:pointer}
+.fp-net-btn:hover{border-color:var(--honey);color:var(--honey2)}
+.fp-net-btn:disabled{opacity:.6;cursor:default}
+.fp-net-status{font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--muted);margin-top:8px;min-height:15px}
+.fp-net-status.ok{color:#86c06a}
+.fp-net-status.err{color:#ff8f8f}
+.fp-net-status.work{color:var(--honey2)}
+.fp-live{margin:12px 0}
+.fp-input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:10px;background:var(--bg2);
+  border:1px solid var(--line2);color:var(--honey2);font-family:var(--mono);font-size:16px;letter-spacing:2px;
+  text-align:center;text-transform:uppercase;margin-bottom:8px}
+.fp-input::placeholder{color:var(--dim);letter-spacing:1px;text-transform:none;font-size:12px}
+.fp-input:focus{outline:none;border-color:var(--honey)}
+.fp-live-btn{width:100%;padding:12px;border-radius:11px;font-family:var(--disp);font-weight:600;font-size:14px;cursor:pointer;
+  background:linear-gradient(180deg,#2f4d4b,#233b39);color:#bfeef0;border:1px solid #6fb0aa;transition:.15s}
+.fp-live-btn:hover{background:linear-gradient(180deg,#396460,#2a4744);border-color:#7fd8e6}
+.fp-live-hint{font-size:11px;color:var(--dim);line-height:1.5;margin-top:8px}
+#lorelay{position:fixed;inset:0;z-index:80;background:rgba(8,5,3,.82);backdrop-filter:blur(5px);
+  display:none;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){#lorelay{align-items:center;padding:22px}}
+#lorelay.show{display:flex}
+.lorebox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:22px 22px 0 0;width:100%;max-width:520px;max-height:90vh;overflow:auto;
+  box-shadow:0 -10px 70px rgba(0,0,0,.6);animation:sheetUp .3s ease}
+@media(min-width:640px){.lorebox{border-radius:22px}}
+.lore-hero{position:relative;padding:26px 22px 18px;text-align:center;
+  background:radial-gradient(120% 90% at 50% 0%,rgba(244,182,76,.16),transparent 62%);border-bottom:1px solid var(--line)}
+.lore-hero .kicker{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--honey);text-transform:uppercase}
+.lore-hero h2{font-family:var(--disp);font-weight:700;font-size:26px;letter-spacing:-.02em;margin-top:7px;
+  background:linear-gradient(180deg,#fff0d6,var(--honey) 75%,var(--ember));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lore-hero .sub{color:var(--muted);font-size:13px;margin-top:7px}
+.lore-cards{padding:16px 16px 6px;display:flex;flex-direction:column;gap:14px}
+.lore-card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:15px 16px}
+.lore-card .ch{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+.lore-card h3{font-family:var(--disp);font-weight:600;font-size:16px;margin:3px 0 8px}
+.lore-card p{font-size:13.5px;line-height:1.62;color:var(--cream)}
+.lore-card p b{color:var(--honey2);font-weight:600}
+.lore-art{width:100%;height:132px;border-radius:12px;margin-bottom:12px;overflow:hidden;border:1px solid var(--line);display:block}
+.lore-art svg{width:100%;height:100%;display:block}
+.lore-sig{font-family:var(--mono);font-size:11px;color:var(--dim);text-align:center;margin:4px 0 14px}
+.lore-foot{padding:2px 16px 22px}
+.osum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ochip{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:8px 11px;flex:1;min-width:88px}
+.ochip .ocv{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--honey2)}
+.ochip .ock{font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* menu popover */
+#menu{position:fixed;top:60px;right:14px;z-index:65;background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border:1px solid var(--line2);border-radius:14px;padding:8px;display:none;box-shadow:0 20px 60px rgba(0,0,0,.5);min-width:180px}
+#menu.show{display:block}
+#menu button{display:flex;width:100%;align-items:center;gap:10px;padding:9px 11px;border-radius:9px;font-size:13.5px;transition:.12s;text-align:left}
+#menu button:hover{background:var(--bg2)}
+#menu .sep{height:1px;background:var(--line);margin:5px 4px}
+.rarity-name{font-weight:600}
+.brow{cursor:pointer}
+.brow:hover{background:rgba(255,255,255,.035)}
+.gslot{cursor:pointer}
+.gslot:hover{transform:translateY(-2px)}
+/* inspector (read-only bystander view) */
+#inspect{position:fixed;inset:0;z-index:68;background:rgba(10,7,4,.62);backdrop-filter:blur(3px);
+  display:none;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){#inspect{align-items:center;padding:20px}}
+#inspect.show{display:flex}
+.insp{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:20px 20px 0 0;padding:20px;max-width:420px;width:100%;box-shadow:0 -10px 60px rgba(0,0,0,.6);
+  animation:sheetUp .28s ease;max-height:86vh;overflow:auto}
+@media(min-width:640px){.insp{border-radius:20px}}
+@keyframes sheetUp{from{transform:translateY(34px);opacity:.3}to{transform:translateY(0);opacity:1}}
+.insp-head{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.insp-ico{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:26px;background:var(--bg2);border:1.5px solid var(--line2);flex:0 0 auto}
+.insp-head .it{font-family:var(--disp);font-weight:600;font-size:18px;line-height:1.15}
+.insp-head .is{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px}
+.insp-stat{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.insp-stat .sk{color:var(--muted)}
+.insp-stat .sv{font-family:var(--mono);font-weight:600;text-align:right}
+.insp-tag{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 9px;border-radius:8px;margin-top:5px;background:rgba(255,255,255,.05)}
+.passive-line{margin-top:12px;padding:10px 12px;border-radius:11px;background:rgba(244,182,76,.08);
+  border:1px solid rgba(244,182,76,.25);font-size:12.5px}
+.passive-line b{color:var(--honey2)}
+.passive-line.tapline{display:block;width:100%;text-align:left;font:inherit;color:var(--cream);cursor:pointer;transition:.15s}
+.passive-line.tapline:hover{border-color:var(--honey);background:rgba(244,182,76,.14)}
+.passive-line .lpk{opacity:.6;font-family:var(--mono);font-size:10px;letter-spacing:1px}
+.insp-note{margin-top:14px;font-size:12px;color:var(--dim);text-align:center;font-style:italic}
+.insp-close{width:100%;margin-top:16px;padding:12px;border-radius:12px;background:var(--bg2);
+  border:1px solid var(--line2);font-family:var(--disp);font-weight:600;color:var(--cream);transition:.15s}
+.insp-close:hover{border-color:var(--honey)}
+.hidden{display:none !important}
+#confirmlay{position:fixed;inset:0;z-index:90;background:rgba(8,5,3,.8);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;padding:22px}
+#confirmlay.show{display:flex}
+.confirmbox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:18px;padding:22px;max-width:360px;width:100%;box-shadow:0 20px 70px rgba(0,0,0,.6);
+  animation:sheetUp .28s ease;text-align:center}
+.confirmbox h2{font-family:var(--disp);font-weight:700;font-size:19px;margin-bottom:8px}
+.confirmbox p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:18px}
+.confirm-btns{display:flex;gap:10px}
+.cbtn{flex:1;padding:12px;border-radius:11px;font-family:var(--disp);font-weight:600;font-size:14px;transition:.15s}
+.cbtn.cancel{background:var(--bg2);border:1px solid var(--line2);color:var(--cream)}
+.cbtn.cancel:hover{border-color:var(--honey)}
+.cbtn.danger{background:var(--bad);color:#1a130c}
+.cbtn.danger:hover{filter:brightness(1.08)}
+
+/* realtime pill (replaces speed selector) */
+.rt{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);
+  border:1px solid var(--line);border-radius:8px;padding:6px 10px;white-space:nowrap}
+/* owner name field on start */
+.owner-input{margin:16px auto 0;display:block;width:min(300px,80vw);text-align:center;
+  background:var(--bg2);border:1px solid var(--line2);border-radius:11px;color:var(--cream);
+  font-family:var(--mono);font-size:14px;padding:11px 14px;outline:none;transition:.15s}
+.owner-input::placeholder{color:var(--dim)}
+.owner-input:focus{border-color:var(--honey)}
+/* settings + leaderboard modals (share .setbox) */
+#setlay,#lblay{position:fixed;inset:0;z-index:88;background:rgba(8,5,3,.8);backdrop-filter:blur(5px);
+  display:none;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){#setlay,#lblay{align-items:center;padding:22px}}
+#setlay.show,#lblay.show{display:flex}
+.setbox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:20px 20px 0 0;width:100%;max-width:460px;max-height:88vh;overflow:auto;padding:22px;
+  box-shadow:0 -10px 70px rgba(0,0,0,.6);animation:sheetUp .28s ease}
+@media(min-width:640px){.setbox{border-radius:20px}}
+.setbox h2{font-family:var(--disp);font-weight:700;font-size:20px;margin-bottom:14px}
+.set-sec{font-family:var(--disp);font-weight:600;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:16px 0 9px;display:flex;align-items:baseline;gap:8px}
+.set-sec:first-of-type{margin-top:0}
+.set-hint{font-family:var(--body);font-weight:400;font-size:11px;letter-spacing:0;text-transform:none;color:var(--dim)}
+.pal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.pal{background:var(--bg2);border:1.5px solid var(--line);border-radius:13px;padding:11px;text-align:left;transition:.15s}
+.pal:hover{border-color:var(--line2)}
+.pal.on{border-color:var(--honey);box-shadow:0 0 14px rgba(244,182,76,.2)}
+.pal-dots{display:flex;gap:4px;margin-bottom:7px}
+.pal-dots i{width:15px;height:15px;border-radius:50%;display:block}
+.pal-name{font-family:var(--disp);font-weight:600;font-size:13px}
+.pal-note{font-size:10.5px;color:var(--muted);margin-top:1px}
+.set-toggle{display:flex;width:100%;align-items:center;justify-content:space-between;background:var(--bg2);
+  border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:8px;font-size:14px;color:var(--cream);transition:.15s}
+.set-toggle:hover{border-color:var(--line2)}
+.set-toggle b{font-family:var(--mono);font-size:12px;padding:3px 10px;border-radius:7px;background:var(--panel3);color:var(--dim)}
+.set-toggle b.on{background:var(--honey);color:#1a130c}
+.setbox .insp-close{width:100%;margin-top:16px;padding:12px;border-radius:12px;background:var(--bg2);
+  border:1px solid var(--line2);font-family:var(--disp);font-weight:600;color:var(--cream);transition:.15s}
+.setbox .insp-close:hover{border-color:var(--honey)}
+/* leaderboard */
+.lb-head,.lb-row{display:grid;grid-template-columns:26px 1fr 44px 44px 64px;gap:6px;align-items:center;font-size:12.5px}
+.lb-head{color:var(--muted);font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:0 6px 7px;border-bottom:1px solid var(--line)}
+.lb-row{padding:9px 6px;border-bottom:1px dashed var(--line)}
+.lb-row.me{background:rgba(244,182,76,.08);border-radius:9px}
+.lb-rank{font-family:var(--mono);font-weight:700;color:var(--honey2);text-align:center}
+.lb-name b{font-family:var(--disp);font-weight:600;font-size:13px}
+.lb-sub{display:block;font-family:var(--mono);font-size:10px;color:var(--muted)}
+.lb-stat{font-family:var(--mono);font-weight:600;text-align:right}
+.lb-note{font-size:11.5px;color:var(--dim);line-height:1.5;margin-top:12px}
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div id="start">
+  <div class="start-inner">
+  <div class="brand">Flip the<br>Switch</div>
+  <p class="tag">You never play. <b>You watch.</b> One flip wakes a tiny tinkerer who mines, loots, crafts, upgrades and ascends through endless worlds — completely on its own. Every world writes its own story.</p>
+  <input id="ownerName" class="owner-input" type="text" maxlength="16" placeholder="your name (for the leaderboard)" autocomplete="off">
+  <div class="switch-wrap">
+    <div class="switch" id="switch"><div class="knob"></div></div>
+    <div class="hint">tap to <b>flip the switch</b></div>
+    <button class="lore-link" id="loreLinkStart">read the story ▸</button>
+    <div class="friends-wrap">
+      <button class="friends-btn" id="friendsBtn">🤝 Find friends ▾</button>
+      <div class="friends-panel" id="friendsPanel"><div class="friends-inner">
+        <div class="fp-title">Watch together</div>
+        <p class="fp-body">Two wanderers share one screen — each finding its own gear and moving at its own pace, so no two journeys look alike. Co-op runs at one shared speed (no fast-forward).</p>
+        <button class="fp-duo" id="friendsDuo">▶ Start local duo — 2 wanderers</button>
+        <div class="fp-code"><span>Your wanderer code</span><b id="friendCode">····-····</b></div>
+        <div class="fp-live">
+          <input id="joinCodeInput" class="fp-input" type="text" maxlength="9" placeholder="enter a friend's code" autocomplete="off" spellcheck="false">
+          <button class="fp-live-btn" id="playLiveBtn">▶ Play live with a friend</button>
+          <p class="fp-live-hint">Share <b>your</b> code above, or type a friend's here — you'll both land in the same room and see each other's wanderer live. (Leave it blank to open <b>your</b> room and wait.)</p>
+        </div>
+        <div class="fp-net">
+          <div class="fp-net-title">Server connection</div>
+          <button class="fp-net-btn" id="netTestBtn">🔌 Test connection to the server</button>
+          <div class="fp-net-status" id="netTestStatus">Not tested yet — tap to check the link to your Supabase.</div>
+        </div>
+        <p class="fp-note"><b style="color:var(--honey2)">Live co-op with a real friend</b> (using this code) is next — it connects two devices through the server above. The local duo is a preview so you can see how two wanderers look together first.</p>
+        <button class="fp-solo" id="friendsSolo">Or begin solo →</button>
+      </div></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="top">
+    <div class="who">
+      <div class="avatar" id="topAvatar"></div>
+      <div>
+        <div class="nm" id="topName">Echo</div>
+        <div class="sub" id="topSub">World 1 · 00:00</div>
+      </div>
+    </div>
+    <div class="res-strip" id="resStrip"></div>
+    <div class="spd" id="spd"></div>
+    <button class="icon-btn" id="loreBtn" title="The story">📖</button>
+    <button class="icon-btn" id="menuBtn">☰</button>
+  </div>
+
+  <div id="board" class="board">
+    <section class="mod m-6" data-mod="stage"><div class="mod-grip">⠿ Stage</div>
+      <div class="stage-card">
+        <div class="stage" id="stage">
+          <div class="world-label">
+            <div class="wn" id="worldName">World 1 · The Quiet Bench</div>
+            <div class="pbar" id="worldBar"><span style="width:0%"></span></div>
+          </div>
+          <div class="scene" id="scene">
+            <div class="scene-sky" id="sceneSky"></div>
+            <div class="pll far" id="pllFar"></div>
+            <div class="pll mid" id="pllMid"></div>
+            <div class="pll near" id="pllNear"></div>
+          </div>
+          <div class="floor"></div>
+          <div class="base" id="base">
+            <div class="room-wall"></div>
+            <div class="room-window"></div>
+            <div class="base-floor"></div>
+            <div class="room-rug"></div>
+            <div class="room-bench"></div>
+            <div class="room-shelf"><div class="shelf-items" id="trophies"></div></div>
+            <div class="room-beacon" id="beacon"></div>
+          </div>
+          <div class="shadow" id="shadow"></div>
+          <div class="shadow duo-only hidden" id="shadow2"></div>
+          <div class="creature" id="creature"></div>
+          <div class="creature friend duo-only hidden" id="creature2"></div>
+          <div class="wtag duo-only hidden" id="wtag"></div>
+          <div class="wtag friend duo-only hidden" id="wtag2"></div>
+          <div class="thought" id="thought">Waking up…</div>
+          <div class="thought duo-only hidden" id="thought2"></div>
+          <div class="worldflash" id="worldflash"></div>
+          <button class="react-launch" id="reactLaunch" title="Send a reaction">😀</button>
+          <div class="react-bar" id="reactBar"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="resources"><div class="mod-grip">⠿ Resources</div>
+      <div class="card">
+        <h3><span class="dot"></span>Resources</h3>
+        <div id="resFull"></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="buildings"><div class="mod-grip">⠿ Buildings</div>
+      <div class="card">
+        <h3><span class="dot"></span>Buildings</h3>
+        <div class="blist" id="blist"></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="now"><div class="mod-grip">⠿ Right now</div>
+      <div class="card">
+        <h3><span class="dot"></span>Right now</h3>
+        <div class="now-row"><span class="k">Doing</span><span class="val" id="nowAction">—</span></div>
+        <div class="now-row"><span class="k">Target</span><span class="val" id="nowTarget">—</span></div>
+        <div class="now-row"><span class="k">Ascension</span><span class="val" id="nowAsc">—</span></div>
+        <div class="pbar asc" id="ascBar" style="margin-top:8px"><span style="width:0%"></span></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="crafting"><div class="mod-grip">⠿ Crafting</div>
+      <div class="card">
+        <h3><span class="dot"></span>Crafting</h3>
+        <div id="craftBox"><div class="craft-idle">Nothing on the bench</div></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="gear"><div class="mod-grip">⠿ Gear</div>
+      <div class="card">
+        <h3><span class="dot"></span>Equipped gear</h3>
+        <div class="gslots" id="gslots"></div>
+        <div class="gtotal">Total power <b id="gpower">0</b></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="events"><div class="mod-grip">⠿ Events</div>
+      <div class="card">
+        <h3><span class="dot"></span>Recent events</h3>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="stats"><div class="mod-grip">⠿ Statistics</div>
+      <div class="card collapsible" id="statsCard">
+        <h3><span class="dot"></span>Statistics <span class="chev">▾</span></h3>
+        <div class="body" id="statsBody"></div>
+      </div>
+    </section>
+
+    <section class="mod m-3" data-mod="ach"><div class="mod-grip">⠿ Achievements</div>
+      <div class="card collapsible closed" id="achCard">
+        <h3><span class="dot"></span>Achievements <span class="chev">▾</span></h3>
+        <div class="body"><div class="ach-grid" id="achGrid"></div></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="layoutBar"><span>Drag panels to rearrange · they snap into the grid</span><button id="layoutDone">Done</button></div>
+</div>
+
+<div id="toasts"></div>
+<div id="inspect"><div class="insp" id="inspBox"></div></div>
+<div id="paintModal"><div class="paint-box">
+  <div class="paint-title">Paint your own reaction</div>
+  <div class="paint-grid" id="paintGrid"></div>
+  <div class="paint-swatches" id="paintSwatches"></div>
+  <div class="paint-actions">
+    <button class="pbtn" id="paintClear">Clear</button>
+    <button class="pbtn ghost" id="paintCancel">Cancel</button>
+    <button class="pbtn go" id="paintSave">Save reaction</button>
+  </div>
+</div></div>
+<div id="menu">
+  <button id="mLeader">🏆 Leaderboard</button>
+  <button id="mSettings">🎨 Appearance & settings</button>
+  <button id="mLayout">▦ Edit layout</button>
+  <div class="sep"></div>
+  <button id="mMute">🔊 Sound: on</button>
+  <button id="mSave">💾 Save now</button>
+  <div class="sep"></div>
+  <button id="mReset" style="color:var(--bad)">↺ Reset simulation</button>
+</div>
+
+<div id="offlay"><div class="offbox">
+  <h2 id="offTitle">While you were away</h2>
+  <div class="osub" id="offSub"></div>
+  <div class="osum" id="offSum"></div>
+  <div id="offTimeline"></div>
+  <button class="obtn" id="offClose">Back to watching</button>
+</div></div>
+
+<div id="lorelay"><div class="lorebox" id="loreBox"></div></div>
+
+<div id="confirmlay"><div class="confirmbox">
+  <h2>Reset simulation?</h2>
+  <p>This erases this wanderer's entire run and starts over from a blank switch. It can't be undone.</p>
+  <div class="confirm-btns">
+    <button class="cbtn cancel" id="confirmCancel">Cancel</button>
+    <button class="cbtn danger" id="confirmYes">Reset</button>
+  </div>
+</div></div>
+
+<div id="setlay"><div class="setbox" id="setBox"></div></div>
+<div id="lblay"><div class="setbox" id="lbBox"></div></div>
+
+<script>
+"use strict";
+/* ============================================================
+   FLIP THE SWITCH — autonomous idle simulation, single file
+   The AI plays. You watch.
+   ============================================================ */
+
+/* ---------- tiny helpers ---------- */
+const $=id=>document.getElementById(id);
+const rnd=(a=1,b=null)=>b===null?Math.random()*a:a+Math.random()*(b-a);
+const ri=(a,b)=>Math.floor(rnd(a,b+1));
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const chance=p=>Math.random()<p;
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+
+const SUF=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','UDc','DDc'];
+function fmt(n){
+  if(!isFinite(n))return '∞';
+  if(n<0)return '-'+fmt(-n);
+  if(n<1000)return (n>=100||n%1===0)?Math.floor(n).toString():n.toFixed(1);
+  let t=Math.floor(Math.log10(n)/3);
+  if(t<SUF.length){let s=n/Math.pow(10,t*3);return (s>=100?s.toFixed(0):s>=10?s.toFixed(1):s.toFixed(2))+SUF[t];}
+  return n.toExponential(2).replace('e+','e');
+}
+function fmtTime(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=s%60;
+  return (h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(ss).padStart(2,'0');}
+
+/* ---------- static data (data-driven) ---------- */
+const NAMES=['Echo','Chip','Scout','Atlas','Pip','Bolt','Nova','Wren','Sol','Tuck','Fig','Moss','Juno','Kip','Ember','Nib'];
+const WORLDS=['The Quiet Bench','Copper Hollow','Dust & Dawn','The Sunken Cog','Amberfields','Static Marsh','Mechanical Wastes','The Glass Orchard','Hollow Foundry','Nimbus Reach','The Last Lantern','Ashen Spires','Prism Vale','The Deep Below','Solder Bay','Verdigris','Rustfall Reach','The Emberworks','Palewood','Cinder Terrace','The Hushed Span','Marrow Deep','Goldvane','The Frayed Coast','Quartz Hollow','Tarnish Flats','The Kindled Vault','Mirebloom','Saffron Drift','The Cobalt Rift','Weldenmoor','The Filament Wilds','Umber Hollow','Glimmerslag','The Sundered Cog','Nettlespark','The Opal Deep','Ferrous Dawn','The Lanternmarsh','Vitreous Vale','The Ashen Tide','Coppervein','The Dimlight Span','Brasswind','The Silent Kiln','Pyre Hollow','Gloamfield','The Crystalline Wastes','Emberreach','The Long Dusk'];
+
+const RARITIES=[
+  {k:'Common',c:'--c-common',w:62,pw:10,ic:'▪'},
+  {k:'Uncommon',c:'--c-uncommon',w:30,pw:22,ic:'◆'},
+  {k:'Rare',c:'--c-rare',w:12,pw:48,ic:'◆'},
+  {k:'Epic',c:'--c-epic',w:3.2,pw:110,ic:'✦'},
+  {k:'Legendary',c:'--c-legendary',w:.65,pw:260,ic:'★'},
+  {k:'Mythical',c:'--c-mythical',w:.12,pw:640,ic:'✷'},
+  {k:'Artifact',c:'--c-artifact',w:.02,pw:1500,ic:'❖'},
+  {k:'Cosmic',c:'--c-cosmic',w:.004,pw:3800,ic:'✺'},
+];
+const rarIdx=k=>RARITIES.findIndex(r=>r.k===k);
+
+const SLOTS=[
+  {id:'tool',name:'Tool',ic:'🔧'},
+  {id:'tool2',name:'Tool',ic:'🦾'},
+  {id:'core',name:'Core',ic:'⚙️'},
+  {id:'frame',name:'Frame',ic:'🛡️'},
+  {id:'optics',name:'Optics',ic:'🔮'},
+  {id:'thrusters',name:'Thrusters',ic:'🚀'},
+  {id:'antenna',name:'Antenna',ic:'📡'},
+  {id:'heatsink',name:'Heat Sink',ic:'❄️'},
+  {id:'powercell',name:'Power Cell',ic:'🔋'},
+  {id:'stabilizer',name:'Stabilizer',ic:'🧭'},
+];
+const GEAR_NOUNS={tool:['Wrench','Hammer','Drill','Pick','Torch','Cutter'],
+  tool2:['Gripper','Manipulator','Claw','Welder','Clamp','Spanner'],
+  core:['Engine','Reactor','Dynamo','Cell','Coil','Turbine'],
+  frame:['Plating','Chassis','Shell','Harness','Rig','Girdle'],
+  optics:['Lens','Prism','Scanner','Eye','Monocle','Array'],
+  thrusters:['Thruster','Booster','Jet','Impeller','Nozzle','Drive'],
+  antenna:['Antenna','Aerial','Dish','Whisker','Mast','Receiver'],
+  heatsink:['Heatsink','Radiator','Fin','Vent','Cooler','Lattice'],
+  powercell:['Cell','Battery','Capacitor','Accumulator','Pack','Reserve'],
+  stabilizer:['Gyro','Stabilizer','Balancer','Flywheel','Governor','Damper']};
+const GEAR_ADJ=['Hydraulic','Overclocked','Gilded','Runic','Quantum','Salvaged','Pristine','Humming','Ancient','Featherlight','Molten','Frosted'];
+
+// stat pool -> maps into multipliers
+const STATS=[
+  {id:'income',name:'Income',fmt:v=>'+'+(v*100).toFixed(0)+'% prod'},
+  {id:'luck',name:'Luck',fmt:v=>'+'+(v*100).toFixed(0)+'% luck'},
+  {id:'drop',name:'Drop rate',fmt:v=>'+'+(v*100).toFixed(0)+'% drops'},
+  {id:'craftS',name:'Craft speed',fmt:v=>'+'+(v*100).toFixed(0)+'% craft'},
+  {id:'craftQ',name:'Craft quality',fmt:v=>'+'+(v*100).toFixed(0)+'% quality'},
+  {id:'asc',name:'Ascension',fmt:v=>'+'+(v*100).toFixed(0)+'% ascend'},
+  {id:'crit',name:'Lucky strike',fmt:v=>'+'+(v*100).toFixed(0)+'% rich-haul chance'},
+];
+const PASSIVES=['Overclocked','Efficient','Fortunate','Resonant','Tempered','Voracious','Bright','Steady','Wild','Prime'];
+// passives now DO something (small, stacking bonuses) + have descriptions
+const PASSIVE_INFO={
+  Overclocked:{d:'Runs hot and eager — pushes all production higher.',b:{income:0.08}},
+  Efficient:{d:'Wastes no motion at the bench — crafts finish faster.',b:{craftS:0.12}},
+  Fortunate:{d:'Good things simply find it — nudges every rarity roll upward.',b:{luck:0.08}},
+  Resonant:{d:'Hums in tune with the world\u2019s edge — more ascension gain.',b:{asc:0.10}},
+  Tempered:{d:'Forged and cooled just right — better craft quality.',b:{craftQ:0.10}},
+  Voracious:{d:'Never stops scavenging — items drop a little more often.',b:{drop:0.10}},
+  Bright:{d:'A clear, steady glow — a touch more luck.',b:{luck:0.06}},
+  Steady:{d:'Dependable output, rain or shine — reliable income.',b:{income:0.06}},
+  Wild:{d:'Unpredictable surges — bigger, rarer coin bursts.',b:{crit:0.04}},
+  Prime:{d:'A flawless specimen — a small boost to everything it touches.',b:{income:0.04,luck:0.04,asc:0.04}},
+};
+
+const RES=[
+  {id:'coins',name:'Coins',ic:'coin',col:'--honey',val:1},
+  {id:'energy',name:'Energy',ic:'energy',col:'#7fd0e6',val:3},
+  {id:'shards',name:'Shards',ic:'shard',col:'--c-epic',val:8},
+  {id:'fragments',name:'Fragments',ic:'frag',col:'--c-rare',val:40},
+  {id:'essence',name:'Essence',ic:'ess',col:'--c-artifact',val:130},
+  {id:'sparks',name:'Ascension',ic:'spark',col:'--c-legendary',val:0},
+];
+const resVal=r=>{const o=RES.find(x=>x.id===r);return o?o.val:1;};
+
+/* ---------- economy scaling (big-number idle growth) ----------
+   These are the levers that make on-screen numbers climb K→M→B→T→…
+   - permProd : each Production-Mastery level adds this fraction (additive)
+   - nexusMul : each Nexus Core multiplies ALL production (multiplicative)
+   - mileMul  : every `mileEvery` units of a building multiplies THAT
+                building's output by mileMul (per-building milestone)
+   - ascG     : each ascension permanently multiplies ALL production
+   - ascDiv/ascNorm : ascension spark cost = sqrt(totalRun /
+                (ascDiv * ascG^(ascensions*ascNorm))). ascNorm scales the
+                requirement with the economy so ascension stays *earned*
+                (rarer over time) instead of accelerating into a blur. */
+const ECON={permProd:0.25, nexusMul:1.10, mileEvery:30, mileMul:1.5, ascG:1.55, ascDiv:2.8e7, ascNorm:1.7,
+  // NOTE: ascDiv/ascNorm are PROVISIONAL — ascension pace depends on gear (m.asc, income), which is redesigned in P4.
+  // Final ascension lock happens in the post-P4 re-measure. First-ascension target ~2h (median), soft upward escalation.
+  // P2: world travel = time-based escalating clock, capped then "recycled" (worlds re-themed by number past the unique set).
+  // worldLen(w)=min(worldBase*worldGrow^(w-1), worldMax): world 1 ~30min → soft curve → ~6h cap.
+  worldBase:1800, worldGrow:1.55, worldMax:21600,
+  // P2: bounded travel-speed so lucky gear travels faster (tight divergence). Provisional driver=luck; Thrusters wired in P4.
+  travelMin:0.8, travelMax:1.5, travelK:0.30,
+  // P4 gear: power driven by WORLD DEPTH (gentle), rarity a small multiplier; stats modest + depth-capped. // TUNE
+  gearBase:80, gearPerWorld:120, gearRarStep:0.11, gearStatPow:100,
+  statBase:0.03, statPerRar:0.015, statDepthK:0.02, statDepthMax:1.6,
+  // P5: crafting is a visible event — a 5–10 s floor so the watcher can see him work.
+  craftBase:8, craftMin:5, craftMax:10};
+const mileMult=c=>Math.pow(ECON.mileMul,Math.floor(c/ECON.mileEvery));
+
+// building templates
+const BLD=[
+  {id:'spark',name:'Spark Coil',ic:'⚡',prod:{coins:1},cost:{coins:10},g:1.14,unlock:()=>true},
+  {id:'dynamo',name:'Dynamo',ic:'🔋',prod:{energy:.5},cost:{coins:65},g:1.15,unlock:()=>S.res.coins>50||cnt('spark')>=3},
+  {id:'crusher',name:'Ore Crusher',ic:'⛏️',prod:{shards:.15},cost:{coins:260,energy:20},g:1.16,unlock:()=>totalBld()>=6},
+  {id:'sifter',name:'Sifter',ic:'🌀',prod:{fragments:.04},cost:{coins:1300,energy:80},g:1.17,unlock:()=>cnt('crusher')>=2},
+  {id:'distiller',name:'Distiller',ic:'⚗️',prod:{essence:.02},cost:{coins:5500,fragments:8},g:1.18,unlock:()=>cnt('sifter')>=1},
+  {id:'nexus',name:'Nexus Core',ic:'🔆',effect:{prod:.10},cost:{coins:900,shards:12},g:1.26,unlock:()=>S.res.coins>1200},
+  {id:'forge',name:'Forge',ic:'🔥',effect:{craftS:.12,craftQ:.05},cost:{coins:3200,energy:100},g:1.22,unlock:()=>cnt('distiller')>=1},
+  {id:'beacon',name:'Beacon',ic:'📡',effect:{drop:.10,luck:.04},cost:{coins:4500,shards:35},g:1.24,unlock:()=>S.stats.gearFound>=6},
+  {id:'obelisk',name:'Obelisk',ic:'🗿',effect:{asc:.15},cost:{coins:22000,essence:15},g:1.30,unlock:()=>S.ascensions>=1||S.res.coins>60000},
+];
+const bDef=id=>BLD.find(b=>b.id===id);
+
+// ascension permanent tree
+const PERM=[
+  {id:'prod',name:'Production Mastery',ic:'📈',base:2,g:1.55,fmt:l=>'+'+(l*20)+'% all prod'},
+  {id:'fortune',name:'Fortune',ic:'🍀',base:3,g:1.6,fmt:l=>'+'+(l*12)+'% luck'},
+  {id:'artistry',name:'Artistry',ic:'🎨',base:4,g:1.62,fmt:l=>'+'+(l*10)+'% craft quality'},
+  {id:'magnet',name:'Magnetism',ic:'🧲',base:3,g:1.58,fmt:l=>'+'+(l*12)+'% drop rate'},
+  {id:'momentum',name:'Momentum',ic:'💨',base:5,g:1.7,fmt:l=>'+'+(l*12)+'% automation'},
+  {id:'insight',name:'Insight',ic:'🔭',base:4,g:1.66,fmt:l=>'+'+(l*15)+'% ascension gain'},
+];
+
+// achievements (some hidden)
+const ACH=[
+  {id:'flip',ic:'🔌',n:'Lights On',d:'Flip the switch',chk:()=>S.started},
+  {id:'b1',ic:'🏗️',n:'First Brick',d:'Buy a building',chk:()=>totalBld()>=1},
+  {id:'b10',ic:'🏙️',n:'Little Empire',d:'Own 10 buildings',chk:()=>totalBld()>=10},
+  {id:'b25',ic:'🌆',n:'Industrialist',d:'Own 25 buildings',chk:()=>totalBld()>=25},
+  {id:'loot1',ic:'🎁',n:'Finders',d:'Find your first gear',chk:()=>S.stats.gearFound>=1},
+  {id:'rare',ic:'🔷',n:'Getting Rare',d:'Find Rare gear',chk:()=>rarIdx(S.stats.bestRar)>=2},
+  {id:'epic',ic:'🟣',n:'Epic Find',d:'Find Epic gear',chk:()=>rarIdx(S.stats.bestRar)>=3},
+  {id:'leg',ic:'⭐',n:'Legend',d:'Find Legendary gear',chk:()=>rarIdx(S.stats.bestRar)>=4},
+  {id:'myth',ic:'🌟',n:'Mythical!',d:'Find Mythical gear',chk:()=>rarIdx(S.stats.bestRar)>=5},
+  {id:'arti',ic:'💎',n:'Relic Hunter',d:'Find an Artifact',chk:()=>rarIdx(S.stats.bestRar)>=6,hidden:true},
+  {id:'cosmic',ic:'✺',n:'Touched the Cosmos',d:'Find Cosmic gear',chk:()=>rarIdx(S.stats.bestRar)>=7,hidden:true},
+  {id:'craft1',ic:'🔨',n:'Handmade',d:'Craft an item',chk:()=>S.stats.crafts>=1},
+  {id:'perfect',ic:'✨',n:'Flawless',d:'Craft a Perfect item',chk:()=>S.stats.perfect>=1},
+  {id:'mut',ic:'🧬',n:'Mutation',d:'Trigger a craft mutation',chk:()=>S.stats.mutations>=1,hidden:true},
+  {id:'asc1',ic:'🌀',n:'Reborn',d:'Ascend once',chk:()=>S.ascensions>=1},
+  {id:'asc5',ic:'🌌',n:'Cycle of Five',d:'Ascend 5 times',chk:()=>S.ascensions>=5},
+  {id:'asc15',ic:'♾️',n:'Endless',d:'Ascend 15 times',chk:()=>S.ascensions>=15},
+  {id:'m1',ic:'🪙',n:'Millionaire',d:'Reach 1M coins',chk:()=>S.stats.bestCoins>=1e6},
+  {id:'b1b',ic:'💰',n:'Billionaire',d:'Reach 1B coins',chk:()=>S.stats.bestCoins>=1e9},
+  {id:'g100',ic:'📦',n:'Pack Rat',d:'Find 100 gear',chk:()=>S.stats.gearFound>=100},
+  {id:'rec500',ic:'♻️',n:'Recycler',d:'Recycle 500 gear',chk:()=>S.stats.recycled>=500,hidden:true},
+  {id:'cursed',ic:'💀',n:'Cursed',d:'Fail 20 crafts total',chk:()=>S.stats.failed>=20,hidden:true},
+  {id:'fast',ic:'⚡',n:'Speedrun',d:'Ascend under 40s',chk:()=>S.stats.fastAsc>0&&S.stats.fastAsc<40,hidden:true},
+  {id:'hoard',ic:'🫙',n:'Hoarder',d:'Hold 1K essence',chk:()=>S.res.essence>=1000,hidden:true},
+];
+
+/* ---------- SVG icons ---------- */
+function svgRes(id){
+  const m={
+    coin:`<circle cx="9" cy="9" r="8" fill="#f4b64c"/><circle cx="9" cy="9" r="5" fill="none" stroke="#a86a1e" stroke-width="1.4"/>`,
+    energy:`<path d="M10 1 3 10h4l-1 7 8-10H9z" fill="#7fd0e6"/>`,
+    shard:`<path d="M9 1 16 8 9 17 2 8z" fill="#b483e6"/>`,
+    frag:`<path d="M4 4h10v10H4z" fill="#57b0e6" transform="rotate(45 9 9)"/>`,
+    ess:`<circle cx="9" cy="9" r="7" fill="none" stroke="#35d6c0" stroke-width="2"/><circle cx="9" cy="9" r="2.5" fill="#35d6c0"/>`,
+    spark:`<path d="M9 1l2 5 5 .5-4 3.5 1.5 5L9 17l-4.5 3 1.5-5-4-3.5 5-.5z" fill="#f5a623"/>`,
+  };
+  return `<svg viewBox="0 0 18 18" width="18" height="18">${m[id]||''}</svg>`;
+}
+function creatureSVG(mood){
+  const eye = mood==='happy'?`<path d="M0 2 Q3 -2 6 2" stroke="#7fe3d8" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
+    :`<ellipse cx="3" cy="2" rx="3" ry="3.4" fill="#7fe3d8"/>`;
+  return `<svg class="body" viewBox="0 0 120 130" width="120" height="130">
+    <defs><radialGradient id="gg" cx="40%" cy="30%"><stop offset="0" stop-color="#5a4a38"/><stop offset="1" stop-color="#2c2016"/></radialGradient>
+    <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6a6"/><stop offset=".45" stop-color="#ff9f52"/><stop offset="1" stop-color="#ff6f6f" stop-opacity="0"/></linearGradient></defs>
+    <!-- antenna -->
+    <line x1="60" y1="18" x2="60" y2="4" stroke="#5a4634" stroke-width="3"/>
+    <circle cx="60" cy="3" r="5" fill="#f4b64c"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>
+    <!-- body -->
+    <rect x="30" y="60" width="60" height="52" rx="16" fill="url(#gg)" stroke="#6b543d" stroke-width="2"/>
+    <!-- arms -->
+    <rect x="20" y="70" width="12" height="26" rx="6" fill="#3a2c1e"/>
+    <rect x="88" y="70" width="12" height="26" rx="6" fill="#3a2c1e"/>
+    <!-- thrusters (was legs) -->
+    <g class="thr t1">
+      <path class="flame" d="M40 116 L52 116 L46 131 Z" fill="url(#flame)"/>
+      <rect x="39" y="105" width="14" height="11" rx="3.5" fill="#4a3a28" stroke="#6b543d" stroke-width="1.5"/>
+      <rect x="42" y="113" width="8" height="3" rx="1.5" fill="#2a2016"/>
+    </g>
+    <g class="thr t2">
+      <path class="flame" d="M68 116 L80 116 L74 131 Z" fill="url(#flame)"/>
+      <rect x="67" y="105" width="14" height="11" rx="3.5" fill="#4a3a28" stroke="#6b543d" stroke-width="1.5"/>
+      <rect x="70" y="113" width="8" height="3" rx="1.5" fill="#2a2016"/>
+    </g>
+    <!-- head -->
+    <rect x="26" y="16" width="68" height="52" rx="20" fill="url(#gg)" stroke="#6b543d" stroke-width="2.5"/>
+    <!-- face plate -->
+    <rect x="36" y="28" width="48" height="30" rx="13" fill="#120d08"/>
+    <g transform="translate(45 40)"><g class="eye">${eye}</g></g>
+    <g transform="translate(66 40)"><g class="eye" style="animation-delay:.2s">${eye}</g></g>
+  </svg>`;
+}
+
+/* ---------- STATE ---------- */
+let S;
+function freshStats(){return{gearFound:0,recycled:0,crafts:0,perfect:0,failed:0,mutations:0,legendaryCrafts:0,
+  buildingsBought:0,bestRar:'Common',bestCoins:0,highIncome:0,fastAsc:0,longestRun:0,coinsAll:0,resAll:0};}
+function newGame(){
+  S={
+    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, collapsed:{ach:true}, grid:null,
+    gameTime:0, runTime:0, world:1, worldProg:0,
+    res:{coins:20,energy:0,shards:0,fragments:0,essence:0,sparks:0},
+    buildings:{}, gear:{tool:null,tool2:null,core:null,frame:null,optics:null,thrusters:null,antenna:null,heatsink:null,powercell:null,stabilizer:null},
+    perm:{prod:0,fortune:0,artistry:0,magnet:0,momentum:0,insight:0},
+    totalCoinsRun:0, ascensions:0, lastAscSparks:0,
+    action:'idle', target:'—', thought:'Waking up…',
+    craft:null, log:[], achieved:{}, stats:freshStats(),
+    // accumulators
+    lootTimer:6, decAcc:0, saveTarget:null, lastReal:Date.now(),
+  };
+}
+
+/* ---------- derived multipliers ---------- */
+function cnt(id){return S.buildings[id]||0;}
+function totalBld(){let t=0;for(const k in S.buildings)t+=S.buildings[k];return t;}
+function gearSum(stat){let s=0;for(const sl in S.gear){const g=S.gear[sl];if(g&&g.stats[stat])s+=g.stats[stat];}return s;}
+function effSum(key){let s=0;for(const b of BLD){if(b.effect&&b.effect[key]!==undefined)s+=b.effect[key]*cnt(b.id);}return s;}
+function passiveSum(stat){let s=0;for(const sl in S.gear){const g=S.gear[sl];if(g&&g.passive){const info=PASSIVE_INFO[g.passive];if(info&&info.b[stat])s+=info.b[stat];}}return s;}
+
+function M(){
+  const P=S.perm;
+  const prod=(1+P.prod*ECON.permProd)*Math.pow(ECON.nexusMul,cnt('nexus'))*(1+gearSum('income')+passiveSum('income'))*Math.pow(ECON.ascG,S.ascensions);
+  const luck=1+P.fortune*0.12+effSum('luck')+gearSum('luck')+passiveSum('luck');
+  const drop=1+P.magnet*0.12+effSum('drop')+gearSum('drop')+passiveSum('drop');
+  const craftS=1+effSum('craftS')+gearSum('craftS')+passiveSum('craftS');
+  const craftQ=1+P.artistry*0.10+effSum('craftQ')+gearSum('craftQ')+passiveSum('craftQ');
+  const asc=1+P.insight*0.15+effSum('asc')+gearSum('asc')+passiveSum('asc');
+  const auto=1+P.momentum*0.12;
+  const crit=0.03+gearSum('crit')+passiveSum('crit');
+  return {prod,luck,drop,craftS,craftQ,asc,auto,crit};
+}
+
+/* ---------- production ---------- */
+function production(){ // per game-second, coins already multiplied
+  const m=M(), out={coins:0,energy:0,shards:0,fragments:0,essence:0,sparks:0};
+  for(const b of BLD){ if(!b.prod)continue; const c=cnt(b.id); if(!c)continue;
+    const mile=mileMult(c);
+    for(const r in b.prod) out[r]+=b.prod[r]*c*m.prod*mile;
+  }
+  return out;
+}
+function coinIncome(){return production().coins;}
+// P2: seconds to travel through world w — escalating clock, capped at worldMax then recycled by number.
+function worldLen(w){return Math.min(ECON.worldBase*Math.pow(ECON.worldGrow, Math.max(w-1,0)), ECON.worldMax);}
+// P2: bounded travel-speed (divergence). Lucky gear travels faster; kept tight. // P4: replace luck driver with Thrusters mobility.
+function travelSpeed(m){ m=m||M(); return clamp(1+(m.luck-1)*ECON.travelK, ECON.travelMin, ECON.travelMax); }
+
+/* ---------- ascension math ---------- */
+function pendingSparks(){
+  const m=M();
+  return Math.floor(Math.pow(Math.max(0,S.totalCoinsRun)/(ECON.ascDiv*Math.pow(ECON.ascG,S.ascensions*ECON.ascNorm)),0.5)*m.asc);
+}
+function shouldAscend(){
+  const p=pendingSparks();
+  if(p<3||S.runTime<70)return false;
+  const target=Math.max(3,Math.ceil(S.lastAscSparks*1.6)+1);
+  return p>=target && S.runTime>95;
+}
+
+/* ---------- RNG rarity roll ---------- */
+const RAR_UNLOCK=[0,0,0,3,5,7,13,21]; // P4: min world for Common,Uncommon,Rare,Epic,Legendary,Mythical,Artifact,Cosmic
+function maxRarForDepth(d){let m=0;for(let i=0;i<RAR_UNLOCK.length;i++)if(d>=RAR_UNLOCK[i])m=i;return m;}
+function rollRarity(luck,boost=0,depth){
+  if(depth==null)depth=S.world;
+  let total=0;const ws=RARITIES.map((r,i)=>{
+    if(depth<RAR_UNLOCK[i])return 0;                     // tier locked until deep enough
+    let w=r.w*Math.pow(1+luck*0.08, i<=2? i : 2+(i-2)*0.30)*(i>=4?(1+boost):1);
+    if(i===0)w*=clamp(1-depth*0.03,0.05,1);              // commons fade with depth
+    else if(i===1)w*=clamp(1-depth*0.015,0.2,1);         // uncommons fade slower
+    total+=w;return w;});
+  let x=rnd(total);
+  for(let i=0;i<ws.length;i++){x-=ws[i];if(x<=0)return i;}
+  return 0;
+}
+const GEAR_MAIN={tool:['income'],tool2:['income'],core:['income','crit'],frame:['drop','income'],
+  optics:['luck','craftQ'],thrusters:['drop','asc'],antenna:['luck','asc'],heatsink:['craftS','crit'],
+  powercell:['income','craftS'],stabilizer:['crit','craftQ']};
+function makeGear(slotId,rarIndex,lvl){
+  const r=RARITIES[rarIndex], depth=Math.max(1,S.world);
+  const adj=pick(GEAR_ADJ), noun=pick(GEAR_NOUNS[slotId]||GEAR_NOUNS.tool);
+  const stats={};
+  const main=pick(GEAR_MAIN[slotId]||['income']);
+  // P4: modest stat magnitude, grows gently with depth and is CAPPED (no 60% monoliths)
+  const dMul=clamp(1+depth*ECON.statDepthK,1,ECON.statDepthMax);
+  const base=(ECON.statBase+rarIndex*ECON.statPerRar)*rnd(0.85,1.15)*dMul;
+  stats[main]=base;
+  const nSec=clamp(Math.floor(rarIndex/2)+ri(0,1),0,3);
+  const pool=STATS.map(s=>s.id).filter(s=>s!==main);
+  for(let i=0;i<nSec && pool.length;i++){const st=pool.splice(ri(0,pool.length-1),1)[0];stats[st]=base*rnd(0.3,0.6);}
+  // P4: POWER = world depth (gentle) × small rarity multiplier -> a deep low-rarity piece can beat a shallow high-rarity one
+  const rarMul=1+rarIndex*ECON.gearRarStep;
+  const sumStats=Object.values(stats).reduce((a,b)=>a+b,0);
+  const power=Math.round((ECON.gearBase+depth*ECON.gearPerWorld)*rarMul*rnd(0.9,1.15)+sumStats*ECON.gearStatPow);
+  const g={id:'g'+Math.random().toString(36).slice(2,8),slot:slotId,rar:r.k,rarI:rarIndex,lvl,world:depth,name:adj+' '+noun,stats,power};
+  if(rarIndex>=3&&chance(0.4))g.passive=pick(PASSIVES);
+  return g;
+}
+function gearScore(g){ // AI valuation (not just power) — weight by current needs
+  if(!g)return 0;
+  const m=M();let s=g.power;
+  // reward income when production is what we need most; simple heuristic
+  s+= (g.stats.income||0)*600;
+  s+= (g.stats.luck||0)*350;
+  s+= (g.stats.drop||0)*300;
+  s+= (g.stats.asc||0)*(400+S.ascensions*40);
+  s+= (g.stats.craftQ||0)*200 + (g.stats.craftS||0)*180 + (g.stats.crit||0)*220;
+  if(g.passive&&PASSIVE_INFO[g.passive]){const b=PASSIVE_INFO[g.passive].b;
+    s+= (b.income||0)*600 + (b.luck||0)*350 + (b.drop||0)*300 + (b.asc||0)*(400+S.ascensions*40)
+      + (b.craftQ||0)*200 + (b.craftS||0)*180 + (b.crit||0)*220;}
+  return s;
+}
+
+/* ---------- log ---------- */
+function log(text,rar,gear){
+  S.log.unshift({t:S.runTime,x:text,r:rar,g:gear||null});
+  if(S.log.length>60)S.log.pop();
+  logDirty=true;
+}
+function rarSpan(k){const r=RARITIES[rarIdx(k)];return `<b style="color:var(${r.c})">${k}</b>`;}
+
+/* ---------- THE AI: loot ---------- */
+function doLoot(offline){
+  const m=M();
+  const slot=pick(SLOTS).id;
+  const ri_=rollRarity(m.luck);
+  const lvl=1+S.world+ri(0,S.ascensions+2);
+  const g=makeGear(slot,ri_,lvl);
+  S.stats.gearFound++;
+  if(rarIdx(g.rar)>rarIdx(S.stats.bestRar))S.stats.bestRar=g.rar;
+  const cur=S.gear[slot];
+  const equip=gearScore(g)>gearScore(cur);
+  if(equip){
+    if(cur){S.res.shards+=Math.round(cur.power*0.6);S.stats.recycled++;}
+    S.gear[slot]=g; gearDirty=true;
+    if(ri_>=2 && !offline) floatReward('▲ '+g.rar,RARITIES[ri_].c);
+    if(ri_>=3) log(`Equipped ${rarSpan(g.rar)} ${g.name}`,g.rar,g);
+    if(ri_>=4&&!offline){celebrate(g.rar);setThought(`${g.rar}! ✦`,true);}
+  }else{
+    S.res.shards+=Math.max(1,Math.round(g.power*0.5));S.stats.recycled++;
+    if(ri_>=4){log(`Found ${rarSpan(g.rar)} ${g.name} — recycled for shards`,g.rar,g);if(!offline){celebrate(g.rar);setThought(`${g.rar} found!`,true);}}
+  }
+}
+
+/* ---------- crafting ---------- */
+function craftPickSlot(){
+  // choose the weakest / most world-outdated slot, with a readable reason
+  let best=null,bestScore=-1,reason='';
+  for(const s of SLOTS){
+    const g=S.gear[s.id];
+    let score, why;
+    if(!g){ score=1e9; why='the slot is empty'; }
+    else { const behind=Math.max(0,S.world-(g.world||1)); score=behind*1000+(2000-Math.min(2000,g.power))*0.001; why= behind>0?`his are ${behind} world${behind>1?'s':''} behind`:'to sharpen a weak spot'; }
+    if(score>bestScore){bestScore=score;best=s;reason=why;}
+  }
+  return {slot:best.id,name:best.name,reason};
+}
+function startCraft(){
+  const m=M();
+  // consume resources
+  S.res.shards=Math.max(0,S.res.shards-8);
+  S.res.essence=Math.max(0,S.res.essence-1);
+  const pickS=craftPickSlot();
+  // P5: visible craft floor (5–10 s) so the watcher can actually see him work
+  const dur=clamp(ECON.craftBase/m.craftS, ECON.craftMin, ECON.craftMax);
+  S.craft={slot:pickS.slot,name:pickS.name,reason:pickS.reason,left:dur,total:dur};
+  S.action='craft';S.target=pickS.slot;
+  setThought(say('craft'));
+  craftDirty=true;
+}
+function finishCraft(offline){
+  const m=M();
+  const slot=S.craft.slot;S.craft=null;craftDirty=true;
+  S.stats.crafts++;
+  // outcome
+  const q=m.craftQ, luck=m.luck;
+  const failP=clamp(0.12-q*0.05,0.02,0.12);
+  if(chance(failP)){S.stats.failed++;S.res.shards+=3;if(!offline){setThought(say('craftfail'));}
+    return;}
+  // rarity roll, biased higher than loot
+  let ri_=rollRarity(luck,0.4);
+  let tag='';
+  if(chance(clamp(0.10+q*0.08,0.1,0.4))){ri_=Math.min(ri_+1,maxRarForDepth(S.world));tag='Perfect ';S.stats.perfect++;}
+  if(chance(0.05)){S.stats.mutations++;tag='Mutant ';}
+  const lvl=2+S.world+ri(0,S.ascensions+2);
+  const g=makeGear(slot,ri_,lvl);
+  if(tag==='Mutant ')g.passive=pick(PASSIVES);
+  if(ri_>=4)S.stats.legendaryCrafts++;
+  if(rarIdx(g.rar)>rarIdx(S.stats.bestRar))S.stats.bestRar=g.rar;
+  // equip if better
+  const cur=S.gear[slot];
+  if(gearScore(g)>gearScore(cur)){
+    if(cur){S.res.shards+=Math.round(cur.power*0.6);S.stats.recycled++;}
+    S.gear[slot]=g; gearDirty=true;
+    log(`Crafted ${tag}${rarSpan(g.rar)} ${g.name}`,g.rar,g);
+  }else{
+    S.res.shards+=Math.round(g.power*0.5);S.stats.recycled++;
+    if(ri_>=4)log(`Crafted ${tag}${rarSpan(g.rar)} ${g.name} — recycled`,g.rar,g);
+  }
+  if(ri_>=4&&!offline){celebrate(g.rar);setThought(`${tag}${g.rar}!`,true);}
+}
+
+/* ---------- buildings AI ---------- */
+function bestBuy(){
+  const m=M();
+  const prodCoinPerSec=Math.max(1,coinIncome());
+  let best=null,bestROI=0;
+  for(const b of BLD){
+    if(!b.unlock())continue;
+    const c=cnt(b.id);
+    const cost=costOf(b,c);
+    const costCoin=coinCost(cost);
+    if(costCoin<=0)continue;
+    // value/sec of this purchase in coin-equivalent
+    let val=0;
+    if(b.prod){for(const r in b.prod)val+=b.prod[r]*m.prod*resVal(r);}
+    if(b.effect){ // effect ~ fraction of current production
+      let ep=(b.effect.prod||0)*prodCoinPerSec*1.0;
+      ep+=(b.effect.drop||0)*prodCoinPerSec*0.6+(b.effect.luck||0)*prodCoinPerSec*0.6;
+      ep+=(b.effect.craftS||0)*prodCoinPerSec*0.4+(b.effect.craftQ||0)*prodCoinPerSec*0.4;
+      ep+=(b.effect.asc||0)*prodCoinPerSec*0.8;
+      val+=ep;
+    }
+    const roi=val/costCoin;
+    if(roi>bestROI){bestROI=roi;best={b,cost,costCoin};}
+  }
+  return best;
+}
+function costOf(b,c){const o={};for(const r in b.cost)o[r]=b.cost[r]*Math.pow(b.g,c);return o;}
+function coinCost(cost){let s=0;for(const r in cost)s+=cost[r]*resVal(r);return s;}
+function canAfford(cost){for(const r in cost)if(S.res[r]<cost[r])return false;return true;}
+function pay(cost){for(const r in cost)S.res[r]-=cost[r];}
+
+function buyBuilding(b,cost){
+  pay(cost);S.buildings[b.id]=(S.buildings[b.id]||0)+1;S.stats.buildingsBought++;
+  flashB=b.id;flashT=0.8;bldDirty=true;
+}
+
+/* ---------- ascension ---------- */
+function ascend(offline){
+  const gain=pendingSparks();
+  S.res.sparks+=gain;S.lastAscSparks=gain;S.ascensions++;
+  if(S.stats.fastAsc===0||S.runTime<S.stats.fastAsc)S.stats.fastAsc=S.runTime;
+  if(S.runTime>S.stats.longestRun)S.stats.longestRun=S.runTime;
+  log(`✦ Ascension #${S.ascensions} · World ${S.world} (+${fmt(gain)} sparks)`,'Legendary');
+  // reset the RUN economy only — world, world-travel progress and GEAR all persist (Session 3 decouple)
+  S.res.coins=0;S.res.energy=0;S.res.shards=0;S.res.fragments=0;S.res.essence=0;
+  S.buildings={};
+  S.totalCoinsRun=0;S.runTime=0;S.craft=null;S.saveTarget=null;
+  // auto-spend sparks, then grant a head start that grows with progress
+  spendSparks();
+  S.res.coins=15+S.ascensions*10+Math.floor(S.perm.prod*40+S.perm.momentum*12);
+  if(!offline){celebrate('Legendary');setThought(say('asc'),true);}
+  bldDirty=gearDirty=true;
+}
+function spendSparks(){
+  let guard=200;
+  while(guard-->0){
+    let cheapest=null,cc=Infinity;
+    for(const p of PERM){const c=Math.ceil(p.base*Math.pow(p.g,S.perm[p.id]));if(c<cc){cc=c;cheapest=p;}}
+    if(cheapest&&S.res.sparks>=cc){S.res.sparks-=cc;S.perm[cheapest.id]++;}
+    else break;
+  }
+  permDirty=true;
+}
+
+/* ---------- AI decision ---------- */
+function decide(offline){
+  // priority: ascend > buy(good ROI) > craft > save
+  if(shouldAscend()){ascend(offline);return;}
+  const best=bestBuy();
+  if(best){
+    if(canAfford(best.cost)){buyBuilding(best.b,best.cost);S.action='buy';S.target=best.b.name;
+      if(!offline&&thoughtHold<=0){setThought(say('buy').replace('%',best.b.name.split(' ')[0]));}S.saveTarget=null;return;}
+    // can't afford yet: consider saving vs crafting
+    S.saveTarget=best.b.id;
+  }
+  // craft with spare shards while saving (essence boosts quality if present)
+  const forgeReady=cnt('forge')>=1||(totalBld()>=4&&S.res.shards>=12);
+  if(!S.craft && forgeReady && S.res.shards>=10 && chance(0.5)){
+    startCraft();return;
+  }
+  // saving — the wanderer's musing is driven by the relaxed chatter timer, not here
+  S.action='save';
+  if(S.saveTarget){const b=bDef(S.saveTarget);S.target=b?b.name:'—';}
+  else {S.target='—';}
+}
+
+/* ============================================================
+   CORE TICK (shared by live + offline)
+   ============================================================ */
+function tickCore(dt,offline){
+  const m=M();
+  S.gameTime+=dt;S.runTime+=dt;
+  // production
+  const p=production();
+  let coinGain=0;
+  for(const r in p){S.res[r]+=p[r]*dt;if(r==='coins')coinGain+=p[r]*dt;}
+  S.totalCoinsRun+=coinGain;
+  S.stats.coinsAll+=coinGain;
+  S.stats.resAll+=(p.coins+p.energy+p.shards+p.fragments+p.essence)*dt;
+  if(S.res.coins>S.stats.bestCoins)S.stats.bestCoins=S.res.coins;
+  const inc=coinIncome();if(inc>S.stats.highIncome)S.stats.highIncome=inc;
+  // crit income burst
+  if(dt<1 && chance(m.crit*dt*0.6)){const burst=inc*rnd(3,8);S.res.coins+=burst;if(!offline){floatReward('RICH HAUL +'+fmt(burst),'--honey2');setThought(pick(['Rich vein! ⛏','Jackpot!','Big haul!','Struck gold!']),true);}}
+  // world travel: fills by time-in-world × travel-speed; at 100% advance (DECOUPLED from ascension)
+  S.worldProg += dt*travelSpeed(m)/worldLen(S.world);
+  while(S.worldProg>=1){
+    S.worldProg-=1; S.world++;
+    const wn=WORLDS[(S.world-1)%WORLDS.length];
+    log(`→ Reached World ${S.world} · ${wn}`,'Rare');
+    if(!offline){setThought(`World ${S.world} · ${wn}`,true);}
+  }
+
+  // loot
+  const lootInt=clamp(6.5/m.drop,0.7,30);
+  S.lootTimer-=dt;let lg=0;
+  while(S.lootTimer<=0&&lg<60){doLoot(offline);S.lootTimer+=lootInt;lg++;}
+
+  // craft progress
+  if(S.craft){S.craft.left-=dt;if(S.craft.left<=0)finishCraft(offline);else craftDirty=true;}
+
+  // decisions
+  const decInt=clamp(0.8/m.auto,0.15,3);
+  S.decAcc+=dt;let dg=0;
+  while(S.decAcc>=decInt&&dg<40){decide(offline);S.decAcc-=decInt;dg++;}
+}
+
+/* ============================================================
+   OFFLINE SIMULATION
+   ============================================================ */
+function runOffline(realSeconds){
+  const cap=Math.min(realSeconds,12*3600); // cap 12h
+  const before={coins:S.res.coins,asc:S.ascensions,gear:S.stats.gearFound,best:S.stats.bestRar,world:S.world};
+  const events=[];const _log=log;
+  // temporarily capture notable events
+  const startLog=S.log.length;
+  const steps=Math.min(500,Math.max(30,Math.floor(cap/4)));
+  const dt=cap/steps;
+  for(let i=0;i<steps;i++){
+    const beforeAsc=S.ascensions, beforeBest=rarIdx(S.stats.bestRar);
+    tickCore(dt,true);
+    // collect notable
+    if(S.ascensions>beforeAsc)events.push({t:cap*(i/steps),x:`Ascended to World ${S.world}`});
+    if(rarIdx(S.stats.bestRar)>beforeBest&&rarIdx(S.stats.bestRar)>=4)
+      events.push({t:cap*(i/steps),x:`Found ${S.stats.bestRar} gear`});
+  }
+  return {cap,before,events:events.slice(-8)};
+}
+function showOffline(o){
+  const gainedCoins=Math.max(0,S.res.coins-o.before.coins);
+  const asc=S.ascensions-o.before.asc, gear=S.stats.gearFound-o.before.gear;
+  $('offSub').textContent=`${S.name} kept working for ${fmtTime(o.cap)}.`;
+  $('offSum').innerHTML=[
+    ['Coins gained',fmt(gainedCoins)],['Ascensions',asc],['Gear found',gear],['Best',S.stats.bestRar]
+  ].map(([k,v])=>`<div class="ochip"><div class="ocv">${v}</div><div class="ock">${k}</div></div>`).join('');
+  const tl=o.events.length?o.events.map(e=>`<div class="ot"><span class="ott">+${fmtTime(e.t)}</span><span>${e.x}</span></div>`).join('')
+    :`<div class="ot"><span>A calm, steady shift. Nothing wild happened.</span></div>`;
+  $('offTimeline').innerHTML=tl;
+  $('offlay').classList.add('show');
+}
+
+/* ============================================================
+   VISUAL FX
+   ============================================================ */
+let creatureX=50;
+function setThought(t,em){S.thought=t;if(S&&S.bubbles===false)return;const el=$('thought');if(el){el.innerHTML=em?`<span class="em">${t}</span>`:t;}thoughtHold=em?3.2:2.6;}
+let thoughtHold=0;
+/* the little one talks — varied pools so it isn't just "Saving…" forever */
+const THOUGHTS={
+  idle:['Watching the numbers climb…','Humming to myself…','Tinkering…','A little further…','So much to gather.',
+    'Onward, then.','The light holds.','Another coil, another coin.','Wonder what\u2019s over the ridge.','Keep the light moving.',
+    'Steady does it.','Rust and treasure everywhere.','Could always use more shards.','The makers were here once…',
+    'Quiet out here.','One more step.','Scrap today, wonders tomorrow.','My gears feel good today.','Nearly topped up.',
+    'Nice and warm.','Still watching over me? Good.','Sorting the pile…','Bit of this, bit of that.','Where does the road go?',
+    'Every world has a story.','I\u2019ll rest when it\u2019s bright.','Tick, tick, tick…','Found a shiny bolt!','Long way to go. That\u2019s fine.'],
+  craft:['Crafting…','At the bench…','Forging something…','Let\u2019s build.','Sparks flying…','Careful now…','Shaping metal…','Hammer and heat…'],
+  craftfail:['Craft failed…','Hmph. Scrap.','That one broke.','Back to the pile.','Ah well. Next time.','Not quite…'],
+  save:['Saving up…','Counting coins…','Almost enough…','Patience…','Just a bit more…','Eyes on the prize.','Nearly there…'],
+  buy:['Built %!','Set up %.','New %, online.','%, done!','That\u2019ll help — %.'],
+  asc:['Ascending…','Folding the world…','To the next!','Onward and up!','Brighter now.','Stepping through…','A new world waits.'],
+};
+function say(cat){return pick(THOUGHTS[cat]||THOUGHTS.idle);}
+function celebrate(rar){celebrateAt(rar,creatureX,'creature');}
+function celebrateAt(rar,xPct,cid){
+  const c=$(cid);if(c){c.classList.remove('hop');void c.offsetWidth;c.classList.add('hop');}
+  const col=RARITIES[rarIdx(rar)]?.c||'--honey';
+  const st=$('stage');if(!st)return;const n=rar==='Cosmic'?24:rar==='Artifact'?18:12;
+  const cx=st.clientWidth*xPct/100, cy=st.clientHeight-150;
+  for(let i=0;i<n;i++){
+    const s=document.createElement('div');s.className='spark';
+    s.style.left=cx+'px';s.style.top=cy+'px';
+    s.style.background=`var(${col})`;s.style.boxShadow=`0 0 8px var(${col})`;
+    const a=rnd(Math.PI*2),d=rnd(30,90);
+    s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',(Math.sin(a)*d-30)+'px');
+    st.appendChild(s);setTimeout(()=>s.remove(),820);
+  }
+  playChime(rar);
+}
+function floatReward(txt,col){floatRewardAt(txt,col,creatureX);}
+function floatRewardAt(txt,col,xPct){
+  const st=$('stage');if(!st)return;
+  const f=document.createElement('div');f.className='floaty';f.textContent=txt;
+  f.style.color=`var(${col})`;f.style.left=(st.clientWidth*xPct/100+rnd(-30,30))+'px';f.style.top=(st.clientHeight-170)+'px';
+  st.appendChild(f);setTimeout(()=>f.remove(),1500);
+}
+
+/* ---------- emoji reactions (local now; broadcasts over co-op later) ---------- */
+const REACT_EMOJI=['👏','🎉','🔥','😂','😮','😍','💪','🙌','👍','⭐','💎','🏆','🚀','🫡','❤️','✨','😎','🤯','🥳','👀','🍀','⚡','🌟','🙏'];
+const PAINT_N=11, PAINT_SW=['#f4b64c','#ff6f6f','#7fd8e6','#b483e6','#86c06a','#ffffff','#1a120a'];
+let lastReactT=-1e9, paintColor=PAINT_SW[0], paintCells=null;
+function customEmoji(){ if(!S.customEmoji)S.customEmoji=[]; return S.customEmoji; }
+function reactionNode(payload){
+  if(payload&&payload.svg){const d=document.createElement('div');d.innerHTML=payload.svg;return d.firstChild;}
+  const s=document.createElement('span');s.textContent=payload;return s;
+}
+function floatReaction(payload,xPct){
+  const st=$('stage');if(!st)return;
+  const f=document.createElement('div');f.className='reaction';
+  f.appendChild(reactionNode(payload));
+  f.style.left=(st.clientWidth*xPct/100-18+rnd(-8,8))+'px';
+  f.style.bottom='214px';                 // settle just above the speech bubble (bubble is at bottom:186px)
+  st.appendChild(f);setTimeout(()=>f.remove(),3600);
+}
+function sendReaction(payload){
+  const now=(typeof performance!=='undefined'?performance.now():Date.now());
+  if(now-lastReactT<1100)return;                 // spam guard
+  lastReactT=now;
+  floatReaction(payload, (duo||netDuo)?YOU_X:creatureX);
+  try{beep(660,0.05,0.05,'triangle');}catch(e){}
+  if(duo&&chance(0.5))setTimeout(()=>{ if(duo){floatReaction(pick(REACT_EMOJI),friendX); bubble('thought2',pick(['🙂','ty!','😄','🙌']));} }, rnd(500,1200));
+  if(netDuo&&netCh){ try{ netCh.send('react', reactionToWire(payload)); }catch(e){} }
+}
+function buildReactBar(){
+  const bar=$('reactBar');if(!bar)return;
+  bar.innerHTML=REACT_EMOJI.map(e=>`<button class="rx" data-e="${e}">${e}</button>`).join('')
+    +customEmoji().map((c,i)=>`<button class="rx" data-c="${i}">${c.svg}</button>`).join('')
+    +`<button class="rx paint" id="rxPaint" title="Paint your own">🎨</button>`;
+}
+function toggleReactBar(){ const bar=$('reactBar'); if(!bar)return; if(!bar.classList.contains('open'))buildReactBar(); bar.classList.toggle('open'); }
+function openPaint(){
+  const modal=$('paintModal');if(!modal)return;
+  paintCells=Array.from({length:PAINT_N*PAINT_N},()=>null);
+  const grid=$('paintGrid'); grid.style.gridTemplateColumns=`repeat(${PAINT_N},1fr)`;
+  grid.innerHTML=paintCells.map((_,i)=>`<div class="pc" data-i="${i}"></div>`).join('');
+  $('paintSwatches').innerHTML=PAINT_SW.map((c,i)=>`<div class="sw${i===0?' on':''}" data-c="${c}" style="background:${c}"></div>`).join('');
+  paintColor=PAINT_SW[0]; modal.classList.add('show');
+}
+function closePaint(){ const m=$('paintModal'); if(m)m.classList.remove('show'); }
+function paintCellsToSVG(){
+  let r='';
+  for(let i=0;i<paintCells.length;i++){ if(paintCells[i]){ const x=i%PAINT_N,y=(i/PAINT_N|0); r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${paintCells[i]}"/>`; } }
+  return r?`<svg viewBox="0 0 ${PAINT_N} ${PAINT_N}" shape-rendering="crispEdges">${r}</svg>`:null;
+}
+function savePaintReaction(){
+  const svg=paintCellsToSVG();
+  if(!svg){ closePaint(); return; }
+  customEmoji().push({svg}); if(customEmoji().length>12)customEmoji().shift();
+  try{save();}catch(e){}
+  buildReactBar(); closePaint();
+  const bar=$('reactBar'); if(bar)bar.classList.add('open');
+}
+function wireReactions(){
+  const L=$('reactLaunch'); if(L)L.onclick=toggleReactBar;
+  const bar=$('reactBar'); if(bar)bar.addEventListener('click',e=>{const b=e.target.closest('.rx');if(!b)return;
+    if(b.id==='rxPaint'){openPaint();return;}
+    if(b.dataset.e)sendReaction(b.dataset.e);
+    else if(b.dataset.c!=null){const c=customEmoji()[+b.dataset.c];if(c)sendReaction({svg:c.svg});}
+    bar.classList.remove('open');});
+  const g=$('paintGrid'); if(g){ let down=false;
+    const paintAt=(x,y)=>{const el=document.elementFromPoint(x,y);const c=el&&el.closest&&el.closest('.pc');
+      if(c&&g.contains(c)){const i=+c.dataset.i;paintCells[i]=paintColor;c.style.background=paintColor;}};
+    g.addEventListener('pointerdown',e=>{down=true;e.preventDefault();try{g.setPointerCapture(e.pointerId);}catch(_){}paintAt(e.clientX,e.clientY);});
+    g.addEventListener('pointermove',e=>{if(down){e.preventDefault();paintAt(e.clientX,e.clientY);}});
+    const end=()=>{down=false;};
+    g.addEventListener('pointerup',end); g.addEventListener('pointercancel',end); document.addEventListener('pointerup',end); }
+  const sw=$('paintSwatches'); if(sw)sw.addEventListener('click',e=>{const s=e.target.closest('.sw');if(!s)return;
+    paintColor=s.dataset.c; sw.querySelectorAll('.sw').forEach(x=>x.classList.toggle('on',x===s));});
+  const pc=$('paintClear'); if(pc)pc.onclick=()=>{paintCells=paintCells.map(()=>null);$('paintGrid').querySelectorAll('.pc').forEach(c=>c.style.background='');};
+  const px=$('paintCancel'); if(px)px.onclick=closePaint;
+  const ps=$('paintSave'); if(ps)ps.onclick=savePaintReaction;
+}
+function bubble(elId,text){if(S&&S.bubbles===false)return;const el=$(elId);if(el)el.textContent=text;}
+function wander(){
+  // Side-scroller: the world moves, not the creature. Keep it anchored so
+  // celebrate()/floatReward() stay aligned; a tiny idle glance adds life.
+  // While visiting the base he actually strolls between his stations.
+  if(atBase){ creatureX=rnd(16,84); const cc=$('creature'),sh=$('shadow'); if(cc)cc.style.left=creatureX+'%'; if(sh)sh.style.left=creatureX+'%'; return; }
+  if(!duo)creatureX=50;
+  const c=$('creature');
+  if(c&&S.action!=='craft'){c.classList.remove('hop');void c.offsetWidth;c.classList.add('hop');}
+}
+
+/* ---------- home base visit + mining flavour ---------- */
+let atBase=false, baseVisitT=140, baseStayT=0, baseChatterT=0, mineT=10;
+function flashTeleport(){ if(worldflash){worldflash.classList.remove('go');void worldflash.offsetWidth;worldflash.classList.add('go');} }
+function homeBeacon(){
+  const idx=Math.max(0,rarIdx(S.stats.bestRar||'Common'));
+  const r=RARITIES[idx]||RARITIES[0];
+  const ic=['▪','◆','◆','✦','★','✷','❖','✺'][idx]||'✦';
+  return {ic,name:r.k,c:r.c};
+}
+function buildBase(){
+  const bea=$('beacon');
+  if(bea){const b=homeBeacon();
+    bea.innerHTML=`<div class="bi" style="color:var(${b.c})">${b.ic}</div><div class="bl" style="color:var(${b.c})">${b.name}</div>`;}
+  const shelf=$('trophies'); if(!shelf)return;
+  const s=S.stats||{}, t=[];
+  if(S.ascensions>0) t.push({ic:'✦',lab:S.ascensions+'× ascend',c:'--c-legendary'});
+  if(S.world>=3) t.push({ic:'🚩',lab:'World '+S.world,c:'--honey2'});
+  if((s.gearFound||0)>=25) t.push({ic:'🧰',lab:fmt(s.gearFound)+' finds',c:'--c-rare'});
+  if((s.crafts||0)>=10) t.push({ic:'⚒️',lab:fmt(s.crafts)+' crafts',c:'--c-uncommon'});
+  if((s.perfect||0)>0) t.push({ic:'💎',lab:fmt(s.perfect)+' perfect',c:'--c-epic'});
+  if((s.mutations||0)>0) t.push({ic:'🧬',lab:fmt(s.mutations)+' mutant',c:'--c-mythical'});
+  if(t.length===0) t.push({ic:'🪵',lab:'a quiet home',c:'--honey2'});
+  shelf.innerHTML=t.map(x=>`<div class="trophy"><div class="ti" style="color:var(${x.c})">${x.ic}</div><div class="tl">${x.lab}</div></div>`).join('');
+}
+function enterBase(){
+  if(atBase||duo)return;                 // solo-only for now
+  atBase=true; baseStayT=rnd(22,34); baseChatterT=0;
+  buildBase(); flashTeleport();
+  const b=$('base'); if(b)b.classList.add('show');
+  setThought('Heading home… 🏠',true);
+  log('Teleported home to restock at the base','Rare');
+}
+function leaveBase(){
+  atBase=false; baseVisitT=rnd(600,900);   // ~10–15 min until the next visit
+  flashTeleport();
+  const b=$('base'); if(b)b.classList.remove('show');
+  creatureX=50; const cc=$('creature'),sh=$('shadow'); if(cc)cc.style.left='50%'; if(sh)sh.style.left='50%';
+  setThought(pick(['Back to the world!','Onward!','Refuelled — off we go!']),true);
+}
+function mineSwing(){
+  const st=$('stage'); if(!st)return;
+  const cx=st.clientWidth*creatureX/100, cy=st.clientHeight-118;
+  const h=document.createElement('div'); h.className='hammer'; h.textContent='🔨';
+  h.style.left=(cx+14)+'px'; h.style.top=(cy-14)+'px'; st.appendChild(h); setTimeout(()=>h.remove(),560);
+  for(let i=0;i<6;i++){const s=document.createElement('div');s.className='spark';
+    s.style.left=(cx+14)+'px';s.style.top=cy+'px';s.style.background='var(--c-epic)';s.style.boxShadow='0 0 8px var(--c-epic)';
+    const a=rnd(-Math.PI,0),d=rnd(18,46);s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',(Math.sin(a)*d)+'px');
+    st.appendChild(s);setTimeout(()=>s.remove(),700);}
+  if(chance(0.28)) setThought(pick(['Ore! ⛏','*clang*','Good seam here','Nice haul']));
+}
+
+/* ============================================================
+   SIDE-SCROLLER SCENE  (parallax, per-world themes)
+   The tinkerer walks forward; the world scrolls behind it.
+   Worlds cycle through THEMES; each biome has its own look.
+   ============================================================ */
+const SVGW={far:900,mid:660,near:520};
+function svgURI(w,inner){
+  return `url("data:image/svg+xml,`+encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} 420'>${inner}</svg>`)+`")`;
+}
+// seamless tiling hill/ridge band (start y == end y)
+function hills(w,base,amp,periods,phase,fill){
+  let d='M0 '+base;
+  for(let x=0;x<=w;x+=14){const y=(base-amp*(0.5+0.5*Math.sin(x/w*periods*6.2832+phase))).toFixed(1);d+='L'+x+' '+y;}
+  return `<path d='${d}L${w} 420L0 420Z' fill='${fill}'/>`;
+}
+function jagged(w,base,amp,teeth,fill){
+  let d='M0 '+base,step=w/teeth;
+  for(let i=0;i<=teeth;i++){const x=(i*step).toFixed(0),y=(base-(i%2?amp:amp*0.4)).toFixed(0);d+='L'+x+' '+y;}
+  return `<path d='${d}L${w} 420L0 420Z' fill='${fill}'/>`;
+}
+// props (drawn with feet at y=g)
+const P={
+  tree:(x,g,c,a,s=1)=>`<g transform='translate(${x} ${g})'><rect x='-4' y='${-38*s}' width='8' height='${38*s}' fill='${a}'/><ellipse cx='0' cy='${-46*s}' rx='${26*s}' ry='${34*s}' fill='${c}'/><ellipse cx='${-18*s}' cy='${-30*s}' rx='${18*s}' ry='${22*s}' fill='${c}'/><ellipse cx='${18*s}' cy='${-34*s}' rx='${18*s}' ry='${24*s}' fill='${c}'/></g>`,
+  crystal:(x,g,c,a,s=1)=>`<g transform='translate(${x} ${g})'><polygon points='0,${-92*s} ${24*s},${-38*s} ${12*s},0 ${-12*s},0 ${-24*s},${-38*s}' fill='${c}'/><polygon points='0,${-92*s} ${12*s},${-38*s} 0,0' fill='${a}' opacity='.55'/></g>`,
+  car:(x,g,c,a)=>`<g transform='translate(${x} ${g})'><rect x='-36' y='-22' width='72' height='20' rx='7' fill='${c}'/><path d='M-20 -22 L-11 -37 L15 -37 L23 -22 Z' fill='${c}'/><rect x='-8' y='-34' width='19' height='12' fill='${a}' opacity='.35'/><circle cx='-21' cy='-1' r='9' fill='#160f09'/><circle cx='21' cy='-1' r='9' fill='#160f09'/><circle cx='-21' cy='-1' r='3.4' fill='${a}'/><circle cx='21' cy='-1' r='3.4' fill='${a}'/></g>`,
+  machine:(x,g,c,a)=>`<g transform='translate(${x} ${g})'><rect x='-28' y='-56' width='56' height='56' rx='7' fill='${c}'/><rect x='-16' y='-74' width='13' height='20' fill='${a}'/><circle cx='9' cy='-32' r='11' fill='${a}' opacity='.6'/><rect x='-22' y='-16' width='44' height='6' fill='${a}' opacity='.4'/></g>`,
+  rock:(x,g,c,s=1)=>`<g transform='translate(${x} ${g}) scale(${s})'><path d='M-26 0 Q-30 -20 -8 -24 Q8 -32 24 -21 Q32 -6 24 0 Z' fill='${c}'/></g>`,
+  pillar:(x,g,c,a)=>`<g transform='translate(${x} ${g})'><rect x='-13' y='-98' width='26' height='98' fill='${c}'/><rect x='-18' y='-102' width='36' height='9' fill='${a}'/><rect x='-18' y='-9' width='36' height='9' fill='${a}'/></g>`,
+  post:(x,g,c,a)=>`<g transform='translate(${x} ${g})'><rect x='-4' y='-64' width='8' height='64' fill='${c}'/><rect x='-14' y='-64' width='28' height='7' rx='2' fill='${a}'/></g>`,
+  reed:(x,g,c)=>{let s='';for(let i=-3;i<=3;i++)s+=`<line x1='${i*5}' y1='0' x2='${i*5+i*1.5}' y2='${-22-Math.abs(i)*4}' stroke='${c}' stroke-width='3' stroke-linecap='round'/>`;return `<g transform='translate(${x} ${g})'>${s}</g>`;},
+  chimney:(x,g,c,a)=>`<g transform='translate(${x} ${g})'><rect x='-16' y='-92' width='32' height='92' fill='${c}'/><rect x='-20' y='-98' width='40' height='10' fill='${a}'/><rect x='-10' y='-70' width='20' height='8' fill='${a}' opacity='.4'/></g>`,
+  cloud:(x,y,c)=>`<g transform='translate(${x} ${y})' fill='${c}'><ellipse cx='0' cy='0' rx='42' ry='18'/><ellipse cx='32' cy='7' rx='30' ry='14'/><ellipse cx='-32' cy='7' rx='28' ry='13'/></g>`,
+  lantern:(x,c,a,drop)=>`<g transform='translate(${x} 0)'><line x1='0' y1='0' x2='0' y2='${drop}' stroke='#3a2c1e' stroke-width='2'/><rect x='-10' y='${drop}' width='20' height='26' rx='6' fill='${c}'/><rect x='-6' y='${drop+5}' width='12' height='16' rx='3' fill='${a}'><animate attributeName='opacity' values='1;.55;1' dur='2.6s' repeatCount='indefinite'/></rect></g>`,
+  glint:(x,y,a)=>`<circle cx='${x}' cy='${y}' r='2.4' fill='${a}'><animate attributeName='opacity' values='.3;1;.3' dur='2.2s' repeatCount='indefinite'/></circle>`,
+};
+const GY=362; // ground line inside 0..420 viewBox
+
+// each biome returns {far, mid, near} inner-SVG strings from a palette p
+const BIOME={
+  workshop(p){return{
+    far:hills(SVGW.far,250,70,3,0.4,p.far),
+    mid:hills(SVGW.mid,320,44,2,1.1,p.mid)+P.machine(140,GY,p.mid,p.accent)+P.machine(500,GY,p.mid,p.accent),
+    near:ground(p)+P.rock(70,GY,p.near,.8)+P.car? '' : '' };
+  },
+  cavern(p){return{
+    far:jagged(SVGW.far,255,80,9,p.far),
+    mid:jagged(SVGW.mid,320,60,7,p.mid)+P.glint(180,300,p.accent)+P.glint(430,290,p.accent),
+    near:ground(p)+P.rock(90,GY,p.near,1.1)+P.rock(300,GY,p.near,.7)+P.rock(430,GY,p.near,1)+P.glint(220,GY-30,p.accent)};
+  },
+  desert(p){return{
+    far:hills(SVGW.far,270,50,2,0.2,p.far),
+    mid:hills(SVGW.mid,330,34,1,0.9,p.mid)+P.rock(300,GY,p.mid,1.4),
+    near:ground(p)+P.rock(120,GY,p.near,.9)+P.rock(380,GY,p.near,1.2)};
+  },
+  fields(p){const feat=p.feature||'tree';const near=(x)=>feat==='reed'?P.reed(x,GY,p.accent):feat==='post'?P.post(x,GY,p.near,p.accent):feat==='pillar'?P.pillar(x,GY,p.near,p.accent):P.tree(x,GY,p.mid,p.accent,.55);
+    return{
+    far:hills(SVGW.far,255,64,3,0.7,p.far),
+    mid:hills(SVGW.mid,325,40,2,0.3,p.mid)+P.tree(120,GY,p.mid,p.accent,1)+P.tree(470,GY,p.mid,p.accent,.85),
+    near:ground(p)+near(80)+near(250)+near(410)};
+  },
+  scrap(p){return{
+    far:jagged(SVGW.far,258,66,6,p.far),
+    mid:hills(SVGW.mid,325,42,2,1.4,p.mid)+P.car(150,GY-2,p.mid,p.accent)+P.machine(470,GY,p.mid,p.accent),
+    near:ground(p)+P.car(90,GY,p.near,p.accent)+P.rock(280,GY,p.near,.7)+P.car(400,GY,p.mid,p.accent)+P.glint(230,GY-14,p.accent)};
+  },
+  crystal(p){return{
+    far:jagged(SVGW.far,255,84,8,p.far),
+    mid:P.crystal(150,GY,p.mid,p.accent,1.2)+P.crystal(360,GY,p.mid,p.accent,.9)+P.crystal(540,GY,p.mid,p.accent,1.1),
+    near:ground(p)+P.crystal(90,GY,p.near,p.accent,.7)+P.crystal(300,GY,p.near,p.accent,.55)+P.crystal(440,GY,p.near,p.accent,.65)+P.glint(200,GY-40,p.accent)};
+  },
+  foundry(p){return{
+    far:hills(SVGW.far,245,58,4,0.6,p.far)+P.chimney(200,255,p.far,p.accent)+P.chimney(620,250,p.far,p.accent),
+    mid:hills(SVGW.mid,320,40,2,1.0,p.mid)+P.machine(150,GY,p.mid,p.accent)+P.chimney(470,GY,p.mid,p.accent),
+    near:ground(p)+P.machine(100,GY,p.near,p.accent)+P.glint(250,GY-20,p.accent)+P.glint(360,GY-8,p.accent)+P.rock(430,GY,p.near,.8)};
+  },
+  sky(p){return{
+    far:P.cloud(150,180,p.far)+P.cloud(520,140,p.far)+P.cloud(780,210,p.far),
+    mid:P.cloud(120,270,p.mid)+P.cloud(430,240,p.mid)+P.rock(330,GY,p.mid,1.4),
+    near:ground(p)+P.cloud(90,GY-40,p.near)+P.cloud(360,GY-30,p.near)};
+  },
+  lantern(p){return{
+    far:hills(SVGW.far,250,60,3,0.5,p.far)+P.lantern(180,p.mid,p.accent,120)+P.lantern(640,p.mid,p.accent,150),
+    mid:hills(SVGW.mid,325,42,2,0.9,p.mid)+P.lantern(300,p.near,p.accent,90),
+    near:ground(p)+P.post(110,GY,p.near,p.accent)+P.lantern(110,p.near,p.accent,GY-90)+P.post(400,GY,p.near,p.accent)+P.lantern(400,p.near,p.accent,GY-90)};
+  },
+};
+function ground(p){return `<rect x='0' y='${GY}' width='${SVGW.near}' height='${420-GY}' fill='${p.ground}'/>`
+  +`<rect x='0' y='${GY-2}' width='${SVGW.near}' height='3' fill='${p.accent}' opacity='.5'/>`;}
+// workshop near had a stray ternary — normalise it
+BIOME.workshop=function(p){return{
+  far:hills(SVGW.far,250,70,3,0.4,p.far),
+  mid:hills(SVGW.mid,320,44,2,1.1,p.mid)+P.machine(150,GY,p.mid,p.accent)+P.machine(500,GY,p.mid,p.accent),
+  near:ground(p)+P.rock(80,GY,p.near,.8)+P.machine(300,GY,p.near,p.accent)+P.rock(430,GY,p.near,1)};
+};
+
+// per-world palettes (index aligns with WORLDS). Warm terrarium base, hue-shifted per biome.
+const THEMES=[
+  {biome:'workshop',sky:'radial-gradient(120% 90% at 50% 118%,rgba(244,182,76,.20),transparent 60%),linear-gradient(180deg,#241a12,#171008)',far:'#2c2013',mid:'#3a2c1e',near:'#221812',accent:'#f4b64c',ground:'#1c130c'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(230,128,79,.18),transparent 60%),linear-gradient(180deg,#231611,#140b08)',far:'#3a2415',mid:'#4a2e1a',near:'#241610',accent:'#e8804f',ground:'#1a0f09'},
+  {biome:'desert',sky:'radial-gradient(120% 90% at 50% 10%,#3a2a16,transparent 60%),linear-gradient(180deg,#2e2213,#1a120a)',far:'#4a3820',mid:'#5c4526',near:'#2e2114',accent:'#ffd27a',ground:'#241a10'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(53,214,192,.16),transparent 60%),linear-gradient(180deg,#0f1c1e,#0a1113)',far:'#173033',mid:'#1e4044',near:'#101f21',accent:'#35d6c0',ground:'#0b1517'},
+  {biome:'fields',feature:'tree',sky:'radial-gradient(120% 90% at 50% 10%,#2a2a13,transparent 60%),linear-gradient(180deg,#1f2410,#12140a)',far:'#26331a',mid:'#324422',near:'#1c2412',accent:'#c8e06a',ground:'#151c0e'},
+  {biome:'fields',feature:'reed',sky:'radial-gradient(120% 90% at 50% 118%,rgba(134,192,106,.14),transparent 60%),linear-gradient(180deg,#161d16,#0d120d)',far:'#1d2a1f',mid:'#26362a',near:'#141c16',accent:'#86c06a',ground:'#0f150f'},
+  {biome:'scrap',sky:'radial-gradient(120% 90% at 50% 118%,rgba(232,128,79,.16),transparent 60%),linear-gradient(180deg,#241a14,#15100b)',far:'#3a2a1c',mid:'#4a3423',near:'#241812',accent:'#e8944f',ground:'#1a120c'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(180,131,230,.18),transparent 60%),linear-gradient(180deg,#1a1522,#100b16)',far:'#2c2340',mid:'#3a2e54',near:'#1e1830',accent:'#b483e6',ground:'#140f1e'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(255,111,111,.20),transparent 55%),linear-gradient(180deg,#241310,#15090a)',far:'#3a1c18',mid:'#4c2420',near:'#241210',accent:'#ff8f6f',ground:'#180b0a'},
+  {biome:'sky',sky:'radial-gradient(120% 100% at 50% 10%,#3a3320,transparent 55%),linear-gradient(180deg,#2a2c33,#191b22)',far:'#3a3e48',mid:'#4c5160',near:'#2e323c',accent:'#ffd27a',ground:'#262a33'},
+  {biome:'lantern',sky:'radial-gradient(90% 70% at 50% 60%,rgba(244,182,76,.18),transparent 55%),linear-gradient(180deg,#140f0a,#0a0705)',far:'#20180f',mid:'#2c2115',near:'#160f09',accent:'#ffd27a',ground:'#0d0906'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(180,131,230,.16),transparent 55%),linear-gradient(180deg,#1c1622,#100a14)',far:'#2e2038',mid:'#3c2a48',near:'#1c1526',accent:'#ff6f6f',ground:'#120c18'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(255,143,208,.18),transparent 60%),linear-gradient(180deg,#22141d,#140b12)',far:'#3a2033',mid:'#4c2a44',near:'#241522',accent:'#ff8fd0',ground:'#180d16'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(87,176,230,.14),transparent 55%),linear-gradient(180deg,#0f1420,#080b12)',far:'#182034',mid:'#202b44',near:'#0f1420',accent:'#57b0e6',ground:'#0a0e17'},
+  {biome:'fields',feature:'post',sky:'radial-gradient(120% 90% at 50% 118%,rgba(127,208,230,.14),transparent 55%),linear-gradient(180deg,#14201f,#0c1312)',far:'#1a2e2c',mid:'#234039',near:'#132220',accent:'#7fd0e6',ground:'#0e1716'},
+  {biome:'fields',feature:'pillar',sky:'radial-gradient(120% 90% at 50% 118%,rgba(53,214,192,.16),transparent 60%),linear-gradient(180deg,#14211a,#0c130f)',far:'#1c3227',mid:'#264636',near:'#132318',accent:'#35d6c0',ground:'#0d1710'},
+  {biome:'scrap',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,129,82,.17),transparent 60%),linear-gradient(180deg,#24160f,#150c07)',far:'#37241b',mid:'#4c3326',near:'#291912',accent:'#e2875a',ground:'#1f130d'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(217,224,82,.17),transparent 60%),linear-gradient(180deg,#23240f,#141507)',far:'#35371b',mid:'#4a4c26',near:'#282912',accent:'#dbe25a',ground:'#1e1f0d'},
+  {biome:'fields',feature:'tree',sky:'radial-gradient(120% 90% at 50% 118%,rgba(115,224,82,.17),transparent 60%),linear-gradient(180deg,#14240f,#0a1507)',far:'#21371b',mid:'#2f4c26',near:'#172912',accent:'#7ae25a',ground:'#111f0d'},
+  {biome:'desert',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,224,151,.17),transparent 60%),linear-gradient(180deg,#0f2419,#07150e)',far:'#1b3728',mid:'#264c39',near:'#12291d',accent:'#5ae29c',ground:'#0d1f15'},
+  {biome:'lantern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,196,224,.17),transparent 60%),linear-gradient(180deg,#0f2024,#071215)',far:'#1b3137',mid:'#26454c',near:'#122429',accent:'#5ac7e2',ground:'#0d1b1f'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,93,224,.17),transparent 60%),linear-gradient(180deg,#0f1124,#070815)',far:'#1b1d37',mid:'#262a4c',near:'#121429',accent:'#5a66e2',ground:'#0d0e1f'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(172,82,224,.17),transparent 60%),linear-gradient(180deg,#1c0f24,#100715)',far:'#2c1b37',mid:'#3e264c',near:'#201229',accent:'#b05ae2',ground:'#180d1f'},
+  {biome:'fields',feature:'reed',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,174,.17),transparent 60%),linear-gradient(180deg,#240f1d,#150710)',far:'#371b2d',mid:'#4c263f',near:'#291221',accent:'#e25ab2',ground:'#1f0d18'},
+  {biome:'sky',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,91,82,.17),transparent 60%),linear-gradient(180deg,#24100f,#150807)',far:'#371d1b',mid:'#4c2926',near:'#291312',accent:'#e2635a',ground:'#1f0e0d'},
+  {biome:'workshop',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,193,82,.17),transparent 60%),linear-gradient(180deg,#24200f,#151207)',far:'#37311b',mid:'#4c4426',near:'#292412',accent:'#e2c55a',ground:'#1f1b0d'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(153,224,82,.17),transparent 60%),linear-gradient(180deg,#1a240f,#0e1507)',far:'#29371b',mid:'#394c26',near:'#1d2912',accent:'#9ee25a',ground:'#161f0d'},
+  {biome:'fields',feature:'pillar',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,224,113,.17),transparent 60%),linear-gradient(180deg,#0f2413,#07150a)',far:'#1b3721',mid:'#264c2f',near:'#122917',accent:'#5ae278',ground:'#0d1f11'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,224,215,.17),transparent 60%),linear-gradient(180deg,#0f2423,#071514)',far:'#1b3735',mid:'#264c4a',near:'#122927',accent:'#5ae2d9',ground:'#0d1f1e'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,132,224,.17),transparent 60%),linear-gradient(180deg,#0f1624,#070c15)',far:'#1b2537',mid:'#26344c',near:'#121a29',accent:'#5a8ae2',ground:'#0d131f'},
+  {biome:'desert',sky:'radial-gradient(120% 90% at 50% 118%,rgba(134,82,224,.17),transparent 60%),linear-gradient(180deg,#170f24,#0c0715)',far:'#251b37',mid:'#34264c',near:'#1a1229',accent:'#8c5ae2',ground:'#130d1f'},
+  {biome:'fields',feature:'post',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,212,.17),transparent 60%),linear-gradient(180deg,#240f22,#150714)',far:'#371b34',mid:'#4c2649',near:'#291227',accent:'#e25ad7',ground:'#1f0d1d'},
+  {biome:'scrap',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,110,.17),transparent 60%),linear-gradient(180deg,#240f13,#15070a)',far:'#371b20',mid:'#4c262e',near:'#291216',accent:'#e25a75',ground:'#1f0d10'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,155,82,.17),transparent 60%),linear-gradient(180deg,#241a0f,#150e07)',far:'#37291b',mid:'#4c3a26',near:'#291e12',accent:'#e2a05a',ground:'#1f160d'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(191,224,82,.17),transparent 60%),linear-gradient(180deg,#1f240f,#121507)',far:'#30371b',mid:'#434c26',near:'#242912',accent:'#c2e25a',ground:'#1b1f0d'},
+  {biome:'fields',feature:'reed',sky:'radial-gradient(120% 90% at 50% 118%,rgba(89,224,82,.17),transparent 60%),linear-gradient(180deg,#10240f,#081507)',far:'#1c371b',mid:'#284c26',near:'#132912',accent:'#61e25a',ground:'#0d1f0d'},
+  {biome:'lantern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,224,177,.17),transparent 60%),linear-gradient(180deg,#0f241d,#071510)',far:'#1b372d',mid:'#264c40',near:'#122921',accent:'#5ae2b5',ground:'#0d1f19'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,170,224,.17),transparent 60%),linear-gradient(180deg,#0f1c24,#071015)',far:'#1b2c37',mid:'#263e4c',near:'#122029',accent:'#5aaee2',ground:'#0d181f'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(96,82,224,.17),transparent 60%),linear-gradient(180deg,#110f24,#090715)',far:'#1e1b37',mid:'#2a264c',near:'#141229',accent:'#685ae2',ground:'#0e0d1f'},
+  {biome:'sky',sky:'radial-gradient(120% 90% at 50% 118%,rgba(198,82,224,.17),transparent 60%),linear-gradient(180deg,#200f24,#120715)',far:'#321b37',mid:'#45264c',near:'#251229',accent:'#c95ae2',ground:'#1b0d1f'},
+  {biome:'fields',feature:'tree',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,148,.17),transparent 60%),linear-gradient(180deg,#240f19,#15070e)',far:'#371b28',mid:'#4c2638',near:'#29121d',accent:'#e25a9a',ground:'#1f0d15'},
+  {biome:'foundry',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,117,82,.17),transparent 60%),linear-gradient(180deg,#24140f,#150b07)',far:'#37221b',mid:'#4c3026',near:'#291712',accent:'#e27c5a',ground:'#1f110d'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,220,82,.17),transparent 60%),linear-gradient(180deg,#24230f,#151407)',far:'#37361b',mid:'#4c4b26',near:'#292812',accent:'#e2dd5a',ground:'#1f1e0d'},
+  {biome:'desert',sky:'radial-gradient(120% 90% at 50% 118%,rgba(127,224,82,.17),transparent 60%),linear-gradient(180deg,#16240f,#0c1507)',far:'#24371b',mid:'#324c26',near:'#192912',accent:'#85e25a',ground:'#121f0d'},
+  {biome:'lantern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,224,139,.17),transparent 60%),linear-gradient(180deg,#0f2417,#07150d)',far:'#1b3726',mid:'#264c36',near:'#12291b',accent:'#5ae291',ground:'#0d1f14'},
+  {biome:'cavern',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,208,224,.17),transparent 60%),linear-gradient(180deg,#0f2224,#071315)',far:'#1b3337',mid:'#26484c',near:'#122629',accent:'#5ad2e2',ground:'#0d1d1f'},
+  {biome:'fields',feature:'pillar',sky:'radial-gradient(120% 90% at 50% 118%,rgba(82,105,224,.17),transparent 60%),linear-gradient(180deg,#0f1224,#070a15)',far:'#1b2037',mid:'#262d4c',near:'#121629',accent:'#5a71e2',ground:'#0d101f'},
+  {biome:'crystal',sky:'radial-gradient(120% 90% at 50% 118%,rgba(160,82,224,.17),transparent 60%),linear-gradient(180deg,#1b0f24,#0f0715)',far:'#2a1b37',mid:'#3b264c',near:'#1e1229',accent:'#a55ae2',ground:'#170d1f'},
+  {biome:'scrap',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,186,.17),transparent 60%),linear-gradient(180deg,#240f1e,#150711)',far:'#371b2f',mid:'#4c2642',near:'#291223',accent:'#e25abe',ground:'#1f0d1a'},
+  {biome:'sky',sky:'radial-gradient(120% 90% at 50% 118%,rgba(224,82,84,.17),transparent 60%),linear-gradient(180deg,#240f0f,#150708)',far:'#371b1b',mid:'#4c2627',near:'#291212',accent:'#e25a5d',ground:'#1f0d0d'},
+];
+function themeFor(world){return THEMES[(world-1)%THEMES.length];}
+
+let pllFar,pllMid,pllNear,sceneSky,worldflash,sceneReady=false;
+let sceneScroll=0,curThemeWorld=0,scrollCur=42,scrollTarget=42,speedDriftT=0;
+const SCENE_SPEED=42; // px/sec of the near layer (real time, not game time)
+function initScene(){
+  pllFar=$('pllFar');pllMid=$('pllMid');pllNear=$('pllNear');sceneSky=$('sceneSky');worldflash=$('worldflash');
+  sceneReady=!!(pllFar&&pllMid&&pllNear);
+}
+function litHex(hex,f){
+  hex=(hex||'#000').replace('#','');
+  let r=parseInt(hex.slice(0,2),16)||0,g=parseInt(hex.slice(2,4),16)||0,b=parseInt(hex.slice(4,6),16)||0;
+  r=Math.min(255,Math.round(r*f));g=Math.min(255,Math.round(g*f));b=Math.min(255,Math.round(b*f));
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function applyTheme(world,flash){
+  if(!sceneReady)return;
+  const t=themeFor(world),L=BIOME[t.biome](t);
+  sceneSky.style.background=t.sky;
+  pllFar.style.backgroundImage=svgURI(SVGW.far,L.far);
+  pllMid.style.backgroundImage=svgURI(SVGW.mid,L.mid);
+  pllNear.style.backgroundImage=svgURI(SVGW.near,L.near);
+  if(flash&&worldflash){worldflash.classList.remove('go');void worldflash.offsetWidth;worldflash.classList.add('go');}
+  curThemeWorld=world;
+}
+function applyScroll(){
+  if(!sceneReady)return;
+  pllFar.style.backgroundPositionX=(-(sceneScroll*0.25)%SVGW.far)+'px';
+  pllMid.style.backgroundPositionX=(-(sceneScroll*0.55)%SVGW.mid)+'px';
+  pllNear.style.backgroundPositionX=(-(sceneScroll)%SVGW.near)+'px';
+}
+
+/* ---------- audio (tiny, optional) ---------- */
+let actx;
+function beep(freq,dur,vol,type){
+  if(S.mute)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain();o.type=type||'sine';o.frequency.value=freq;
+    o.connect(g);g.connect(actx.destination);g.gain.value=0;
+    const t=actx.currentTime;g.gain.linearRampToValueAtTime(vol||0.05,t+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+(dur||0.15));o.start(t);o.stop(t+(dur||0.15)+0.02);
+  }catch(e){}
+}
+function playChime(rar){const i=rarIdx(rar);const base=440+i*60;beep(base,0.12,0.05,'triangle');setTimeout(()=>beep(base*1.5,0.16,0.045,'triangle'),90);}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+let bldDirty=true,gearDirty=true,permDirty=true,logDirty=true,craftDirty=true,achDirty=true;
+let flashB=null,flashT=0;
+function buildStrip(){
+  const top=['coins','energy','shards','essence','sparks'];
+  $('resStrip').innerHTML=top.map(id=>{const r=RES.find(x=>x.id===id);
+    return `<div class="res tap" data-res="${id}"><span class="ico">${svgRes(r.ic)}</span><div class="col">
+      <span class="v" id="rv_${id}">0</span><span class="r" id="rr_${id}"></span></div></div>`;}).join('');
+  $('resFull').innerHTML=RES.map(r=>`<div class="now-row tap" data-res="${r.id}">
+    <span class="k" style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0">
+      <span style="width:16px;display:inline-flex">${svgRes(r.ic)}</span>${r.name}</span>
+    <span class="val"><span id="rf_${r.id}">0</span> <span style="color:var(--good);font-size:11px" id="rfr_${r.id}"></span></span></div>`).join('');
+}
+function buildSpeed(){
+  S.speed=1;
+  $('spd').innerHTML=`<span class="rt" title="Runs in real time — your progress saves while you're away, so you can pick up (and rejoin friends) where you left off">◷ realtime</span>`;
+}
+function buildGear(){
+  $('gslots').innerHTML=SLOTS.map(sl=>{const g=S.gear[sl.id];
+    const col=g?`var(${RARITIES[rarIdx(g.rar)].c})`:'var(--line)';
+    return `<div class="gslot" data-slot="${sl.id}" style="border-color:${col};${g?`box-shadow:0 0 12px ${col}33`:''}" title="${sl.name}${g?': '+g.name:' (empty)'}">
+      <span style="filter:${g?'none':'grayscale(1)'};opacity:${g?1:.4}">${sl.ic}</span>
+      ${g?`<span class="pw">${fmt(g.power)}</span>`:''}</div>`;}).join('');
+  let tp=0;for(const k in S.gear)if(S.gear[k])tp+=S.gear[k].power;
+  $('gpower').textContent=fmt(tp);
+}
+function buildBld(){
+  $('blist').innerHTML=BLD.map(b=>{
+    const unlocked=b.unlock()||cnt(b.id)>0;
+    if(!unlocked)return '';
+    const c=cnt(b.id);const desc=b.prod?Object.entries(b.prod).map(([r,v])=>'+'+fmt(v*c*M().prod*mileMult(c))+' '+r+'/s').join(' ')
+      :Object.entries(b.effect).map(([k,v])=>'+'+Math.round(v*c*100)+'% '+k).join(' ');
+    return `<div class="brow ${flashB===b.id?'flash':''} ${S.saveTarget===b.id?'tgt':''}" data-b="${b.id}">
+      <div class="bico">${b.ic}</div>
+      <div class="bmeta"><div class="bn">${b.name}</div><div class="bd">${desc||'—'}</div></div>
+      <div class="blv">${c}</div></div>`;}).join('');
+}
+function buildPerm(){/* shown in stats area via nowAsc; keep light */ permDirty=false;}
+function buildLog(){
+  $('log').innerHTML=S.log.slice(0,10).map((e,i)=>`<div class="levent${e.g?' tap':''}"${e.g?` data-log="${i}"`:''}>
+    <span class="lt">+${fmtTime(e.t)}</span><span class="lx">${e.x}${e.g?' <span class="lpk">▸</span>':''}</span></div>`).join('')||
+    '<div class="craft-idle">Nothing yet…</div>';
+  logDirty=false;
+}
+function buildAch(){
+  $('achGrid').innerHTML=ACH.map(a=>{const got=S.achieved[a.id];
+    const show=got||!a.hidden;
+    return `<div class="ach ${got?'got':''}">
+      <span>${show?a.ic:'❔'}</span>
+      <div class="tip"><b>${show?a.n:'Hidden'}</b>${show?a.d:'Keep watching to reveal'}</div></div>`;}).join('');
+  achDirty=false;
+}
+function buildStats(){
+  const s=S.stats;const rows=[
+    ['Total play time',fmtTime(S.gameTime)],['Ascensions',fmt(S.ascensions)],
+    ['Best gear',s.bestRar],['Highest income',fmt(s.highIncome)+'/s'],
+    ['Peak coins',fmt(s.bestCoins)],['Gear found',fmt(s.gearFound)],
+    ['Gear recycled',fmt(s.recycled)],['Crafts',fmt(s.crafts)],
+    ['Perfect crafts',fmt(s.perfect)],['Failed crafts',fmt(s.failed)],
+    ['Buildings bought',fmt(s.buildingsBought)],['Fastest ascension',s.fastAsc?fmtTime(s.fastAsc):'—'],
+    ['Lifetime resources',fmt(s.resAll)],
+    ['Perm upgrades',PERM.reduce((a,p)=>a+S.perm[p.id],0)],
+  ];
+  $('statsBody').innerHTML=rows.map(([k,v])=>`<div class="srow"><span class="sk">${k}</span><span class="sv">${v}</span></div>`).join('');
+}
+
+function render(){
+  if(sceneReady&&S.world!==curThemeWorld) applyTheme(S.world,curThemeWorld!==0);
+  const p=production();
+  for(const id of ['coins','energy','shards','essence','sparks']){
+    const v=$('rv_'+id);if(v)v.textContent=fmt(S.res[id]);
+    const rr=$('rr_'+id);if(rr){const rate=p[id]||0;rr.textContent=rate>0?'+'+fmt(rate)+'/s':'';}
+  }
+  for(const r of RES){const el=$('rf_'+r.id);if(el)el.textContent=fmt(S.res[r.id]);
+    const rr=$('rfr_'+r.id);if(rr){const rate=p[r.id]||0;rr.textContent=rate>0?'+'+fmt(rate)+'/s':'';}}
+  // header
+  $('topName').textContent=S.name;
+  const wn=WORLDS[(S.world-1)%WORLDS.length];
+  $('topSub').textContent=`World ${S.world} · ${fmtTime(S.runTime)}`;
+  $('worldName').textContent=`World ${S.world} · ${wn}`;
+  $('worldBar').firstElementChild.style.width=(S.worldProg*100).toFixed(1)+'%';
+  // now
+  const actLabel={buy:'Buying',save:'Saving',craft:'Crafting',idle:'Watching'}[S.action]||'—';
+  $('nowAction').textContent=actLabel;
+  $('nowTarget').textContent=S.target;
+  const pend=pendingSparks();
+  $('nowAsc').textContent=`+${fmt(pend)} sparks ready`;
+  const ascNeed=Math.max(3,Math.ceil(S.lastAscSparks*1.6)+1);
+  const ascProg=clamp(pend/ascNeed,0,1);
+  $('ascBar').firstElementChild.style.width=(ascProg*100).toFixed(1)+'%';
+  // craft box
+  if(S.craft){const pc=(1-S.craft.left/S.craft.total)*100;
+    $('craftBox').innerHTML=`<div class="craft-live"><div class="craft-ico">⚒️</div>
+      <div class="craft-body"><div class="ct">Forging ${S.craft.name||S.craft.slot}${S.craft.reason?` — ${S.craft.reason}`:''}</div>
+      <div class="cbar"><span style="width:${pc.toFixed(0)}%"></span></div></div>
+      <div class="mono" style="font-size:12px;color:var(--muted)">${S.craft.left.toFixed(1)}s</div></div>`;
+  }else if(craftDirty){$('craftBox').innerHTML='<div class="craft-idle">Nothing on the bench</div>';craftDirty=false;}
+  // dirty sections
+  if(bldDirty){buildBld();bldDirty=false;}
+  if(gearDirty){buildGear();gearDirty=false;}
+  if(logDirty)buildLog();
+  if(achDirty)buildAch();
+  buildStats();
+  if(permDirty)buildPerm();
+}
+
+/* ---------- inspector (read-only) ---------- */
+const statRow=(k,v)=>`<div class="insp-stat"><span class="sk">${k}</span><span class="sv">${v}</span></div>`;
+const EFFNAME={prod:'All production',drop:'Drop rate',luck:'Luck',craftS:'Craft speed',craftQ:'Craft quality',asc:'Ascension gain'};
+function openInspect(){$('inspect').classList.add('show');}
+function closeInspect(){$('inspect').classList.remove('show');}
+function inspectBuilding(id){
+  const b=bDef(id);if(!b)return;const c=cnt(id),m=M();
+  let rows='';
+  if(b.prod){const mile=mileMult(c);for(const r in b.prod){const per=b.prod[r]*m.prod;const nm=RES.find(x=>x.id===r).name;
+    rows+=statRow('Produces','+'+fmt(per)+' '+nm+'/s each');
+    rows+=statRow('Total output','+'+fmt(per*c*mile)+' '+nm+'/s');}
+    if(mile>1)rows+=statRow('Milestone bonus','×'+fmt(mile)+' (every '+ECON.mileEvery+' owned)');}
+  if(b.effect){for(const k in b.effect){
+    rows+=statRow(EFFNAME[k]||k,'+'+Math.round(b.effect[k]*100)+'% each');
+    const tot=k==='prod'?(Math.pow(1+b.effect[k],c)-1):b.effect[k]*c;
+    rows+=statRow('Total bonus','+'+Math.round(tot*100)+'%'+(k==='prod'?' (compounding)':''));}}
+  rows+=statRow('Owned',c);
+  const cost=costOf(b,c);
+  rows+=statRow('Next one costs',Object.entries(cost).map(([r,v])=>fmt(v)+' '+r).join(' · '));
+  $('inspBox').innerHTML=
+    `<div class="insp-head"><div class="insp-ico">${b.ic}</div>
+      <div><div class="it">${b.name}</div><div class="is">Building · owned ${c}</div></div></div>
+    ${rows}
+    <div class="insp-note">👁️ ${S.name} decides when to build this — you're just watching</div>
+    <button class="insp-close" onclick="closeInspect()">Close</button>`;
+  openInspect();
+}
+// shared gear renderer — used for equipped slots and for items in the event log
+function gearInspectHTML(g,note){
+  const r=RARITIES[rarIdx(g.rar)], slot=SLOTS.find(s=>s.id===g.slot);
+  let stats='';
+  for(const st in g.stats){const meta=STATS.find(x=>x.id===st);
+    stats+=statRow(meta?meta.name:st, meta?meta.fmt(g.stats[st]):('+'+(g.stats[st]*100).toFixed(0)+'%'));}
+  return `<div class="insp-head"><div class="insp-ico" style="border-color:var(${r.c})">${slot?slot.ic:'◆'}</div>
+      <div><div class="it">${g.name}</div>
+      <span class="insp-tag" style="color:var(${r.c});border:1px solid var(${r.c})">${g.rar}</span></div></div>
+    ${statRow('Slot',slot?slot.name:g.slot)}
+    ${statRow('Item level',g.lvl)}
+    ${statRow('Power score',fmt(g.power))}
+    <div style="height:4px"></div>
+    ${stats||statRow('Bonuses','none')}
+    ${g.passive?`<button class="passive-line tapline" onclick="inspectPassive('${g.passive}')">✦ Passive: <b>${g.passive}</b> <span class="lpk">▸ tap</span></button>`:''}
+    <div class="insp-note">${note}</div>
+    <button class="insp-close" onclick="closeInspect()">Close</button>`;
+}
+function inspectGear(slotId){
+  const g=S.gear[slotId], slot=SLOTS.find(s=>s.id===slotId);
+  if(!g){
+    $('inspBox').innerHTML=
+      `<div class="insp-head"><div class="insp-ico" style="opacity:.45">${slot.ic}</div>
+        <div><div class="it">${slot.name} slot</div><div class="is">Empty</div></div></div>
+      <div class="insp-note">${S.name} hasn't found ${slot.name.toLowerCase()} gear worth equipping yet</div>
+      <button class="insp-close" onclick="closeInspect()">Close</button>`;
+    openInspect();return;
+  }
+  $('inspBox').innerHTML=gearInspectHTML(g,`👁️ Equipped by ${S.name} — look, don't touch`);
+  openInspect();
+}
+function inspectLog(idx){
+  const e=S.log[idx];
+  if(!e||!e.g)return;
+  const note=e.who?`👁️ ${e.who} found this — your friend's find (you're just watching)`
+    :`👁️ ${S.name} found this ${fmtTime(e.t)} into the run — a keepsake from the log`;
+  $('inspBox').innerHTML=gearInspectHTML(e.g,note);
+  openInspect();
+}
+function inspectPassive(name){
+  const info=PASSIVE_INFO[name];
+  const eff=info?Object.entries(info.b).map(([k,v])=>{const meta=STATS.find(x=>x.id===k);return (meta?meta.name:k)+' +'+Math.round(v*100)+'%';}).join(' · '):'—';
+  $('inspBox').innerHTML=
+    `<div class="insp-head"><div class="insp-ico" style="border-color:var(--honey)">✦</div>
+      <div><div class="it">${name}</div><div class="is">Passive ability</div></div></div>
+    ${info?`<div class="insp-note" style="margin:2px 0 12px;font-style:normal;color:var(--cream)">${info.d}</div>`:''}
+    ${statRow('Effect',eff)}
+    ${statRow('Stacks?','Yes — from every equipped piece')}
+    <div class="insp-note">👁️ ${S.name} favours gear with strong passives when deciding what to wear</div>
+    <button class="insp-close" onclick="closeInspect()">Close</button>`;
+  openInspect();
+}
+const RESINFO={
+  coins:{d:'The everyday currency of the workshop.',src:'Spark Coils and most machines produce coins.',use:`${'$'}{name} spends coins to buy nearly every building.`},
+  energy:{d:'Powers the deeper machines.',src:'Dynamos generate energy.',use:'Crushers, Sifters and other advanced builds cost energy to set up.'},
+  shards:{d:'Salvage from gear that isn\u2019t worth equipping.',src:'Ore Crushers produce shards; recycling unwanted finds adds more.',use:'Fuels crafting and unlocks the Nexus and Beacon.'},
+  fragments:{d:'A refined material for higher-tier work.',src:'Sifters slowly produce fragments.',use:'Needed to build Distillers and to reach essence.'},
+  essence:{d:'Concentrated crafting essence — the rarest steady resource.',src:'Distillers produce essence, very slowly.',use:'Consumed every time gear is crafted; also builds the Obelisk.'},
+  sparks:{d:'Ascension energy: the currency of starting over.',src:'Earned by ascending — the more this run produced, the more sparks.',use:'Spent on the permanent upgrade tree that carries across every run.'},
+};
+function inspectResource(id){
+  const r=RES.find(x=>x.id===id); if(!r)return;
+  const info=RESINFO[id]||{d:'',src:'',use:''};
+  const p=production();const rate=p[id]||0;
+  let rows='';
+  rows+=statRow('Held now',fmt(S.res[id]));
+  if(rate>0)rows+=statRow('Producing','+'+fmt(rate)+'/s');
+  if(r.val>0)rows+=statRow('Coin value',fmt(r.val)+' per unit');
+  rows+=statRow('Comes from',info.src);
+  rows+=statRow('Used for',info.use.replace('${name}',S.name));
+  $('inspBox').innerHTML=
+    `<div class="insp-head"><div class="insp-ico">${svgRes(r.ic)}</div>
+      <div><div class="it">${r.name}</div><div class="is">Resource</div></div></div>
+    <div class="insp-note" style="margin:2px 0 8px">${info.d}</div>
+    ${rows}
+    <div class="insp-note">👁️ ${S.name} earns and spends this on its own — you're just watching</div>
+    <button class="insp-close" onclick="closeInspect()">Close</button>`;
+  openInspect();
+}
+
+/* ============================================================
+   LORE  (read-only story — the only thing to *do* is read)
+   ============================================================ */
+const LORE_ART={
+  quiet:`<svg viewBox="0 0 520 132" preserveAspectRatio="xMidYMid slice">
+    <defs><radialGradient id="lq" cx="50%" cy="18%" r="85%"><stop offset="0" stop-color="#3a2a18"/><stop offset="1" stop-color="#120d08"/></radialGradient></defs>
+    <rect width="520" height="132" fill="url(#lq)"/>
+    <g fill="var(--honey2)" opacity=".7"><circle cx="70" cy="26" r="1.4"/><circle cx="180" cy="16" r="1"/><circle cx="330" cy="30" r="1.2"/><circle cx="440" cy="20" r="1.4"/><circle cx="480" cy="42" r="1"/></g>
+    <path d="M0 96 L58 96 L58 60 L94 60 L94 96 L150 96 L150 74 L182 74 L182 96 L520 96 L520 132 L0 132 Z" fill="#241a11"/>
+    <rect x="360" y="54" width="20" height="50" fill="#2c2016"/><rect x="356" y="49" width="28" height="7" fill="#3a2c1e"/>
+    <rect x="406" y="66" width="18" height="38" fill="#2c2016"/>
+    <line x1="250" y1="0" x2="250" y2="40" stroke="#3a2c1e" stroke-width="2"/>
+    <rect x="240" y="40" width="20" height="26" rx="6" fill="#2c2016" stroke="#4a3a2c"/>
+    <ellipse cx="250" cy="54" rx="62" ry="42" fill="var(--honey)" opacity=".09"/>
+    <rect x="244" y="45" width="12" height="16" rx="3" fill="var(--honey)"><animate attributeName="opacity" values="1;.55;1" dur="3s" repeatCount="indefinite"/></rect>
+    <rect x="0" y="100" width="520" height="32" fill="#1a130c"/></svg>`,
+  wanderer:`<svg viewBox="0 0 520 132" preserveAspectRatio="xMidYMid slice">
+    <rect width="520" height="132" fill="#150f09"/><ellipse cx="260" cy="150" rx="320" ry="72" fill="#241a10"/>
+    <ellipse cx="300" cy="96" rx="96" ry="48" fill="var(--honey)" opacity=".10"/>
+    <g transform="translate(232 40)">
+      <line x1="20" y1="8" x2="20" y2="0" stroke="#5a4634" stroke-width="3"/><circle cx="20" cy="-2" r="4" fill="var(--honey)"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>
+      <rect x="4" y="26" width="32" height="26" rx="9" fill="#3a2c1e" stroke="#6b543d"/>
+      <rect x="8" y="6" width="24" height="22" rx="8" fill="#3a2c1e" stroke="#6b543d"/>
+      <rect x="12" y="12" width="16" height="10" rx="4" fill="#0f0b07"/>
+      <circle cx="17" cy="17" r="1.8" fill="#7fe3d8"/><circle cx="23" cy="17" r="1.8" fill="#7fe3d8"/>
+      <rect x="11" y="52" width="7" height="9" rx="3" fill="#2c2016"/><rect x="22" y="52" width="7" height="9" rx="3" fill="#2c2016"/>
+      <rect x="34" y="30" width="12" height="6" rx="3" fill="#2c2016"/>
+      <line x1="46" y1="33" x2="53" y2="44" stroke="#3a2c1e" stroke-width="2"/>
+      <rect x="46" y="44" width="14" height="18" rx="4" fill="#2c2016" stroke="#4a3a2c"/>
+      <rect x="49" y="48" width="8" height="11" rx="2" fill="var(--honey)"><animate attributeName="opacity" values="1;.55;1" dur="2.4s" repeatCount="indefinite"/></rect>
+    </g></svg>`,
+  spark:`<svg viewBox="0 0 520 132" preserveAspectRatio="xMidYMid slice">
+    <rect width="520" height="132" fill="#150f09"/><ellipse cx="270" cy="70" rx="96" ry="44" fill="var(--honey)" opacity=".13"/>
+    <rect x="206" y="50" width="104" height="44" rx="22" fill="#120d09" stroke="#3d2e20" stroke-width="2"/>
+    <circle cx="288" cy="72" r="18" fill="var(--honey)"/><circle cx="288" cy="72" r="18" fill="none" stroke="#ffe0a0" stroke-width="1.6"/>
+    <g stroke="var(--honey2)" stroke-width="2.4" stroke-linecap="round"><line x1="288" y1="44" x2="288" y2="34"/><line x1="313" y1="55" x2="323" y2="49"/><line x1="313" y1="89" x2="323" y2="95"/></g>
+    <text x="226" y="78" fill="var(--honey2)" font-family="monospace" font-size="14" font-weight="700" letter-spacing="2">ON</text></svg>`,
+  gate:`<svg viewBox="0 0 520 132" preserveAspectRatio="xMidYMid slice">
+    <rect width="520" height="132" fill="#140d13"/>
+    <g fill="var(--c-cosmic)" opacity=".6"><circle cx="80" cy="28" r="1.3"/><circle cx="150" cy="18" r="1"/><circle cx="380" cy="34" r="1"/><circle cx="440" cy="24" r="1.3"/></g>
+    <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset="1" stop-color="#b483e6"/></linearGradient></defs>
+    <path d="M226 108 L226 46 Q260 20 294 46 L294 108 Z" fill="url(#lg)" opacity=".85"/>
+    <path d="M234 108 L234 50 Q260 30 286 50 L286 108 Z" fill="#140d13"/>
+    <ellipse cx="260" cy="72" rx="72" ry="46" fill="url(#lg)" opacity=".09"/>
+    <circle cx="260" cy="88" r="13" fill="var(--honey)" opacity=".9"/><circle cx="260" cy="72" r="7.5" fill="var(--honey2)" opacity=".75"/><circle cx="260" cy="62" r="4" fill="#fff" opacity=".6"/>
+    <rect x="0" y="108" width="520" height="24" fill="#1a1220"/></svg>`,
+  road:`<svg viewBox="0 0 520 132" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="lr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1f13"/><stop offset="1" stop-color="#120d08"/></linearGradient></defs>
+    <rect width="520" height="132" fill="url(#lr)"/>
+    <circle cx="260" cy="50" r="30" fill="var(--honey)" opacity=".22"/><circle cx="260" cy="50" r="20" fill="var(--honey2)" opacity=".5"/>
+    <path d="M0 92 Q130 70 260 88 Q390 106 520 84 L520 132 L0 132 Z" fill="#1e160d"/>
+    <path d="M0 104 Q160 92 300 104 Q420 114 520 100 L520 132 L0 132 Z" fill="#171009"/>
+    <path d="M250 132 Q282 108 258 96 Q236 86 262 78" fill="none" stroke="var(--honey)" stroke-width="3" opacity=".5" stroke-linecap="round"/>
+    <g transform="translate(256 82)"><rect x="-3" y="-6" width="6" height="8" rx="2" fill="#2c2016"/><circle cx="0" cy="-8" r="2.6" fill="#3a2c1e"/><circle cx="4" cy="-7" r="1.6" fill="var(--honey)"/></g></svg>`,
+};
+function loreCards(){
+  const n=`<b>${S.name}</b>`;
+  return [
+    {ch:'I · The world',t:'The Long Quiet',art:'quiet',
+     p:`Long before the first switch, the world hummed with makers and their machines. Then, one by one, their lights went out. What was left broke apart into many small, sleeping worlds — a quiet bench, a copper hollow, a field of mechanical wrecks — each scattered with the parts the makers left behind.`},
+    {ch:'II · The wanderer',t:'A Small Light',art:'wanderer',
+     p:`${n} is a <b>Lamplighter</b>: a tiny tinkerer built for one humble job — to keep a single light moving through the dark. Between worlds it powers down to almost nothing, curled on a workbench, holding just one spark in reserve, waiting for a hand to wind it back to life.`},
+    {ch:'III · Your part',t:'One Flip',art:'spark',
+     p:`That hand is yours. You didn't build ${n}, and you can't steer it — you only reached out and <b>flipped the switch</b>. That was enough. Everything after this, it decides and does entirely on its own. You are not the player here. You're the one who keeps watch.`},
+    {ch:'IV · What it does',t:'Gather, Build, Forge',
+     p:`So it walks. It gathers the old world piece by piece — coins, coils, shards and stranger things — and builds little machines to help it gather faster. At its bench it forges better tools, keeps only the gear that makes it stronger, and melts the rest back down. It never hurries. It simply keeps going, and gets a little better at going.`},
+    {ch:'V · Moving on',t:'The Far Edge',art:'gate',
+     p:`When a world has given all it can, ${n} saves up enough <b>ascension sparks</b> to fold that world gently closed and step through to the next — a little further along, a little brighter than before. It carries nothing but what it learned. Everything else, it leaves behind without regret.`},
+    {ch:'VI · The goal',t:'The Road Has No End',art:'road',
+     p:`There is no final world. Some say the Lamplighters are searching for the makers who left; some say they're relighting every lantern, one world at a time. ${n} doesn't say. It only walks, and gathers, and climbs — for as long as its light is watched over.<br><br>That last part is the whole of your job: to look in now and then, and wonder what your little one did while you were away.`},
+  ];
+}
+function buildLore(){
+  const cards=loreCards();
+  $('loreBox').innerHTML=
+    `<div class="lore-hero"><div class="kicker">The story of</div>
+       <h2>Flip the Switch</h2><div class="sub">Why the little one walks the wastes</div></div>
+     <div class="lore-cards">${cards.map(c=>
+        `<div class="lore-card">${c.art?`<div class="lore-art">${LORE_ART[c.art]||''}</div>`:''}
+           <div class="ch">${c.ch}</div><h3>${c.t}</h3><p>${c.p}</p></div>`).join('')}</div>
+     <div class="lore-sig">— keep the light moving —</div>
+     <div class="lore-foot"><button class="obtn" onclick="closeLore()">Back to watching</button></div>`;
+}
+function openLore(){buildLore();$('lorelay').classList.add('show');}
+function closeLore(){$('lorelay').classList.remove('show');}
+
+/* ============================================================
+   APPEARANCE (colour palettes, incl. colourblind-safe) + SETTINGS
+   ============================================================ */
+// keys map to CSS custom properties; unspecified vars keep the default sheet.
+const PALETTES={
+  lantern:{name:'Lantern',note:'the cosy default',sf:'none',
+    v:{bg:'#16110d',bg2:'#1d1712',panel:'#241c16',panel2:'#2c231b',panel3:'#352a20',line:'#3a2d22',line2:'#4a3a2c',
+       cream:'#f3e7d5',muted:'#a08b74',dim:'#7d6a55',honey:'#f4b64c',honey2:'#ffd27a',ember:'#e8804f',glow:'#ffb648',halo:'#241a12',
+       'c-common':'#9c8f7d','c-uncommon':'#86c06a','c-rare':'#57b0e6','c-epic':'#b483e6','c-legendary':'#f5a623','c-mythical':'#ff6f6f','c-artifact':'#35d6c0','c-cosmic':'#ff8fd0',good:'#86c06a',bad:'#e07a5f'}},
+  contrast:{name:'High contrast',note:'bright on near-black',sf:'saturate(1.2) brightness(1.08) contrast(1.05)',
+    v:{bg:'#080706',bg2:'#131110',panel:'#1a1714',panel2:'#221e19',panel3:'#2b251f',line:'#4a3d2e',line2:'#63513c',
+       cream:'#fffdf7',muted:'#d3c2a6',dim:'#9f8f76',honey:'#ffc23a',honey2:'#ffe38f',ember:'#ff9a55',glow:'#ffc23a',halo:'#2a2118',
+       'c-common':'#cfcabd','c-uncommon':'#7be863','c-rare':'#4fc3ff','c-epic':'#c78bff','c-legendary':'#ffc23a','c-mythical':'#ff7b7b','c-artifact':'#33f0d6','c-cosmic':'#ff9ce0',good:'#7be863',bad:'#ff7b6a'}},
+  cvd:{name:'Colourblind-safe',note:'red–green friendly (Okabe–Ito)',sf:'saturate(1.12) contrast(1.05)',
+    v:{bg:'#14110d',bg2:'#1c1813',panel:'#241f18',panel2:'#2b251d',panel3:'#332c22',line:'#3d3226',line2:'#4f4030',
+       cream:'#f4ebdc',muted:'#a89a82',dim:'#82715a',honey:'#E69F00',honey2:'#f2c860',ember:'#D55E00',glow:'#E69F00',halo:'#241a12',
+       'c-common':'#999999','c-uncommon':'#56B4E9','c-rare':'#0072B2','c-epic':'#CC79A7','c-legendary':'#E69F00','c-mythical':'#D55E00','c-artifact':'#009E73','c-cosmic':'#F0E442',good:'#009E73',bad:'#D55E00'}},
+  tritan:{name:'Tritan-safe',note:'blue–yellow friendly',sf:'hue-rotate(-28deg) saturate(1.15)',
+    v:{bg:'#140f10',bg2:'#1c1618',panel:'#241d1f',panel2:'#2b2325',panel3:'#332a2c',line:'#3d2f31',line2:'#4f3d40',
+       cream:'#f5e8ea',muted:'#b49aa0',dim:'#886c72',honey:'#ff5f8f',honey2:'#ff9ab8',ember:'#ff7a6a',glow:'#ff5f8f',halo:'#251519',
+       'c-common':'#a89a9c','c-uncommon':'#e06a86','c-rare':'#c23a5a','c-epic':'#b06ae0','c-legendary':'#ff8a3a','c-mythical':'#e03a3a','c-artifact':'#2ec4a0','c-cosmic':'#ff6fd0',good:'#2ec4a0',bad:'#e03a3a'}},
+  dusk:{name:'Cool dusk',note:'calm teal & blue',sf:'hue-rotate(150deg) saturate(1.08) brightness(1.02)',
+    v:{bg:'#0d1114',bg2:'#12181c',panel:'#182027',panel2:'#1e2830',panel3:'#26333c',line:'#2a3a42',line2:'#39505b',
+       cream:'#e4eef2',muted:'#8fa6b0',dim:'#647b86',honey:'#57c8e6',honey2:'#8fe0f0',ember:'#5ad0b0',glow:'#57c8e6',halo:'#12222a',
+       'c-common':'#8fa0a6','c-uncommon':'#7ad08a','c-rare':'#57b0e6','c-epic':'#a88ce6','c-legendary':'#f0b24a','c-mythical':'#ff7f9f','c-artifact':'#35d6c0','c-cosmic':'#ff8fd0',good:'#7ad08a',bad:'#f07a6a'}},
+  rose:{name:'Rose ember',note:'warm berry & gold',sf:'hue-rotate(-18deg) saturate(1.18)',
+    v:{bg:'#160f11',bg2:'#1e1418',panel:'#261a1f',panel2:'#2e2026',panel3:'#38272e',line:'#3d2a31',line2:'#503743',
+       cream:'#f6e6ea',muted:'#b8969f',dim:'#8a6771',honey:'#ff9a4a',honey2:'#ffc27a',ember:'#ff6a8a',glow:'#ff9a4a',halo:'#2a1620',
+       'c-common':'#a8969c','c-uncommon':'#8fc06a','c-rare':'#6ab0e6','c-epic':'#c483e6','c-legendary':'#ffb04a','c-mythical':'#ff6f8f','c-artifact':'#35d6c0','c-cosmic':'#ff8fd0',good:'#8fc06a',bad:'#ff6a6a'}},
+};
+const PAL_KEY='flipswitch:palette';
+function applyPalette(id){
+  const p=PALETTES[id]||PALETTES.lantern;
+  const r=document.documentElement;
+  for(const k in p.v) r.style.setProperty('--'+k, p.v[k]);
+  ['sceneSky','pllFar','pllMid','pllNear'].forEach(id=>{const el=document.getElementById(id); if(el) el.style.filter='';});
+  const sc=document.getElementById('scene'); if(sc) sc.style.filter=p.sf||'none';
+  try{localStorage.setItem(PAL_KEY,id);}catch(e){}
+  if(S) S.palette=id;
+}
+function currentPalette(){ try{return localStorage.getItem(PAL_KEY);}catch(e){return null;} }
+
+function buildSettings(){
+  const cur=(S&&S.palette)||currentPalette()||'lantern';
+  const sw=Object.entries(PALETTES).map(([id,p])=>{
+    const dots=['c-common','c-legendary','c-rare','c-artifact','c-cosmic'].map(c=>`<i style="background:${p.v[c]}"></i>`).join('');
+    return `<button class="pal ${id===cur?'on':''}" data-pal="${id}"><div class="pal-dots">${dots}</div>
+      <div class="pal-name">${p.name}</div><div class="pal-note">${p.note}</div></button>`;}).join('');
+  const bubblesOn=!S||S.bubbles!==false, soundOn=!(S&&S.mute);
+  $('setBox').innerHTML=
+    `<h2>Settings</h2>
+     <div class="set-sec">Colour palette <span class="set-hint">for colour-vision needs & taste</span></div>
+     <div class="pal-grid">${sw}</div>
+     <div class="set-sec">Display</div>
+     <button class="set-toggle" data-tog="bubbles"><span>Speech bubbles</span><b class="${bubblesOn?'on':''}">${bubblesOn?'On':'Off'}</b></button>
+     <button class="set-toggle" data-tog="sound"><span>Sound</span><b class="${soundOn?'on':''}">${soundOn?'On':'Off'}</b></button>
+     <button class="insp-close" onclick="closeSettings()">Done</button>`;
+  $('setBox').querySelectorAll('.pal').forEach(b=>b.onclick=()=>{applyPalette(b.dataset.pal);buildSettings();save();});
+  $('setBox').querySelectorAll('.set-toggle').forEach(b=>b.onclick=()=>{
+    const t=b.dataset.tog;
+    if(t==='bubbles'){S.bubbles=(S.bubbles===false); applyBubbleVis();}
+    if(t==='sound'){S.mute=!S.mute; $('mMute')&&($('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on');}
+    buildSettings();save();
+  });
+}
+function applyBubbleVis(){
+  const on=!(S&&S.bubbles===false);
+  ['thought','thought2'].forEach(id=>{const el=$(id);if(el)el.style.visibility=on?'':'hidden';});
+}
+function openSettings(){buildSettings();$('setlay').classList.add('show');}
+function closeSettings(){$('setlay').classList.remove('show');}
+
+/* ---------- leaderboard ---------- */
+function progressScore(st){ // higher = further along
+  return st.ascensions*1e6 + st.world*1e4 + Math.log10(Math.max(1,st.stats.coinsAll||1))*100;
+}
+function buildLeaderboard(){
+  const rows=[];
+  rows.push({name:S.name, owner:(S.owner||'You'), you:true, world:S.world, asc:S.ascensions, inc:coinIncome(), score:progressScore(S)});
+  if(duo&&F){ const keep=S;S=F;const finc=coinIncome();S=keep;
+    rows.push({name:F.name, owner:(F.owner||'Friend'), you:false, world:F.world, asc:F.ascensions, inc:finc, score:progressScore(F)}); }
+  rows.sort((a,b)=>b.score-a.score);
+  const body=rows.map((r,i)=>`<div class="lb-row ${r.you?'me':''}">
+      <span class="lb-rank">${i+1}</span>
+      <span class="lb-name"><b>${r.owner}</b><span class="lb-sub">${r.name}${r.you?' · you':''}</span></span>
+      <span class="lb-stat">W${r.world}</span><span class="lb-stat">↑${fmt(r.asc)}</span>
+      <span class="lb-stat">${fmt(r.inc)}/s</span></div>`).join('');
+  const note = duo&&F
+    ? `Positions swap with luck — bad RNG isn't permanent (we tested it). Want guaranteed catch-up for whoever falls behind? I can add a gentle rubber-band.`
+    : `In co-op your friend (and a whole world of players) will show up here. Start a local duo from the switch screen to see two of you ranked.`;
+  $('lbBox').innerHTML=`<h2>🏆 Leaderboard</h2>
+     <div class="lb-head"><span class="lb-rank">#</span><span class="lb-name">Wanderer</span>
+       <span class="lb-stat">World</span><span class="lb-stat">Asc</span><span class="lb-stat">Income</span></div>
+     ${body}
+     <p class="lb-note">${note}</p>
+     <button class="insp-close" onclick="closeLeaderboard()">Close</button>`;
+}
+function openLeaderboard(){buildLeaderboard();$('lblay').classList.add('show');}
+function closeLeaderboard(){$('lblay').classList.remove('show');}
+
+/* ============================================================
+   MOVABLE MODULE GRID
+   - stage is locked top-centre (not movable/resizable/collapsible)
+   - every other panel: drag to reorder (any position), collapse via ▾,
+     and drag its bottom edge to set a height (content scrolls if taller)
+   ============================================================ */
+const MODS_DEFAULT=['stage','resources','buildings','now','crafting','gear','events','stats','ach'];
+const MODW={stage:2,resources:1,buildings:1,now:1,crafting:1,gear:1,events:1,stats:1,ach:1};
+const MODH_DEF={stage:8,resources:6,buildings:10,now:6,crafting:3,gear:5,events:10,stats:8,ach:6};
+const GRID_COLS=4;
+let layoutEdit=false, dragMod=null, dragResize=null, dragPH=null, dragPending=null;
+
+// one-time: make each non-stage card collapsible (▾), wrap its body, add a resize grip
+function prepModules(){
+  const board=$('board'); if(!board)return;
+  board.querySelectorAll('.mod').forEach(mod=>{
+    const id=mod.dataset.mod;
+    if(id==='stage'){mod.classList.add('mod-stage');return;}
+    const card=mod.querySelector('.card'); if(card){
+      card.classList.add('collapsible');
+      const h3=card.querySelector('h3');
+      if(h3 && !h3.querySelector('.chev')){const c=document.createElement('span');c.className='chev';c.textContent='▾';h3.appendChild(c);}
+      if(!card.querySelector(':scope > .body')){
+        const body=document.createElement('div'); body.className='body';
+        let cur=h3?h3.nextSibling:card.firstChild; const move=[];
+        while(cur){move.push(cur);cur=cur.nextSibling;}
+        move.forEach(n=>body.appendChild(n)); card.appendChild(body);
+      }
+    }
+    if(!mod.querySelector(':scope > .mod-resize')){const rz=document.createElement('div');rz.className='mod-resize';mod.appendChild(rz);}
+  });
+}
+function modEl(id){const b=$('board');return b?b.querySelector('.mod[data-mod="'+id+'"]'):null;}
+function collide(a,b){return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;}
+function ensureGrid(){
+  if(!S)return; S.grid=S.grid||{};
+  // stage is locked centre-top (cols 1-2) so a panel fits on each side of it
+  if(!S.grid.stage) S.grid.stage={x:1,y:0,w:2,h:MODH_DEF.stage};
+  else { S.grid.stage.x=1; S.grid.stage.y=0; S.grid.stage.w=2; S.grid.stage.h=MODH_DEF.stage; }
+  const miss=MODS_DEFAULT.filter(id=>id!=='stage' && !S.grid[id]);
+  for(const id of miss){ const w=MODW[id], h=MODH_DEF[id]; let best=null;
+    for(let y=0;y<400 && !best;y++) for(let x=0;x+w<=GRID_COLS;x++){
+      const c={x,y,w,h}; if(!Object.keys(S.grid).some(o=>collide(c,S.grid[o]))){best=c;break;} }
+    S.grid[id]=best||{x:0,y:0,w,h};
+  }
+  for(const id of MODS_DEFAULT){const g=S.grid[id]; if(!g)continue; g.w=MODW[id];
+    if(g.x+g.w>GRID_COLS)g.x=GRID_COLS-g.w; if(g.x<0)g.x=0; if(g.y<0)g.y=0; g.h=Math.max(1,g.h||MODH_DEF[id]); }
+}
+// float packing: keep everyone's (x,y); only push overlaps DOWN. stage & `keep` have priority.
+function packFloat(keep){
+  ensureGrid();
+  const ids=MODS_DEFAULT.filter(id=>S.grid[id]);
+  const rest=ids.filter(id=>id!=='stage'&&id!==keep).sort((a,b)=>S.grid[a].y-S.grid[b].y||S.grid[a].x-S.grid[b].x);
+  const order=['stage', ...(keep&&keep!=='stage'?[keep]:[]), ...rest];
+  const placed=[];
+  for(const id of order){ const g={...S.grid[id]};
+    while(placed.some(pid=>collide(g,S.grid[pid]))) g.y++;
+    S.grid[id]=g; placed.push(id);
+  }
+}
+function orderYX(){return MODS_DEFAULT.filter(id=>S.grid&&S.grid[id]).sort((a,b)=>S.grid[a].y-S.grid[b].y||S.grid[a].x-S.grid[b].x);}
+function isStacked(){return (typeof window!=='undefined'?window.innerWidth:1000)<760;}
+function renderGrid(){
+  const board=$('board'); if(!board||!S)return;
+  ensureGrid(); const stacked=isStacked(); board.classList.toggle('stacked',stacked);
+  if(stacked){
+    for(const id of orderYX()){const el=modEl(id); if(!el)continue; el.style.gridColumn=''; el.style.gridRow='';
+      const card=el.querySelector('.card'); if(card)el.classList.toggle('collapsed',card.classList.contains('closed')); board.appendChild(el);}
+  }else{
+    packFloat(null);
+    for(const id of MODS_DEFAULT){const g=S.grid[id]; const el=modEl(id); if(!el||!g)continue;
+      const card=el.querySelector('.card'); const closed=card&&card.classList.contains('closed');
+      el.classList.toggle('collapsed',!!closed);
+      el.style.gridColumn=(g.x+1)+' / span '+g.w;
+      el.style.gridRow=(g.y+1)+' / span '+(closed?1:g.h);
+    }
+  }
+}
+const applyLayout=renderGrid;                 // alias for existing callers
+function applyModState(){ renderGrid(); }
+function setLayoutEdit(on){
+  layoutEdit=on;
+  const b=$('board'); if(b)b.classList.toggle('editing',on);
+  const bar=$('layoutBar'); if(bar){ bar.classList.toggle('show',on);
+    const hint=bar.querySelector('span'); if(hint) hint.textContent=isStacked()
+      ? 'Narrow screen: panels just stack — open on a wider screen to arrange the grid.'
+      : 'Drag a panel to move it · drag its bottom edge to resize · gaps are allowed'; }
+}
+function cellMetrics(){
+  const board=$('board'); const r=board.getBoundingClientRect();
+  const cs=getComputedStyle(board); const gap=parseFloat(cs.gap)||12;
+  let rowh=parseFloat(cs.gridAutoRows); if(!rowh||isNaN(rowh)) rowh=42;
+  const cellW=(r.width-gap*(GRID_COLS-1))/GRID_COLS;
+  return {r,gap,rowh,cellW,pitchX:cellW+gap,pitchY:rowh+gap};
+}
+function initLayoutDrag(){
+  const board=$('board'); if(!board)return;
+  // collapse via header ▾ (normal mode only)
+  board.addEventListener('click',e=>{
+    if(layoutEdit)return;
+    const card=e.target.closest('.card.collapsible'); if(!card)return;
+    const h3=card.querySelector(':scope > h3'); if(!h3||!h3.contains(e.target))return;
+    const mod=card.closest('.mod'); const id=mod&&mod.dataset.mod;
+    const closed=card.classList.toggle('closed');
+    if(id){S.collapsed=S.collapsed||{}; S.collapsed[id]=closed;} renderGrid(); save();
+  });
+  board.addEventListener('pointerdown',e=>{
+    if(!layoutEdit||isStacked())return;
+    const mod=e.target.closest('.mod'); if(!mod)return;
+    if(e.target.closest('.mod-resize')){ startResize(mod,e); return; }
+    if(mod.dataset.mod==='stage')return;         // stage is locked
+    startMove(mod,e);                            // grab anywhere on the panel
+  });
+  board.addEventListener('pointermove',onMove);
+  board.addEventListener('pointerup',onUp);
+  board.addEventListener('pointercancel',onUp);
+  window.addEventListener('resize',()=>{ if(!dragMod&&!dragResize) renderGrid(); });
+}
+function startMove(mod,e){
+  const rect=mod.getBoundingClientRect(); const g=S.grid[mod.dataset.mod];
+  dragMod={mod,id:mod.dataset.mod,offX:e.clientX-rect.left,offY:e.clientY-rect.top};
+  dragPH=document.createElement('div'); dragPH.className='grid-ph';
+  dragPH.style.gridColumn=(g.x+1)+' / span '+g.w; dragPH.style.gridRow=(g.y+1)+' / span '+g.h;
+  board.appendChild(dragPH);
+  mod.classList.add('dragging');
+  mod.style.width=rect.width+'px'; mod.style.height=rect.height+'px';
+  mod.style.left=rect.left+'px'; mod.style.top=rect.top+'px';
+  dragPending={x:g.x,y:g.y};
+  try{$('board').setPointerCapture(e.pointerId);}catch(_){}
+  e.preventDefault();
+}
+function onMove(e){
+  if(dragResize){ doResize(e); return; }
+  if(!dragMod)return;
+  dragMod.mod.style.left=(e.clientX-dragMod.offX)+'px';
+  dragMod.mod.style.top=(e.clientY-dragMod.offY)+'px';
+  const m=cellMetrics(); const g=S.grid[dragMod.id];
+  let col=Math.round((e.clientX-dragMod.offX - m.r.left)/m.pitchX);
+  let row=Math.round((e.clientY-dragMod.offY - m.r.top)/m.pitchY);
+  col=Math.max(0,Math.min(GRID_COLS-g.w,col)); row=Math.max(0,row);
+  dragPending={x:col,y:row};
+  if(dragPH){dragPH.style.gridColumn=(col+1)+' / span '+g.w; dragPH.style.gridRow=(row+1)+' / span '+g.h;}
+  e.preventDefault();
+}
+function onUp(){
+  if(dragResize){ endResize(); return; }
+  if(!dragMod)return;
+  const id=dragMod.id;
+  S.grid[id].x=dragPending.x; S.grid[id].y=dragPending.y;
+  const mod=dragMod.mod;
+  mod.classList.remove('dragging');
+  mod.style.width=mod.style.height=mod.style.left=mod.style.top='';
+  if(dragPH){dragPH.remove(); dragPH=null;}
+  packFloat(id); dragMod=null; dragPending=null;
+  renderGrid(); save();
+}
+function startResize(mod,e){
+  dragResize={mod,id:mod.dataset.mod,top:mod.getBoundingClientRect().top};
+  mod.classList.add('resizing');
+  try{$('board').setPointerCapture(e.pointerId);}catch(_){}
+  e.preventDefault();
+}
+function doResize(e){
+  const m=cellMetrics();
+  let h=Math.round((e.clientY - dragResize.top)/m.pitchY);
+  h=Math.max(2,Math.min(40,h));
+  if(S.grid[dragResize.id].h!==h){ S.grid[dragResize.id].h=h; packFloat(dragResize.id); renderGrid(); }
+  e.preventDefault();
+}
+function endResize(){ if(!dragResize)return; dragResize.mod.classList.remove('resizing'); dragResize=null; save(); }
+
+/* ---------- achievements check ---------- */
+function checkAch(){
+  for(const a of ACH){if(!S.achieved[a.id]&&a.chk()){S.achieved[a.id]=true;achDirty=true;toast(a);}}
+}
+function toast(a){
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<div class="ti">${a.ic}</div><div class="tx"><b>${a.n}</b><div>${a.d}</div></div>`;
+  $('toasts').appendChild(el);setTimeout(()=>el.remove(),4200);
+  beep(660,0.1,0.05,'sine');setTimeout(()=>beep(880,0.14,0.045,'sine'),100);
+}
+
+/* ============================================================
+   LOCAL DUO  (mode "b": a second, independent wanderer on-screen)
+   The friend is a full second simulation with its own RNG, so it
+   diverges on its own. It runs silently (offline=true) and a small
+   cosmetic layer animates it. Real remote co-op ("a") comes later.
+   ============================================================ */
+let duo=false, F=null, friendX=70, fPrevAsc=0, fPrevBest=0, fChatter=0;
+const YOU_X=30;
+function placeDuo(cid,sid,tid,wid,xPct){
+  for(const id of [cid,sid,tid,wid]){const el=$(id);if(el)el.style.left=xPct+'%';}
+}
+function startDuo(){
+  duo=true;
+  const keep=S; newGame(); F=S; S=keep;   // F is a fresh, independent game
+  F.started=true;
+  let guard=8; while(F.name===S.name && guard-->0) F.name=pick(NAMES);
+  fPrevAsc=0; fPrevBest=0; fChatter=rnd(2,4);
+  document.querySelectorAll('.duo-only').forEach(el=>el.classList.remove('hidden'));
+  $('creature2').innerHTML=creatureSVG('idle');
+  creatureX=YOU_X;
+  placeDuo('creature','shadow','thought','wtag',YOU_X);
+  placeDuo('creature2','shadow2','thought2','wtag2',friendX);
+  bubble('thought2','Hello there!');
+  S.speed=1; buildSpeed();          // co-op = one shared speed
+}
+function duoTick(dt){
+  const keep=S; S=F;
+  let rem=dt; while(rem>0){const st=Math.min(rem,0.5); tickCore(st,true); rem-=st;}
+  S=keep;
+}
+function friendCosmetic(real){
+  if(!F)return;
+  fChatter-=real;
+  if(fChatter<=0){fChatter=rnd(5,10); if(F.action!=='craft') bubble('thought2', pick(THOUGHTS.idle));}
+  const bi=rarIdx(F.stats.bestRar);
+  if(bi>fPrevBest){ if(bi>=3){celebrateAt(F.stats.bestRar,friendX,'creature2'); bubble('thought2', F.stats.bestRar+'! ✦');
+      friendLog(`found ${rarSpan(F.stats.bestRar)} gear!`, F.stats.bestRar, bestFriendGear()); } fPrevBest=bi; }
+  if(F.ascensions>fPrevAsc){ celebrateAt('Legendary',friendX,'creature2'); bubble('thought2','Ascending…');
+      friendLog(`ascended to World ${F.world}`, 'Legendary'); fPrevAsc=F.ascensions; }
+}
+// friend's events show up in YOUR recent-events feed (called with S = primary)
+function bestFriendGear(){ let best=null,bi=-1; for(const sl in F.gear){const g=F.gear[sl]; if(g&&(g.rarI||0)>bi){bi=g.rarI||0;best=g;}} return best; }
+function friendLog(text,rar,gear){
+  S.log.unshift({t:S.runTime,x:`<b style="color:#7fd8e6">${F.name}</b> ${text}`,r:rar,g:gear||null,who:gear?F.name:null});
+  if(S.log.length>60)S.log.pop();
+  logDirty=true;
+}
+function duoRender(){
+  if(!F)return;
+  $('wtag').innerHTML=`<b>${S.name}</b> · you<br><span class="ww">World ${S.world} · ${fmt(coinIncome())}/s</span>`;
+  const keep=S; S=F; const finc=coinIncome(); S=keep;
+  $('wtag2').innerHTML=`<b>${F.name}</b> · friend<br><span class="ww">World ${F.world} · ${fmt(finc)}/s</span>`;
+}
+
+/* ============================================================
+   NETWORK — P7a transport (raw WebSocket → Supabase Realtime)
+   A tiny hand-rolled Phoenix-channel client so co-op needs no SDK
+   and the game stays a single self-contained file. Dormant until
+   something (the self-test, or later join-by-code) opens a channel;
+   solo + local duo never touch the network.
+   ============================================================ */
+const NET = {
+  // Flip the Switch — its OWN Supabase project (separate from any other).
+  url: 'https://sclmvswoqebrwowerorh.supabase.co',
+  // Realtime authenticates with the JWT "anon" key (publishable keys aren't
+  // JWTs). This key is meant to live in public client code — access is guarded
+  // by Row Level Security; with no tables + public channels there is nothing to
+  // expose here anyway.
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjbG12c3dvcWVicndvd2Vyb3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjg1NzcsImV4cCI6MjA5ODYwNDU3N30.Z0xWMAFzZohW1-TEagQGGES5P-w4U8NnNEDjVvsAogA',
+};
+function netWsURL(){
+  const base = (NET.url||'').replace(/^http/,'ws');               // https→wss, http→ws
+  return base + '/realtime/v1/websocket?apikey=' + encodeURIComponent(NET.key) + '&vsn=1.0.0';
+}
+// presence payloads arrive as { key:{ metas:[ {phx_ref,...meta} ] } }
+function flattenPresence(state){
+  const out={};
+  for(const k in state){ const m=state[k]&&state[k].metas; if(m&&m.length) out[k]=m[m.length-1]; }
+  return out;
+}
+function applyPresenceDiff(pres, diff){
+  if(diff&&diff.joins) for(const k in diff.joins){ const m=diff.joins[k].metas; if(m&&m.length) pres[k]=m[m.length-1]; }
+  if(diff&&diff.leaves) for(const k in diff.leaves){ delete pres[k]; }
+}
+
+const RT = {
+  ws:null, status:'idle', ref:0, hbTimer:null,
+  channels:{}, onStatus:null,
+  reconnect:false, backoff:1000, backoffMax:15000,
+
+  nextRef(){ return String(++this.ref); },
+  _wsCtor(){ return (typeof WebSocket!=='undefined') ? WebSocket
+           : (typeof globalThis!=='undefined' && globalThis.WebSocket) ? globalThis.WebSocket : null; },
+  _setStatus(s,detail){ this.status=s; if(typeof this.onStatus==='function'){ try{ this.onStatus(s,detail); }catch(e){} } },
+  _chanForTopic(topic){ for(const n in this.channels){ if(this.channels[n].topic===topic) return this.channels[n]; } return null; },
+
+  connect(){
+    if(this.ws && (this.status==='connecting'||this.status==='open')) return;
+    const WSImpl=this._wsCtor();
+    if(!WSImpl){ this._setStatus('error','no WebSocket in this environment'); return; }
+    this.reconnect=true; this._setStatus('connecting');
+    let sock; try{ sock=new WSImpl(netWsURL()); }
+    catch(e){ this._setStatus('error',String(e&&e.message||e)); this._scheduleReconnect(); return; }
+    this.ws=sock;
+    sock.onopen=()=>{ this._setStatus('open'); this.backoff=1000; this._startHeartbeat();
+      for(const n in this.channels){ this._sendJoin(this.channels[n]); } };
+    sock.onmessage=(ev)=>{ let m; try{ m=JSON.parse(ev.data); }catch(e){ return; } this._onMessage(m); };
+    sock.onerror=()=>{ this._setStatus('error','socket error'); };
+    sock.onclose=()=>{ this._stopHeartbeat(); if(this.status!=='idle') this._setStatus('closed');
+      for(const n in this.channels){ this.channels[n].joined=false; } this._scheduleReconnect(); };
+  },
+  disconnect(){ this.reconnect=false; this._stopHeartbeat();
+    try{ if(this.ws) this.ws.close(); }catch(e){} this.ws=null; this.channels={}; this._setStatus('idle'); },
+
+  _startHeartbeat(){ this._stopHeartbeat();
+    this.hbTimer=setInterval(()=>{ this._send({topic:'phoenix',event:'heartbeat',payload:{},ref:this.nextRef()}); }, 25000); },
+  _stopHeartbeat(){ if(this.hbTimer){ clearInterval(this.hbTimer); this.hbTimer=null; } },
+  _scheduleReconnect(){ if(!this.reconnect) return; const wait=this.backoff;
+    this.backoff=Math.min(this.backoff*2,this.backoffMax); setTimeout(()=>{ if(this.reconnect) this.connect(); }, wait); },
+
+  _send(msg){ try{ if(this.ws && this.status==='open'){ this.ws.send(JSON.stringify(msg)); return true; } }catch(e){} return false; },
+
+  // open (or fetch) a channel; opts.broadcastSelf echoes your own broadcasts back (used by the self-test)
+  channel(name, opts){
+    if(this.channels[name]) return this.channels[name];
+    const ch={
+      name, topic:'realtime:'+name, opts:opts||{}, joined:false, joinRef:null,
+      handlers:{}, presence:{}, onPresence:null,
+      on(ev,fn){ (this.handlers[ev]||(this.handlers[ev]=[])).push(fn); return this; },
+      send(ev,payload){ return RT._sendBroadcast(this,ev,payload); },
+      track(meta){ return RT._sendPresenceTrack(this,meta); },
+      leave(){ return RT._leave(this); },
+    };
+    this.channels[name]=ch;
+    if(this.status==='open') this._sendJoin(ch); else this.connect();
+    return ch;
+  },
+  _sendJoin(ch){ ch.joinRef=this.nextRef();
+    this._send({ topic:ch.topic, event:'phx_join', ref:ch.joinRef, payload:{
+      config:{ broadcast:{ self:!!(ch.opts&&ch.opts.broadcastSelf), ack:false }, presence:{ key:'' }, private:false },
+      access_token: NET.key } }); },
+  _leave(ch){ if(this.channels[ch.name]){ this._send({topic:ch.topic,event:'phx_leave',ref:this.nextRef(),payload:{}}); delete this.channels[ch.name]; } },
+  _sendBroadcast(ch,ev,payload){ return this._send({ topic:ch.topic, event:'broadcast', ref:this.nextRef(),
+      payload:{ type:'broadcast', event:ev, payload:payload } }); },
+  _sendPresenceTrack(ch,meta){ return this._send({ topic:ch.topic, event:'presence', ref:this.nextRef(),
+      payload:{ type:'presence', event:'track', payload:meta } }); },
+
+  _onMessage(m){
+    const chan = m.topic ? this._chanForTopic(m.topic) : null;
+    switch(m.event){
+      case 'phx_reply':
+        if(chan && m.ref===chan.joinRef){ const ok=m.payload&&m.payload.status==='ok'; chan.joined=ok;
+          this._emit(chan, ok?'_joined':'_joinerror', m.payload); }
+        break;
+      case 'broadcast':
+        if(chan) this._emit(chan, m.payload&&m.payload.event, m.payload&&m.payload.payload);
+        break;
+      case 'presence_state':
+        if(chan){ chan.presence=flattenPresence(m.payload||{}); this._presenceChanged(chan); }
+        break;
+      case 'presence_diff':
+        if(chan){ applyPresenceDiff(chan.presence, m.payload||{}); this._presenceChanged(chan); }
+        break;
+      case 'phx_error': if(chan){ chan.joined=false; this._emit(chan,'_joinerror',m.payload); } break;
+      case 'phx_close': if(chan){ chan.joined=false; } break;
+    }
+  },
+  _presenceChanged(chan){ if(chan.onPresence){ try{ chan.onPresence(chan.presence); }catch(e){} } this._emit(chan,'_presence',chan.presence); },
+  _emit(chan,ev,data){ const hs=ev&&chan.handlers[ev]; if(!hs) return; for(const fn of hs){ try{ fn(data); }catch(e){} } },
+};
+
+/* Self-test — proves the whole pipe end to end against the real project:
+   connect → join a scratch room (auth ok) → presence round-trip → broadcast echo.
+   Visible in the Find-friends panel so the user can confirm in-browser. */
+let netTestBusy=false;
+function setNetTestLine(text, cls){
+  const el=$('netTestStatus'); if(!el) return;
+  el.className='fp-net-status'+(cls?(' '+cls):''); el.textContent=text;
+}
+function netSelfTest(){
+  if(netTestBusy) return; netTestBusy=true;
+  const btn=$('netTestBtn'); if(btn) btn.disabled=true;
+  setNetTestLine('Connecting to the server…','work');
+  let done=false, ch=null;
+  const finish=(ok,msg)=>{ if(done) return; done=true; clearTimeout(to);
+    setNetTestLine((ok?'✓ ':'✗ ')+msg, ok?'ok':'err');
+    try{ if(ch) ch.leave(); }catch(e){}
+    RT.onStatus=null; netTestBusy=false; if(btn) btn.disabled=false; };
+  const to=setTimeout(()=>finish(false,'Timed out. Check your internet, or the server URL/key.'), 10000);
+  RT.onStatus=(s,d)=>{ if(s==='error'&&!done) setNetTestLine('Trouble reaching the server'+(d?(' ('+d+')'):'')+'…','work'); };
+  let gotJoin=false, gotPres=false, gotEcho=false;
+  const check=()=>{ if(gotJoin&&gotPres&&gotEcho) finish(true,'Connected to your Supabase — the pipes work!'); };
+  try{
+    ch=RT.channel('selftest-'+Math.random().toString(36).slice(2,8), {broadcastSelf:true});
+    ch.on('_joined', ()=>{ gotJoin=true; setNetTestLine('Joined a test room ✓ — saying hello…','work');
+      ch.track({hello:Date.now()}); ch.send('ping',{t:Date.now()}); check(); });
+    ch.on('_joinerror', ()=>finish(false,'The server refused the room — double-check the anon key.'));
+    ch.on('_presence', ()=>{ gotPres=true; check(); });
+    ch.on('ping', ()=>{ gotEcho=true; check(); });
+  }catch(e){ finish(false,'Could not start: '+(e&&e.message||e)); }
+}
+// expose a small debug/test handle (also lets headless tests drive the transport)
+try{ if(typeof window!=='undefined'){ window.__net={ RT, NET, netSelfTest, flattenPresence, applyPresenceDiff }; } }catch(e){}
+
+/* ============================================================
+   NETWORK — P7b remote duo (join by code)
+   Two real players in one room (channel `duo:<CODE>`). Nobody
+   simulates the friend: each side streams a compact snapshot of
+   its OWN wanderer ~every 2.5 s; the other side renders it through
+   the existing duo renderer. Finds/ascensions are detected from
+   snapshot deltas; reactions ride their own event. All inbound
+   data is validated/sanitised before it touches the DOM.
+   ============================================================ */
+let netDuo=false, netCh=null, RF=null, netRoom='', netSnapT=0;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function normCode(s){ return String(s||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,'').slice(0,9); }
+function bestOwnGear(){ let best=null,bi=-1; for(const sl in S.gear){ const g=S.gear[sl]; if(g&&(g.rarI||0)>bi){ bi=g.rarI||0; best=g; } } return best; }
+
+// ---- outbound: my wanderer as a small snapshot ----
+function netSnapshot(){
+  const g=bestOwnGear();
+  return { name:S.name, owner:(S.owner||'You'), world:S.world, worldProg:+(S.worldProg||0),
+    asc:S.ascensions, inc:coinIncome(), act:S.action,
+    bestRar:(S.stats&&S.stats.bestRar)||null, gear:g||null, t:Date.now() };
+}
+function netBroadcastSnapshot(){ if(netDuo&&netCh){ try{ netCh.send('snapshot', netSnapshot()); }catch(e){} } }
+
+// ---- inbound validation (never trust the wire) ----
+function validateGear(g){
+  if(!g||typeof g!=='object') return null;
+  const rar=(typeof g.rar==='string'&&rarIdx(g.rar)>=0)?g.rar:null; if(!rar) return null;
+  const slot=(typeof g.slot==='string'&&SLOTS.some(s=>s.id===g.slot))?g.slot:'tool';
+  const num=(v,d,lo,hi)=>{ v=+v; if(!isFinite(v))v=d; return Math.max(lo,Math.min(hi,v)); };
+  const stats={};
+  if(g.stats&&typeof g.stats==='object') for(const k in g.stats){ if(STATS.some(s=>s.id===k)){ const v=+g.stats[k]; if(isFinite(v)) stats[k]=Math.max(-10,Math.min(10,v)); } }
+  const clean={ id:'rg'+Math.random().toString(36).slice(2,7), slot, rar, rarI:num(g.rarI,rarIdx(rar),0,7)|0,
+    lvl:num(g.lvl,1,1,99999)|0, world:num(g.world,1,1,99999)|0,
+    name:esc(String(g.name||'Gear')).slice(0,48), stats, power:num(g.power,0,0,1e15) };
+  if(typeof g.passive==='string'&&PASSIVE_INFO[g.passive]) clean.passive=g.passive;  // only known passives (safe strings)
+  return clean;
+}
+function validateSnapshot(d){
+  const str=(v,n)=>esc(String(v==null?'':v)).slice(0,n);
+  const num=(v)=>{ v=+v; return isFinite(v)?v:0; };
+  let rar=d.bestRar; if(rar!=null&&rarIdx(rar)<0) rar=null;
+  return { name:str(d.name,16)||'friend', owner:str(d.owner,16)||'Friend',
+    world:Math.max(1,Math.min(99999,num(d.world)|0)), worldProg:Math.max(0,Math.min(1,num(d.worldProg))),
+    asc:Math.max(0,Math.min(1e9,num(d.asc)|0)), inc:Math.max(0,num(d.inc)), act:str(d.act,24),
+    bestRar:rar, gear:validateGear(d.gear) };
+}
+
+// ---- reactions over the wire (rebuilt from validated data — never raw SVG) ----
+function reactionToWire(payload){
+  if(payload&&payload.svg){ const rects=[]; const re=/<rect x="(\d+)" y="(\d+)"[^>]*fill="(#[0-9a-fA-F]{3,8})"/g; let m;
+    while((m=re.exec(payload.svg))&&rects.length<160){ rects.push([+m[1],+m[2],m[3]]); } return {r:rects}; }
+  return { e:(typeof payload==='string'?payload:'').slice(0,12) };
+}
+function reactionFromWire(w){
+  if(!w||typeof w!=='object') return null;
+  if(Array.isArray(w.r)){ let rects='';
+    for(const t of w.r.slice(0,160)){ if(!Array.isArray(t))continue;
+      const x=Math.max(0,Math.min(PAINT_N-1,t[0]|0)), y=Math.max(0,Math.min(PAINT_N-1,t[1]|0));
+      const c=(typeof t[2]==='string'&&/^#[0-9a-fA-F]{3,8}$/.test(t[2]))?t[2]:'#f4b64c';
+      rects+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`; }
+    return rects?{svg:`<svg viewBox="0 0 ${PAINT_N} ${PAINT_N}" shape-rendering="crispEdges">${rects}</svg>`}:null; }
+  if(typeof w.e==='string'){ const e=w.e.replace(/[<>&]/g,'').slice(0,12); return e||null; }
+  return null;
+}
+
+// ---- room lifecycle ----
+function startNetDuo(room){
+  room=normCode(room); if(!room) return;
+  netRoom=room;
+  startGame(false);                 // normal solo boot (creature, theme, save)
+  netDuo=true; duo=false;
+  RF={ name:'friend', owner:'Friend', world:1, worldProg:0, ascensions:0, income:0, action:'idle',
+       bestRar:null, bestGear:null, present:false, greeted:false, prevBest:-1, prevAsc:0, lastSeen:0 };
+  netSnapT=1.5;
+  document.querySelectorAll('.duo-only').forEach(el=>el.classList.remove('hidden'));
+  $('creature2').innerHTML=creatureSVG('idle');
+  creatureX=YOU_X;
+  placeDuo('creature','shadow','thought','wtag',YOU_X);
+  placeDuo('creature2','shadow2','thought2','wtag2',friendX);
+  $('wtag').innerHTML=`<b>${esc(S.name)}</b> · you<br><span class="ww">World ${S.world}</span>`;
+  $('wtag2').innerHTML=`<b>waiting…</b> · friend<br><span class="ww">room ${esc(room)}</span>`;
+  bubble('thought2','…');
+  netFriendLog(`Room <b>${esc(room)}</b> open — waiting for a friend to join…`, 'Legendary');
+  joinRoom(room);
+}
+function joinRoom(room){
+  try{
+    netCh=RT.channel('duo:'+room, {});
+    netCh.onPresence=(pres)=>netUpdatePresence(pres);
+    netCh.on('_joined', ()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} netBroadcastSnapshot(); });
+    netCh.on('_joinerror', ()=>netFriendLog('Could not open the room (the server refused). Try again.', null));
+    netCh.on('snapshot', (d)=>netOnSnapshot(d));
+    netCh.on('react', (d)=>netOnReact(d));
+  }catch(e){}
+}
+function leaveNetDuo(){
+  netDuo=false;
+  try{ if(netCh) netCh.leave(); }catch(e){}
+  netCh=null; RF=null; netRoom='';
+}
+function netUpdatePresence(pres){
+  if(!netDuo||!RF) return;
+  const here=Object.keys(pres||{}).length>=2;      // presence includes me → 2 means a friend is in
+  if(here && !RF.present){ RF.present=true; netBroadcastSnapshot(); }
+  else if(!here && RF.present){ RF.present=false; RF.greeted=false;
+    netFriendLog(`${esc(RF.name||'Your friend')} left the room.`, null);
+    bubble('thought2',''); $('wtag2').innerHTML=`<b>friend left</b><br><span class="ww">room ${esc(netRoom)}</span>`; }
+}
+function netOnSnapshot(raw){
+  if(!netDuo||!RF||!raw||typeof raw!=='object') return;
+  const d=validateSnapshot(raw);
+  RF.name=d.name; RF.owner=d.owner; RF.world=d.world; RF.worldProg=d.worldProg;
+  RF.ascensions=d.asc; RF.income=d.inc; RF.action=d.act; RF.bestRar=d.bestRar; RF.bestGear=d.gear;
+  RF.present=true; RF.lastSeen=Date.now();
+  if(!RF.greeted){ RF.greeted=true; bubble('thought2','Hello there!'); }
+  const bi=d.bestRar?rarIdx(d.bestRar):-1;
+  if(RF.prevBest>=0 && bi>RF.prevBest && bi>=3){          // a genuinely new best (skip the initial sync)
+    celebrateAt(d.bestRar, friendX, 'creature2'); bubble('thought2', d.bestRar+'! ✦');
+    netFriendLog(`found ${rarSpan(d.bestRar)} gear!`, d.bestRar, d.gear);
+  }
+  if(bi>=0) RF.prevBest=Math.max(RF.prevBest, bi);
+  if(RF.prevAsc>0 && d.asc>RF.prevAsc){
+    celebrateAt('Legendary', friendX, 'creature2'); bubble('thought2','Ascending…');
+    netFriendLog(`ascended — ${d.asc}× now`, 'Legendary');
+  }
+  RF.prevAsc=Math.max(RF.prevAsc, d.asc);
+  remoteRender();
+}
+function netOnReact(w){
+  if(!netDuo) return;
+  const p=reactionFromWire(w); if(!p) return;
+  try{ floatReaction(p, friendX); }catch(e){}
+}
+function netFriendLog(text,rar,gear){
+  const nm=esc(RF&&RF.name||'Friend');
+  S.log.unshift({ t:S.runTime, x:`<b style="color:#7fd8e6">${nm}</b> ${text}`, r:rar, g:gear||null, who:gear?nm:null });
+  if(S.log.length>60)S.log.pop();
+  logDirty=true;
+}
+function remoteRender(){
+  if(!netDuo||!RF) return;
+  $('wtag').innerHTML=`<b>${esc(S.name)}</b> · you<br><span class="ww">World ${S.world} · ${fmt(coinIncome())}/s</span>`;
+  $('wtag2').innerHTML=`<b>${esc(RF.name||'friend')}</b> · friend<br><span class="ww">World ${RF.world} · ${fmt(RF.income||0)}/s</span>`;
+}
+function netTick(real){
+  if(!netDuo) return;
+  netSnapT-=real;
+  if(netSnapT<=0){ netSnapT=2.5; netBroadcastSnapshot(); }
+}
+try{ if(typeof window!=='undefined'&&window.__net){
+  Object.assign(window.__net, { startNetDuo, joinRoom, leaveNetDuo, netOnSnapshot, netOnReact, netUpdatePresence,
+    validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
+  Object.defineProperties(window.__net, {
+    netDuo:{ get(){ return netDuo; }, configurable:true },
+    RF:{ get(){ return RF; }, configurable:true },
+    netCh:{ get(){ return netCh; }, configurable:true },
+    netRoom:{ get(){ return netRoom; }, configurable:true } });
+} }catch(e){}
+
+/* ============================================================
+   LOOP
+   ============================================================ */
+let last=performance.now(),accReal=0,wanderT=0,renderT=0,chatterT=3;
+function loop(now){
+  try{
+  const real=(now-last)/1000;last=now;
+  if(S.started){
+    const dt=Math.min(real,0.25)*S.speed; // game seconds this frame
+    // sub-step for high speed stability
+    let remaining=dt,step;
+    while(remaining>0){step=Math.min(remaining,0.5);tickCore(step,false);remaining-=step;}
+    // flash timer
+    if(flashT>0){flashT-=real;if(flashT<=0){flashB=null;bldDirty=true;}}
+    // thought decay
+    if(thoughtHold>0){thoughtHold-=real;}
+    // ambient chatter — the little one muses to itself while it walks
+    chatterT-=real;
+    if(chatterT<=0){chatterT=rnd(5,9);
+      if(thoughtHold<=0 && S.action!=='craft' && !S.craft){
+        const cat=(S.action==='save' && chance(0.5))?'save':'idle';
+        setThought(say(cat));
+      }}
+    // wander
+    wanderT-=real;if(wanderT<=0){wander();wanderT=atBase?rnd(1.6,3):rnd(3,6);}
+    // periodic home-base visit (solo) + mining flavour
+    if(!atBase){
+      if(!duo&&!netDuo){ baseVisitT-=real; if(baseVisitT<=0) enterBase(); }
+      if(cnt('crusher')>0){ mineT-=real; if(mineT<=0){ mineSwing(); mineT=rnd(8,15); } }
+    } else {
+      baseStayT-=real; if(baseStayT<=0) leaveBase();
+      baseChatterT-=real; if(baseChatterT<=0){ baseChatterT=rnd(4,7);
+        setThought(pick(['Restocking…','Tinkering at the bench','Checking the crushers…','Sorting shards…','Oiling the gears…','Emptying the sifters…'])); }
+    }
+    // constant forward march — always walking (no scroll while home at base)
+    if(sceneReady){
+      if(!atBase){ sceneScroll += real*SCENE_SPEED; applyScroll(); }
+      const c=$('creature'); if(c) c.classList.add('walking');
+      if(duo||netDuo){const c2=$('creature2'); if(c2) c2.classList.add('walking');}
+    }
+    // local duo: advance the friend's independent sim + its cosmetics
+    if(duo){ duoTick(dt); friendCosmetic(real); }
+    else if(netDuo){ netTick(real); }
+    // building unlock refresh occasionally
+    // render throttle
+    renderT-=real;if(renderT<=0){render();checkAch();if(duo)duoRender();else if(netDuo)remoteRender();renderT=0.12;}
+    // autosave
+    accReal+=real;if(accReal>5){accReal=0;save();}
+  }
+  }catch(err){ /* never let one frame kill the loop */ }
+  requestAnimationFrame(loop);
+}
+
+/* ============================================================
+   SAVE / LOAD
+   ============================================================ */
+const SKEY='flipswitch:save:v1';
+let storageOK=(typeof window!=='undefined'&&window.storage&&window.storage.set);
+let memSave=null;
+async function save(){
+  S.lastReal=Date.now();
+  const data=JSON.stringify(S);
+  try{ if(storageOK){await window.storage.set(SKEY,data,false);} else {memSave=data;localTry(data);} }
+  catch(e){ memSave=data; localTry(data); }
+}
+function localTry(data){try{localStorage.setItem(SKEY,data);}catch(e){}}
+async function load(){
+  let data=null;
+  try{ if(storageOK){const r=await window.storage.get(SKEY,false);data=r&&r.value;} }
+  catch(e){}
+  if(!data){try{data=localStorage.getItem(SKEY);}catch(e){}}
+  if(!data)data=memSave;
+  if(!data)return null;
+  try{return JSON.parse(data);}catch(e){return null;}
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function mountAvatar(){$('topAvatar').innerHTML=`<svg viewBox="0 0 30 30" width="26" height="26">
+  <rect x="6" y="4" width="18" height="14" rx="6" fill="#3a2c1e" stroke="#6b543d"/>
+  <rect x="10" y="8" width="10" height="6" rx="3" fill="#120d08"/>
+  <circle cx="12.5" cy="11" r="1.6" fill="#7fe3d8"/><circle cx="17.5" cy="11" r="1.6" fill="#7fe3d8"/>
+  <rect x="10" y="18" width="10" height="8" rx="3" fill="#3a2c1e" stroke="#6b543d"/></svg>`;}
+
+function startGame(fromLoad,withDuo){
+  $('start').classList.add('gone');
+  setTimeout(()=>{$('start').style.display='none';},800);
+  $('app').classList.add('live');
+  netDuo=false;             // solo / local-duo starts are not networked (startNetDuo re-enables after)
+  S.started=true; atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
+  const on=$('ownerName'); if(on&&on.value.trim()) S.owner=on.value.trim(); if(!S.owner)S.owner='You';
+  $('creature').innerHTML=creatureSVG('idle');
+  applyTheme(S.world,false);
+  applyBubbleVis();
+  setThought(fromLoad?'Back to work!':'Ooh, a switch!',true);
+  log(fromLoad?'Resumed the simulation':'Flipped the switch — off we go!','Legendary');
+  if(withDuo) startDuo();
+  checkAch();save();
+}
+
+async function doReset(){
+  // best-effort clear of the saved game (each wrapped — storage may be sandboxed)
+  try{ if(storageOK) await window.storage.delete(SKEY,false); }catch(e){}
+  try{ localStorage.removeItem(SKEY); }catch(e){}
+  memSave=null;
+  // tear down duo if it was running
+  duo=false; F=null; leaveNetDuo(); setLayoutEdit(false); atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
+  document.querySelectorAll('.duo-only').forEach(el=>el.classList.add('hidden'));
+  // fresh state — started:false makes the loop idle and the start screen return
+  newGame();
+  creatureX=50; curThemeWorld=0; sceneScroll=0;
+  ['creature','creature2','shadow','shadow2','thought','thought2','wtag','wtag2'].forEach(id=>{const el=$(id);if(el)el.style.left='';});
+  const cr=$('creature'); if(cr) cr.classList.remove('walking','hop');
+  // rebuild every panel to the blank state
+  buildStrip();buildSpeed();buildGear();buildBld();buildLog();buildAch();buildStats();
+  bldDirty=gearDirty=permDirty=logDirty=craftDirty=achDirty=true;
+  applyLayout();
+  $('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';
+  // close menus / panels
+  $('menu').classList.remove('show');
+  if($('friendsPanel')){$('friendsPanel').classList.remove('open');$('friendsBtn').textContent='🤝 Find friends ▾';}
+  if(sceneReady)applyScroll();
+  // back to the "flip the switch" screen, switch off
+  $('app').classList.remove('live');
+  $('switch').classList.remove('on');
+  const st=$('start'); if(st){ st.style.display='flex'; void st.offsetWidth; st.classList.remove('gone'); }
+  // persist the reset so a later reload also comes up fresh
+  try{ save(); }catch(e){}
+}
+
+function boot(){
+  applyPalette(currentPalette()||'lantern');
+  buildStrip();mountAvatar();initScene();initLayoutDrag();prepModules();applyLayout();
+  try{wireReactions();}catch(e){}
+  $('switch').onclick=()=>{
+    if(S.started)return;
+    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);
+    setTimeout(()=>startGame(false),420);
+  };
+  // menu
+  $('menuBtn').onclick=()=>$('menu').classList.toggle('show');
+  document.addEventListener('click',e=>{if(!$('menu').contains(e.target)&&e.target!==$('menuBtn'))$('menu').classList.remove('show');});
+  $('mMute').onclick=()=>{S.mute=!S.mute;$('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';};
+  $('mSave').onclick=()=>{save();$('mSave').textContent='💾 Saved!';setTimeout(()=>$('mSave').textContent='💾 Save now',1200);};
+  $('mReset').onclick=()=>{$('menu').classList.remove('show');$('confirmlay').classList.add('show');};
+  $('confirmCancel').onclick=()=>$('confirmlay').classList.remove('show');
+  $('confirmlay').addEventListener('click',e=>{if(e.target.id==='confirmlay')$('confirmlay').classList.remove('show');});
+  $('confirmYes').onclick=()=>{$('confirmlay').classList.remove('show');doReset();};
+  // collapsibles
+  $('offClose').onclick=()=>$('offlay').classList.remove('show');
+  // appearance / settings + leaderboard
+  $('mSettings').onclick=()=>{$('menu').classList.remove('show');openSettings();};
+  $('mLeader').onclick=()=>{$('menu').classList.remove('show');openLeaderboard();};
+  $('mLayout').onclick=()=>{$('menu').classList.remove('show');setLayoutEdit(true);};
+  $('layoutDone').onclick=()=>{setLayoutEdit(false);save();};
+  $('setlay').addEventListener('click',e=>{if(e.target.id==='setlay')closeSettings();});
+  $('lblay').addEventListener('click',e=>{if(e.target.id==='lblay')closeLeaderboard();});
+  // lore reader (read-only story)
+  $('loreBtn').onclick=openLore;
+  $('loreLinkStart').onclick=openLore;
+  $('lorelay').addEventListener('click',e=>{if(e.target.id==='lorelay')closeLore();});
+  // find friends (co-op is a planned feature — see note in panel)
+  const fcode=()=>{const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<8;i++){if(i===4)o+='-';o+=s[Math.floor(Math.random()*s.length)];}return o;};
+  if(!S.myCode) S.myCode=fcode();
+  $('friendCode').textContent=S.myCode;
+  { const nb=$('netTestBtn'); if(nb) nb.onclick=netSelfTest; }
+  { const pl=$('playLiveBtn'); if(pl) pl.onclick=()=>{
+      const room=normCode(($('joinCodeInput')&&$('joinCodeInput').value)||'')||S.myCode;
+      $('friendsPanel').classList.remove('open'); $('friendsBtn').textContent='🤝 Find friends ▾';
+      $('switch').classList.add('on'); beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);
+      setTimeout(()=>startNetDuo(room),420);
+    }; }
+  $('friendsBtn').onclick=()=>{const p=$('friendsPanel');p.classList.toggle('open');
+    $('friendsBtn').textContent=p.classList.contains('open')?'🤝 Find friends ▴':'🤝 Find friends ▾';};
+  $('friendsSolo').onclick=()=>{$('friendsPanel').classList.remove('open');$('friendsBtn').textContent='🤝 Find friends ▾';
+    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);setTimeout(()=>startGame(false),420);};
+  $('friendsDuo').onclick=()=>{$('friendsPanel').classList.remove('open');
+    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);setTimeout(()=>startGame(false,true),420);};
+  // read-only inspector: tap a building or gear slot to see what it does
+  $('blist').addEventListener('click',e=>{const row=e.target.closest('.brow');if(row&&row.dataset.b)inspectBuilding(row.dataset.b);});
+  $('gslots').addEventListener('click',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)inspectGear(s.dataset.slot);});
+  $('resStrip').addEventListener('click',e=>{const s=e.target.closest('.res');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
+  $('resFull').addEventListener('click',e=>{const s=e.target.closest('.now-row');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
+  $('log').addEventListener('click',e=>{const s=e.target.closest('.levent');if(s&&s.dataset.log!=null)inspectLog(+s.dataset.log);});
+  $('inspect').addEventListener('click',e=>{if(e.target.id==='inspect')closeInspect();});
+  buildSpeed();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- go ---------- */
+(async function main(){
+  newGame();
+  mountAvatar();buildStrip();buildSpeed();buildGear();buildBld();buildLog();buildAch();buildStats();
+  const saved=await load();
+  if(saved&&saved.started){
+    S=Object.assign(newGameObj(),saved); // merge to be migration-safe
+    S.mute=saved.mute||false;$('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';
+    S.speed=1;                       // realtime only now (ignore any old saved speed)
+    if(S.palette)applyPalette(S.palette);
+    if($('ownerName')&&S.owner)$('ownerName').value=S.owner;
+    buildSpeed();
+    // offline sim
+    const elapsed=Math.max(0,(Date.now()-(saved.lastReal||Date.now()))/1000);
+    boot();
+    applyLayout();
+    startGame(true);
+    if(elapsed>60){const o=runOffline(elapsed);showOffline(o);bldDirty=gearDirty=logDirty=achDirty=true;}
+    save();
+  }else{
+    boot();
+  }
+})();
+
+// helper to get a fresh default object for safe merge
+function newGameObj(){const tmp=S;newGame();const d=S;S=tmp;return d;}
+</script>
+</body>
+</html>
