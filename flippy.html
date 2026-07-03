@@ -2670,32 +2670,54 @@ function renderLobby(friend){
     : `<div class="lobby-slot"><span class="ls-dot"></span><span class="ls-name" style="color:var(--dim)">waiting for a friend…</span><span class="ls-tag">—</span></div>`;
   el.innerHTML=you+fr;
 }
+let netHelloT=null, netFriendName=null;
+function netSendHello(){ if(netCh){ try{ netCh.send('hello',{name:S.name, owner:(S.owner||'You')}); }catch(e){} } }
+function startLobbyPing(){ stopLobbyPing(); netSendHello(); netHelloT=setInterval(()=>{ if(netPhase==='lobby'&&!netStarted) netSendHello(); else stopLobbyPing(); }, 1000); }
+function stopLobbyPing(){ if(netHelloT){ clearInterval(netHelloT); netHelloT=null; } }
+function friendJoinedStart(name){
+  if(netStarted) return; netStarted=true; netFriendName=name||netFriendName;
+  renderLobby({name:netFriendName||'Friend'}); setLobbyStatus('Friend joined! Starting…', true);
+  stopLobbyPing(); setTimeout(()=>enterNetGame(), 700);
+}
 function netConnect(room){
   try{
     netCh=RT.channel('duo:'+room, {});
     netCh.onPresence=(pres)=>netPresence(pres);
-    netCh.on('_joined', ()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} if(netPhase==='playing') netBroadcastSnapshot(); });
-    netCh.on('_joinerror', ()=>{ setLobbyStatus('Could not reach the room — check your connection.', false); netFriendLog('Could not open the room (server refused).', null); });
+    netCh.on('_joined', ()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){}
+      netSendHello(); if(netPhase==='playing') netBroadcastSnapshot(); });
+    netCh.on('_joinerror', ()=>{ setLobbyStatus('Could not reach the room — check your connection.', false); });
+    netCh.on('hello', (d)=>netOnHello(d));
     netCh.on('snapshot', (d)=>{ if(netPhase==='playing') netOnSnapshot(d); });
     netCh.on('react', (d)=>{ if(netPhase==='playing') netOnReact(d); });
   }catch(e){}
 }
 function openLobby(room){
   room=normCode(room); if(!room) return;
-  netRoom=room; netPhase='lobby'; netStarted=false;
+  netRoom=room; netPhase='lobby'; netStarted=false; netFriendName=null;
   const lc=$('lobbyCode'); if(lc) lc.textContent=room;
   renderLobby(null); setLobbyStatus('Connecting…');
   $('lobbylay').classList.add('show');
   netConnect(room);
+  startLobbyPing();                 // keep announcing ourselves until both are in
+}
+// "hello" = the reliable discovery signal (broadcast), independent of presence ordering
+function netOnHello(d){
+  const name=(d&&typeof d.name==='string')?esc(String(d.name)).slice(0,16):'Friend';
+  netFriendName=name;
+  if(netPhase==='lobby'){
+    friendJoinedStart(name);        // a friend is here → both auto-start
+  } else if(netPhase==='playing' && RF){
+    if(!RF.present){ RF.present=true; netSendHello(); netBroadcastSnapshot(); }  // help a (re)joining friend find us, once
+    else { netBroadcastSnapshot(); }                                            // already synced → just resend state (no hello, no ping-pong)
+  }
 }
 function netPresence(pres){
   const list=Object.values(pres||{}).filter(Boolean);
   const count=list.length;
   const friend=list.find(m=>m&&m.name&&m.name!==S.name) || (count>=2?list[list.length-1]:null);
   if(netPhase==='lobby'){
-    renderLobby(count>=2?friend:null);
-    if(count>=2 && !netStarted){ netStarted=true; setLobbyStatus('Friend joined! Starting…', true); setTimeout(()=>enterNetGame(),900); }
-    else if(count<2){ setLobbyStatus('Waiting for a friend to join…'); }
+    if(count>=2){ friendJoinedStart(friend&&friend.name); }   // presence is a secondary trigger; hello is primary
+    else if(!netStarted){ renderLobby(null); setLobbyStatus('Waiting for a friend to join…'); }
   } else if(netPhase==='playing' && RF){
     const here=count>=2;
     if(here && !RF.present){ RF.present=true; netBroadcastSnapshot(); }
@@ -2718,7 +2740,11 @@ function netEnterGameWorld(){
   $('wtag').innerHTML=`<b>${esc(S.name)}</b> · you<br><span class="ww">World ${S.world}</span>`;
   $('wtag2').innerHTML=`<b>friend</b> · friend<br><span class="ww">syncing…</span>`;
   bubble('thought2','Hello there!');
+  stopLobbyPing();
+  netSendHello();                   // announce we're in-game so a lobby friend finds us
   netBroadcastSnapshot();
+  setTimeout(()=>{ if(netDuo) netBroadcastSnapshot(); }, 700);    // a couple of extra sends so the
+  setTimeout(()=>{ if(netDuo) netBroadcastSnapshot(); }, 1800);   // friend's screen fills in fast
 }
 function enterNetGame(){
   if(netPhase==='playing') return;
@@ -2734,7 +2760,8 @@ function startNetDuo(room){
   netEnterGameWorld();
 }
 function leaveNetDuo(){
-  netDuo=false; netPhase='off'; netStarted=false;
+  netDuo=false; netPhase='off'; netStarted=false; netFriendName=null;
+  stopLobbyPing();
   try{ if(netCh) netCh.leave(); }catch(e){}
   netCh=null; RF=null; netRoom='';
   const ll=$('lobbylay'); if(ll) ll.classList.remove('show');
@@ -2781,7 +2808,7 @@ function netTick(real){
   if(netSnapT<=0){ netSnapT=2.5; netBroadcastSnapshot(); }
 }
 try{ if(typeof window!=='undefined'&&window.__net){
-  Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence,
+  Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence, netOnHello, netSendHello,
     validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
   Object.defineProperties(window.__net, {
     netDuo:{ get(){ return netDuo; }, configurable:true },
