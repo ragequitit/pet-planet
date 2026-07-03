@@ -179,8 +179,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   background:linear-gradient(90deg,var(--honey),var(--honey2));transition:width .4s;box-shadow:0 0 12px rgba(244,182,76,.5)}
 .pbar.asc > span{background:linear-gradient(90deg,#b483e6,#ff8fd0)}
 .floor{position:absolute;left:0;right:0;bottom:0;height:74px;
-  background:linear-gradient(180deg,transparent,rgba(0,0,0,.35));
-  border-top:1px solid rgba(244,182,76,.12)}
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.35))}
 .creature{position:absolute;bottom:56px;left:50%;width:120px;height:130px;
   transform:translateX(-50%);transition:left 2.4s cubic-bezier(.4,0,.3,1);z-index:2;will-change:transform}
 .creature .body{animation:breathe 3.4s ease-in-out infinite;transform-origin:50% 100%}
@@ -207,6 +206,61 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   border:1px solid rgba(244,182,76,.4);background:rgba(28,20,12,.82);color:#fff;font-size:19px;cursor:pointer;
   box-shadow:0 4px 14px rgba(0,0,0,.45);transition:transform .12s ease,background .12s ease}
 .react-launch:hover{transform:scale(1.08);background:rgba(40,30,18,.92)}
+/* world chat launch + badge */
+.chat-launch{position:absolute;right:10px;bottom:56px;z-index:8;width:38px;height:38px;border-radius:50%;
+  border:1px solid #5f9a95;background:rgba(28,20,12,.82);color:#fff;font-size:18px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.45);transition:transform .12s ease,background .12s ease}
+.chat-launch:hover{transform:scale(1.08);background:rgba(40,30,18,.92)}
+.chat-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:9px;
+  background:#e0574f;color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;line-height:16px;text-align:center}
+/* chat drawer */
+#chatlay{position:fixed;inset:0;z-index:72;background:rgba(10,7,4,.6);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}
+#chatlay.show{display:flex}
+.chatbox{width:100%;max-width:520px;height:min(72vh,560px);display:flex;flex-direction:column;
+  background:linear-gradient(180deg,#1b140d,#140e08);border:1px solid var(--line2);border-bottom:none;
+  border-radius:18px 18px 0 0;box-shadow:0 -12px 44px rgba(0,0,0,.5);overflow:hidden}
+.chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--disp);font-size:15px;color:var(--cream)}
+.chat-x{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.chat-x:hover{color:var(--cream);background:var(--bg2)}
+.chat-feed{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.cf-empty{color:var(--muted);text-align:center;margin:auto;font-size:13px}
+.cf-msg{display:flex;align-items:baseline;gap:7px;font-size:13.5px;line-height:1.4}
+.cf-msg .cf-name{font-family:var(--disp);font-weight:600;color:#7fd8e6;flex:0 0 auto}
+.cf-msg.me .cf-name{color:var(--honey2)}
+.cf-msg .cf-text{color:var(--cream);word-break:break-word;flex:1}
+.cf-report{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;opacity:.4;padding:0 2px;flex:0 0 auto}
+.cf-report:hover{opacity:1;color:#e0574f}
+.cf-evt{font-size:12.5px;color:var(--dim);font-style:italic;padding:2px 0;border-left:2px solid var(--line2);padding-left:9px}
+.cf-evt b{color:#9fe0dc;font-style:normal;font-weight:600}
+.cf-note{font-size:12px;color:var(--honey2);text-align:center;background:rgba(244,182,76,.08);border-radius:9px;padding:5px 10px}
+.chat-bar{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);background:var(--panel)}
+.chat-input{flex:1;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--cream);font-family:inherit;font-size:14px}
+.chat-input:focus{border-color:#5f9a95;outline:none}
+.chat-send{background:linear-gradient(180deg,#2f4d4b,#233b39);border:1px solid #5f9a95;border-radius:11px;color:#d6f4f2;font-family:var(--disp);font-weight:600;padding:0 18px;cursor:pointer}
+.chat-send:hover{border-color:#7fd8e6}
+.chat-gate{display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px;border-top:1px solid var(--line);background:var(--panel);text-align:center}
+.cg-title{font-family:var(--disp);font-weight:600;font-size:14px;color:var(--cream)}
+.cg-body{font-size:12px;color:var(--muted);max-width:340px}
+.cg-btn{margin-top:4px;background:linear-gradient(180deg,var(--honey),var(--honey2));border:none;border-radius:12px;color:#1a130c;font-family:var(--disp);font-weight:700;padding:11px 20px;cursor:pointer}
+.cg-btn:hover{filter:brightness(1.06)}
+/* premium modal */
+#premlay{position:fixed;inset:0;z-index:80;background:rgba(10,7,4,.78);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:20px}
+#premlay.show{display:flex}
+.prembox{width:100%;max-width:360px;background:linear-gradient(180deg,#241a12,#17100a);border:1px solid var(--honey);border-radius:20px;
+  padding:26px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.prem-emoji{font-size:34px}
+.prembox h2{font-family:var(--disp);font-size:24px;color:var(--honey2);margin:6px 0 4px}
+.prem-sub{font-size:13px;color:var(--muted);line-height:1.5}
+.prem-price{margin:16px 0 6px;display:flex;align-items:baseline;justify-content:center;gap:4px}
+.pp-amt{font-family:var(--disp);font-weight:700;font-size:38px;color:var(--cream)}
+.pp-per{font-size:14px;color:var(--muted)}
+.prem-perks{list-style:none;padding:0;margin:14px 0;text-align:left;display:flex;flex-direction:column;gap:9px}
+.prem-perks li{font-size:13px;color:var(--cream)}
+.prem-go{width:100%;background:linear-gradient(180deg,var(--honey),var(--honey2));border:none;border-radius:13px;color:#1a130c;font-family:var(--disp);font-weight:700;font-size:15px;padding:13px;cursor:pointer}
+.prem-go:hover{filter:brightness(1.06)}
+.prem-cancel{width:100%;margin-top:9px;background:none;border:none;color:var(--muted);font-family:var(--disp);font-weight:600;padding:8px;cursor:pointer}
+.prem-cancel:hover{color:var(--cream)}
+.prem-note{font-size:10.5px;color:var(--dim);line-height:1.5;margin-top:14px}
 .react-bar{position:absolute;right:10px;bottom:56px;z-index:8;max-width:min(90%,320px);display:none;flex-wrap:wrap;gap:5px;
   padding:9px;border-radius:14px;background:rgba(20,14,9,.94);border:1px solid rgba(244,182,76,.28);
   box-shadow:0 10px 30px rgba(0,0,0,.55)}
@@ -330,6 +384,11 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .comm-count{position:absolute;top:10px;right:12px;z-index:5;font-family:var(--mono);font-size:11px;font-weight:600;
   color:#bfeef0;background:rgba(28,20,13,.82);border:1px solid #5f9a95;border-radius:9px;padding:4px 10px;pointer-events:none}
 .comm-count:empty{display:none}
+.net-status{position:absolute;top:10px;left:12px;z-index:5;font-family:var(--mono);font-size:10.5px;font-weight:600;
+  border-radius:8px;padding:3px 9px;pointer-events:none;background:rgba(28,20,13,.82);border:1px solid var(--line)}
+.net-status:empty{display:none}
+.net-status.live{color:#86c06a;border-color:#3e5e34}
+.net-status.warn{color:var(--honey2);border-color:#7a5a1e}
 
 /* NOW panel */
 .now-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0}
@@ -401,13 +460,13 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .collapsible.closed .body{display:none}
 .collapsible.closed .chev{transform:rotate(-90deg)}
 
-/* toast (achievement unlock) */
-#toasts{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+/* toast (achievement unlock) — queued, one at a time, tucked top-right */
+#toasts{position:fixed;top:56px;right:12px;left:auto;transform:none;z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
 .toast{background:linear-gradient(180deg,#33281c,#241a12);border:1px solid var(--honey);border-radius:12px;
   padding:9px 15px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 40px rgba(0,0,0,.5);
-  animation:toastIn .4s ease, toastOut .4s ease 3.6s forwards;max-width:90vw}
-@keyframes toastIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes toastOut{to{opacity:0;transform:translateY(-16px)}}
+  animation:toastIn .3s ease, toastOut .3s ease 2.3s forwards;max-width:min(300px,80vw)}
+@keyframes toastIn{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(24px)}}
 .toast .ti{font-size:22px}
 .toast .tx b{color:var(--honey2);font-family:var(--disp);font-size:13px}
 .toast .tx div{font-size:11px;color:var(--muted)}
@@ -431,6 +490,11 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   background:none;border:none;border-bottom:1px dashed var(--line2);padding:3px 3px 4px;transition:.15s}
 .lore-link:hover{color:var(--honey2);border-color:var(--honey)}
 /* three-button entry (start screen) */
+.chooser{display:none;flex-direction:column;align-items:center;width:100%}
+.chooser.revealed{display:flex;animation:chooserIn .45s ease}
+@keyframes chooserIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.chooser-title{font-family:var(--disp);font-weight:600;font-size:14px;color:var(--honey2);margin:20px 0 2px;text-align:center}
+.chooser .entry{margin-top:12px}
 .entry{margin-top:34px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px}
 .entry-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:15px 16px;border-radius:15px;cursor:pointer;
   background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);transition:.15s}
@@ -448,6 +512,12 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .3s ease}
 .friend-sub.open{max-height:560px;opacity:1;margin-top:14px}
 .friend-sub .fp-duo{margin-top:2px}
+.mini-link{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:1px;color:var(--dim);
+  background:none;border:none;cursor:pointer;transition:.15s}
+.mini-link:hover{color:#7fd8e6}
+.world-sub{width:100%;max-width:360px;text-align:left;max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .35s ease,opacity .3s ease}
+.world-sub.open{max-height:260px;opacity:1;margin-top:10px}
 .friends-wrap{margin-top:20px;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center}
 .friends-btn{font-family:var(--mono);font-size:12px;letter-spacing:1px;color:var(--cream);background:var(--bg2);
   border:1px solid var(--line2);border-radius:11px;padding:9px 16px;transition:.15s}
@@ -658,6 +728,12 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   <div class="brand">Flip the<br>Switch</div>
   <p class="tag">You never play. <b>You watch.</b> One flip wakes a tiny tinkerer who mines, loots, crafts, upgrades and ascends through endless worlds — completely on its own. Every world writes its own story.</p>
   <input id="ownerName" class="owner-input" type="text" maxlength="16" placeholder="your name (for the leaderboard)" autocomplete="off">
+  <div class="switch-wrap">
+    <div class="switch" id="switch"><div class="knob"></div></div>
+    <div class="hint" id="switchHint">tap to <b>flip the switch</b></div>
+  </div>
+  <div class="chooser" id="chooser">
+    <div class="chooser-title">The light is on — how do you want to watch?</div>
   <div class="entry">
     <button class="entry-btn pick-solo" id="btnSolo"><span class="eb-ic">▶</span><span class="eb-tx"><b>Solo</b><small>Watch your own wanderer</small></span></button>
     <button class="entry-btn pick-friend" id="btnFriend"><span class="eb-ic">🤝</span><span class="eb-tx"><b>With a friend</b><small>Play live by sharing a code</small></span></button>
@@ -676,6 +752,13 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
       <button class="fp-net-btn" id="netTestBtn">🔌 Test connection to the server</button>
       <div class="fp-net-status" id="netTestStatus">Not tested yet — tap to check the link.</div>
     </div>
+  </div>
+  <button class="mini-link" id="namedWorldLink">or join a named world ▾</button>
+  <div class="world-sub" id="worldSub">
+    <input id="worldNameInput" class="fp-input" type="text" maxlength="20" placeholder="a world name (e.g. cozy-crew)" autocomplete="off" spellcheck="false">
+    <button class="fp-live-btn" id="joinNamedBtn">🌍 Join this named world</button>
+    <p class="fp-live-hint">Everyone who types the <b>same</b> world name lands together — your own private community. The big <b>Community</b> button above is the open world where anyone can show up.</p>
+  </div>
   </div>
   <button class="lore-link" id="loreLinkStart">read the story ▸</button>
   </div>
@@ -727,12 +810,14 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
           <div class="creature friend duo-only hidden" id="creature2"></div>
           <div class="comm-layer" id="commLayer"></div>
           <div class="comm-count" id="commCount"></div>
+          <div class="net-status" id="netStatus"></div>
           <div class="wtag duo-only hidden" id="wtag"></div>
           <div class="wtag friend duo-only hidden" id="wtag2"></div>
           <div class="thought" id="thought">Waking up…</div>
           <div class="thought duo-only hidden" id="thought2"></div>
           <div class="worldflash" id="worldflash"></div>
           <button class="react-launch" id="reactLaunch" title="Send a reaction">😀</button>
+          <button class="chat-launch" id="chatLaunch" title="World chat" style="display:none">💬<span class="chat-badge" id="chatBadge" style="display:none"></span></button>
           <div class="react-bar" id="reactBar"></div>
         </div>
       </div>
@@ -856,6 +941,37 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 
 <div id="setlay"><div class="setbox" id="setBox"></div></div>
 <div id="lblay"><div class="setbox" id="lbBox"></div></div>
+
+<!-- world chat (community) -->
+<div id="chatlay"><div class="chatbox">
+  <div class="chat-head"><b>🌍 World chat</b><button class="chat-x" id="chatClose">✕</button></div>
+  <div class="chat-feed" id="chatFeed"></div>
+  <div class="chat-gate" id="chatGate">
+    <div class="cg-title">💬 Chatting is a premium feature</div>
+    <p class="cg-body">Reading the world feed is free. To <b>type</b> and talk with everyone here, unlock chat.</p>
+    <button class="cg-btn" id="chatGoPrem">Unlock chat — €25/mo</button>
+  </div>
+  <div class="chat-bar" id="chatBar" style="display:none">
+    <input id="chatInput" class="chat-input" type="text" maxlength="180" placeholder="Say something kind…" autocomplete="off">
+    <button class="chat-send" id="chatSend">Send</button>
+  </div>
+</div></div>
+
+<!-- premium modal -->
+<div id="premlay"><div class="prembox">
+  <div class="prem-emoji">✨</div>
+  <h2>Go Premium</h2>
+  <p class="prem-sub">Unlock <b>world chat</b> — talk live with everyone in your community world.</p>
+  <div class="prem-price"><span class="pp-amt">€25</span><span class="pp-per">/ month</span></div>
+  <ul class="prem-perks">
+    <li>💬 Type in world chat</li>
+    <li>🌍 See everyone's finds, crafts & ascensions live</li>
+    <li>🛡️ Report &amp; mute tools to keep it friendly</li>
+  </ul>
+  <button class="prem-go" id="premGo">Start subscription</button>
+  <button class="prem-cancel" id="premCancel">Maybe later</button>
+  <p class="prem-note">Preview build: unlocks locally on this device. Live billing &amp; account sync arrive when the game is hosted with a server.</p>
+</div></div>
 
 <script>
 "use strict";
@@ -1089,7 +1205,7 @@ function freshStats(){return{gearFound:0,recycled:0,crafts:0,perfect:0,failed:0,
   buildingsBought:0,bestRar:'Common',bestCoins:0,highIncome:0,fastAsc:0,longestRun:0,coinsAll:0,resAll:0};}
 function newGame(){
   S={
-    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, myId:null, collapsed:{ach:true}, grid:null,
+    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, stageWide:false, rubber:true, premium:false, collapsed:{ach:true}, grid:null,
     gameTime:0, runTime:0, world:1, worldProg:0,
     res:{coins:20,energy:0,shards:0,fragments:0,essence:0,sparks:0},
     buildings:{}, gear:{tool:null,tool2:null,core:null,frame:null,optics:null,thrusters:null,antenna:null,heatsink:null,powercell:null,stabilizer:null},
@@ -1109,9 +1225,11 @@ function gearSum(stat){let s=0;for(const sl in S.gear){const g=S.gear[sl];if(g&&
 function effSum(key){let s=0;for(const b of BLD){if(b.effect&&b.effect[key]!==undefined)s+=b.effect[key]*cnt(b.id);}return s;}
 function passiveSum(stat){let s=0;for(const sl in S.gear){const g=S.gear[sl];if(g&&g.passive){const info=PASSIVE_INFO[g.passive];if(info&&info.b[stat])s+=info.b[stat];}}return s;}
 
+/* rubber-band catch-up: whoever's behind the room gets a gentle production boost (co-op only) */
+let rubberMul=1, rubberT=0;
 function M(){
   const P=S.perm;
-  const prod=(1+P.prod*ECON.permProd)*Math.pow(ECON.nexusMul,cnt('nexus'))*(1+gearSum('income')+passiveSum('income'))*Math.pow(ECON.ascG,S.ascensions);
+  const prod=(1+P.prod*ECON.permProd)*Math.pow(ECON.nexusMul,cnt('nexus'))*(1+gearSum('income')+passiveSum('income'))*Math.pow(ECON.ascG,S.ascensions)*rubberMul;
   const luck=1+P.fortune*0.12+effSum('luck')+gearSum('luck')+passiveSum('luck');
   const drop=1+P.magnet*0.12+effSum('drop')+gearSum('drop')+passiveSum('drop');
   const craftS=1+effSum('craftS')+gearSum('craftS')+passiveSum('craftS');
@@ -1231,6 +1349,7 @@ function doLoot(offline){
     S.res.shards+=Math.max(1,Math.round(g.power*0.5));S.stats.recycled++;
     if(ri_>=4){log(`Found ${rarSpan(g.rar)} ${g.name} — recycled for shards`,g.rar,g);if(!offline){celebrate(g.rar);setThought(`${g.rar} found!`,true);}}
   }
+  if(community && ri_>=4 && !offline) worldFeed(S.name, `found ${rarSpan(g.rar)} gear — <i>${esc(g.name)}</i>!`, g.rar);
 }
 
 /* ---------- crafting ---------- */
@@ -1334,6 +1453,7 @@ function ascend(offline){
   if(S.stats.fastAsc===0||S.runTime<S.stats.fastAsc)S.stats.fastAsc=S.runTime;
   if(S.runTime>S.stats.longestRun)S.stats.longestRun=S.runTime;
   log(`✦ Ascension #${S.ascensions} · World ${S.world} (+${fmt(gain)} sparks)`,'Legendary');
+  if(community && !offline) worldFeed(S.name, `ascended — now ${S.ascensions}× ✦`, 'Legendary');
   // reset the RUN economy only — world, world-travel progress and GEAR all persist (Session 3 decouple)
   S.res.coins=0;S.res.energy=0;S.res.shards=0;S.res.fragments=0;S.res.essence=0;
   S.buildings={};
@@ -1521,7 +1641,7 @@ function sendReaction(payload){
   try{beep(660,0.05,0.05,'triangle');}catch(e){}
   if(duo&&chance(0.5))setTimeout(()=>{ if(duo){floatReaction(pick(REACT_EMOJI),friendX); bubble('thought2',pick(['🙂','ty!','😄','🙌']));} }, rnd(500,1200));
   if(netDuo&&netCh){ try{ netCh.send('react', reactionToWire(payload)); }catch(e){} }
-  if(community&&netCh){ try{ netCh.send('react', Object.assign(reactionToWire(payload),{from:S.myId})); }catch(e){} }
+  if(community&&netCh){ try{ netCh.send('react', Object.assign(reactionToWire(payload),{from:MYID})); }catch(e){} }
 }
 function buildReactBar(){
   const bar=$('reactBar');if(!bar)return;
@@ -2177,7 +2297,7 @@ function buildSettings(){
     const dots=['c-common','c-legendary','c-rare','c-artifact','c-cosmic'].map(c=>`<i style="background:${p.v[c]}"></i>`).join('');
     return `<button class="pal ${id===cur?'on':''}" data-pal="${id}"><div class="pal-dots">${dots}</div>
       <div class="pal-name">${p.name}</div><div class="pal-note">${p.note}</div></button>`;}).join('');
-  const bubblesOn=!S||S.bubbles!==false, soundOn=!(S&&S.mute);
+  const bubblesOn=!S||S.bubbles!==false, soundOn=!(S&&S.mute), wideOn=!!(S&&S.stageWide), rubberOn=!(S&&S.rubber===false);
   $('setBox').innerHTML=
     `<h2>Settings</h2>
      <div class="set-sec">Colour palette <span class="set-hint">for colour-vision needs & taste</span></div>
@@ -2185,12 +2305,16 @@ function buildSettings(){
      <div class="set-sec">Display</div>
      <button class="set-toggle" data-tog="bubbles"><span>Speech bubbles</span><b class="${bubblesOn?'on':''}">${bubblesOn?'On':'Off'}</b></button>
      <button class="set-toggle" data-tog="sound"><span>Sound</span><b class="${soundOn?'on':''}">${soundOn?'On':'Off'}</b></button>
+     <button class="set-toggle" data-tog="wide"><span>Wide stage <span class="set-hint">room for a crowd</span></span><b class="${wideOn?'on':''}">${wideOn?'On':'Off'}</b></button>
+     <button class="set-toggle" data-tog="rubber"><span>Catch-up boost <span class="set-hint">a gentle hand when you're behind in co-op</span></span><b class="${rubberOn?'on':''}">${rubberOn?'On':'Off'}</b></button>
      <button class="insp-close" onclick="closeSettings()">Done</button>`;
   $('setBox').querySelectorAll('.pal').forEach(b=>b.onclick=()=>{applyPalette(b.dataset.pal);buildSettings();save();});
   $('setBox').querySelectorAll('.set-toggle').forEach(b=>b.onclick=()=>{
     const t=b.dataset.tog;
     if(t==='bubbles'){S.bubbles=(S.bubbles===false); applyBubbleVis();}
     if(t==='sound'){S.mute=!S.mute; $('mMute')&&($('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on');}
+    if(t==='wide'){setStageWide(!(S&&S.stageWide));}
+    if(t==='rubber'){S.rubber=(S.rubber===false); if(S.rubber===false) rubberMul=1;}
     buildSettings();save();
   });
 }
@@ -2205,20 +2329,28 @@ function closeSettings(){$('setlay').classList.remove('show');}
 function progressScore(st){ // higher = further along
   return st.ascensions*1e6 + st.world*1e4 + Math.log10(Math.max(1,st.stats.coinsAll||1))*100;
 }
+function scoreRemote(r){ return (r.asc||r.ascensions||0)*1e6 + (r.world||1)*1e4 + Math.log10(Math.max(1,r.income||1))*100; }
 function buildLeaderboard(){
   const rows=[];
   rows.push({name:S.name, owner:(S.owner||'You'), you:true, world:S.world, asc:S.ascensions, inc:coinIncome(), score:progressScore(S)});
   if(duo&&F){ const keep=S;S=F;const finc=coinIncome();S=keep;
     rows.push({name:F.name, owner:(F.owner||'Friend'), you:false, world:F.world, asc:F.ascensions, inc:finc, score:progressScore(F)}); }
+  if(typeof netDuo!=='undefined' && netDuo && RF && RF.present){
+    rows.push({name:RF.name||'friend', owner:RF.owner||'Friend', you:false, world:RF.world||1, asc:RF.ascensions||0, inc:RF.income||0, score:scoreRemote({asc:RF.ascensions,world:RF.world,income:RF.income})}); }
+  if(typeof community!=='undefined' && community){ for(const id in RFS){ const r=RFS[id];
+    rows.push({name:r.name||'friend', owner:r.owner||r.name||'Friend', you:false, world:r.world||1, asc:r.prevAsc||0, inc:r.income||0, score:scoreRemote({asc:r.prevAsc,world:r.world,income:r.income})}); } }
   rows.sort((a,b)=>b.score-a.score);
   const body=rows.map((r,i)=>`<div class="lb-row ${r.you?'me':''}">
       <span class="lb-rank">${i+1}</span>
       <span class="lb-name"><b>${r.owner}</b><span class="lb-sub">${r.name}${r.you?' · you':''}</span></span>
       <span class="lb-stat">W${r.world}</span><span class="lb-stat">↑${fmt(r.asc)}</span>
       <span class="lb-stat">${fmt(r.inc)}/s</span></div>`).join('');
-  const note = duo&&F
+  const live = (typeof netDuo!=='undefined'&&netDuo) || (typeof community!=='undefined'&&community);
+  const note = live
+    ? `Live standings for everyone in the room right now (${rows.length}). Positions swap with luck — that's the fun of watching.`
+    : duo&&F
     ? `Positions swap with luck — bad RNG isn't permanent (we tested it). Want guaranteed catch-up for whoever falls behind? I can add a gentle rubber-band.`
-    : `In co-op your friend (and a whole world of players) will show up here. Start a local duo from the switch screen to see two of you ranked.`;
+    : `Pick "With a friend" or "Community" on the start screen and everyone in your room shows up here, live.`;
   $('lbBox').innerHTML=`<h2>🏆 Leaderboard</h2>
      <div class="lb-head"><span class="lb-rank">#</span><span class="lb-name">Wanderer</span>
        <span class="lb-stat">World</span><span class="lb-stat">Asc</span><span class="lb-stat">Income</span></div>
@@ -2265,17 +2397,23 @@ function modEl(id){const b=$('board');return b?b.querySelector('.mod[data-mod="'
 function collide(a,b){return a.x<b.x+b.w && a.x+a.w>b.x && a.y<b.y+b.h && a.y+a.h>b.y;}
 function ensureGrid(){
   if(!S)return; S.grid=S.grid||{};
-  // stage is locked centre-top (cols 1-2) so a panel fits on each side of it
-  if(!S.grid.stage) S.grid.stage={x:1,y:0,w:2,h:MODH_DEF.stage};
-  else { S.grid.stage.x=1; S.grid.stage.y=0; S.grid.stage.w=2; S.grid.stage.h=MODH_DEF.stage; }
+  // stage is locked to the top; normally cols 1-2 (a panel fits each side), or full width in wide mode
+  const wide=!!(S&&S.stageWide), sx=wide?0:1, sw=wide?GRID_COLS:2;
+  if(!S.grid.stage) S.grid.stage={x:sx,y:0,w:sw,h:MODH_DEF.stage};
+  else { S.grid.stage.x=sx; S.grid.stage.y=0; S.grid.stage.w=sw; S.grid.stage.h=MODH_DEF.stage; }
   const miss=MODS_DEFAULT.filter(id=>id!=='stage' && !S.grid[id]);
   for(const id of miss){ const w=MODW[id], h=MODH_DEF[id]; let best=null;
     for(let y=0;y<400 && !best;y++) for(let x=0;x+w<=GRID_COLS;x++){
       const c={x,y,w,h}; if(!Object.keys(S.grid).some(o=>collide(c,S.grid[o]))){best=c;break;} }
     S.grid[id]=best||{x:0,y:0,w,h};
   }
-  for(const id of MODS_DEFAULT){const g=S.grid[id]; if(!g)continue; g.w=MODW[id];
+  for(const id of MODS_DEFAULT){const g=S.grid[id]; if(!g)continue; g.w=(id==='stage')?sw:MODW[id];
     if(g.x+g.w>GRID_COLS)g.x=GRID_COLS-g.w; if(g.x<0)g.x=0; if(g.y<0)g.y=0; g.h=Math.max(1,g.h||MODH_DEF[id]); }
+}
+function setStageWide(on){
+  S.stageWide=!!on;
+  ensureGrid(); packFloat('stage'); renderGrid();
+  try{save();}catch(e){}
 }
 // float packing: keep everyone's (x,y); only push overlaps DOWN. stage & `keep` have priority.
 function packFloat(keep){
@@ -2404,11 +2542,17 @@ function endResize(){ if(!dragResize)return; dragResize.mod.classList.remove('re
 function checkAch(){
   for(const a of ACH){if(!S.achieved[a.id]&&a.chk()){S.achieved[a.id]=true;achDirty=true;toast(a);}}
 }
-function toast(a){
+let toastQ=[], toastBusy=false;
+function toast(a){ toastQ.push(a); pumpToasts(); }
+function pumpToasts(){
+  if(toastBusy) return;
+  const a=toastQ.shift(); if(!a) return;
+  toastBusy=true;
   const el=document.createElement('div');el.className='toast';
   el.innerHTML=`<div class="ti">${a.ic}</div><div class="tx"><b>${a.n}</b><div>${a.d}</div></div>`;
-  $('toasts').appendChild(el);setTimeout(()=>el.remove(),4200);
+  const wrap=$('toasts'); if(wrap) wrap.appendChild(el);
   beep(660,0.1,0.05,'sine');setTimeout(()=>beep(880,0.14,0.045,'sine'),100);
+  setTimeout(()=>{ try{el.remove();}catch(e){} toastBusy=false; pumpToasts(); }, 2650);   // one at a time
 }
 
 /* ============================================================
@@ -2625,6 +2769,17 @@ try{ if(typeof window!=='undefined'){ window.__net={ RT, NET, netSelfTest, flatt
    data is validated/sanitised before it touches the DOM.
    ============================================================ */
 let netDuo=false, netCh=null, RF=null, netRoom='', netSnapT=0;
+// a per-page-load id: two tabs/devices always differ, so nobody filters the other out as "self"
+const MYID='p'+Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+// --- anti-spam: rate-limit inbound per sender, cap how many wanderers we track/reply to ---
+let netRate={}, lastReplyT=0;
+const MAX_RFS=40;
+function rateOK(id,kind,minMs){
+  const now=(typeof performance!=='undefined'?performance.now():Date.now());
+  const key=(id||'anon')+':'+kind; const t=netRate[key];
+  if(t && now-t<minMs) return false;
+  netRate[key]=now; return true;
+}
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function normCode(s){ return String(s||'').trim().toUpperCase().replace(/[^A-Z0-9-]/g,'').slice(0,9); }
 function bestOwnGear(){ let best=null,bi=-1; for(const sl in S.gear){ const g=S.gear[sl]; if(g&&(g.rarI||0)>bi){ bi=g.rarI||0; best=g; } } return best; }
@@ -2632,7 +2787,7 @@ function bestOwnGear(){ let best=null,bi=-1; for(const sl in S.gear){ const g=S.
 // ---- outbound: my wanderer as a small snapshot ----
 function netSnapshot(){
   const g=bestOwnGear();
-  return { id:S.myId, name:S.name, owner:(S.owner||'You'), world:S.world, worldProg:+(S.worldProg||0),
+  return { id:MYID, name:S.name, owner:(S.owner||'You'), world:S.world, worldProg:+(S.worldProg||0),
     asc:S.ascensions, inc:coinIncome(), act:S.action,
     bestRar:(S.stats&&S.stats.bestRar)||null, gear:g||null, t:Date.now() };
 }
@@ -2762,6 +2917,7 @@ function netEnterGameWorld(){
   $('wtag2').innerHTML=`<b>friend</b> · friend<br><span class="ww">syncing…</span>`;
   bubble('thought2','Hello there!');
   stopLobbyPing();
+  netStatusStart();
   netSendHello();                   // announce we're in-game so a lobby friend finds us
   netBroadcastSnapshot();
   setTimeout(()=>{ if(netDuo) netBroadcastSnapshot(); }, 700);    // a couple of extra sends so the
@@ -2782,7 +2938,7 @@ function startNetDuo(room){
 }
 function leaveNetDuo(){
   netDuo=false; netPhase='off'; netStarted=false; netFriendName=null;
-  stopLobbyPing();
+  stopLobbyPing(); netStatusStop(); resetRubber();
   try{ if(netCh) netCh.leave(); }catch(e){}
   netCh=null; RF=null; netRoom='';
   const ll=$('lobbylay'); if(ll) ll.classList.remove('show');
@@ -2795,55 +2951,100 @@ function leaveNetDuo(){
    shown as a "+N more" count). Reuses the snapshot/hello/validation
    from P7b, generalised from one friend (RF) to a map (RFS).
    ============================================================ */
-let community=false, RFS={}, commNodes={}, commT=0, commRenderT=0, lastCommReply=0;
-const COMM_ROOM='world:commons', COMM_CAP=6, COMM_SLOTS=[16,28,40,60,72,84];
-function joinCommunity(){
+let community=false, RFS={}, commNodes={}, commT=0, commRenderT=0, lastCommReply=0, commRoom='commons';
+const COMM_CAP=6, COMM_SLOTS=[16,28,40,60,72,84];
+function normRoom(s){ return String(s||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,20); }
+const COMM_ROOM_CAP=12;                 // players per public room before opening a new one
+let dirCh=null, dirCounts={}, dirBeaconT=0;
+function joinCommunity(name){
+  const named=normRoom(name);
   startGame(false);
   community=true; duo=false; netDuo=false; netPhase='off';
   RFS={}; commNodes={}; commT=1.0; commRenderT=0;
   const layer=$('commLayer'); if(layer) layer.innerHTML='';
   creatureX=50; placeDuo('creature','shadow','thought','wtag',50);
+  setStageWide(true);               // give the crowd room; user can rearrange in Edit layout
+  resetChat(); setChatVisible(true);
+  netStatusStart();
+  if(named){ commRoom=named; enterCommunityRoom(); communityRender(); }     // private named world → no matchmaking
+  else { matchmake(room=>{ commRoom=room; enterCommunityRoom(); }); }        // public → find a room WITH people
+}
+// ---- matchmaking: a tiny directory channel tells us which public rooms have people + space ----
+function matchmake(cb){
+  const cc=$('commCount'); if(cc) cc.textContent='🌍 finding a world with people…';
+  dirCounts={};
+  try{
+    dirCh=RT.channel('world:dir',{});
+    dirCh.on('dir',(d)=>{ if(d&&typeof d.w==='string') dirCounts[d.w]={ n:Math.max(0,+d.n||0), t:Date.now() }; });
+    dirCh.on('who',()=>dirAnnounce());            // someone is looking — if we're in a room, announce it
+    dirCh.on('_joined',()=>{ try{ dirCh.send('who',{}); }catch(e){} });   // ask current rooms to report in
+  }catch(e){}
+  setTimeout(()=>{ cb(pickRoom()); }, 1300);      // listen briefly, then choose
+}
+function pickRoom(){
+  const now=Date.now(); let best=null, bestN=-1;
+  for(const w in dirCounts){ const e=dirCounts[w]; if(now-e.t>6000) continue;   // ignore stale
+    if(/^commons-\d+$/.test(w) && e.n>0 && e.n<COMM_ROOM_CAP && e.n>bestN){ best=w; bestN=e.n; } }
+  if(best) return best;                               // join the fullest public room that still has space
+  for(let i=1;i<=99;i++){ const w='commons-'+i; const e=dirCounts[w];          // else the first free room
+    if(!e || (now-e.t<=6000 && e.n<COMM_ROOM_CAP)) return w; }
+  return 'commons-1';
+}
+function dirAnnounce(){ if(dirCh && community && /^commons-\d+$/.test(commRoom)){ try{ dirCh.send('dir',{ w:commRoom, n:Object.keys(RFS).length+1 }); }catch(e){} } }
+function enterCommunityRoom(){
+  const cc=$('commCount'); if(cc) cc.textContent='';
   commConnect();
+  if(!dirCh){ try{ dirCh=RT.channel('world:dir',{}); dirCh.on('who',()=>dirAnnounce()); }catch(e){} }
+  dirBeaconT=0; dirAnnounce();
   communityRender();
 }
 function commConnect(){
   try{
-    netCh=RT.channel(COMM_ROOM,{});
+    netCh=RT.channel('world:'+commRoom,{});
     netCh.on('_joined',()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} commHello(); commBroadcast(); });
     netCh.on('hello',(d)=>commOnHello(d));
     netCh.on('snapshot',(d)=>commOnSnapshot(d));
     netCh.on('react',(d)=>commOnReact(d));
+    netCh.on('chat',(d)=>commOnChat(d));
+    netCh.on('report',(d)=>commOnReport(d));
   }catch(e){}
 }
-function commHello(){ if(netCh){ try{ netCh.send('hello',{id:S.myId, name:S.name, owner:(S.owner||'You')}); }catch(e){} } }
+function commHello(){ if(netCh){ try{ netCh.send('hello',{id:MYID, name:S.name, owner:(S.owner||'You')}); }catch(e){} } }
 function commBroadcast(){ if(community&&netCh){ try{ netCh.send('snapshot', netSnapshot()); }catch(e){} } }
 function commOnHello(d){
   if(!community||!d) return;
-  const id=(typeof d.id==='string')?d.id.slice(0,24):null; if(!id||id===S.myId) return;
-  if(!RFS[id]) RFS[id]={ name:esc(String(d.name||'friend')).slice(0,16), world:1, income:0, bestRar:null, gear:null,
-    joinT:Date.now(), lastSeen:Date.now(), prevBest:-1, prevAsc:0, _x:50 };
+  const id=(typeof d.id==='string')?d.id.slice(0,24):null; if(!id||id===MYID) return;
+  if(!RFS[id]) RFS[id]={ name:esc(String(d.name||'friend')).slice(0,16), owner:esc(String(d.owner||'Friend')).slice(0,16),
+    world:1, income:0, bestRar:null, gear:null, joinT:Date.now(), lastSeen:Date.now(), prevBest:-1, prevAsc:0, _x:50 };
   else RFS[id].lastSeen=Date.now();
   commBroadcast();            // reply with our snapshot so the newcomer sees us (no loop: snapshots don't reply)
   communityRender();
 }
 function commOnSnapshot(raw){
   if(!community||!raw||typeof raw!=='object') return;
-  const id=(typeof raw.id==='string')?raw.id.slice(0,24):null; if(!id||id===S.myId) return;
+  const id=(typeof raw.id==='string')?raw.id.slice(0,24):null; if(!id||id===MYID) return;
+  const existed=!!RFS[id];
+  if(!existed && Object.keys(RFS).length>=MAX_RFS) return;                       // cap tracked wanderers
+  if(existed && !rateOK(id,'snap',400)){ RFS[id].lastSeen=Date.now(); return; } // throttle snapshot floods
   const d=validateSnapshot(raw);
-  let r=RFS[id];
+  let r=RFS[id]; const isNew=!r;
   if(!r){ r=RFS[id]={ joinT:Date.now(), prevBest:-1, prevAsc:0, _x:50 }; }
-  r.name=d.name; r.world=d.world; r.income=d.inc; r.bestRar=d.bestRar; r.gear=d.gear; r.lastSeen=Date.now();
+  r.name=d.name; r.owner=d.owner; r.world=d.world; r.income=d.inc; r.bestRar=d.bestRar; r.gear=d.gear; r.lastSeen=Date.now();
   const bi=d.bestRar?rarIdx(d.bestRar):-1;
   if(r.prevBest>=0 && bi>r.prevBest && bi>=4 && chance(0.7)){          // Legendary+ only, with a drop-chance (many players)
     celebrateAt(d.bestRar, r._x||50, 'creature'); netCommLog(r.name, `found ${rarSpan(d.bestRar)} gear!`, d.bestRar, d.gear);
+    worldFeed(r.name, `found ${rarSpan(d.bestRar)} gear${d.gear&&d.gear.name?` — <i>${esc(d.gear.name)}</i>`:''}!`, d.bestRar);
   }
   if(bi>=0) r.prevBest=Math.max(r.prevBest, bi);
-  if(r.prevAsc>0 && d.asc>r.prevAsc && chance(0.6)){ netCommLog(r.name, `ascended — ${d.asc}× now`, 'Legendary'); }
+  if(r.prevAsc>0 && d.asc>r.prevAsc && chance(0.6)){ netCommLog(r.name, `ascended — ${d.asc}× now`, 'Legendary'); worldFeed(r.name, `ascended — now ${d.asc}× ✦`, 'Legendary'); }
   r.prevAsc=Math.max(r.prevAsc, d.asc);
+  if(isNew){ const now=Date.now(); if(now-lastReplyT>250){ lastReplyT=now; commBroadcast(); commHello(); } }  // announce ourselves (bounded)
+  communityRender();                            // reflect the new name/world/income on stage right away
 }
 function commOnReact(w){
   if(!community||!w) return;
   const from=(typeof w.from==='string')?w.from:null;
+  if(!rateOK(from||'anon','react',900)) return;          // one reaction per ~0.9s per player
   const x=(from&&RFS[from]&&RFS[from]._x)||rnd(18,82);
   const p=reactionFromWire(w); if(p){ try{ floatReaction(p, x); }catch(e){} }
 }
@@ -2852,6 +3053,110 @@ function netCommLog(name,text,rar,gear){
   S.log.unshift({ t:S.runTime, x:`<b style="color:#7fd8e6">${nm}</b> ${text}`, r:rar, g:gear||null, who:gear?nm:null });
   if(S.log.length>60)S.log.pop(); logDirty=true;
 }
+
+/* ============================================================
+   P8 — WORLD CHAT (community only)
+   A shared feed that mixes live activity (finds / crafts / ascensions
+   from the snapshots we already receive) with text chat. Reading is
+   free; TYPING is a premium feature. A profanity blacklist filters
+   messages, and any player can be reported → locally muted, with a
+   community threshold that auto-mutes for everyone.
+   Real billing + server-enforced bans need a backend; here the
+   premium unlock and mutes are client-side (a working preview).
+   ============================================================ */
+let chatFeed=[], chatMuted={}, chatReports={}, chatUnread=0, chatOpen=false;
+const CHAT_MAX=90;
+// --- profanity blacklist (a starter set; an operator would maintain this server-side) ---
+const BADWORDS=new Set(['fuck','fucker','fucking','shit','bullshit','bitch','asshole','ass','bastard','dick','dickhead',
+  'piss','cock','pussy','cunt','slut','whore','wanker','twat','fag','faggot','nigger','nigga','retard','rape','rapist',
+  'nazi','kys','coon','spic','kike']);
+function normLeet(s){ return String(s).toLowerCase()
+  .replace(/[@]/g,'a').replace(/[$]/g,'s').replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/4/g,'a').replace(/5/g,'s').replace(/7/g,'t')
+  .replace(/[^a-z]/g,'').replace(/(.)\1+/g,'$1'); }   // collapse repeats: "shiiit" → "shit"
+function isBadToken(tok){ const n=normLeet(tok); if(!n) return false; if(BADWORDS.has(n)) return true;
+  for(const b of BADWORDS){ if(b.length>=4 && n.includes(b)) return true; } return false; }   // catch embedded slurs
+function hasBadWord(text){ return String(text).split(/[\s.,!?;:_/-]+/).some(isBadToken); }
+function maskBad(text){ return String(text).split(/(\s+)/).map(w=>isBadToken(w)?'✱✱✱':w).join(''); }
+function cleanChat(raw){
+  let t=String(raw||'').replace(/\s+/g,' ').trim().slice(0,180);
+  if(!t) return { ok:false, reason:'empty' };
+  if(hasBadWord(t)) return { ok:false, reason:'blocked' };
+  return { ok:true, text:t };
+}
+function isPremium(){ return !!(S&&S.premium); }
+function pushChat(entry){
+  entry.t=entry.t||Date.now();
+  chatFeed.push(entry); if(chatFeed.length>CHAT_MAX) chatFeed.shift();
+  if(!chatOpen && !entry.me){ chatUnread++; }
+  renderChat(); updateChatBadge();
+}
+// live activity into the feed (called for others' finds/ascensions, and our own)
+function worldFeed(name, html, rar){ if(!community) return; pushChat({ kind:'event', name:esc(name||'Someone'), html, rar:rar||null }); }
+function commOnChat(d){
+  if(!community||!d) return;
+  const id=(typeof d.id==='string')?d.id.slice(0,24):null; if(!id||id===MYID) return;
+  if(chatMuted[id]) return;                         // muted sender → drop
+  if(!rateOK(id,'chat',1500)) return;               // 1 message / 1.5 s per sender
+  const name=esc(String(d.name||'friend')).slice(0,16);
+  const text=esc(maskBad(String(d.text||'').slice(0,180)));  // defence-in-depth: filter inbound too
+  if(!text) return;
+  pushChat({ kind:'msg', id, name, text });
+}
+function chatSend(){
+  if(!community) return;
+  if(!isPremium()){ openPremium(); return; }
+  const inp=$('chatInput'); if(!inp) return;
+  const raw=inp.value;
+  const c=cleanChat(raw);
+  if(!c.ok){ if(c.reason==='blocked') chatNotice("That message was blocked — let's keep it kind. 💛"); return; }
+  if(!rateOK('me','chatsend',1200)){ chatNotice('Easy — one message at a time.'); return; }
+  inp.value='';
+  pushChat({ kind:'msg', id:MYID, name:esc(S.name), text:esc(c.text), me:true });
+  if(netCh){ try{ netCh.send('chat', { id:MYID, name:S.name, text:c.text }); }catch(e){} }
+}
+function chatReport(id,name){
+  if(!id||id===MYID) return;
+  chatMuted[id]=true;                               // mute them for me right away
+  if(netCh){ try{ netCh.send('report', { from:MYID, target:id }); }catch(e){} }
+  chatNotice(`Reported ${name||'that player'} — you won't see their messages. Thanks for keeping the world kind.`);
+  renderChat();
+}
+function commOnReport(d){
+  if(!community||!d) return;
+  const from=(typeof d.from==='string')?d.from:null, target=(typeof d.target==='string')?d.target:null;
+  if(!from||!target||target===MYID) return;          // (a real ban of yourself would be server-side)
+  const set=chatReports[target]||(chatReports[target]=new Set());
+  set.add(from);
+  if(set.size>=3){ chatMuted[target]=true; renderChat(); }   // community threshold → auto-mute for everyone
+}
+function chatNotice(text){ pushChat({ kind:'notice', text:esc(text), me:true }); }
+function updateChatBadge(){
+  const b=$('chatBadge'); if(b){ b.textContent=chatUnread>0?(chatUnread>9?'9+':String(chatUnread)):''; b.style.display=chatUnread>0?'':'none'; }
+}
+function openChat(){ chatOpen=true; chatUnread=0; updateChatBadge(); const l=$('chatlay'); if(l) l.classList.add('show'); renderChat();
+  const f=$('chatFeed'); if(f) f.scrollTop=f.scrollHeight; setTimeout(()=>{ const i=$('chatInput'); if(i&&isPremium()) i.focus(); },60); }
+function closeChat(){ chatOpen=false; const l=$('chatlay'); if(l) l.classList.remove('show'); }
+function renderChat(){
+  const f=$('chatFeed'); if(!f) return;
+  const rows=chatFeed.map(e=>{
+    if(e.kind==='event') return `<div class="cf-evt"><b>${e.name}</b> ${e.html}</div>`;
+    if(e.kind==='notice') return `<div class="cf-note">${e.text}</div>`;
+    const mine=e.me?' me':'';
+    const rep=(!e.me&&e.id)?`<button class="cf-report" data-rep="${e.id}" data-repn="${e.name}" title="Report">⚑</button>`:'';
+    return `<div class="cf-msg${mine}"><span class="cf-name">${e.name||'you'}</span><span class="cf-text">${e.text}</span>${rep}</div>`;
+  }).join('');
+  f.innerHTML=rows||'<div class="cf-empty">No messages yet. Say hello to the world 👋</div>';
+  const gate=$('chatGate'), bar=$('chatBar');
+  if(gate&&bar){ if(isPremium()){ gate.style.display='none'; bar.style.display='flex'; } else { gate.style.display='flex'; bar.style.display='none'; } }
+  f.scrollTop=f.scrollHeight;
+}
+function setChatVisible(on){ const b=$('chatLaunch'); if(b) b.style.display=on?'':'none'; if(!on){ closeChat(); } }
+function resetChat(){ chatFeed=[]; chatMuted={}; chatReports={}; chatUnread=0; chatOpen=false; updateChatBadge(); const f=$('chatFeed'); if(f) f.innerHTML=''; }
+// --- premium ---
+function openPremium(){ const l=$('premlay'); if(l) l.classList.add('show'); }
+function closePremium(){ const l=$('premlay'); if(l) l.classList.remove('show'); }
+function goPremium(){ S.premium=true; try{save();}catch(e){} closePremium(); renderChat();
+  chatNotice('Chat unlocked — welcome! Be excellent to each other. ✨'); const i=$('chatInput'); if(i) setTimeout(()=>i.focus(),80); }
 function communityRender(){
   const layer=$('commLayer'); if(!layer) return;
   const ids=Object.keys(RFS).sort((a,b)=>(RFS[a].joinT||0)-(RFS[b].joinT||0));
@@ -2867,24 +3172,59 @@ function communityRender(){
     n.tag.innerHTML=`<b>${esc(r.name||'friend')}</b><br><span class="ww">World ${r.world||1} · ${fmt(r.income||0)}/s</span>`;
   });
   const total=ids.length+1;  // + you
-  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${total} in the world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
+  let roomTag='';
+  const mm=/^commons-(\d+)$/.exec(commRoom||'');
+  if(mm) roomTag=`Room ${mm[1]} · `;
+  else if(commRoom && commRoom!=='commons') roomTag=`“${esc(commRoom)}” · `;
+  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${roomTag}${total} in the world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
 }
 function communityTick(real){
   if(!community) return;
   commT-=real; if(commT<=0){ commT=2.5; commBroadcast(); commHello(); }
+  dirBeaconT-=real; if(dirBeaconT<=0){ dirBeaconT=2; dirAnnounce(); }   // keep the directory fresh so others can find us
   const now=Date.now(); let changed=false;
   for(const id in RFS){ if(now-RFS[id].lastSeen>12000){ delete RFS[id]; changed=true; } }
   commRenderT-=real; if(commRenderT<=0||changed){ commRenderT=0.6; communityRender(); }
 }
 function leaveCommunity(){
-  community=false;
+  community=false; netStatusStop(); resetRubber();
+  setChatVisible(false); resetChat();
   try{ if(netCh) netCh.leave(); }catch(e){}
-  netCh=null; RFS={};
+  try{ if(dirCh) dirCh.leave(); }catch(e){}
+  netCh=null; dirCh=null; RFS={}; dirCounts={};
   const layer=$('commLayer'); if(layer) layer.innerHTML=''; commNodes={};
   const cc=$('commCount'); if(cc) cc.textContent='';
 }
+
+/* P7d — a small live connection indicator while networked, + auto re-sync on reconnect */
+function netStatusHandler(s){
+  const el=$('netStatus'); if(!el) return;
+  if(!(netDuo||community)){ el.className='net-status'; el.textContent=''; return; }
+  if(s==='open'){ el.className='net-status live'; el.textContent='● live'; }
+  else if(s==='connecting'){ el.className='net-status warn'; el.textContent='◌ connecting…'; }
+  else { el.className='net-status warn'; el.textContent='◌ reconnecting…'; }
+}
+function netStatusStart(){ RT.onStatus=netStatusHandler; netStatusHandler(RT.status); }
+function netStatusStop(){ if(RT.onStatus===netStatusHandler) RT.onStatus=null; const el=$('netStatus'); if(el){ el.className='net-status'; el.textContent=''; } }
+
+/* rubber-band: measure how far behind the room's best player you are → a capped, gentle prod boost.
+   Automatic (not player-controlled), co-op only, off in solo. Keeps the horse-race close. */
+function rubberFactor(){
+  if(S&&S.rubber===false) return 1;
+  if(!(duo||netDuo||community)) return 1;
+  let best=0;
+  if(duo&&F){ const keep=S;S=F;const s=progressScore(F);S=keep; best=Math.max(best,s); }
+  if(netDuo&&RF&&RF.present) best=Math.max(best, scoreRemote({asc:RF.ascensions,world:RF.world,income:RF.income}));
+  if(community){ for(const id in RFS){ const r=RFS[id]; best=Math.max(best, scoreRemote({asc:r.prevAsc,world:r.world,income:r.income})); } }
+  if(best<=0) return 1;
+  const mine=progressScore(S);
+  if(best<=mine) return 1;                       // level or ahead → no boost
+  return clamp(1 + (best-mine)/2e6, 1, 3);        // up to 3× when far behind, easing to 1× as you catch up
+}
+function resetRubber(){ rubberMul=1; rubberT=0; }
 function netOnSnapshot(raw){
   if(!netDuo||!RF||!raw||typeof raw!=='object') return;
+  if(RF.greeted && !rateOK('duo','snap',300)){ RF.lastSeen=Date.now(); return; }   // ignore snapshot floods
   const d=validateSnapshot(raw);
   RF.name=d.name; RF.owner=d.owner; RF.world=d.world; RF.worldProg=d.worldProg;
   RF.ascensions=d.asc; RF.income=d.inc; RF.action=d.act; RF.bestRar=d.bestRar; RF.bestGear=d.gear;
@@ -2905,6 +3245,7 @@ function netOnSnapshot(raw){
 }
 function netOnReact(w){
   if(!netDuo) return;
+  if(!rateOK('duo','react',900)) return;                 // one reaction per ~0.9s from the friend
   const p=reactionFromWire(w); if(!p) return;
   try{ floatReaction(p, friendX); }catch(e){}
 }
@@ -2926,16 +3267,20 @@ function netTick(real){
 }
 try{ if(typeof window!=='undefined'&&window.__net){
   Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence, netOnHello, netSendHello,
-    joinCommunity, commConnect, commOnSnapshot, commOnHello, commOnReact, communityRender, leaveCommunity,
+    joinCommunity, commConnect, commOnSnapshot, commOnHello, commOnReact, communityRender, leaveCommunity, matchmake, pickRoom, enterCommunityRoom, dirAnnounce,
     validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
   Object.defineProperties(window.__net, {
     netDuo:{ get(){ return netDuo; }, configurable:true },
     netPhase:{ get(){ return netPhase; }, configurable:true },
     community:{ get(){ return community; }, configurable:true },
+    commRoom:{ get(){ return commRoom; }, configurable:true },
     RFS:{ get(){ return RFS; }, configurable:true },
     RF:{ get(){ return RF; }, configurable:true },
     netCh:{ get(){ return netCh; }, configurable:true },
-    netRoom:{ get(){ return netRoom; }, configurable:true } });
+    netRoom:{ get(){ return netRoom; }, configurable:true },
+    MYID:{ get(){ return MYID; }, configurable:true },
+    rubberMul:{ get(){ return rubberMul; }, set(v){ rubberMul=v; }, configurable:true },
+    rubberOn:{ get(){ return !(S&&S.rubber===false); }, set(v){ if(S) S.rubber=!!v; if(v===false) rubberMul=1; }, configurable:true } });
 } }catch(e){}
 
 /* ============================================================
@@ -2982,6 +3327,9 @@ function loop(now){
     if(duo){ duoTick(dt); friendCosmetic(real); }
     else if(netDuo){ netTick(real); }
     else if(community){ communityTick(real); }
+    // rubber-band catch-up (co-op only): recompute the gentle boost each second
+    rubberT-=real; if(rubberT<=0){ rubberT=1; const prev=rubberMul; rubberMul=rubberFactor();
+      if(rubberMul>1.2 && prev<=1.2 && thoughtHold<=0 && S.action!=='craft'){ setThought(pick(['Catching up! 🏃','Picking up the pace!','I can close this gap.'])); } }
     // building unlock refresh occasionally
     // render throttle
     renderT-=real;if(renderT<=0){render();checkAch();if(duo)duoRender();else if(netDuo)remoteRender();renderT=0.12;}
@@ -3028,7 +3376,7 @@ function startGame(fromLoad,withDuo){
   $('start').classList.add('gone');
   setTimeout(()=>{$('start').style.display='none';},800);
   $('app').classList.add('live');
-  netDuo=false; community=false;   // solo / local-duo starts are not networked (joinCommunity/startNetDuo re-enable after)
+  netDuo=false; community=false; resetRubber();   // solo / local-duo starts are not networked (joinCommunity/startNetDuo re-enable after)
   S.started=true; atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
   const on=$('ownerName'); if(on&&on.value.trim()) S.owner=on.value.trim(); if(!S.owner)S.owner='You';
   $('creature').innerHTML=creatureSVG('idle');
@@ -3041,15 +3389,17 @@ function startGame(fromLoad,withDuo){
 }
 
 async function doReset(){
+  const keepPrem=!!(S&&S.premium);   // premium is an entitlement — a sim reset shouldn't revoke it
   // best-effort clear of the saved game (each wrapped — storage may be sandboxed)
   try{ if(storageOK) await window.storage.delete(SKEY,false); }catch(e){}
   try{ localStorage.removeItem(SKEY); }catch(e){}
   memSave=null;
   // tear down duo if it was running
-  duo=false; F=null; leaveNetDuo(); leaveCommunity(); setLayoutEdit(false); atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
+  duo=false; F=null; leaveNetDuo(); leaveCommunity(); resetChat(); setLayoutEdit(false); atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
   document.querySelectorAll('.duo-only').forEach(el=>el.classList.add('hidden'));
   // fresh state — started:false makes the loop idle and the start screen return
   newGame();
+  if(keepPrem) S.premium=true;
   creatureX=50; curThemeWorld=0; sceneScroll=0;
   ['creature','creature2','shadow','shadow2','thought','thought2','wtag','wtag2'].forEach(id=>{const el=$(id);if(el)el.style.left='';});
   const cr=$('creature'); if(cr) cr.classList.remove('walking','hop');
@@ -3061,6 +3411,10 @@ async function doReset(){
   // close menus / panels
   $('menu').classList.remove('show');
   { const fs=$('friendSub'); if(fs) fs.classList.remove('open'); }
+  { const ws=$('worldSub'); if(ws) ws.classList.remove('open'); }
+  { const sw=$('switch'); if(sw) sw.classList.remove('on'); }
+  { const ch=$('chooser'); if(ch) ch.classList.remove('revealed'); }
+  { const hint=$('switchHint'); if(hint) hint.style.display=''; }
   if(sceneReady)applyScroll();
   // back to the start screen
   $('app').classList.remove('live');
@@ -3073,10 +3427,17 @@ function boot(){
   applyPalette(currentPalette()||'lantern');
   buildStrip();mountAvatar();initScene();initLayoutDrag();prepModules();applyLayout();
   try{wireReactions();}catch(e){}
-  $('switch')&&($('switch').onclick=null);
-  { const bs=$('btnSolo'); if(bs) bs.onclick=()=>{ beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>startGame(false),300); }; }
+  { const sw=$('switch'); if(sw) sw.onclick=()=>{
+      if(sw.classList.contains('on')) return;
+      sw.classList.add('on'); beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);
+      const hint=$('switchHint'); if(hint) hint.style.display='none';
+      const ch=$('chooser'); if(ch) ch.classList.add('revealed');
+    }; }
+  { const bs=$('btnSolo'); if(bs) bs.onclick=()=>{ beep(520,0.14,0.05,'triangle'); setTimeout(()=>startGame(false),260); }; }
   { const bf=$('btnFriend'); if(bf) bf.onclick=()=>{ const fs=$('friendSub'); if(fs){ fs.classList.toggle('open'); if(fs.classList.contains('open')) setTimeout(()=>{ const jc=$('joinCodeInput'); if(jc) jc.focus(); },250); } }; }
-  { const bw=$('btnWorld'); if(bw) bw.onclick=()=>{ beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>joinCommunity(),300); }; }
+  { const bw=$('btnWorld'); if(bw) bw.onclick=()=>{ beep(520,0.14,0.05,'triangle'); setTimeout(()=>joinCommunity(),260); }; }
+  { const nl=$('namedWorldLink'); if(nl) nl.onclick=()=>{ const ws=$('worldSub'); if(ws){ ws.classList.toggle('open'); nl.textContent=ws.classList.contains('open')?'or join a named world ▴':'or join a named world ▾'; if(ws.classList.contains('open')) setTimeout(()=>{ const wi=$('worldNameInput'); if(wi) wi.focus(); },250); } }; }
+  { const jn=$('joinNamedBtn'); if(jn) jn.onclick=()=>{ const nm=normRoom(($('worldNameInput')&&$('worldNameInput').value)||''); if(!nm) return; const ws=$('worldSub'); if(ws) ws.classList.remove('open'); beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>joinCommunity(nm),300); }; }
   // menu
   $('menuBtn').onclick=()=>$('menu').classList.toggle('show');
   document.addEventListener('click',e=>{if(!$('menu').contains(e.target)&&e.target!==$('menuBtn'))$('menu').classList.remove('show');});
@@ -3098,11 +3459,21 @@ function boot(){
   // lore reader (read-only story)
   $('loreBtn').onclick=openLore;
   $('loreLinkStart').onclick=openLore;
+  // world chat + premium
+  { const b=$('chatLaunch'); if(b) b.onclick=openChat; }
+  { const b=$('chatClose'); if(b) b.onclick=closeChat; }
+  { const b=$('chatSend'); if(b) b.onclick=chatSend; }
+  { const i=$('chatInput'); if(i) i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); chatSend(); } }); }
+  { const b=$('chatGoPrem'); if(b) b.onclick=openPremium; }
+  { const b=$('premGo'); if(b) b.onclick=goPremium; }
+  { const b=$('premCancel'); if(b) b.onclick=closePremium; }
+  { const l=$('chatlay'); if(l) l.addEventListener('click',e=>{ if(e.target.id==='chatlay') closeChat(); }); }
+  { const l=$('premlay'); if(l) l.addEventListener('click',e=>{ if(e.target.id==='premlay') closePremium(); }); }
+  { const f=$('chatFeed'); if(f) f.addEventListener('click',e=>{ const r=e.target.closest('.cf-report'); if(r&&r.dataset.rep) chatReport(r.dataset.rep, r.dataset.repn); }); }
   $('lorelay').addEventListener('click',e=>{if(e.target.id==='lorelay')closeLore();});
   // find friends (co-op is a planned feature — see note in panel)
   const fcode=()=>{const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<8;i++){if(i===4)o+='-';o+=s[Math.floor(Math.random()*s.length)];}return o;};
   if(!S.myCode) S.myCode=fcode();
-  if(!S.myId) S.myId='p'+Math.random().toString(36).slice(2,10);
   $('friendCode').textContent=S.myCode;
   { const jc=$('joinCodeInput'); if(jc&&!jc.value) jc.value=S.myCode; }
   { const nb=$('netTestBtn'); if(nb) nb.onclick=netSelfTest; }
