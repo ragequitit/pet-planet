@@ -625,6 +625,22 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .brow:hover{background:rgba(255,255,255,.035)}
 .gslot{cursor:pointer;transition:border-color .12s ease,box-shadow .12s ease}
 .gslot:hover{border-color:var(--honey)!important;box-shadow:0 0 0 1px var(--honey),0 0 12px rgba(244,182,76,.28)!important}
+/* custom hover tooltip */
+.tip{position:fixed;z-index:90;display:none;pointer-events:none;max-width:230px;
+  background:linear-gradient(180deg,#241a12,#170f08);border:1px solid var(--line2);border-radius:12px;
+  padding:10px 12px;box-shadow:0 12px 34px rgba(0,0,0,.55);animation:tipIn .12s ease}
+@keyframes tipIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.tip .tip-arrow{position:absolute;left:var(--ax,50%);bottom:-6px;transform:translateX(-50%) rotate(45deg);
+  width:11px;height:11px;background:#170f08;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+.tip.below .tip-arrow{bottom:auto;top:-6px;transform:translateX(-50%) rotate(45deg);
+  background:#241a12;border:none;border-left:1px solid var(--line2);border-top:1px solid var(--line2)}
+.tip-head{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tip-name{font-family:var(--disp);font-weight:700;font-size:14px;margin-top:1px;line-height:1.2}
+.tip-meta{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin-top:3px}
+.tip-stats{display:flex;flex-direction:column;gap:2px;margin-top:7px}
+.tip-stat{font-family:var(--mono);font-size:10.5px;color:var(--cream)}
+.tip-passive{margin-top:7px;font-size:11px;color:var(--honey2)}
+.tip-empty{font-size:12px;color:var(--muted);margin-top:2px}
 /* inspector (read-only bystander view) */
 #inspect{position:fixed;inset:0;z-index:68;background:rgba(10,7,4,.62);backdrop-filter:blur(3px);
   display:none;align-items:flex-end;justify-content:center;padding:0}
@@ -1000,6 +1016,9 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 <div id="lblay"><div class="setbox" id="lbBox"></div></div>
 
 <!-- world chat is now a movable module (see the board) -->
+
+<!-- custom hover tooltip -->
+<div id="tip" class="tip"><div class="tip-body" id="tipBody"></div><div class="tip-arrow"></div></div>
 
 <!-- premium modal -->
 <div id="premlay"><div class="prembox">
@@ -2014,7 +2033,7 @@ function buildSpeed(){
 function buildGear(){
   $('gslots').innerHTML=SLOTS.map(sl=>{const g=S.gear[sl.id];
     const col=g?`var(${RARITIES[rarIdx(g.rar)].c})`:'var(--line)';
-    return `<div class="gslot" data-slot="${sl.id}" style="border-color:${col};${g?`box-shadow:0 0 12px ${col}33`:''}" title="${sl.name}${g?': '+g.name:' (empty)'}">
+    return `<div class="gslot" data-slot="${sl.id}" style="border-color:${col};${g?`box-shadow:0 0 12px ${col}33`:''}">
       <span style="filter:${g?'none':'grayscale(1)'};opacity:${g?1:.4}">${sl.ic}</span>
       ${g?`<span class="pw">${fmt(g.power)}</span>`:''}</div>`;}).join('');
   let tp=0;for(const k in S.gear)if(S.gear[k])tp+=S.gear[k].power;
@@ -2145,8 +2164,38 @@ function gearInspectHTML(g,note){
     <div class="insp-note">${note}</div>
     <button class="insp-close" onclick="closeInspect()">Close</button>`;
 }
+/* custom hover tooltip (matching style) — currently used by gear slots */
+function gearTip(slotId){
+  const sl=SLOTS.find(s=>s.id===slotId); if(!sl) return '';
+  const g=S.gear[slotId];
+  if(!g) return `<div class="tip-head">${sl.name}</div><div class="tip-empty">Empty — nothing equipped yet</div>`;
+  const rc=`var(${RARITIES[rarIdx(g.rar)].c})`;
+  let stats='';
+  for(const st in g.stats){ const meta=STATS.find(x=>x.id===st);
+    stats+=`<span class="tip-stat">${meta?meta.fmt(g.stats[st]):('+'+(g.stats[st]*100).toFixed(0)+'%')}</span>`; }
+  return `<div class="tip-head">${sl.name}</div>
+    <div class="tip-name" style="color:${rc}">${esc(g.name)}</div>
+    <div class="tip-meta"><span style="color:${rc}">${g.rar}</span> · World ${g.world} · ⚡${fmt(g.power)}</div>
+    ${stats?`<div class="tip-stats">${stats}</div>`:''}
+    ${g.passive?`<div class="tip-passive">✦ ${g.passive}</div>`:''}`;
+}
+function showTip(html, rect){
+  const tip=$('tip'), body=$('tipBody'); if(!tip||!body||!rect) return;
+  body.innerHTML=html;
+  tip.style.display='block'; tip.classList.remove('below'); tip.style.left='0px'; tip.style.top='0px';
+  const tw=tip.offsetWidth, th=tip.offsetHeight;
+  let left=rect.left+rect.width/2-tw/2;
+  left=Math.max(8, Math.min(left, window.innerWidth-tw-8));
+  let top=rect.top-th-9;
+  if(top<8){ top=rect.bottom+9; tip.classList.add('below'); }
+  tip.style.left=left+'px'; tip.style.top=top+'px';
+  const ax=(rect.left+rect.width/2)-left;
+  tip.style.setProperty('--ax', Math.max(12, Math.min(ax, tw-12))+'px');
+}
+function hideTip(){ const tip=$('tip'); if(tip) tip.style.display='none'; }
 function inspectGear(slotId){
   const g=S.gear[slotId], slot=SLOTS.find(s=>s.id===slotId);
+  hideTip();
   if(!g){
     $('inspBox').innerHTML=
       `<div class="insp-head"><div class="insp-ico" style="opacity:.45">${slot.ic}</div>
@@ -3637,6 +3686,9 @@ function boot(){
   // read-only inspector: tap a building or gear slot to see what it does
   $('blist').addEventListener('click',e=>{const row=e.target.closest('.brow');if(row&&row.dataset.b)inspectBuilding(row.dataset.b);});
   $('gslots').addEventListener('click',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)inspectGear(s.dataset.slot);});
+  $('gslots').addEventListener('mouseover',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)showTip(gearTip(s.dataset.slot),s.getBoundingClientRect());});
+  $('gslots').addEventListener('mouseout',e=>{const s=e.target.closest('.gslot');const to=(e.relatedTarget&&e.relatedTarget.closest)?e.relatedTarget.closest('.gslot'):null;if(s&&to!==s)hideTip();});
+  window.addEventListener('scroll',hideTip,true);
   $('resStrip').addEventListener('click',e=>{const s=e.target.closest('.res');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
   $('resFull').addEventListener('click',e=>{const s=e.target.closest('.now-row');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
   $('log').addEventListener('click',e=>{const s=e.target.closest('.levent');if(s&&s.dataset.log!=null)inspectLog(+s.dataset.log);});
