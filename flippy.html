@@ -202,6 +202,10 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   z-index:5;animation:floatUp 1.5s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.6)}
 @keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(.8)}15%{opacity:1;transform:translateY(-6px) scale(1)}100%{opacity:0;transform:translateY(-52px) scale(1)}}
 /* --- emoji reactions --- */
+.pause-tag{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9;
+  font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.06em;color:var(--cream);
+  background:rgba(20,14,9,.86);border:1px solid var(--honey);border-radius:12px;padding:9px 18px;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);pointer-events:none}
 .react-launch{position:absolute;right:10px;bottom:10px;z-index:8;width:38px;height:38px;border-radius:50%;
   border:1px solid rgba(244,182,76,.4);background:rgba(28,20,12,.82);color:#fff;font-size:19px;cursor:pointer;
   box-shadow:0 4px 14px rgba(0,0,0,.45);transition:transform .12s ease,background .12s ease}
@@ -222,15 +226,16 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--disp);font-size:15px;color:var(--cream)}
 .chat-x{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px}
 .chat-x:hover{color:var(--cream);background:var(--bg2)}
-.chat-feed{max-height:300px;min-height:120px;overflow-y:auto;padding:10px 2px 6px;display:flex;flex-direction:column;gap:8px}
+.chat-feed{max-height:300px;min-height:120px;overflow-y:auto;overflow-x:hidden;padding:10px 2px 6px;display:flex;flex-direction:column;gap:8px}
 .chat-off{color:var(--muted);font-size:12.5px;line-height:1.5;padding:14px 4px}
 .chat-off b{color:#9fe0dc}
 .chat-unread{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:#e0574f;border-radius:9px;padding:1px 7px}
 .chat-body .chat-gate,.chat-body .chat-bar{margin-top:8px}
 /* pop-out + floating chat */
 .chat-pop{margin-left:6px;background:none;border:1px solid var(--line2);border-radius:7px;color:var(--muted);
-  cursor:pointer;font-size:12px;line-height:1;padding:3px 6px;transition:.15s}
-.chat-pop:hover{color:#7fd8e6;border-color:#5f9a95}
+  cursor:pointer;font-size:12px;line-height:1;padding:3px 6px;transition:.15s}.chat-pop:hover{color:#7fd8e6;border-color:#5f9a95}
+.chat-room{font-family:var(--mono);font-size:10px;font-weight:600;color:#7fd8e6;letter-spacing:.04em;text-transform:none}
+.chat-room:empty{display:none}
 .chat-popped{font-size:12.5px;color:var(--muted);padding:14px 4px}
 .link-btn{background:none;border:none;color:#7fd8e6;cursor:pointer;font:inherit;text-decoration:underline;padding:0}
 .chat-float{position:fixed;z-index:55;width:min(340px,92vw);background:linear-gradient(180deg,#1b140d,#140e08);
@@ -244,17 +249,17 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .cfl-body{padding:10px 12px 12px}
 .cfl-body .chat-feed{max-height:min(46vh,320px)}
 .cf-empty{color:var(--muted);text-align:center;margin:auto;font-size:13px}
-.cf-msg{display:flex;align-items:baseline;gap:7px;font-size:13.5px;line-height:1.4}
+.cf-msg{display:flex;align-items:baseline;gap:7px;font-size:13.5px;line-height:1.4;min-width:0;max-width:100%}
 .cf-msg .cf-name{font-family:var(--disp);font-weight:600;color:#7fd8e6;flex:0 0 auto}
 .cf-msg.me .cf-name{color:var(--honey2)}
-.cf-msg .cf-text{color:var(--cream);word-break:break-word;flex:1}
+.cf-msg .cf-text{color:var(--cream);word-break:break-word;overflow-wrap:anywhere;min-width:0;flex:1}
 .cf-report{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;opacity:.4;padding:0 2px;flex:0 0 auto}
 .cf-report:hover{opacity:1;color:#e0574f}
 .cf-evt{font-size:12.5px;color:var(--dim);font-style:italic;padding:2px 0;border-left:2px solid var(--line2);padding-left:9px}
 .cf-evt b{color:#9fe0dc;font-style:normal;font-weight:600}
 .cf-note{font-size:12px;color:var(--honey2);text-align:center;background:rgba(244,182,76,.08);border-radius:9px;padding:5px 10px}
 .chat-bar{display:flex;gap:8px;padding:11px 12px;border-top:1px solid var(--line);background:var(--panel)}
-.chat-input{flex:1;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--cream);font-family:inherit;font-size:14px}
+.chat-input{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--line2);border-radius:11px;padding:11px 13px;color:var(--cream);font-family:inherit;font-size:14px}
 .chat-input:focus{border-color:#5f9a95;outline:none}
 .chat-send{background:linear-gradient(180deg,#2f4d4b,#233b39);border:1px solid #5f9a95;border-radius:11px;color:#d6f4f2;font-family:var(--disp);font-weight:600;padding:0 18px;cursor:pointer}
 .chat-send:hover{border-color:#7fd8e6}
@@ -618,8 +623,8 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .rarity-name{font-weight:600}
 .brow{cursor:pointer}
 .brow:hover{background:rgba(255,255,255,.035)}
-.gslot{cursor:pointer}
-.gslot:hover{transform:translateY(-2px)}
+.gslot{cursor:pointer;transition:border-color .12s ease,box-shadow .12s ease}
+.gslot:hover{border-color:var(--honey)!important;box-shadow:0 0 0 1px var(--honey),0 0 12px rgba(244,182,76,.28)!important}
 /* inspector (read-only bystander view) */
 #inspect{position:fixed;inset:0;z-index:68;background:rgba(10,7,4,.62);backdrop-filter:blur(3px);
   display:none;align-items:flex-end;justify-content:center;padding:0}
@@ -836,6 +841,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
           <div class="thought" id="thought">Waking up…</div>
           <div class="thought duo-only hidden" id="thought2"></div>
           <div class="worldflash" id="worldflash"></div>
+          <div class="pause-tag" id="pauseTag" style="display:none">⏸ Paused</div>
           <button class="react-launch" id="reactLaunch" title="Send a reaction">😀</button>
           <div class="react-bar" id="reactBar"></div>
         </div>
@@ -904,7 +910,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 
     <section class="mod m-3" data-mod="chat"><div class="mod-grip">⠿ World chat</div>
       <div class="card">
-        <h3><span class="dot" style="background:#7fd8e6"></span>World chat
+        <h3><span class="dot" style="background:#7fd8e6"></span>World chat <span class="chat-room" id="chatRoom"></span>
           <span class="chat-unread" id="chatUnread" style="display:none"></span>
           <button class="chat-pop" id="chatPop" title="Pop out into a floating window" style="display:none">⤢</button></h3>
         <div class="chat-off" id="chatOff">Join a <b>Community</b> world to see everyone's finds &amp; ascensions and chat with them.</div>
@@ -929,7 +935,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 
   <!-- floating (draggable) chat window -->
   <div class="chat-float" id="chatFloat" style="display:none">
-    <div class="cfl-head" id="chatFloatHead"><span>🌍 World chat</span><button class="cfl-dock" id="chatFloatDock" title="Dock back into the board">⤡</button></div>
+    <div class="cfl-head" id="chatFloatHead"><span>🌍 World chat <span class="chat-room" id="chatRoomF"></span></span><button class="cfl-dock" id="chatFloatDock" title="Dock back into the board">⤡</button></div>
     <div class="cfl-body" id="chatFloatMount"></div>
   </div>
 
@@ -953,9 +959,11 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   <button id="mSettings">🎨 Appearance & settings</button>
   <button id="mLayout">▦ Edit layout</button>
   <div class="sep"></div>
+  <button id="mPause">⏸ Pause</button>
   <button id="mMute">🔊 Sound: on</button>
   <button id="mSave">💾 Save now</button>
   <div class="sep"></div>
+  <button id="mQuit">⏏ Quit to title</button>
   <button id="mReset" style="color:var(--bad)">↺ Reset simulation</button>
 </div>
 
@@ -1208,8 +1216,8 @@ function creatureSVG(mood){
     <defs><radialGradient id="gg" cx="40%" cy="30%"><stop offset="0" stop-color="#5a4a38"/><stop offset="1" stop-color="#2c2016"/></radialGradient>
     <linearGradient id="flame" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe6a6"/><stop offset=".45" stop-color="#ff9f52"/><stop offset="1" stop-color="#ff6f6f" stop-opacity="0"/></linearGradient></defs>
     <!-- antenna -->
-    <line x1="60" y1="18" x2="60" y2="4" stroke="#5a4634" stroke-width="3"/>
-    <circle cx="60" cy="3" r="5" fill="#f4b64c"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>
+    <line x1="60" y1="18" x2="60" y2="8" stroke="#5a4634" stroke-width="3"/>
+    <circle cx="60" cy="7" r="5" fill="#f4b64c"><animate attributeName="opacity" values="1;.5;1" dur="1.8s" repeatCount="indefinite"/></circle>
     <!-- body -->
     <rect x="30" y="60" width="60" height="52" rx="16" fill="url(#gg)" stroke="#6b543d" stroke-width="2"/>
     <!-- arms -->
@@ -3032,6 +3040,7 @@ function enterCommunityRoom(){
   commConnect();
   if(!dirCh){ try{ dirCh=RT.channel('world:dir',{}); dirCh.on('who',()=>dirAnnounce()); }catch(e){} }
   dirBeaconT=0; dirAnnounce();
+  updateChatRoom();
   communityRender();
 }
 function commConnect(){
@@ -3188,6 +3197,7 @@ function setChatVisible(on){
   const off=$('chatOff'), body=$('chatBody'), pop=$('chatPop');
   if(pop) pop.style.display=on?'':'none';
   if(off) off.style.display=on?'none':'';
+  updateChatRoom();
   if(on){
     if(S&&S.chatPop){ showFloat(true); } else { showFloat(false); if(body) body.style.display=''; }
     renderChat();
@@ -3257,12 +3267,23 @@ function communityRender(){
     n.cr.style.left=x+'%'; n.tag.style.left=x+'%';
     n.tag.innerHTML=`<b>${esc(r.name||'friend')}</b><br><span class="ww">World ${r.world||1} · ${fmt(r.income||0)}/s</span>`;
   });
-  const total=ids.length+1;  // + you
-  let roomTag='';
+  const total=ids.length+1;  // + you (kept for the leaderboard/roster; no longer shown on the scene)
+  const cc=$('commCount'); if(cc) cc.textContent='';   // headcount badge removed — you can see the robots + the chat
+  // your own name tag, under your robot (same little card as everyone else)
+  const wt=$('wtag'); if(wt){ wt.classList.remove('hidden'); wt.style.left=(creatureX||50)+'%';
+    wt.innerHTML=`<b>${esc(S.name)}</b> · you<br><span class="ww">World ${S.world} · ${fmt(coinIncome())}/s</span>`; }
+}
+function chatRoomLabel(){
+  if(!community) return '';
   const mm=/^commons-(\d+)$/.exec(commRoom||'');
-  if(mm) roomTag=`Room ${mm[1]} · `;
-  else if(commRoom && commRoom!=='commons') roomTag=`“${esc(commRoom)}” · `;
-  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${roomTag}${total} in this world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
+  if(mm) return 'Room '+mm[1];
+  if(commRoom && commRoom!=='commons') return commRoom;    // a named world
+  return '';
+}
+function updateChatRoom(){
+  const lbl=chatRoomLabel(), txt=lbl?('· '+lbl):'';
+  const a=$('chatRoom'); if(a) a.textContent=txt;
+  const b=$('chatRoomF'); if(b) b.textContent=txt;
 }
 function communityTick(real){
   if(!community) return;
@@ -3275,6 +3296,7 @@ function communityTick(real){
 function leaveCommunity(){
   community=false; netStatusStop(); resetRubber();
   setChatVisible(false); resetChat();
+  { const wt=$('wtag'); if(wt){ wt.classList.add('hidden'); wt.innerHTML=''; } }
   try{ if(netCh) netCh.leave(); }catch(e){}
   try{ if(dirCh) dirCh.leave(); }catch(e){}
   netCh=null; dirCh=null; RFS={}; dirCounts={};
@@ -3373,10 +3395,40 @@ try{ if(typeof window!=='undefined'&&window.__net){
    LOOP
    ============================================================ */
 let last=performance.now(),accReal=0,wanderT=0,renderT=0,chatterT=3;
+let paused=false;
+function togglePause(){
+  if(!S.started) return;
+  paused=!paused;
+  const pt=$('pauseTag'); if(pt) pt.style.display=paused?'':'none';
+  const mp=$('mPause'); if(mp) mp.textContent=paused?'▶ Resume':'⏸ Pause';
+  const c=$('creature'); if(c&&paused) c.classList.remove('walking');
+  $('menu').classList.remove('show');
+  if(paused){ setThought('Paused ⏸',true); try{save();}catch(e){} }
+  else { setThought('Back to it!',true); }
+}
+function quitToTitle(){
+  try{ save(); }catch(e){}                       // keep progress — this is NOT a reset
+  paused=false; const pt=$('pauseTag'); if(pt) pt.style.display='none';
+  const mp=$('mPause'); if(mp) mp.textContent='⏸ Pause';
+  duo=false; F=null; leaveNetDuo(); leaveCommunity(); resetChat(); setLayoutEdit(false);
+  document.querySelectorAll('.duo-only').forEach(el=>el.classList.add('hidden'));
+  atBase=false; { const bb=$('base'); if(bb) bb.classList.remove('show'); }
+  S.started=false; try{ save(); }catch(e){}       // idle the loop + come up on the title next reload
+  // reset the start-screen switch/chooser so you flip again to resume
+  $('menu').classList.remove('show');
+  { const sw=$('switch'); if(sw) sw.classList.remove('on'); }
+  { const ch=$('chooser'); if(ch) ch.classList.remove('revealed'); }
+  { const hint=$('switchHint'); if(hint) hint.style.display=''; }
+  { const fs=$('friendSub'); if(fs) fs.classList.remove('open'); }
+  { const ws=$('worldSub'); if(ws) ws.classList.remove('open'); }
+  $('app').classList.remove('live');
+  const st=$('start'); if(st){ st.style.display='flex'; void st.offsetWidth; st.classList.remove('gone'); }
+}
 function loop(now){
   try{
   const real=(now-last)/1000;last=now;
   if(S.started){
+   if(!paused){
     const dt=Math.min(real,0.25)*S.speed; // game seconds this frame
     // sub-step for high speed stability
     let remaining=dt,step;
@@ -3421,6 +3473,13 @@ function loop(now){
     renderT-=real;if(renderT<=0){render();checkAch();if(duo)duoRender();else if(netDuo)remoteRender();renderT=0.12;}
     // autosave
     accReal+=real;if(accReal>5){accReal=0;save();}
+   } else {
+    // paused: freeze your wanderer, but keep watching the others and rendering
+    const c=$('creature'); if(c) c.classList.remove('walking');
+    const c2=$('creature2'); if(c2) c2.classList.remove('walking');
+    if(community){ communityTick(real); }
+    renderT-=real; if(renderT<=0){ render(); if(community){} renderT=0.2; }
+   }
   }
   }catch(err){ /* never let one frame kill the loop */ }
   requestAnimationFrame(loop);
@@ -3528,6 +3587,8 @@ function boot(){
   $('menuBtn').onclick=()=>$('menu').classList.toggle('show');
   document.addEventListener('click',e=>{if(!$('menu').contains(e.target)&&e.target!==$('menuBtn'))$('menu').classList.remove('show');});
   $('mMute').onclick=()=>{S.mute=!S.mute;$('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';};
+  { const b=$('mPause'); if(b) b.onclick=togglePause; }
+  { const b=$('mQuit'); if(b) b.onclick=quitToTitle; }
   $('mSave').onclick=()=>{save();$('mSave').textContent='💾 Saved!';setTimeout(()=>$('mSave').textContent='💾 Save now',1200);};
   $('mReset').onclick=()=>{$('menu').classList.remove('show');$('confirmlay').classList.add('show');};
   $('confirmCancel').onclick=()=>$('confirmlay').classList.remove('show');
