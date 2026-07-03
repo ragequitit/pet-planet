@@ -551,6 +551,30 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .cbtn.danger{background:var(--bad);color:#1a130c}
 .cbtn.danger:hover{filter:brightness(1.08)}
 
+/* co-op lobby overlay */
+#lobbylay{position:fixed;inset:0;z-index:91;background:rgba(8,5,3,.86);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:22px}
+#lobbylay.show{display:flex}
+.lobbybox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);
+  border-radius:20px;padding:24px 22px;max-width:380px;width:100%;box-shadow:0 20px 70px rgba(0,0,0,.6);
+  animation:sheetUp .28s ease;text-align:center}
+.lobbybox h2{font-family:var(--disp);font-weight:700;font-size:20px;margin-bottom:4px}
+.lobby-sub{font-size:12.5px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.lobby-code{background:var(--bg2);border:1px solid var(--line);border-radius:13px;padding:12px;margin-bottom:16px}
+.lobby-code .lc-lab{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase}
+.lobby-code .lc-code{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--honey2);letter-spacing:4px;margin-top:4px}
+.lobby-roster{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.lobby-slot{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--line);
+  border-radius:11px;padding:10px 12px;text-align:left}
+.lobby-slot .ls-dot{width:10px;height:10px;border-radius:50%;background:var(--line2);flex:0 0 auto;transition:.2s}
+.lobby-slot.ready .ls-dot{background:#86c06a;box-shadow:0 0 8px #86c06a}
+.lobby-slot .ls-name{font-family:var(--disp);font-weight:600;font-size:14px;color:var(--cream)}
+.lobby-slot .ls-tag{font-family:var(--mono);font-size:10px;color:var(--dim);margin-left:auto}
+.lobby-status{font-family:var(--mono);font-size:12px;color:var(--honey2);min-height:16px;margin-bottom:14px}
+.lobby-status.go{color:#86c06a}
+.lobby-btns{display:flex;gap:10px}
+.lobby-hint{font-size:11px;color:var(--dim);line-height:1.5;margin-top:12px}
+
 /* realtime pill (replaces speed selector) */
 .rt{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--muted);background:var(--bg2);
   border:1px solid var(--line);border-radius:8px;padding:6px 10px;white-space:nowrap}
@@ -622,9 +646,9 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
         <button class="fp-duo" id="friendsDuo">▶ Start local duo — 2 wanderers</button>
         <div class="fp-code"><span>Your wanderer code</span><b id="friendCode">····-····</b></div>
         <div class="fp-live">
-          <input id="joinCodeInput" class="fp-input" type="text" maxlength="9" placeholder="enter a friend's code" autocomplete="off" spellcheck="false">
-          <button class="fp-live-btn" id="playLiveBtn">▶ Play live with a friend</button>
-          <p class="fp-live-hint">Share <b>your</b> code above, or type a friend's here — you'll both land in the same room and see each other's wanderer live. (Leave it blank to open <b>your</b> room and wait.)</p>
+          <input id="joinCodeInput" class="fp-input" type="text" maxlength="9" placeholder="type a room code" autocomplete="off" spellcheck="false">
+          <button class="fp-live-btn" id="playLiveBtn">▶ Join co-op lobby</button>
+          <p class="fp-live-hint">Decide on a code together (or use your code above), then <b>both</b> type the <b>same</b> code. A lobby opens and the game starts the moment your friend joins.</p>
         </div>
         <div class="fp-net">
           <div class="fp-net-title">Server connection</div>
@@ -790,6 +814,16 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 </div></div>
 
 <div id="lorelay"><div class="lorebox" id="loreBox"></div></div>
+
+<div id="lobbylay"><div class="lobbybox">
+  <h2>Co-op lobby</h2>
+  <p class="lobby-sub">Share this code with your friend. When you're both here, the game starts on its own.</p>
+  <div class="lobby-code"><div class="lc-lab">Room code</div><div class="lc-code" id="lobbyCode">····-····</div></div>
+  <div class="lobby-roster" id="lobbyRoster"></div>
+  <div class="lobby-status" id="lobbyStatus">Connecting…</div>
+  <div class="lobby-btns"><button class="cbtn cancel" id="lobbyLeave">Leave lobby</button></div>
+  <p class="lobby-hint">Both players type the <b>same</b> code. Keep this open — it starts automatically when your friend joins.</p>
+</div></div>
 
 <div id="confirmlay"><div class="confirmbox">
   <h2>Reset simulation?</h2>
@@ -2625,48 +2659,85 @@ function reactionFromWire(w){
   return null;
 }
 
-// ---- room lifecycle ----
-function startNetDuo(room){
+// ---- room lifecycle (lobby → auto-start when both are in) ----
+let netPhase='off', netStarted=false;
+function setLobbyStatus(t,go){ const el=$('lobbyStatus'); if(el){ el.className='lobby-status'+(go?' go':''); el.textContent=t; } }
+function renderLobby(friend){
+  const el=$('lobbyRoster'); if(!el) return;
+  const you=`<div class="lobby-slot ready"><span class="ls-dot"></span><span class="ls-name">${esc(S.name)}</span><span class="ls-tag">you · ready</span></div>`;
+  const fr= friend
+    ? `<div class="lobby-slot ready"><span class="ls-dot"></span><span class="ls-name">${esc(friend.name||'Friend')}</span><span class="ls-tag">friend · ready</span></div>`
+    : `<div class="lobby-slot"><span class="ls-dot"></span><span class="ls-name" style="color:var(--dim)">waiting for a friend…</span><span class="ls-tag">—</span></div>`;
+  el.innerHTML=you+fr;
+}
+function netConnect(room){
+  try{
+    netCh=RT.channel('duo:'+room, {});
+    netCh.onPresence=(pres)=>netPresence(pres);
+    netCh.on('_joined', ()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} if(netPhase==='playing') netBroadcastSnapshot(); });
+    netCh.on('_joinerror', ()=>{ setLobbyStatus('Could not reach the room — check your connection.', false); netFriendLog('Could not open the room (server refused).', null); });
+    netCh.on('snapshot', (d)=>{ if(netPhase==='playing') netOnSnapshot(d); });
+    netCh.on('react', (d)=>{ if(netPhase==='playing') netOnReact(d); });
+  }catch(e){}
+}
+function openLobby(room){
   room=normCode(room); if(!room) return;
-  netRoom=room;
+  netRoom=room; netPhase='lobby'; netStarted=false;
+  const lc=$('lobbyCode'); if(lc) lc.textContent=room;
+  renderLobby(null); setLobbyStatus('Connecting…');
+  $('lobbylay').classList.add('show');
+  netConnect(room);
+}
+function netPresence(pres){
+  const list=Object.values(pres||{}).filter(Boolean);
+  const count=list.length;
+  const friend=list.find(m=>m&&m.name&&m.name!==S.name) || (count>=2?list[list.length-1]:null);
+  if(netPhase==='lobby'){
+    renderLobby(count>=2?friend:null);
+    if(count>=2 && !netStarted){ netStarted=true; setLobbyStatus('Friend joined! Starting…', true); setTimeout(()=>enterNetGame(),900); }
+    else if(count<2){ setLobbyStatus('Waiting for a friend to join…'); }
+  } else if(netPhase==='playing' && RF){
+    const here=count>=2;
+    if(here && !RF.present){ RF.present=true; netBroadcastSnapshot(); }
+    else if(!here && RF.present){ RF.present=false; RF.greeted=false;
+      netFriendLog(`${esc(RF.name||'Your friend')} left the room.`, null);
+      bubble('thought2',''); $('wtag2').innerHTML=`<b>friend left</b><br><span class="ww">room ${esc(netRoom)}</span>`; }
+  }
+}
+function netEnterGameWorld(){
   startGame(false);                 // normal solo boot (creature, theme, save)
   netDuo=true; duo=false;
   RF={ name:'friend', owner:'Friend', world:1, worldProg:0, ascensions:0, income:0, action:'idle',
        bestRar:null, bestGear:null, present:false, greeted:false, prevBest:-1, prevAsc:0, lastSeen:0 };
-  netSnapT=1.5;
+  netSnapT=1.2;
   document.querySelectorAll('.duo-only').forEach(el=>el.classList.remove('hidden'));
   $('creature2').innerHTML=creatureSVG('idle');
   creatureX=YOU_X;
   placeDuo('creature','shadow','thought','wtag',YOU_X);
   placeDuo('creature2','shadow2','thought2','wtag2',friendX);
   $('wtag').innerHTML=`<b>${esc(S.name)}</b> · you<br><span class="ww">World ${S.world}</span>`;
-  $('wtag2').innerHTML=`<b>waiting…</b> · friend<br><span class="ww">room ${esc(room)}</span>`;
-  bubble('thought2','…');
-  netFriendLog(`Room <b>${esc(room)}</b> open — waiting for a friend to join…`, 'Legendary');
-  joinRoom(room);
+  $('wtag2').innerHTML=`<b>friend</b> · friend<br><span class="ww">syncing…</span>`;
+  bubble('thought2','Hello there!');
+  netBroadcastSnapshot();
 }
-function joinRoom(room){
-  try{
-    netCh=RT.channel('duo:'+room, {});
-    netCh.onPresence=(pres)=>netUpdatePresence(pres);
-    netCh.on('_joined', ()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} netBroadcastSnapshot(); });
-    netCh.on('_joinerror', ()=>netFriendLog('Could not open the room (the server refused). Try again.', null));
-    netCh.on('snapshot', (d)=>netOnSnapshot(d));
-    netCh.on('react', (d)=>netOnReact(d));
-  }catch(e){}
+function enterNetGame(){
+  if(netPhase==='playing') return;
+  netPhase='playing';
+  const ll=$('lobbylay'); if(ll) ll.classList.remove('show');
+  netEnterGameWorld();
+}
+// direct entry (used by tests / a shortcut): connect + start immediately
+function startNetDuo(room){
+  room=normCode(room); if(!room) return;
+  netRoom=room; netPhase='playing'; netStarted=true;
+  netConnect(room);
+  netEnterGameWorld();
 }
 function leaveNetDuo(){
-  netDuo=false;
+  netDuo=false; netPhase='off'; netStarted=false;
   try{ if(netCh) netCh.leave(); }catch(e){}
   netCh=null; RF=null; netRoom='';
-}
-function netUpdatePresence(pres){
-  if(!netDuo||!RF) return;
-  const here=Object.keys(pres||{}).length>=2;      // presence includes me → 2 means a friend is in
-  if(here && !RF.present){ RF.present=true; netBroadcastSnapshot(); }
-  else if(!here && RF.present){ RF.present=false; RF.greeted=false;
-    netFriendLog(`${esc(RF.name||'Your friend')} left the room.`, null);
-    bubble('thought2',''); $('wtag2').innerHTML=`<b>friend left</b><br><span class="ww">room ${esc(netRoom)}</span>`; }
+  const ll=$('lobbylay'); if(ll) ll.classList.remove('show');
 }
 function netOnSnapshot(raw){
   if(!netDuo||!RF||!raw||typeof raw!=='object') return;
@@ -2674,7 +2745,7 @@ function netOnSnapshot(raw){
   RF.name=d.name; RF.owner=d.owner; RF.world=d.world; RF.worldProg=d.worldProg;
   RF.ascensions=d.asc; RF.income=d.inc; RF.action=d.act; RF.bestRar=d.bestRar; RF.bestGear=d.gear;
   RF.present=true; RF.lastSeen=Date.now();
-  if(!RF.greeted){ RF.greeted=true; bubble('thought2','Hello there!'); }
+  if(!RF.greeted){ RF.greeted=true; bubble('thought2','Hello there!'); netBroadcastSnapshot(); }  // reply so the friend gets ours too
   const bi=d.bestRar?rarIdx(d.bestRar):-1;
   if(RF.prevBest>=0 && bi>RF.prevBest && bi>=3){          // a genuinely new best (skip the initial sync)
     celebrateAt(d.bestRar, friendX, 'creature2'); bubble('thought2', d.bestRar+'! ✦');
@@ -2710,10 +2781,11 @@ function netTick(real){
   if(netSnapT<=0){ netSnapT=2.5; netBroadcastSnapshot(); }
 }
 try{ if(typeof window!=='undefined'&&window.__net){
-  Object.assign(window.__net, { startNetDuo, joinRoom, leaveNetDuo, netOnSnapshot, netOnReact, netUpdatePresence,
+  Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence,
     validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
   Object.defineProperties(window.__net, {
     netDuo:{ get(){ return netDuo; }, configurable:true },
+    netPhase:{ get(){ return netPhase; }, configurable:true },
     RF:{ get(){ return RF; }, configurable:true },
     netCh:{ get(){ return netCh; }, configurable:true },
     netRoom:{ get(){ return netRoom; }, configurable:true } });
@@ -2885,13 +2957,15 @@ function boot(){
   const fcode=()=>{const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<8;i++){if(i===4)o+='-';o+=s[Math.floor(Math.random()*s.length)];}return o;};
   if(!S.myCode) S.myCode=fcode();
   $('friendCode').textContent=S.myCode;
+  { const jc=$('joinCodeInput'); if(jc&&!jc.value) jc.value=S.myCode; }
   { const nb=$('netTestBtn'); if(nb) nb.onclick=netSelfTest; }
   { const pl=$('playLiveBtn'); if(pl) pl.onclick=()=>{
       const room=normCode(($('joinCodeInput')&&$('joinCodeInput').value)||'')||S.myCode;
+      if(!room) return;
       $('friendsPanel').classList.remove('open'); $('friendsBtn').textContent='🤝 Find friends ▾';
-      $('switch').classList.add('on'); beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);
-      setTimeout(()=>startNetDuo(room),420);
+      openLobby(room);
     }; }
+  { const lv=$('lobbyLeave'); if(lv) lv.onclick=()=>leaveNetDuo(); }
   $('friendsBtn').onclick=()=>{const p=$('friendsPanel');p.classList.toggle('open');
     $('friendsBtn').textContent=p.classList.contains('open')?'🤝 Find friends ▴':'🤝 Find friends ▾';};
   $('friendsSolo').onclick=()=>{$('friendsPanel').classList.remove('open');$('friendsBtn').textContent='🤝 Find friends ▾';
