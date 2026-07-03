@@ -222,7 +222,27 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .chat-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--line);font-family:var(--disp);font-size:15px;color:var(--cream)}
 .chat-x{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:4px 8px;border-radius:8px}
 .chat-x:hover{color:var(--cream);background:var(--bg2)}
-.chat-feed{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.chat-feed{max-height:300px;min-height:120px;overflow-y:auto;padding:10px 2px 6px;display:flex;flex-direction:column;gap:8px}
+.chat-off{color:var(--muted);font-size:12.5px;line-height:1.5;padding:14px 4px}
+.chat-off b{color:#9fe0dc}
+.chat-unread{margin-left:auto;font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:#e0574f;border-radius:9px;padding:1px 7px}
+.chat-body .chat-gate,.chat-body .chat-bar{margin-top:8px}
+/* pop-out + floating chat */
+.chat-pop{margin-left:6px;background:none;border:1px solid var(--line2);border-radius:7px;color:var(--muted);
+  cursor:pointer;font-size:12px;line-height:1;padding:3px 6px;transition:.15s}
+.chat-pop:hover{color:#7fd8e6;border-color:#5f9a95}
+.chat-popped{font-size:12.5px;color:var(--muted);padding:14px 4px}
+.link-btn{background:none;border:none;color:#7fd8e6;cursor:pointer;font:inherit;text-decoration:underline;padding:0}
+.chat-float{position:fixed;z-index:55;width:min(340px,92vw);background:linear-gradient(180deg,#1b140d,#140e08);
+  border:1px solid #5f9a95;border-radius:15px;box-shadow:0 18px 50px rgba(0,0,0,.55);overflow:hidden;display:flex;flex-direction:column}
+.cfl-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;cursor:grab;
+  background:linear-gradient(180deg,#2f4d4b,#233b39);border-bottom:1px solid #5f9a95;
+  font-family:var(--disp);font-weight:600;font-size:13px;color:#d6f4f2;user-select:none;touch-action:none}
+.cfl-head:active{cursor:grabbing}
+.cfl-dock{background:none;border:none;color:#bfeef0;cursor:pointer;font-size:15px;padding:2px 6px;border-radius:7px}
+.cfl-dock:hover{background:rgba(255,255,255,.08)}
+.cfl-body{padding:10px 12px 12px}
+.cfl-body .chat-feed{max-height:min(46vh,320px)}
 .cf-empty{color:var(--muted);text-align:center;margin:auto;font-size:13px}
 .cf-msg{display:flex;align-items:baseline;gap:7px;font-size:13.5px;line-height:1.4}
 .cf-msg .cf-name{font-family:var(--disp);font-weight:600;color:#7fd8e6;flex:0 0 auto}
@@ -817,7 +837,6 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
           <div class="thought duo-only hidden" id="thought2"></div>
           <div class="worldflash" id="worldflash"></div>
           <button class="react-launch" id="reactLaunch" title="Send a reaction">😀</button>
-          <button class="chat-launch" id="chatLaunch" title="World chat" style="display:none">💬<span class="chat-badge" id="chatBadge" style="display:none"></span></button>
           <div class="react-bar" id="reactBar"></div>
         </div>
       </div>
@@ -882,6 +901,36 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
         <div class="body"><div class="ach-grid" id="achGrid"></div></div>
       </div>
     </section>
+
+    <section class="mod m-3" data-mod="chat"><div class="mod-grip">⠿ World chat</div>
+      <div class="card">
+        <h3><span class="dot" style="background:#7fd8e6"></span>World chat
+          <span class="chat-unread" id="chatUnread" style="display:none"></span>
+          <button class="chat-pop" id="chatPop" title="Pop out into a floating window" style="display:none">⤢</button></h3>
+        <div class="chat-off" id="chatOff">Join a <b>Community</b> world to see everyone's finds &amp; ascensions and chat with them.</div>
+        <div id="chatDock">
+          <div class="chat-body" id="chatBody" style="display:none">
+            <div class="chat-feed" id="chatFeed"></div>
+            <div class="chat-gate" id="chatGate">
+              <div class="cg-title">💬 Chatting is a premium feature</div>
+              <p class="cg-body">Reading the world feed is free. To <b>type</b> and talk with everyone here, unlock chat.</p>
+              <button class="cg-btn" id="chatGoPrem">Unlock chat — €25/mo</button>
+            </div>
+            <div class="chat-bar" id="chatBar" style="display:none">
+              <input id="chatInput" class="chat-input" type="text" maxlength="180" placeholder="Say something kind…" autocomplete="off">
+              <button class="chat-send" id="chatSend">Send</button>
+            </div>
+          </div>
+        </div>
+        <div class="chat-popped" id="chatPopped" style="display:none">💬 Chat is floating — <button class="link-btn" id="chatDockBtn">dock it back</button></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- floating (draggable) chat window -->
+  <div class="chat-float" id="chatFloat" style="display:none">
+    <div class="cfl-head" id="chatFloatHead"><span>🌍 World chat</span><button class="cfl-dock" id="chatFloatDock" title="Dock back into the board">⤡</button></div>
+    <div class="cfl-body" id="chatFloatMount"></div>
   </div>
 
   <div id="layoutBar"><span>Drag panels to rearrange · they snap into the grid</span><button id="layoutDone">Done</button></div>
@@ -942,20 +991,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 <div id="setlay"><div class="setbox" id="setBox"></div></div>
 <div id="lblay"><div class="setbox" id="lbBox"></div></div>
 
-<!-- world chat (community) -->
-<div id="chatlay"><div class="chatbox">
-  <div class="chat-head"><b>🌍 World chat</b><button class="chat-x" id="chatClose">✕</button></div>
-  <div class="chat-feed" id="chatFeed"></div>
-  <div class="chat-gate" id="chatGate">
-    <div class="cg-title">💬 Chatting is a premium feature</div>
-    <p class="cg-body">Reading the world feed is free. To <b>type</b> and talk with everyone here, unlock chat.</p>
-    <button class="cg-btn" id="chatGoPrem">Unlock chat — €25/mo</button>
-  </div>
-  <div class="chat-bar" id="chatBar" style="display:none">
-    <input id="chatInput" class="chat-input" type="text" maxlength="180" placeholder="Say something kind…" autocomplete="off">
-    <button class="chat-send" id="chatSend">Send</button>
-  </div>
-</div></div>
+<!-- world chat is now a movable module (see the board) -->
 
 <!-- premium modal -->
 <div id="premlay"><div class="prembox">
@@ -1205,7 +1241,7 @@ function freshStats(){return{gearFound:0,recycled:0,crafts:0,perfect:0,failed:0,
   buildingsBought:0,bestRar:'Common',bestCoins:0,highIncome:0,fastAsc:0,longestRun:0,coinsAll:0,resAll:0};}
 function newGame(){
   S={
-    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, stageWide:false, rubber:true, premium:false, collapsed:{ach:true}, grid:null,
+    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, stageWide:false, rubber:true, premium:false, chatPop:false, chatPos:null, collapsed:{ach:true}, grid:null,
     gameTime:0, runTime:0, world:1, worldProg:0,
     res:{coins:20,energy:0,shards:0,fragments:0,essence:0,sparks:0},
     buildings:{}, gear:{tool:null,tool2:null,core:null,frame:null,optics:null,thrusters:null,antenna:null,heatsink:null,powercell:null,stabilizer:null},
@@ -2367,9 +2403,9 @@ function closeLeaderboard(){$('lblay').classList.remove('show');}
    - every other panel: drag to reorder (any position), collapse via ▾,
      and drag its bottom edge to set a height (content scrolls if taller)
    ============================================================ */
-const MODS_DEFAULT=['stage','resources','buildings','now','crafting','gear','events','stats','ach'];
-const MODW={stage:2,resources:1,buildings:1,now:1,crafting:1,gear:1,events:1,stats:1,ach:1};
-const MODH_DEF={stage:8,resources:6,buildings:10,now:6,crafting:3,gear:5,events:10,stats:8,ach:6};
+const MODS_DEFAULT=['stage','resources','buildings','now','crafting','gear','events','stats','ach','chat'];
+const MODW={stage:2,resources:1,buildings:1,now:1,crafting:1,gear:1,events:1,stats:1,ach:1,chat:1};
+const MODH_DEF={stage:8,resources:6,buildings:10,now:6,crafting:3,gear:5,events:10,stats:8,ach:6,chat:10};
 const GRID_COLS=4;
 let layoutEdit=false, dragMod=null, dragResize=null, dragPH=null, dragPending=null;
 
@@ -3064,7 +3100,7 @@ function netCommLog(name,text,rar,gear){
    Real billing + server-enforced bans need a backend; here the
    premium unlock and mutes are client-side (a working preview).
    ============================================================ */
-let chatFeed=[], chatMuted={}, chatReports={}, chatUnread=0, chatOpen=false;
+let chatFeed=[], chatMuted={}, chatReports={}, chatUnread=0;
 const CHAT_MAX=90;
 // --- profanity blacklist (a starter set; an operator would maintain this server-side) ---
 const BADWORDS=new Set(['fuck','fucker','fucking','shit','bullshit','bitch','asshole','ass','bastard','dick','dickhead',
@@ -3087,7 +3123,7 @@ function isPremium(){ return !!(S&&S.premium); }
 function pushChat(entry){
   entry.t=entry.t||Date.now();
   chatFeed.push(entry); if(chatFeed.length>CHAT_MAX) chatFeed.shift();
-  if(!chatOpen && !entry.me){ chatUnread++; }
+  if(!entry.me){ chatUnread++; }
   renderChat(); updateChatBadge();
 }
 // live activity into the feed (called for others' finds/ascensions, and our own)
@@ -3131,11 +3167,9 @@ function commOnReport(d){
 }
 function chatNotice(text){ pushChat({ kind:'notice', text:esc(text), me:true }); }
 function updateChatBadge(){
-  const b=$('chatBadge'); if(b){ b.textContent=chatUnread>0?(chatUnread>9?'9+':String(chatUnread)):''; b.style.display=chatUnread>0?'':'none'; }
+  const b=$('chatUnread'); if(b){ b.textContent=chatUnread>0?(chatUnread>99?'99+':('+'+chatUnread)):''; b.style.display=chatUnread>0?'':'none'; }
 }
-function openChat(){ chatOpen=true; chatUnread=0; updateChatBadge(); const l=$('chatlay'); if(l) l.classList.add('show'); renderChat();
-  const f=$('chatFeed'); if(f) f.scrollTop=f.scrollHeight; setTimeout(()=>{ const i=$('chatInput'); if(i&&isPremium()) i.focus(); },60); }
-function closeChat(){ chatOpen=false; const l=$('chatlay'); if(l) l.classList.remove('show'); }
+function clearChatUnread(){ chatUnread=0; updateChatBadge(); }
 function renderChat(){
   const f=$('chatFeed'); if(!f) return;
   const rows=chatFeed.map(e=>{
@@ -3150,8 +3184,60 @@ function renderChat(){
   if(gate&&bar){ if(isPremium()){ gate.style.display='none'; bar.style.display='flex'; } else { gate.style.display='flex'; bar.style.display='none'; } }
   f.scrollTop=f.scrollHeight;
 }
-function setChatVisible(on){ const b=$('chatLaunch'); if(b) b.style.display=on?'':'none'; if(!on){ closeChat(); } }
-function resetChat(){ chatFeed=[]; chatMuted={}; chatReports={}; chatUnread=0; chatOpen=false; updateChatBadge(); const f=$('chatFeed'); if(f) f.innerHTML=''; }
+function setChatVisible(on){
+  const off=$('chatOff'), body=$('chatBody'), pop=$('chatPop');
+  if(pop) pop.style.display=on?'':'none';
+  if(off) off.style.display=on?'none':'';
+  if(on){
+    if(S&&S.chatPop){ showFloat(true); } else { showFloat(false); if(body) body.style.display=''; }
+    renderChat();
+  } else {
+    showFloat(false);
+    if(body) body.style.display='none';
+    clearChatUnread();
+  }
+}
+// --- pop-out / dock / drag ---
+function showFloat(on){
+  const fl=$('chatFloat'), mount=$('chatFloatMount'), dock=$('chatDock'), body=$('chatBody'), popped=$('chatPopped');
+  if(!fl||!body) return;
+  if(on){
+    if(mount && body.parentNode!==mount) mount.appendChild(body);
+    body.style.display=''; fl.style.display='flex'; if(popped) popped.style.display='';
+    placeFloat();
+  } else {
+    if(dock && body.parentNode!==dock) dock.appendChild(body);
+    fl.style.display='none'; if(popped) popped.style.display='none';
+  }
+}
+function popOutChat(){ if(S) S.chatPop=true; showFloat(true); renderChat(); try{save();}catch(e){} const i=$('chatInput'); if(i&&isPremium()) setTimeout(()=>i.focus(),60); }
+function dockChat(){ if(S) S.chatPop=false; showFloat(false); if(community){ const b=$('chatBody'); if(b) b.style.display=''; } renderChat(); try{save();}catch(e){} }
+function placeFloat(){
+  const fl=$('chatFloat'); if(!fl) return;
+  let x=(S&&S.chatPos&&typeof S.chatPos.x==='number')?S.chatPos.x:(window.innerWidth-Math.min(340,window.innerWidth*0.92)-16);
+  let y=(S&&S.chatPos&&typeof S.chatPos.y==='number')?S.chatPos.y:90;
+  const w=fl.offsetWidth||320, h=fl.offsetHeight||300;
+  x=Math.max(6,Math.min(x,window.innerWidth-w-6));
+  y=Math.max(6,Math.min(y,window.innerHeight-Math.min(h,80)-6));   // keep the header on-screen
+  fl.style.left=x+'px'; fl.style.top=y+'px';
+}
+function initChatDrag(){
+  const fl=$('chatFloat'), head=$('chatFloatHead'); if(!fl||!head) return;
+  let dragging=false, ox=0, oy=0;
+  const down=e=>{ if(e.target.closest('.cfl-dock')) return; dragging=true; const r=fl.getBoundingClientRect();
+    const p=e.touches?e.touches[0]:e; ox=p.clientX-r.left; oy=p.clientY-r.top; e.preventDefault(); };
+  const move=e=>{ if(!dragging) return; const p=e.touches?e.touches[0]:e;
+    let x=p.clientX-ox, y=p.clientY-oy;
+    x=Math.max(6,Math.min(x,window.innerWidth-fl.offsetWidth-6));
+    y=Math.max(6,Math.min(y,window.innerHeight-40));
+    fl.style.left=x+'px'; fl.style.top=y+'px'; };
+  const up=()=>{ if(!dragging) return; dragging=false;
+    if(S){ S.chatPos={ x:parseInt(fl.style.left)||0, y:parseInt(fl.style.top)||0 }; try{save();}catch(e){} } };
+  head.addEventListener('mousedown',down); window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+  head.addEventListener('touchstart',down,{passive:false}); window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up);
+  window.addEventListener('resize',()=>{ if($('chatFloat')&&$('chatFloat').style.display!=='none') placeFloat(); });
+}
+function resetChat(){ chatFeed=[]; chatMuted={}; chatReports={}; chatUnread=0; updateChatBadge(); const f=$('chatFeed'); if(f) f.innerHTML=''; }
 // --- premium ---
 function openPremium(){ const l=$('premlay'); if(l) l.classList.add('show'); }
 function closePremium(){ const l=$('premlay'); if(l) l.classList.remove('show'); }
@@ -3176,7 +3262,7 @@ function communityRender(){
   const mm=/^commons-(\d+)$/.exec(commRoom||'');
   if(mm) roomTag=`Room ${mm[1]} · `;
   else if(commRoom && commRoom!=='commons') roomTag=`“${esc(commRoom)}” · `;
-  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${roomTag}${total} in the world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
+  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${roomTag}${total} in this world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
 }
 function communityTick(real){
   if(!community) return;
@@ -3459,17 +3545,18 @@ function boot(){
   // lore reader (read-only story)
   $('loreBtn').onclick=openLore;
   $('loreLinkStart').onclick=openLore;
-  // world chat + premium
-  { const b=$('chatLaunch'); if(b) b.onclick=openChat; }
-  { const b=$('chatClose'); if(b) b.onclick=closeChat; }
+  // world chat (module) + premium
   { const b=$('chatSend'); if(b) b.onclick=chatSend; }
-  { const i=$('chatInput'); if(i) i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); chatSend(); } }); }
+  { const i=$('chatInput'); if(i){ i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); chatSend(); } }); i.addEventListener('focus',clearChatUnread); } }
   { const b=$('chatGoPrem'); if(b) b.onclick=openPremium; }
   { const b=$('premGo'); if(b) b.onclick=goPremium; }
   { const b=$('premCancel'); if(b) b.onclick=closePremium; }
-  { const l=$('chatlay'); if(l) l.addEventListener('click',e=>{ if(e.target.id==='chatlay') closeChat(); }); }
   { const l=$('premlay'); if(l) l.addEventListener('click',e=>{ if(e.target.id==='premlay') closePremium(); }); }
-  { const f=$('chatFeed'); if(f) f.addEventListener('click',e=>{ const r=e.target.closest('.cf-report'); if(r&&r.dataset.rep) chatReport(r.dataset.rep, r.dataset.repn); }); }
+  { const f=$('chatFeed'); if(f){ f.addEventListener('click',e=>{ const r=e.target.closest('.cf-report'); if(r&&r.dataset.rep){ chatReport(r.dataset.rep, r.dataset.repn); } else { clearChatUnread(); } }); } }
+  { const b=$('chatPop'); if(b) b.onclick=popOutChat; }
+  { const b=$('chatFloatDock'); if(b) b.onclick=dockChat; }
+  { const b=$('chatDockBtn'); if(b) b.onclick=dockChat; }
+  initChatDrag();
   $('lorelay').addEventListener('click',e=>{if(e.target.id==='lorelay')closeLore();});
   // find friends (co-op is a planned feature — see note in panel)
   const fcode=()=>{const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<8;i++){if(i===4)o+='-';o+=s[Math.floor(Math.random()*s.length)];}return o;};
