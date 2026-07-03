@@ -626,13 +626,13 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .gslot{cursor:pointer;transition:border-color .12s ease,box-shadow .12s ease}
 .gslot:hover{border-color:var(--honey)!important;box-shadow:0 0 0 1px var(--honey),0 0 12px rgba(244,182,76,.28)!important}
 /* custom hover tooltip */
-.tip{position:fixed;z-index:90;display:none;pointer-events:none;max-width:230px;
+.htip{position:fixed;z-index:90;display:none;pointer-events:none;max-width:230px;
   background:linear-gradient(180deg,#241a12,#170f08);border:1px solid var(--line2);border-radius:12px;
   padding:10px 12px;box-shadow:0 12px 34px rgba(0,0,0,.55);animation:tipIn .12s ease}
 @keyframes tipIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
-.tip .tip-arrow{position:absolute;left:var(--ax,50%);bottom:-6px;transform:translateX(-50%) rotate(45deg);
+.htip .tip-arrow{position:absolute;left:var(--ax,50%);bottom:-6px;transform:translateX(-50%) rotate(45deg);
   width:11px;height:11px;background:#170f08;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2)}
-.tip.below .tip-arrow{bottom:auto;top:-6px;transform:translateX(-50%) rotate(45deg);
+.htip.below .tip-arrow{bottom:auto;top:-6px;transform:translateX(-50%) rotate(45deg);
   background:#241a12;border:none;border-left:1px solid var(--line2);border-top:1px solid var(--line2)}
 .tip-head{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .tip-name{font-family:var(--disp);font-weight:700;font-size:14px;margin-top:1px;line-height:1.2}
@@ -939,7 +939,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
               <button class="cg-btn" id="chatGoPrem">Unlock chat — €25/mo</button>
             </div>
             <div class="chat-bar" id="chatBar" style="display:none">
-              <input id="chatInput" class="chat-input" type="text" maxlength="180" placeholder="Say something kind…" autocomplete="off">
+              <input id="chatInput" class="chat-input" type="text" maxlength="180" placeholder="Say something!" autocomplete="off">
               <button class="chat-send" id="chatSend">Send</button>
             </div>
           </div>
@@ -1018,7 +1018,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 <!-- world chat is now a movable module (see the board) -->
 
 <!-- custom hover tooltip -->
-<div id="tip" class="tip"><div class="tip-body" id="tipBody"></div><div class="tip-arrow"></div></div>
+<div id="tip" class="htip"><div class="tip-body" id="tipBody"></div><div class="tip-arrow"></div></div>
 
 <!-- premium modal -->
 <div id="premlay"><div class="prembox">
@@ -2060,10 +2060,17 @@ function buildLog(){
 function buildAch(){
   $('achGrid').innerHTML=ACH.map(a=>{const got=S.achieved[a.id];
     const show=got||!a.hidden;
-    return `<div class="ach ${got?'got':''}">
-      <span>${show?a.ic:'❔'}</span>
-      <div class="tip"><b>${show?a.n:'Hidden'}</b>${show?a.d:'Keep watching to reveal'}</div></div>`;}).join('');
+    return `<div class="ach ${got?'got':''}" data-ach="${a.id}">
+      <span>${show?a.ic:'❔'}</span></div>`;}).join('');
   achDirty=false;
+}
+function achTip(id){
+  const a=ACH.find(x=>x.id===id); if(!a) return '';
+  const got=S.achieved[a.id], show=got||!a.hidden;
+  if(!show) return `<div class="tip-head">Achievement</div><div class="tip-name">Hidden</div><div class="tip-meta" style="margin-top:5px">Keep watching to reveal it.</div>`;
+  return `<div class="tip-head">${got?'✓ Unlocked':'Locked'}</div>
+    <div class="tip-name">${a.ic} ${esc(a.n)}</div>
+    <div class="tip-meta" style="margin-top:5px;color:var(--cream);white-space:normal">${esc(a.d)}</div>`;
 }
 function buildStats(){
   const s=S.stats;const rows=[
@@ -2122,7 +2129,7 @@ function render(){
 /* ---------- inspector (read-only) ---------- */
 const statRow=(k,v)=>`<div class="insp-stat"><span class="sk">${k}</span><span class="sv">${v}</span></div>`;
 const EFFNAME={prod:'All production',drop:'Drop rate',luck:'Luck',craftS:'Craft speed',craftQ:'Craft quality',asc:'Ascension gain'};
-function openInspect(){$('inspect').classList.add('show');}
+function openInspect(){ try{hideTip();}catch(e){} $('inspect').classList.add('show');}
 function closeInspect(){$('inspect').classList.remove('show');}
 function inspectBuilding(id){
   const b=bDef(id);if(!b)return;const c=cnt(id),m=M();
@@ -2164,20 +2171,53 @@ function gearInspectHTML(g,note){
     <div class="insp-note">${note}</div>
     <button class="insp-close" onclick="closeInspect()">Close</button>`;
 }
-/* custom hover tooltip (matching style) — currently used by gear slots */
-function gearTip(slotId){
-  const sl=SLOTS.find(s=>s.id===slotId); if(!sl) return '';
-  const g=S.gear[slotId];
-  if(!g) return `<div class="tip-head">${sl.name}</div><div class="tip-empty">Empty — nothing equipped yet</div>`;
+/* custom hover tooltip (matching style) — gear slots, buildings, resources, and log finds */
+function gearTipHTML(g, head){
   const rc=`var(${RARITIES[rarIdx(g.rar)].c})`;
+  const slot=SLOTS.find(s=>s.id===g.slot);
   let stats='';
   for(const st in g.stats){ const meta=STATS.find(x=>x.id===st);
     stats+=`<span class="tip-stat">${meta?meta.fmt(g.stats[st]):('+'+(g.stats[st]*100).toFixed(0)+'%')}</span>`; }
-  return `<div class="tip-head">${sl.name}</div>
+  return `<div class="tip-head">${esc(head||(slot?slot.name:'Gear'))}</div>
     <div class="tip-name" style="color:${rc}">${esc(g.name)}</div>
     <div class="tip-meta"><span style="color:${rc}">${g.rar}</span> · World ${g.world} · ⚡${fmt(g.power)}</div>
     ${stats?`<div class="tip-stats">${stats}</div>`:''}
     ${g.passive?`<div class="tip-passive">✦ ${g.passive}</div>`:''}`;
+}
+function gearTip(slotId){
+  const sl=SLOTS.find(s=>s.id===slotId); if(!sl) return '';
+  const g=S.gear[slotId];
+  if(!g) return `<div class="tip-head">${sl.name}</div><div class="tip-empty">Empty — nothing equipped yet</div>`;
+  return gearTipHTML(g, sl.name);
+}
+function bldTip(id){
+  const b=bDef(id); if(!b) return ''; const c=cnt(id), m=M();
+  let lines='';
+  if(b.prod){ const mile=mileMult(c); for(const r in b.prod){ const nm=(RES.find(x=>x.id===r)||{}).name||r;
+    lines+=`<span class="tip-stat">+${fmt(b.prod[r]*m.prod*c*mile)} ${nm}/s</span>`; } }
+  if(b.effect){ for(const k in b.effect){ lines+=`<span class="tip-stat">+${Math.round(b.effect[k]*c*100)}% ${EFFNAME[k]||k}</span>`; } }
+  const cost=costOf(b,c), costStr=Object.entries(cost).map(([r,v])=>fmt(v)+' '+r).join(' · ');
+  return `<div class="tip-head">Building</div>
+    <div class="tip-name">${b.ic} ${esc(b.name)}</div>
+    <div class="tip-meta">Owned ${c}</div>
+    ${lines?`<div class="tip-stats">${lines}</div>`:''}
+    <div class="tip-meta" style="margin-top:6px">Next costs ${costStr}</div>`;
+}
+function resTip(id){
+  const r=RES.find(x=>x.id===id); if(!r) return ''; const info=(typeof RESINFO!=='undefined'&&RESINFO[id])||{};
+  const p=production(), rate=p[id]||0;
+  let lines='';
+  if(rate>0) lines+=`<span class="tip-stat">+${fmt(rate)}/s producing</span>`;
+  if(r.val>0) lines+=`<span class="tip-stat">${fmt(r.val)} coins / unit</span>`;
+  return `<div class="tip-head">Resource</div>
+    <div class="tip-name">${esc(r.name)}</div>
+    <div class="tip-meta">${fmt(S.res[id]||0)} held</div>
+    ${lines?`<div class="tip-stats">${lines}</div>`:''}
+    ${info.d?`<div class="tip-meta" style="margin-top:6px">${info.d}</div>`:''}`;
+}
+function logTip(idx){
+  const e=S.log[+idx]; if(!e||!e.g) return '';
+  return gearTipHTML(e.g, (e.who?esc(e.who):esc(S.name))+' · found');
 }
 function showTip(html, rect){
   const tip=$('tip'), body=$('tipBody'); if(!tip||!body||!rect) return;
@@ -3686,8 +3726,16 @@ function boot(){
   // read-only inspector: tap a building or gear slot to see what it does
   $('blist').addEventListener('click',e=>{const row=e.target.closest('.brow');if(row&&row.dataset.b)inspectBuilding(row.dataset.b);});
   $('gslots').addEventListener('click',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)inspectGear(s.dataset.slot);});
-  $('gslots').addEventListener('mouseover',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)showTip(gearTip(s.dataset.slot),s.getBoundingClientRect());});
-  $('gslots').addEventListener('mouseout',e=>{const s=e.target.closest('.gslot');const to=(e.relatedTarget&&e.relatedTarget.closest)?e.relatedTarget.closest('.gslot'):null;if(s&&to!==s)hideTip();});
+  // hover tooltips (matching style) across gear / buildings / resources / log finds
+  const attachTip=(id,sel,builder)=>{ const el=$(id); if(!el) return;
+    el.addEventListener('mouseover',ev=>{ const t=ev.target.closest(sel); if(t){ const html=builder(t); if(html) showTip(html, t.getBoundingClientRect()); else hideTip(); } });
+    el.addEventListener('mouseout',ev=>{ const t=ev.target.closest(sel); const to=(ev.relatedTarget&&ev.relatedTarget.closest)?ev.relatedTarget.closest(sel):null; if(t&&to!==t) hideTip(); }); };
+  attachTip('gslots','.gslot', t=>gearTip(t.dataset.slot));
+  attachTip('blist','.brow', t=>bldTip(t.dataset.b));
+  attachTip('resStrip','.res', t=>resTip(t.dataset.res));
+  attachTip('resFull','.now-row', t=>resTip(t.dataset.res));
+  attachTip('log','.levent', t=>t.dataset.log!=null?logTip(t.dataset.log):'');
+  attachTip('achGrid','.ach', t=>achTip(t.dataset.ach));
   window.addEventListener('scroll',hideTip,true);
   $('resStrip').addEventListener('click',e=>{const s=e.target.closest('.res');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
   $('resFull').addEventListener('click',e=>{const s=e.target.closest('.now-row');if(s&&s.dataset.res)inspectResource(s.dataset.res);});
