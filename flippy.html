@@ -324,6 +324,12 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .wtag.friend b{color:#7fd8e6}
 .wtag .ww{color:var(--muted);font-size:9.5px}
 .creature.friend .body{animation-delay:.4s}
+/* community (P7c) — many wanderers */
+.comm-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.creature.comm{filter:hue-rotate(150deg) saturate(1.05);opacity:.96}
+.comm-count{position:absolute;top:10px;right:12px;z-index:5;font-family:var(--mono);font-size:11px;font-weight:600;
+  color:#bfeef0;background:rgba(28,20,13,.82);border:1px solid #5f9a95;border-radius:9px;padding:4px 10px;pointer-events:none}
+.comm-count:empty{display:none}
 
 /* NOW panel */
 .now-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:5px 0}
@@ -424,6 +430,24 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .lore-link{margin-top:24px;font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--muted);
   background:none;border:none;border-bottom:1px dashed var(--line2);padding:3px 3px 4px;transition:.15s}
 .lore-link:hover{color:var(--honey2);border-color:var(--honey)}
+/* three-button entry (start screen) */
+.entry{margin-top:34px;width:100%;max-width:360px;display:flex;flex-direction:column;gap:12px}
+.entry-btn{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:15px 16px;border-radius:15px;cursor:pointer;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line2);transition:.15s}
+.entry-btn:hover{border-color:var(--honey);transform:translateY(-1px);box-shadow:0 8px 26px rgba(0,0,0,.35)}
+.entry-btn .eb-ic{font-size:24px;width:40px;height:40px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  border-radius:11px;background:var(--bg2);border:1px solid var(--line)}
+.entry-btn .eb-tx{display:flex;flex-direction:column;gap:2px}
+.entry-btn .eb-tx b{font-family:var(--disp);font-weight:700;font-size:16px;color:var(--cream)}
+.entry-btn .eb-tx small{font-size:11.5px;color:var(--muted)}
+.entry-btn.pick-solo:hover .eb-ic{color:var(--honey2)}
+.entry-btn.pick-world{background:linear-gradient(180deg,#2f4d4b,#233b39);border-color:#5f9a95}
+.entry-btn.pick-world:hover{border-color:#7fd8e6}
+.entry-btn.pick-world .eb-tx b{color:#d6f4f2}
+.friend-sub{width:100%;max-width:360px;margin-top:12px;text-align:left;
+  max-height:0;overflow:hidden;opacity:0;transition:max-height .35s ease,opacity .3s ease}
+.friend-sub.open{max-height:560px;opacity:1;margin-top:14px}
+.friend-sub .fp-duo{margin-top:2px}
 .friends-wrap{margin-top:20px;width:100%;max-width:360px;display:flex;flex-direction:column;align-items:center}
 .friends-btn{font-family:var(--mono);font-size:12px;letter-spacing:1px;color:var(--cream);background:var(--bg2);
   border:1px solid var(--line2);border-radius:11px;padding:9px 16px;transition:.15s}
@@ -634,32 +658,26 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   <div class="brand">Flip the<br>Switch</div>
   <p class="tag">You never play. <b>You watch.</b> One flip wakes a tiny tinkerer who mines, loots, crafts, upgrades and ascends through endless worlds — completely on its own. Every world writes its own story.</p>
   <input id="ownerName" class="owner-input" type="text" maxlength="16" placeholder="your name (for the leaderboard)" autocomplete="off">
-  <div class="switch-wrap">
-    <div class="switch" id="switch"><div class="knob"></div></div>
-    <div class="hint">tap to <b>flip the switch</b></div>
-    <button class="lore-link" id="loreLinkStart">read the story ▸</button>
-    <div class="friends-wrap">
-      <button class="friends-btn" id="friendsBtn">🤝 Find friends ▾</button>
-      <div class="friends-panel" id="friendsPanel"><div class="friends-inner">
-        <div class="fp-title">Watch together</div>
-        <p class="fp-body">Two wanderers share one screen — each finding its own gear and moving at its own pace, so no two journeys look alike. Co-op runs at one shared speed (no fast-forward).</p>
-        <button class="fp-duo" id="friendsDuo">▶ Start local duo — 2 wanderers</button>
-        <div class="fp-code"><span>Your wanderer code</span><b id="friendCode">····-····</b></div>
-        <div class="fp-live">
-          <input id="joinCodeInput" class="fp-input" type="text" maxlength="9" placeholder="type a room code" autocomplete="off" spellcheck="false">
-          <button class="fp-live-btn" id="playLiveBtn">▶ Join co-op lobby</button>
-          <p class="fp-live-hint">Decide on a code together (or use your code above), then <b>both</b> type the <b>same</b> code. A lobby opens and the game starts the moment your friend joins.</p>
-        </div>
-        <div class="fp-net">
-          <div class="fp-net-title">Server connection</div>
-          <button class="fp-net-btn" id="netTestBtn">🔌 Test connection to the server</button>
-          <div class="fp-net-status" id="netTestStatus">Not tested yet — tap to check the link to your Supabase.</div>
-        </div>
-        <p class="fp-note"><b style="color:var(--honey2)">Live co-op with a real friend</b> (using this code) is next — it connects two devices through the server above. The local duo is a preview so you can see how two wanderers look together first.</p>
-        <button class="fp-solo" id="friendsSolo">Or begin solo →</button>
-      </div></div>
+  <div class="entry">
+    <button class="entry-btn pick-solo" id="btnSolo"><span class="eb-ic">▶</span><span class="eb-tx"><b>Solo</b><small>Watch your own wanderer</small></span></button>
+    <button class="entry-btn pick-friend" id="btnFriend"><span class="eb-ic">🤝</span><span class="eb-tx"><b>With a friend</b><small>Play live by sharing a code</small></span></button>
+    <button class="entry-btn pick-world" id="btnWorld"><span class="eb-ic">🌍</span><span class="eb-tx"><b>Community</b><small>Join everyone in one world</small></span></button>
+  </div>
+  <div class="friend-sub" id="friendSub">
+    <div class="fp-code"><span>Your code (share it)</span><b id="friendCode">····-····</b></div>
+    <div class="fp-live">
+      <input id="joinCodeInput" class="fp-input" type="text" maxlength="9" placeholder="type a room code" autocomplete="off" spellcheck="false">
+      <button class="fp-live-btn" id="playLiveBtn">▶ Join co-op lobby</button>
+      <p class="fp-live-hint">You and your friend type the <b>same</b> code. A lobby opens and the game starts the moment you're both in.</p>
+    </div>
+    <button class="fp-duo" id="friendsDuo">Or preview a local duo (2 wanderers, one screen)</button>
+    <div class="fp-net">
+      <div class="fp-net-title">Server connection</div>
+      <button class="fp-net-btn" id="netTestBtn">🔌 Test connection to the server</button>
+      <div class="fp-net-status" id="netTestStatus">Not tested yet — tap to check the link.</div>
     </div>
   </div>
+  <button class="lore-link" id="loreLinkStart">read the story ▸</button>
   </div>
 </div>
 
@@ -707,6 +725,8 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
           <div class="shadow duo-only hidden" id="shadow2"></div>
           <div class="creature" id="creature"></div>
           <div class="creature friend duo-only hidden" id="creature2"></div>
+          <div class="comm-layer" id="commLayer"></div>
+          <div class="comm-count" id="commCount"></div>
           <div class="wtag duo-only hidden" id="wtag"></div>
           <div class="wtag friend duo-only hidden" id="wtag2"></div>
           <div class="thought" id="thought">Waking up…</div>
@@ -1069,7 +1089,7 @@ function freshStats(){return{gearFound:0,recycled:0,crafts:0,perfect:0,failed:0,
   buildingsBought:0,bestRar:'Common',bestCoins:0,highIncome:0,fastAsc:0,longestRun:0,coinsAll:0,resAll:0};}
 function newGame(){
   S={
-    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, collapsed:{ach:true}, grid:null,
+    version:1, started:false, name:pick(NAMES), speed:1, mute:false, palette:(currentPalette()||'lantern'), bubbles:true, owner:'', myCode:null, myId:null, collapsed:{ach:true}, grid:null,
     gameTime:0, runTime:0, world:1, worldProg:0,
     res:{coins:20,energy:0,shards:0,fragments:0,essence:0,sparks:0},
     buildings:{}, gear:{tool:null,tool2:null,core:null,frame:null,optics:null,thrusters:null,antenna:null,heatsink:null,powercell:null,stabilizer:null},
@@ -1501,6 +1521,7 @@ function sendReaction(payload){
   try{beep(660,0.05,0.05,'triangle');}catch(e){}
   if(duo&&chance(0.5))setTimeout(()=>{ if(duo){floatReaction(pick(REACT_EMOJI),friendX); bubble('thought2',pick(['🙂','ty!','😄','🙌']));} }, rnd(500,1200));
   if(netDuo&&netCh){ try{ netCh.send('react', reactionToWire(payload)); }catch(e){} }
+  if(community&&netCh){ try{ netCh.send('react', Object.assign(reactionToWire(payload),{from:S.myId})); }catch(e){} }
 }
 function buildReactBar(){
   const bar=$('reactBar');if(!bar)return;
@@ -2611,7 +2632,7 @@ function bestOwnGear(){ let best=null,bi=-1; for(const sl in S.gear){ const g=S.
 // ---- outbound: my wanderer as a small snapshot ----
 function netSnapshot(){
   const g=bestOwnGear();
-  return { name:S.name, owner:(S.owner||'You'), world:S.world, worldProg:+(S.worldProg||0),
+  return { id:S.myId, name:S.name, owner:(S.owner||'You'), world:S.world, worldProg:+(S.worldProg||0),
     asc:S.ascensions, inc:coinIncome(), act:S.action,
     bestRar:(S.stats&&S.stats.bestRar)||null, gear:g||null, t:Date.now() };
 }
@@ -2766,6 +2787,102 @@ function leaveNetDuo(){
   netCh=null; RF=null; netRoom='';
   const ll=$('lobbylay'); if(ll) ll.classList.remove('show');
 }
+
+/* ============================================================
+   NETWORK — P7c community world (many wanderers, one shared room)
+   Everyone joins channel `world:commons`, streams the same compact
+   snapshot, and renders up to COMM_CAP others on the stage (the rest
+   shown as a "+N more" count). Reuses the snapshot/hello/validation
+   from P7b, generalised from one friend (RF) to a map (RFS).
+   ============================================================ */
+let community=false, RFS={}, commNodes={}, commT=0, commRenderT=0, lastCommReply=0;
+const COMM_ROOM='world:commons', COMM_CAP=6, COMM_SLOTS=[16,28,40,60,72,84];
+function joinCommunity(){
+  startGame(false);
+  community=true; duo=false; netDuo=false; netPhase='off';
+  RFS={}; commNodes={}; commT=1.0; commRenderT=0;
+  const layer=$('commLayer'); if(layer) layer.innerHTML='';
+  creatureX=50; placeDuo('creature','shadow','thought','wtag',50);
+  commConnect();
+  communityRender();
+}
+function commConnect(){
+  try{
+    netCh=RT.channel(COMM_ROOM,{});
+    netCh.on('_joined',()=>{ try{ netCh.track({name:S.name, owner:(S.owner||'You')}); }catch(e){} commHello(); commBroadcast(); });
+    netCh.on('hello',(d)=>commOnHello(d));
+    netCh.on('snapshot',(d)=>commOnSnapshot(d));
+    netCh.on('react',(d)=>commOnReact(d));
+  }catch(e){}
+}
+function commHello(){ if(netCh){ try{ netCh.send('hello',{id:S.myId, name:S.name, owner:(S.owner||'You')}); }catch(e){} } }
+function commBroadcast(){ if(community&&netCh){ try{ netCh.send('snapshot', netSnapshot()); }catch(e){} } }
+function commOnHello(d){
+  if(!community||!d) return;
+  const id=(typeof d.id==='string')?d.id.slice(0,24):null; if(!id||id===S.myId) return;
+  if(!RFS[id]) RFS[id]={ name:esc(String(d.name||'friend')).slice(0,16), world:1, income:0, bestRar:null, gear:null,
+    joinT:Date.now(), lastSeen:Date.now(), prevBest:-1, prevAsc:0, _x:50 };
+  else RFS[id].lastSeen=Date.now();
+  commBroadcast();            // reply with our snapshot so the newcomer sees us (no loop: snapshots don't reply)
+  communityRender();
+}
+function commOnSnapshot(raw){
+  if(!community||!raw||typeof raw!=='object') return;
+  const id=(typeof raw.id==='string')?raw.id.slice(0,24):null; if(!id||id===S.myId) return;
+  const d=validateSnapshot(raw);
+  let r=RFS[id];
+  if(!r){ r=RFS[id]={ joinT:Date.now(), prevBest:-1, prevAsc:0, _x:50 }; }
+  r.name=d.name; r.world=d.world; r.income=d.inc; r.bestRar=d.bestRar; r.gear=d.gear; r.lastSeen=Date.now();
+  const bi=d.bestRar?rarIdx(d.bestRar):-1;
+  if(r.prevBest>=0 && bi>r.prevBest && bi>=4 && chance(0.7)){          // Legendary+ only, with a drop-chance (many players)
+    celebrateAt(d.bestRar, r._x||50, 'creature'); netCommLog(r.name, `found ${rarSpan(d.bestRar)} gear!`, d.bestRar, d.gear);
+  }
+  if(bi>=0) r.prevBest=Math.max(r.prevBest, bi);
+  if(r.prevAsc>0 && d.asc>r.prevAsc && chance(0.6)){ netCommLog(r.name, `ascended — ${d.asc}× now`, 'Legendary'); }
+  r.prevAsc=Math.max(r.prevAsc, d.asc);
+}
+function commOnReact(w){
+  if(!community||!w) return;
+  const from=(typeof w.from==='string')?w.from:null;
+  const x=(from&&RFS[from]&&RFS[from]._x)||rnd(18,82);
+  const p=reactionFromWire(w); if(p){ try{ floatReaction(p, x); }catch(e){} }
+}
+function netCommLog(name,text,rar,gear){
+  const nm=esc(name||'Someone');
+  S.log.unshift({ t:S.runTime, x:`<b style="color:#7fd8e6">${nm}</b> ${text}`, r:rar, g:gear||null, who:gear?nm:null });
+  if(S.log.length>60)S.log.pop(); logDirty=true;
+}
+function communityRender(){
+  const layer=$('commLayer'); if(!layer) return;
+  const ids=Object.keys(RFS).sort((a,b)=>(RFS[a].joinT||0)-(RFS[b].joinT||0));
+  const shown=ids.slice(0,COMM_CAP); const showSet={}; shown.forEach(id=>showSet[id]=1);
+  for(const id in commNodes){ if(!showSet[id]){ try{ commNodes[id].cr.remove(); commNodes[id].tag.remove(); }catch(e){} delete commNodes[id]; } }
+  shown.forEach((id,i)=>{
+    const r=RFS[id]; const x=COMM_SLOTS[i%COMM_SLOTS.length]; r._x=x;
+    let n=commNodes[id];
+    if(!n){ const cr=document.createElement('div'); cr.className='creature friend comm walking'; cr.innerHTML=creatureSVG('idle');
+      const tag=document.createElement('div'); tag.className='wtag friend comm'; layer.appendChild(cr); layer.appendChild(tag);
+      n=commNodes[id]={cr,tag}; }
+    n.cr.style.left=x+'%'; n.tag.style.left=x+'%';
+    n.tag.innerHTML=`<b>${esc(r.name||'friend')}</b><br><span class="ww">World ${r.world||1} · ${fmt(r.income||0)}/s</span>`;
+  });
+  const total=ids.length+1;  // + you
+  const cc=$('commCount'); if(cc) cc.textContent=`🌍 ${total} in the world`+(ids.length>COMM_CAP?` · +${ids.length-COMM_CAP} more`:'');
+}
+function communityTick(real){
+  if(!community) return;
+  commT-=real; if(commT<=0){ commT=2.5; commBroadcast(); commHello(); }
+  const now=Date.now(); let changed=false;
+  for(const id in RFS){ if(now-RFS[id].lastSeen>12000){ delete RFS[id]; changed=true; } }
+  commRenderT-=real; if(commRenderT<=0||changed){ commRenderT=0.6; communityRender(); }
+}
+function leaveCommunity(){
+  community=false;
+  try{ if(netCh) netCh.leave(); }catch(e){}
+  netCh=null; RFS={};
+  const layer=$('commLayer'); if(layer) layer.innerHTML=''; commNodes={};
+  const cc=$('commCount'); if(cc) cc.textContent='';
+}
 function netOnSnapshot(raw){
   if(!netDuo||!RF||!raw||typeof raw!=='object') return;
   const d=validateSnapshot(raw);
@@ -2809,10 +2926,13 @@ function netTick(real){
 }
 try{ if(typeof window!=='undefined'&&window.__net){
   Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence, netOnHello, netSendHello,
+    joinCommunity, commConnect, commOnSnapshot, commOnHello, commOnReact, communityRender, leaveCommunity,
     validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
   Object.defineProperties(window.__net, {
     netDuo:{ get(){ return netDuo; }, configurable:true },
     netPhase:{ get(){ return netPhase; }, configurable:true },
+    community:{ get(){ return community; }, configurable:true },
+    RFS:{ get(){ return RFS; }, configurable:true },
     RF:{ get(){ return RF; }, configurable:true },
     netCh:{ get(){ return netCh; }, configurable:true },
     netRoom:{ get(){ return netRoom; }, configurable:true } });
@@ -2845,7 +2965,7 @@ function loop(now){
     wanderT-=real;if(wanderT<=0){wander();wanderT=atBase?rnd(1.6,3):rnd(3,6);}
     // periodic home-base visit (solo) + mining flavour
     if(!atBase){
-      if(!duo&&!netDuo){ baseVisitT-=real; if(baseVisitT<=0) enterBase(); }
+      if(!duo&&!netDuo&&!community){ baseVisitT-=real; if(baseVisitT<=0) enterBase(); }
       if(cnt('crusher')>0){ mineT-=real; if(mineT<=0){ mineSwing(); mineT=rnd(8,15); } }
     } else {
       baseStayT-=real; if(baseStayT<=0) leaveBase();
@@ -2861,6 +2981,7 @@ function loop(now){
     // local duo: advance the friend's independent sim + its cosmetics
     if(duo){ duoTick(dt); friendCosmetic(real); }
     else if(netDuo){ netTick(real); }
+    else if(community){ communityTick(real); }
     // building unlock refresh occasionally
     // render throttle
     renderT-=real;if(renderT<=0){render();checkAch();if(duo)duoRender();else if(netDuo)remoteRender();renderT=0.12;}
@@ -2907,7 +3028,7 @@ function startGame(fromLoad,withDuo){
   $('start').classList.add('gone');
   setTimeout(()=>{$('start').style.display='none';},800);
   $('app').classList.add('live');
-  netDuo=false;             // solo / local-duo starts are not networked (startNetDuo re-enables after)
+  netDuo=false; community=false;   // solo / local-duo starts are not networked (joinCommunity/startNetDuo re-enable after)
   S.started=true; atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
   const on=$('ownerName'); if(on&&on.value.trim()) S.owner=on.value.trim(); if(!S.owner)S.owner='You';
   $('creature').innerHTML=creatureSVG('idle');
@@ -2925,7 +3046,7 @@ async function doReset(){
   try{ localStorage.removeItem(SKEY); }catch(e){}
   memSave=null;
   // tear down duo if it was running
-  duo=false; F=null; leaveNetDuo(); setLayoutEdit(false); atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
+  duo=false; F=null; leaveNetDuo(); leaveCommunity(); setLayoutEdit(false); atBase=false; baseVisitT=140; { const bb=$('base'); if(bb)bb.classList.remove('show'); }
   document.querySelectorAll('.duo-only').forEach(el=>el.classList.add('hidden'));
   // fresh state — started:false makes the loop idle and the start screen return
   newGame();
@@ -2939,11 +3060,10 @@ async function doReset(){
   $('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';
   // close menus / panels
   $('menu').classList.remove('show');
-  if($('friendsPanel')){$('friendsPanel').classList.remove('open');$('friendsBtn').textContent='🤝 Find friends ▾';}
+  { const fs=$('friendSub'); if(fs) fs.classList.remove('open'); }
   if(sceneReady)applyScroll();
-  // back to the "flip the switch" screen, switch off
+  // back to the start screen
   $('app').classList.remove('live');
-  $('switch').classList.remove('on');
   const st=$('start'); if(st){ st.style.display='flex'; void st.offsetWidth; st.classList.remove('gone'); }
   // persist the reset so a later reload also comes up fresh
   try{ save(); }catch(e){}
@@ -2953,11 +3073,10 @@ function boot(){
   applyPalette(currentPalette()||'lantern');
   buildStrip();mountAvatar();initScene();initLayoutDrag();prepModules();applyLayout();
   try{wireReactions();}catch(e){}
-  $('switch').onclick=()=>{
-    if(S.started)return;
-    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);
-    setTimeout(()=>startGame(false),420);
-  };
+  $('switch')&&($('switch').onclick=null);
+  { const bs=$('btnSolo'); if(bs) bs.onclick=()=>{ beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>startGame(false),300); }; }
+  { const bf=$('btnFriend'); if(bf) bf.onclick=()=>{ const fs=$('friendSub'); if(fs){ fs.classList.toggle('open'); if(fs.classList.contains('open')) setTimeout(()=>{ const jc=$('joinCodeInput'); if(jc) jc.focus(); },250); } }; }
+  { const bw=$('btnWorld'); if(bw) bw.onclick=()=>{ beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>joinCommunity(),300); }; }
   // menu
   $('menuBtn').onclick=()=>$('menu').classList.toggle('show');
   document.addEventListener('click',e=>{if(!$('menu').contains(e.target)&&e.target!==$('menuBtn'))$('menu').classList.remove('show');});
@@ -2983,22 +3102,19 @@ function boot(){
   // find friends (co-op is a planned feature — see note in panel)
   const fcode=()=>{const s='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let o='';for(let i=0;i<8;i++){if(i===4)o+='-';o+=s[Math.floor(Math.random()*s.length)];}return o;};
   if(!S.myCode) S.myCode=fcode();
+  if(!S.myId) S.myId='p'+Math.random().toString(36).slice(2,10);
   $('friendCode').textContent=S.myCode;
   { const jc=$('joinCodeInput'); if(jc&&!jc.value) jc.value=S.myCode; }
   { const nb=$('netTestBtn'); if(nb) nb.onclick=netSelfTest; }
   { const pl=$('playLiveBtn'); if(pl) pl.onclick=()=>{
       const room=normCode(($('joinCodeInput')&&$('joinCodeInput').value)||'')||S.myCode;
       if(!room) return;
-      $('friendsPanel').classList.remove('open'); $('friendsBtn').textContent='🤝 Find friends ▾';
+      const fs=$('friendSub'); if(fs) fs.classList.remove('open');
       openLobby(room);
     }; }
   { const lv=$('lobbyLeave'); if(lv) lv.onclick=()=>leaveNetDuo(); }
-  $('friendsBtn').onclick=()=>{const p=$('friendsPanel');p.classList.toggle('open');
-    $('friendsBtn').textContent=p.classList.contains('open')?'🤝 Find friends ▴':'🤝 Find friends ▾';};
-  $('friendsSolo').onclick=()=>{$('friendsPanel').classList.remove('open');$('friendsBtn').textContent='🤝 Find friends ▾';
-    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);setTimeout(()=>startGame(false),420);};
-  $('friendsDuo').onclick=()=>{$('friendsPanel').classList.remove('open');
-    $('switch').classList.add('on');beep(180,0.08,0.06,'square');setTimeout(()=>beep(520,0.18,0.06,'triangle'),120);setTimeout(()=>startGame(false,true),420);};
+  { const fd=$('friendsDuo'); if(fd) fd.onclick=()=>{ const fs=$('friendSub'); if(fs) fs.classList.remove('open');
+      beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>startGame(false,true),300); }; }
   // read-only inspector: tap a building or gear slot to see what it does
   $('blist').addEventListener('click',e=>{const row=e.target.closest('.brow');if(row&&row.dataset.b)inspectBuilding(row.dataset.b);});
   $('gslots').addEventListener('click',e=>{const s=e.target.closest('.gslot');if(s&&s.dataset.slot)inspectGear(s.dataset.slot);});
