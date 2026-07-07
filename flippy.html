@@ -118,7 +118,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 @media(min-width:760px){
   .board:not(.stacked) .mod>.card,.board:not(.stacked) .mod>.stage-card{height:100%}
   .board:not(.stacked) .mod>.card{display:flex;flex-direction:column}
-  .board:not(.stacked) .mod>.card>.body{flex:1 1 auto;min-height:0;overflow:auto}
+  .board:not(.stacked) .mod>.card>.body{flex:1 1 auto;min-height:0;overflow:auto;scrollbar-gutter:stable}
   .board:not(.stacked) .mod.collapsed .card>.body{flex:0}
   .board:not(.stacked) .mod-stage .stage{height:100%}
 }
@@ -464,7 +464,8 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
 .levent .lx b{font-weight:600}
 
 /* stats */
-.srow{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.srow{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;padding:5px 4px 5px 0;border-bottom:1px dashed var(--line)}
+.srow .sv{white-space:nowrap}
 .srow:last-child{border-bottom:none}
 .srow .sk{color:var(--muted)}
 .srow .sv{font-family:var(--mono);font-weight:600}
@@ -980,6 +981,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:n
   <button id="mLeader">🏆 Leaderboard</button>
   <button id="mSettings">🎨 Appearance & settings</button>
   <button id="mLayout">▦ Edit layout</button>
+  <button id="mCommunity" style="display:none">🌐 Join a community world</button>
   <div class="sep"></div>
   <button id="mPause">⏸ Pause</button>
   <button id="mMute">🔊 Sound: on</button>
@@ -1070,8 +1072,8 @@ function fmtTime(s){s=Math.floor(s);const h=Math.floor(s/3600),m=Math.floor(s%36
   return (h?h+':':'')+String(m).padStart(h?2:1,'0')+':'+String(ss).padStart(2,'0');}
 
 /* ---------- static data (data-driven) ---------- */
-const NAMES=['Echo','Chip','Scout','Atlas','Pip','Bolt','Nova','Wren','Sol','Tuck','Fig','Moss','Juno','Kip','Ember','Nib'];
-const WORLDS=['The Quiet Bench','Copper Hollow','Dust & Dawn','The Sunken Cog','Amberfields','Static Marsh','Mechanical Wastes','The Glass Orchard','Hollow Foundry','Nimbus Reach','The Last Lantern','Ashen Spires','Prism Vale','The Deep Below','Solder Bay','Verdigris','Rustfall Reach','The Emberworks','Palewood','Cinder Terrace','The Hushed Span','Marrow Deep','Goldvane','The Frayed Coast','Quartz Hollow','Tarnish Flats','The Kindled Vault','Mirebloom','Saffron Drift','The Cobalt Rift','Weldenmoor','The Filament Wilds','Umber Hollow','Glimmerslag','The Sundered Cog','Nettlespark','The Opal Deep','Ferrous Dawn','The Lanternmarsh','Vitreous Vale','The Ashen Tide','Coppervein','The Dimlight Span','Brasswind','The Silent Kiln','Pyre Hollow','Gloamfield','The Crystalline Wastes','Emberreach','The Long Dusk'];
+const NAMES=['Echo','Chip','Scout','Atlas','Pip','Bolt','Nova','Wren','Sol','Tuck','Fig','Moss','Juno','Kip','Ember','Nib','Ash','Bean','Bit','Blip','Bram','Bud','Cinder','Clay','Clover','Cog','Comet','Crank','Dapple','Dash','Dot','Dune','Elm','Fern','Ferro','Finch','Flint','Fox','Gadget','Gear','Gizmo','Grove','Hazel','Hue','Iris','Ivy','Jet','Lark','Leaf','Lumen','Lynx','Marlow','Mica','Milo','Mint','Nell','Nix','Nutmeg','Oat','Olive','Onyx','Opal','Otto','Peat','Pebble','Pine','Plum','Poppy','Puck','Quill','Reed','Rill','Rivet','Rook','Rune','Rust','Sage','Slate','Sky','Snap','Sorrel','Spark','Spool','Sprig','Spud','Sprocket','Tally','Tansy','Teak','Tin','Tinker','Twig','Vale','Watt','Whittle','Willow','Wisp','Zinc','Zip','Bramble'];
+const WORLDS=['The Quiet Bench','Copper Hollow','Dust & Dawn','The Sunken Cog','Amberfields','Static Marsh','Mechanical Wastes','The Glass Orchard','Hollow Foundry','Nimbus Reach','The Last Lantern','Ashen Spires','Prism Vale','The Deep Below','Solder Bay','Verdigris','Rustfall Reach','The Emberworks','Palewood','Cinder Terrace','The Hushed Span','Marrow Deep','Goldvane','The Frayed Coast','Quartz Hollow','Tarnish Flats','The Kindled Vault','Mirebloom','Saffron Drift','The Cobalt Rift','Weldenmoor','The Filament Wilds','Umber Hollow','Glimmerslag','The Sundered Cog','Nettlespark','The Opal Deep','Ferrous Dawn','The Lanternmarsh','Vitreous Vale','The Ashen Tide','Coppervein','The Dimlight Span','Brasswind','The Silent Kiln','Pyre Hollow','Gloamfield','The Crystalline Wastes','Emberreach','The Long Dusk','The Amber Kiln','Brasshollow','The Cinder Fields','Coalgleam','The Dusklands','Emberfall','The Faded Span','Ferrowick','The Gilded Marsh','Glimmerhollow','The Hollow Tide','Ironbloom','The Kindled Coast','Lanternfall','The Mire Below','Nettlereach','The Ochre Wilds','Pewter Vale','The Quiet Foundry','Rustmere','The Sable Span','Slagbloom','The Tin Orchard','Umbergrove','The Verdant Cog','Wickmoor','The Ashfall Reach','Bronzemarsh','The Cobbled Deep','Dimglow','The Ember Coast','Flintgrove','The Gloaming Vale','Hollowbrass','The Iron Lantern','Kilnfield','The Nickel Hollow','Marrowlight','Ochrefall','The Pale Kiln','Quartzmere','The Rusted Span','Sootfield','The Tarnished Deep','The Bellows Deep','The Umbral Span','The Wistful Coast','Zincgrove','The Molten Reach','Cinderhollow'];
 
 const RARITIES=[
   {k:'Common',c:'--c-common',w:62,pw:10,ic:'▪'},
@@ -3107,6 +3109,7 @@ function leaveNetDuo(){
    from P7b, generalised from one friend (RF) to a map (RFS).
    ============================================================ */
 let community=false, RFS={}, commNodes={}, commT=0, commRenderT=0, lastCommReply=0, commRoom='commons';
+let preCommWide=false;   // remembers the solo stage-width so leaving a community can restore it
 const COMM_CAP=6, COMM_SLOTS=[16,28,40,60,72,84];
 function normRoom(s){ return String(s||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,20); }
 const COMM_ROOM_CAP=12;                 // players per public room before opening a new one
@@ -3114,15 +3117,52 @@ let dirCh=null, dirCounts={}, dirBeaconT=0;
 function joinCommunity(name){
   const named=normRoom(name);
   startGame(false);
+  beginCommunity(named);
+}
+// Shared community setup — used by BOTH the title flow (joinCommunity, after startGame)
+// and the in-game "Join a community world" menu action (enterCommunityFromGame, no startGame).
+function beginCommunity(named){
   community=true; duo=false; netDuo=false; netPhase='off';
   RFS={}; commNodes={}; commT=1.0; commRenderT=0;
   const layer=$('commLayer'); if(layer) layer.innerHTML='';
   creatureX=50; placeDuo('creature','shadow','thought','wtag',50);
+  preCommWide=!!(S&&S.stageWide);   // remember solo stage-width so leaving restores it
   setStageWide(true);               // give the crowd room; user can rearrange in Edit layout
   resetChat(); setChatVisible(true);
   netStatusStart();
   if(named){ commRoom=named; enterCommunityRoom(); communityRender(); }     // private named world → no matchmaking
   else { matchmake(room=>{ commRoom=room; enterCommunityRoom(); }); }        // public → find a room WITH people
+  updateMenuMode();
+}
+// Jump straight from a running solo (or friend-duo) game into a public community world —
+// keeps your current run (your wanderer IS you in the room); no trip back to the title.
+function enterCommunityFromGame(){
+  if(!S.started || community) return;
+  duo=false; F=null; leaveNetDuo();                 // drop any friend duo first — we become a community wanderer
+  document.querySelectorAll('.duo-only').forEach(el=>el.classList.add('hidden'));
+  beginCommunity('');                               // '' → public matchmaking (find a room with people)
+  $('menu').classList.remove('show');
+  setThought('Off to find some company…',true);
+  log('Joined a community world','Rare');
+}
+// Leave the community and return to solo WITHOUT going to the title (progress preserved).
+function leaveCommunityToSolo(){
+  if(!community) return;
+  leaveCommunity();
+  setStageWide(preCommWide);                         // restore the pre-community stage width
+  creatureX=50; placeDuo('creature','shadow','thought','wtag',50);
+  gearDirty=bldDirty=logDirty=true;                  // nudge the solo panels to re-render
+  $('menu').classList.remove('show');
+  setThought('Back on my own.',true);
+  log('Left the community world','Rare');
+  updateMenuMode();
+}
+// Keep the context-aware menu entry in sync with the current mode.
+function updateMenuMode(){
+  const b=$('mCommunity'); if(!b) return;
+  if(!S||!S.started){ b.style.display='none'; return; }   // only meaningful while a game is running
+  b.style.display='';
+  b.textContent = community ? '🚪 Leave community world' : '🌐 Join a community world';
 }
 // ---- matchmaking: a tiny directory channel tells us which public rooms have people + space ----
 function matchmake(cb){
@@ -3489,9 +3529,12 @@ function netTick(real){
 }
 try{ if(typeof window!=='undefined'&&window.__net){
   Object.assign(window.__net, { startNetDuo, openLobby, enterNetGame, netConnect, leaveNetDuo, netOnSnapshot, netOnReact, netPresence, netOnHello, netSendHello,
-    joinCommunity, commConnect, commOnSnapshot, commOnHello, commOnReact, communityRender, leaveCommunity, matchmake, pickRoom, enterCommunityRoom, dirAnnounce,
+    joinCommunity, beginCommunity, enterCommunityFromGame, leaveCommunityToSolo, updateMenuMode, startGame, quitToTitle,
+    commConnect, commOnSnapshot, commOnHello, commOnReact, communityRender, leaveCommunity, matchmake, pickRoom, enterCommunityRoom, dirAnnounce,
     validateSnapshot, validateGear, reactionToWire, reactionFromWire, netSnapshot });
   Object.defineProperties(window.__net, {
+    started:{ get(){ return !!(S&&S.started); }, configurable:true },
+    stageWide:{ get(){ return !!(S&&S.stageWide); }, configurable:true },
     netDuo:{ get(){ return netDuo; }, configurable:true },
     netPhase:{ get(){ return netPhase; }, configurable:true },
     community:{ get(){ return community; }, configurable:true },
@@ -3537,6 +3580,7 @@ function quitToTitle(){
   { const ws=$('worldSub'); if(ws) ws.classList.remove('open'); }
   $('app').classList.remove('live');
   const st=$('start'); if(st){ st.style.display='flex'; void st.offsetWidth; st.classList.remove('gone'); }
+  updateMenuMode();
 }
 function loop(now){
   try{
@@ -3648,6 +3692,7 @@ function startGame(fromLoad,withDuo){
   log(fromLoad?'Resumed the simulation':'Flipped the switch — off we go!','Legendary');
   if(withDuo) startDuo();
   checkAch();save();
+  updateMenuMode();
 }
 
 async function doReset(){
@@ -3701,11 +3746,12 @@ function boot(){
   { const nl=$('namedWorldLink'); if(nl) nl.onclick=()=>{ const ws=$('worldSub'); if(ws){ ws.classList.toggle('open'); nl.textContent=ws.classList.contains('open')?'or join a named world ▴':'or join a named world ▾'; if(ws.classList.contains('open')) setTimeout(()=>{ const wi=$('worldNameInput'); if(wi) wi.focus(); },250); } }; }
   { const jn=$('joinNamedBtn'); if(jn) jn.onclick=()=>{ const nm=normRoom(($('worldNameInput')&&$('worldNameInput').value)||''); if(!nm) return; const ws=$('worldSub'); if(ws) ws.classList.remove('open'); beep(180,0.08,0.06,'square'); setTimeout(()=>beep(520,0.18,0.06,'triangle'),120); setTimeout(()=>joinCommunity(nm),300); }; }
   // menu
-  $('menuBtn').onclick=()=>$('menu').classList.toggle('show');
+  $('menuBtn').onclick=()=>{ updateMenuMode(); $('menu').classList.toggle('show'); };
   document.addEventListener('click',e=>{if(!$('menu').contains(e.target)&&e.target!==$('menuBtn'))$('menu').classList.remove('show');});
   $('mMute').onclick=()=>{S.mute=!S.mute;$('mMute').textContent=S.mute?'🔇 Sound: off':'🔊 Sound: on';};
   { const b=$('mPause'); if(b) b.onclick=togglePause; }
   { const b=$('mQuit'); if(b) b.onclick=quitToTitle; }
+  { const b=$('mCommunity'); if(b) b.onclick=()=>{ if(community) leaveCommunityToSolo(); else enterCommunityFromGame(); }; }
   $('mSave').onclick=()=>{save();$('mSave').textContent='💾 Saved!';setTimeout(()=>$('mSave').textContent='💾 Save now',1200);};
   $('mReset').onclick=()=>{$('menu').classList.remove('show');$('confirmlay').classList.add('show');};
   $('confirmCancel').onclick=()=>$('confirmlay').classList.remove('show');
