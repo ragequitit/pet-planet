@@ -1,13 +1,15 @@
 # .github/workflows/keepalive.yml
 # Keeps the Supabase project "flip-the-switch" (ref sclmvswoqebrwowerorh) awake by
-# making a real REST request every few days, so it isn't auto-paused for inactivity.
+# making a real API request every few days, so it isn't auto-paused for inactivity.
 #
 # Drop this file at:  .github/workflows/keepalive.yml  in your game repo, commit & push.
-# Then test it once by hand: repo → Actions → "Supabase keepalive" → "Run workflow".
+# Then test it once by hand: repo -> Actions -> "Supabase keepalive" -> "Run workflow".
 #
-# NOTE: the key below is the PUBLIC anon key — it already ships in the browser game,
-# so it's fine to keep here. If you'd rather not, create repo secrets SUPABASE_URL and
-# SUPABASE_ANON_KEY and swap the two `env:` lines to:  ${{ secrets.SUPABASE_URL }}  etc.
+# KEY: this uses the project's PUBLISHABLE key (sb_publishable_...). It's designed to be
+# public and already ships in the browser game, so it's safe to keep here. (The old legacy
+# anon JWT is rejected by this project's API gateway with 401 — that's why v1 failed.)
+# Prefer a secret? Create repo secret SUPABASE_KEY and change the env line to:
+#   SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
 name: Supabase keepalive
 
@@ -17,7 +19,6 @@ on:
     - cron: "17 6 */3 * *"
   workflow_dispatch: {}   # lets you run it manually from the Actions tab
 
-# Avoid overlapping runs.
 concurrency:
   group: supabase-keepalive
   cancel-in-progress: false
@@ -28,25 +29,31 @@ jobs:
     timeout-minutes: 5
     env:
       SUPABASE_URL: "https://sclmvswoqebrwowerorh.supabase.co"
-      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjbG12c3dvcWVicndvd2Vyb3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjg1NzcsImV4cCI6MjA5ODYwNDU3N30.Z0xWMAFzZohW1-TEagQGGES5P-w4U8NnNEDjVvsAogA"
+      SUPABASE_KEY: "sb_publishable_sgAPY3rfqubK02sNL6gaFQ_0tzzn5Wo"
     steps:
-      - name: Ping Supabase REST endpoint
+      - name: Ping Supabase (keeps the project active)
         run: |
-          set -euo pipefail
-          url="${SUPABASE_URL%/}/rest/v1/"
-          echo "Pinging $url"
-          code=""
+          set -uo pipefail
+          base="${SUPABASE_URL%/}"
+          hit () {
+            curl -sS -m 30 -o /dev/null -w '%{http_code}' \
+              -H "apikey: ${SUPABASE_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_KEY}" \
+              "$1" || echo "000"
+          }
+          c1=""; c2=""; ok=0
           for attempt in 1 2 3; do
-            code="$(curl -sS -m 30 -o /dev/null -w '%{http_code}' \
-              -H "apikey: ${SUPABASE_ANON_KEY}" \
-              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
-              "$url" || true)"
-            echo "Attempt ${attempt}: HTTP ${code}"
-            case "$code" in
-              2??) echo "OK — activity registered at $(date -u +'%Y-%m-%dT%H:%M:%SZ')"; exit 0 ;;
-            esac
+            c1="$(hit "$base/rest/v1/")"
+            echo "Attempt ${attempt}: GET /rest/v1/ -> ${c1}"
+            case "$c1" in 2??) echo "OK via REST"; ok=1; break;; esac
+            c2="$(hit "$base/auth/v1/health")"
+            echo "Attempt ${attempt}: GET /auth/v1/health -> ${c2}"
+            case "$c2" in 2??) echo "OK via auth health"; ok=1; break;; esac
             sleep 10
           done
-          echo "::error::Keepalive ping failed (last HTTP status: ${code:-none})."
-          echo "If the project was already paused, un-pause it from the Supabase dashboard first."
+          if [ "$ok" = "1" ]; then
+            echo "Activity registered at $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            exit 0
+          fi
+          echo "::error::Keepalive ping failed (REST=${c1:-none}, health=${c2:-none}). Check the key, or un-pause the project from the dashboard first."
           exit 1
