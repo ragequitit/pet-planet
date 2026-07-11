@@ -1,1 +1,52 @@
+# .github/workflows/keepalive.yml
+# Keeps the Supabase project "flip-the-switch" (ref sclmvswoqebrwowerorh) awake by
+# making a real REST request every few days, so it isn't auto-paused for inactivity.
+#
+# Drop this file at:  .github/workflows/keepalive.yml  in your game repo, commit & push.
+# Then test it once by hand: repo → Actions → "Supabase keepalive" → "Run workflow".
+#
+# NOTE: the key below is the PUBLIC anon key — it already ships in the browser game,
+# so it's fine to keep here. If you'd rather not, create repo secrets SUPABASE_URL and
+# SUPABASE_ANON_KEY and swap the two `env:` lines to:  ${{ secrets.SUPABASE_URL }}  etc.
 
+name: Supabase keepalive
+
+on:
+  schedule:
+    # 06:17 UTC every 3rd day-of-month (worst-case gap stays well under the ~7-day pause window).
+    - cron: "17 6 */3 * *"
+  workflow_dispatch: {}   # lets you run it manually from the Actions tab
+
+# Avoid overlapping runs.
+concurrency:
+  group: supabase-keepalive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: "https://sclmvswoqebrwowerorh.supabase.co"
+      SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNjbG12c3dvcWVicndvd2Vyb3JoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMjg1NzcsImV4cCI6MjA5ODYwNDU3N30.Z0xWMAFzZohW1-TEagQGGES5P-w4U8NnNEDjVvsAogA"
+    steps:
+      - name: Ping Supabase REST endpoint
+        run: |
+          set -euo pipefail
+          url="${SUPABASE_URL%/}/rest/v1/"
+          echo "Pinging $url"
+          code=""
+          for attempt in 1 2 3; do
+            code="$(curl -sS -m 30 -o /dev/null -w '%{http_code}' \
+              -H "apikey: ${SUPABASE_ANON_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+              "$url" || true)"
+            echo "Attempt ${attempt}: HTTP ${code}"
+            case "$code" in
+              2??) echo "OK — activity registered at $(date -u +'%Y-%m-%dT%H:%M:%SZ')"; exit 0 ;;
+            esac
+            sleep 10
+          done
+          echo "::error::Keepalive ping failed (last HTTP status: ${code:-none})."
+          echo "If the project was already paused, un-pause it from the Supabase dashboard first."
+          exit 1
